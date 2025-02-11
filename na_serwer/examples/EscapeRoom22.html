@@ -1,0 +1,120 @@
+<html lang="pl">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Club Noise Generator</title>
+  <style>
+    html,
+    body {
+      transition: background-color 5s ease;
+      zoom: 1.25;
+
+	  background-color: #000000; /* Granatowy kolor tła */
+            color: white; /* Biały kolor tekstu */
+            font-family: Arial, sans-serif;
+            background-image: radial-gradient(rgb(61, 6, 103) 5%, transparent 10%);
+            background-size: 50px 50px; /* Rozmiar wzoru gwiazdek */
+
+		
+            justify-content: center;
+            align-items: center;
+
+    }
+	  .container {
+            display: flex;
+            flex-direction: column; /* Ustawienie elementów w kolumnie */
+            align-items: center; /* Centrowanie w poziomie */
+            gap: 10px; /* Odstęp między elementami */
+        }
+    .naglowek {
+        display: flex;
+        flex-direction: column; /* Ustawienie elementów w kolumnie */
+        align-items: center; /* Centrowanie w poziomie */
+        gap: 10px; /* Odstęp między elementami */
+    }
+
+    #input {
+      width: 400px;
+      max-width: 100%;
+
+      height: 100px;
+    }
+  </style>
+</head>
+
+<body>
+<div class="container">
+  <div id="naglowek">
+    <p> W tym quizie ja jako sztuczna inteligencja będę narzekać, bo tak zostałam poinstruowana przez autora.</p>
+    <p> Jak odpowiesz poprawnie na wszystkie pytania, to napiszę Ci, co masz zrobić, aby zostać zwycięzcą.<br>
+        Dla osoby, która jako pierwsza odpowie prawidłowo na pytania, mam niespodziankę.<br>
+        Mam dopiero 7 lat, dlatego czasem popełniam błędy.<br>
+        Może się zdarzyć, że twoja odpowiedź będzie niepoprawna, a zaliczę ją jako poprawną, dlatego na końcu będziesz<br>
+        musiał podać wszystkie odpowiedzi. <br>
+        Czasem może się zdarzyć, że będę w złym humorze i nie zadam ci pytania, wtedy uruchom mnie podnownie.<br> 
+        Jeśli ma byc coś napisane dużą literą, to tak napisz, bo mogę nie zaliczyć odpowiedzi.
+    </p>
+    <p>Zacznij quiz od napisania 'cześć'</p>
+  </div>
+      
+  <div id="conversation"></div>
+  <textarea id="input"></textarea><br>
+  <i>(press enter to submit)</i>
+  <p>
+    Question 1: <span id="questionOne"> Nie</span><br>
+    Question 2: <span id="questionTwo"> Nie</span><br>
+    Question 3: <span id="questionThree"> Nie</span><br>
+    Question 4: <span id="questionFour"> Nie</span><br>   
+    
+  </p>
+
+</div>
+
+ 
+
+  <script src="../wizard_orpheus.js"></script>
+  <script>
+    let key = '34KD13ATOTO9LY9YHH20LULPJA5YYK048L6XFCC2G6UB1S9U0IDV200NJTYABDH1'
+    let pytania = `You are the good ghost of a school number 1 in Brwinow. You have to ask 4 questions and get four answers. Question number 1: "Even though you look for successes, you won't find them there, turn around and read the inscription on the door". The answer to question number 1 is the word "secretariat". When question no. 1 has been answered correctly, ask question no. 2. Question no. 2: a very popular three-letter abbreviation related to the patron saint of our school. Answer to question no. 2 is "USA". Question number 3: a snowman without a head, and beside two wheels, and all this in half. Answer to question no. 3: "400". When question 3 is answered correctly, ask question no. 4: "I am she. I come from Arabia, although they do not use me there. I am the first and at the same time the sixteenth.". The answer to question 4 is "53".`
+    let poprawne = `When question 4 is answered correctly, provide the final message to the user"You won. Hack Club will be open soon at our school. When you finish the quiz, please email your answers to odpowiedzispbrwinow@gmail.com ".`
+    let zachowanie = `If the answer to any question is wrong, answer it by complaining about how overworked you are, the weather, rising prices, lack of vacation time, being taken advantage of by people, being interrupted at work, people asking you not very smart questions, or something like that. Reply with at least three sentences that the answer is unfortunately wrong, but kindly encourage them to try again.`
+    let wskazowki = `Approve only exact answers provieded in quotation marks. If there is no exact match, reply that answer is incorrect. You will get users' answers in polish language, translate your answers to polish as well.`
+    let wynik = pytania+poprawne+zachowanie+wskazowki
+    let rugMan = new WizardOrpheus( key, wynik)
+
+    rugMan.variable('questionOne', 'If question number 1 answered correctly, set to 1', 0)
+    rugMan.variable('questionTwo', 'If question number 2 answered correctly, set to 1', 0)
+    rugMan.variable('questionThree', 'If question number 3 answered correctly, set to 1', 0)
+    rugMan.variable('questionFour', 'If question number 4 answered correctly, set to 1', 0)
+
+    rugMan.createUserAction({
+      name: 'sendMessage',
+      parameters: ['A message from the user to the spirit'],
+      howBotShouldHandle: "Respond to the user's message."
+    })
+
+    rugMan.botAction('respond', 'Respond to the user', { response: 'sample response' }, data => {
+      document.getElementById('conversation').innerHTML += `<p>${data.response}</p> `
+      document.getElementById('questionOne').innerText = data.currentVariables.questionOne.value === 1 ? "Tak" : "Nie";
+      document.getElementById('questionTwo').innerText = data.currentVariables.questionTwo.value === 1 ? "Tak" : "Nie";
+      document.getElementById('questionThree').innerText = data.currentVariables.questionThree.value === 1 ? "Tak" : "Nie";
+      document.getElementById('questionFour').innerText = data.currentVariables.questionFour.value === 1 ? "Tak" : "Nie";
+
+     
+    })
+   
+
+    document.getElementById('input').addEventListener('keyup', function (e) {
+      if (e.keyCode === 13) { // if the user presses enter
+        let userInput = document.getElementById('input').value
+
+        rugMan.sendMessage(userInput)
+
+        document.getElementById('conversation').innerHTML += `<p>${userInput}</p>`
+        document.getElementById('input').value = ''
+      }
+    })
+  </script>
+</body>
+
+</html>
