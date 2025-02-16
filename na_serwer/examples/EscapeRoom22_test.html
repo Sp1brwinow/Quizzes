@@ -46,6 +46,14 @@
 <div class="container">
   <div id="naglowek">
     
+    <p> process.env.API_KEY </p>
+
+    <div id="wynik"></div>
+    <script>
+        // let aaa = "Witaj, świecie!";
+        let aaa = process.env.REACT_APP_API_KEY
+        document.getElementById("wynik").innerHTML = aaa;
+    </script>
 
     <p> W tym quizie ja jako sztuczna inteligencja będę narzekać, bo tak zostałam poinstruowana przez autora.</p>
     <p> Jak odpowiesz poprawnie na wszystkie pytania, to napiszę Ci, co masz zrobić, aby zostać zwycięzcą.<br>
