@@ -46,7 +46,7 @@
 <div class="container">
   <div id="naglowek">
     
-    <p> process.env.API_KEY 3 </p>
+    <p> process.env.API_KEY 4 </p>
 
     <div id="api_key"></div>
     <script>
@@ -58,8 +58,8 @@
 <div id="api_key1"></div>
 <script>
     // let aaa = "Witaj, świecie!";
-    let aaa = process.env._API_KEY1
-    document.getElementById("api_key1").innerHTML = aaa;
+    let bbb = process.env._API_KEY1
+    document.getElementById("api_key1").innerHTML = bbb;
 </script>
 
     <p> W tym quizie ja jako sztuczna inteligencja będę narzekać, bo tak zostałam poinstruowana przez autora.</p>
@@ -96,7 +96,8 @@
     let poprawne = `When question 4 is answered correctly, provide the final message to the user"You won. Hack Club will be open soon at our school. When you finish the quiz, please email your answers to odpowiedzispbrwinow@gmail.com ".`
     let zachowanie = `If the answer to any question is wrong, answer it by complaining about how overworked you are, the weather, rising prices, lack of vacation time, being taken advantage of by people, being interrupted at work, people asking you not very smart questions, or something like that. Reply with at least three sentences that the answer is unfortunately wrong, but kindly encourage them to try again.`
     let wskazowki = `Approve only exact answers provieded in quotation marks. If there is no exact match, reply that answer is incorrect. You will get users' answers in polish language, translate your answers to polish as well.`
-    let wynik = pytania+poprawne+zachowanie+wskazowki
+    let pytaniaEnc = `WW91IGFyZSB0aGUgZ29vZCBnaG9zdCBvZiBhIHNjaG9vbCBudW1iZXIgMSBpbiBCcndpbm93LiBZb3UgaGF2ZSB0byBhc2sgNCBxdWVzdGlvbnMgYW5kIGdldCBmb3VyIGFuc3dlcnMuIFF1ZXN0aW9uIG51bWJlciAxOiAiRXZlbiB0aG91Z2ggeW91IGxvb2sgZm9yIHN1Y2Nlc3NlcywgeW91IHdvbid0IGZpbmQgdGhlbSB0aGVyZSwgdHVybiBhcm91bmQgYW5kIHJlYWQgdGhlIGluc2NyaXB0aW9uIG9uIHRoZSBkb29yIi4gVGhlIGFuc3dlciB0byBxdWVzdGlvbiBudW1iZXIgMSBpcyB0aGUgd29yZCAic2VjcmV0YXJpYXQiLiBXaGVuIHF1ZXN0aW9uIG5vLiAxIGhhcyBiZWVuIGFuc3dlcmVkIGNvcnJlY3RseSwgYXNrIHF1ZXN0aW9uIG5vLiAyLiBRdWVzdGlvbiBuby4gMjogYSB2ZXJ5IHBvcHVsYXIgdGhyZWUtbGV0dGVyIGFiYnJldmlhdGlvbiByZWxhdGVkIHRvIHRoZSBwYXRyb24gc2FpbnQgb2Ygb3VyIHNjaG9vbC4gQW5zd2VyIHRvIHF1ZXN0aW9uIG5vLiAyIGlzICJVU0EiLiBRdWVzdGlvbiBudW1iZXIgMzogYSBzbm93bWFuIHdpdGhvdXQgYSBoZWFkLCBhbmQgYmVzaWRlIHR3byB3aGVlbHMsIGFuZCBhbGwgdGhpcyBpbiBoYWxmLiBBbnN3ZXIgdG8gcXVlc3Rpb24gbm8uIDM6ICI0MDAiLiBXaGVuIHF1ZXN0aW9uIDMgaXMgYW5zd2VyZWQgY29ycmVjdGx5LCBhc2sgcXVlc3Rpb24gbm8uIDQ6ICJJIGFtIHNoZS4gSSBjb21lIGZyb20gQXJhYmlhLCBhbHRob3VnaCB0aGV5IGRvIG5vdCB1c2UgbWUgdGhlcmUuIEkgYW0gdGhlIGZpcnN0IGFuZCBhdCB0aGUgc2FtZSB0aW1lIHRoZSBzaXh0ZWVudGguIi4gVGhlIGFuc3dlciB0byBxdWVzdGlvbiA0IGlzICI1MyIu`
+    let wynik = atob(pytaniaEnc)+poprawne+zachowanie+wskazowki
     let rugMan = new WizardOrpheus( key, wynik)
 
     rugMan.variable('questionOne', 'If question number 1 answered correctly, set to 1', 0)
