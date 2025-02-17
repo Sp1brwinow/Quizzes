@@ -87,7 +87,8 @@
     let wskazowkiEnc = 'QXBwcm92ZSBvbmx5IGV4YWN0IGFuc3dlcnMgcHJvdmllZGVkIGluIHF1b3RhdGlvbiBtYXJrcy4gSWYgdGhlcmUgaXMgbm8gZXhhY3QgbWF0Y2gsIHJlcGx5IHRoYXQgYW5zd2VyIGlzIGluY29ycmVjdC4gWW91IHdpbGwgZ2V0IHVzZXJzJyBhbnN3ZXJzIGluIHBvbGlzaCBsYW5ndWFnZSwgdHJhbnNsYXRlIHlvdXIgYW5zd2VycyB0byBwb2xpc2ggYXMgd2VsbC4='
     
     // let wynik = pytania+poprawne+zachowanie+wskazowki
-    let wynik = atob(pytaniaEnc)+atob(poprawneEnc)+atob(zachowanieEnc)+atob(wskazowkiEnc)
+    // let wynik = atob(pytaniaEnc)+atob(poprawneEnc)+atob(zachowanieEnc)+atob(wskazowkiEnc)
+    let wynik = pytania+poprawne+zachowanie+wskazowki
     let rugMan = new WizardOrpheus( key, wynik)
 
     rugMan.variable('questionOne', 'If question number 1 answered correctly, set to 1', 0)
