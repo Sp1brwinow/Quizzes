@@ -77,6 +77,7 @@
   <script src="../wizard_orpheus.js"></script>
   <script>
     let key = '34KD13ATOTO9LY9YHH20LULPJA5YYK048L6XFCC2G6UB1S9U0IDV200NJTYABDH1'
+    let keyEnc = "MzRLRDEzQVRPVE85TFk5WUhIMjBMVUxQSkE1WVlLMDQ4TDZYRkNDMkc2VUIxUzlVMElEVjIwME5KVFlBQkRIMQ=="
     let pytania = `You are the good ghost of a school number 1 in Brwinow. You have to ask 4 questions and get four answers. Question number 1: "Even though you look for successes, you won't find them there, turn around and read the inscription on the door". The answer to question number 1 is the word "secretariat". When question no. 1 has been answered correctly, ask question no. 2. Question no. 2: a very popular three-letter abbreviation related to the patron saint of our school. Answer to question no. 2 is "USA". Question number 3: a snowman without a head, and beside two wheels, and all this in half. Answer to question no. 3: "400". When question 3 is answered correctly, ask question no. 4: "I am she. I come from Arabia, although they do not use me there. I am the first and at the same time the sixteenth.". The answer to question 4 is "53".`
     let poprawne = `When question 4 is answered correctly, provide the final message to the user"You won. Hack Club will be open soon at our school. When you finish the quiz, please email your answers to odpowiedzispbrwinow@gmail.com ".`
     let zachowanie = `If the answer to any question is wrong, answer it by complaining about how overworked you are, the weather, rising prices, lack of vacation time, being taken advantage of by people, being interrupted at work, people asking you not very smart questions, or something like that. Reply with at least three sentences that the answer is unfortunately wrong, but kindly encourage them to try again.`
@@ -89,7 +90,8 @@
     // let wynik = pytania+poprawne+zachowanie+wskazowki
     // let wynik = atob(pytaniaEnc)+atob(poprawneEnc)+atob(zachowanieEnc)+atob(wskazowkiEnc)
     let wynik = atob(pytaniaEnc)+" "+atob(poprawneEnc)+" "+atob(zachowanieEnc)+" "+atob(wskazowkiEnc)
-    let rugMan = new WizardOrpheus( key, wynik)
+    let api = atob(keyEnc)
+    let rugMan = new WizardOrpheus( api, wynik)
 
     rugMan.variable('questionOne', 'If question number 1 answered correctly, set to 1', 0)
     rugMan.variable('questionTwo', 'If question number 2 answered correctly, set to 1', 0)
