@@ -88,7 +88,7 @@
     
     // let wynik = pytania+poprawne+zachowanie+wskazowki
     // let wynik = atob(pytaniaEnc)+atob(poprawneEnc)+atob(zachowanieEnc)+atob(wskazowkiEnc)
-    let wynik = atob(pytania)+poprawne+zachowanie+wskazowki
+    let wynik = atob(pytania)+atob(poprawne)+zachowanie+wskazowki
     let rugMan = new WizardOrpheus( key, wynik)
 
     rugMan.variable('questionOne', 'If question number 1 answered correctly, set to 1', 0)
