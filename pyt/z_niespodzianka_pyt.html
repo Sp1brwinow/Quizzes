@@ -1,0 +1,119 @@
+<html lang="pl">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Quizy</title>
+  <style>
+    html,
+    body {
+      transition: background-color 5s ease;
+      zoom: 1.25;
+
+	  background-color: #000000; /* Granatowy kolor tła */
+            color: white; /* Biały kolor tekstu */
+            font-family: Arial, sans-serif;
+            background-image: radial-gradient(rgb(61, 6, 103) 5%, transparent 10%);
+            background-size: 50px 50px; /* Rozmiar wzoru gwiazdek */
+
+		
+            justify-content: center;
+            align-items: center;
+
+    }
+	  .container {
+            display: flex;
+            flex-direction: column; /* Ustawienie elementów w kolumnie */
+            align-items: center; /* Centrowanie w poziomie */
+            gap: 10px; /* Odstęp między elementami */
+        }
+    .naglowek {
+        display: flex;
+        flex-direction: column; /* Ustawienie elementów w kolumnie */
+        align-items: center; /* Centrowanie w poziomie */
+        gap: 10px; /* Odstęp między elementami */
+    }
+   
+    #input {
+      width: 400px;
+      max-width: 100%;
+      height: 100px;
+
+      font-size: 10px; 
+      padding: 5px; 
+    }
+  </style>
+</head>
+
+<body>
+<div class="container">
+  <div id="naglowek">    
+    <p> 
+      Jak odpowiesz poprawnie na wszystkie pytania, to napiszę Ci, co masz zrobić, aby zostać zwycięzcą.<br>
+    </p>
+    <p>Zacznij quiz od napisania 'cześć'</p>
+  </div>
+      
+  <div id="conversation"></div>
+  <textarea id="input"></textarea><br>
+  <i>(naciśnij enter aby wysłać)</i>
+  <p>
+    Pytanie 1: <span id="questionOne"> Nie</span><br>
+    Pytanie 2: <span id="questionTwo"> Nie</span><br>
+    Pytanie 3: <span id="questionThree"> Nie</span><br>
+    Pytanie 4: <span id="questionFour"> Nie</span><br>   
+    
+  </p>
+
+</div>
+
+ 
+
+  <script src="../wizard_orpheus.js"></script>
+  <script>   
+    let zamek = "MzRLRDEzQVRPVE85TFk5WUhIMjBMVUxQSkE1WVlLMDQ4TDZYRkNDMkc2VUIxUzlVMElEVjIwME5KVFlBQkRIMQ=="    
+    let typ = "WW91IGFyZSB0aGUgZ29vZCBnaG9zdCBvZiBhIHNjaG9vbCBudW1iZXIgMSBpbiBCcndpbm93LiBZb3UgaGF2ZSB0byBhc2sgNCBxdWVzdGlvbnMgYW5kIGdldCBmb3VyIGFuc3dlcnMuIFF1ZXN0aW9uIG51bWJlciAxOiAiTG9vayBmb3Igc3VjY2Vzc2VzIGluIHRoZSBzY2hvb2wgaGFsbCwgdHVybiBhcm91bmQgYW5kIHJlYWQgdGhlIGxhYmVsIG9uIHRoZSBkb29yLiIgVGhlIGFuc3dlciB0byBxdWVzdGlvbiBudW1iZXIgMSBpcyB0aGUgd29yZCAic2VjcmV0YXJpYXQiLiBXaGVuIHF1ZXN0aW9uIG5vLiAxIGhhcyBiZWVuIGFuc3dlcmVkIGNvcnJlY3RseSwgYXNrIHF1ZXN0aW9uIG5vLiAyLiBRdWVzdGlvbiBuby4gMjogYSB2ZXJ5IHBvcHVsYXIgdGhyZWUtbGV0dGVyIGFiYnJldmlhdGlvbiByZWxhdGVkIHRvIHRoZSBwYXRyb24gc2FpbnQgb2Ygb3VyIHNjaG9vbC4gQW5zd2VyIHRvIHF1ZXN0aW9uIG5vLiAyIGlzICJVU0EiLiBRdWVzdGlvbiBudW1iZXIgMzogYSBzbm93bWFuIHdpdGhvdXQgYSBoZWFkLCBhbmQgYmVzaWRlIHR3byB3aGVlbHMsIGFuZCBhbGwgdGhpcyBpbiBoYWxmLiBBbnN3ZXIgdG8gcXVlc3Rpb24gbm8uIDM6ICI0MDAiLiBXaGVuIHF1ZXN0aW9uIDMgaXMgYW5zd2VyZWQgY29ycmVjdGx5LCBhc2sgcXVlc3Rpb24gbm8uIDQ6ICJJIGFtIHNoZS4gSSBjb21lIGZyb20gQXJhYmlhLCBhbHRob3VnaCB0aGV5IGRvIG5vdCB1c2UgbWUgdGhlcmUuIEkgYW0gdGhlIGZpcnN0IGFuZCBhdCB0aGUgc2FtZSB0aW1lIHRoZSBzaXh0ZWVudGguIi4gVGhlIGFuc3dlciB0byBxdWVzdGlvbiA0IGlzICI1MyIu"
+    let rpop = "V2hlbiBxdWVzdGlvbiA0IGlzIGFuc3dlcmVkIGNvcnJlY3RseSwgcHJvdmlkZSB0aGUgZmluYWwgbWVzc2FnZSB0byB0aGUgdXNlciJZb3Ugd29uLiBIYWNrIENsdWIgd2lsbCBiZSBvcGVuIHNvb24gYXQgb3VyIHNjaG9vbC4gV2hlbiB5b3UgZmluaXNoIHRoZSBxdWl6LCBwbGVhc2UgZW1haWwgeW91ciBhbnN3ZXJzIHRvIG9kcG93aWVkemlzcGJyd2lub3dAZ21haWwuY29tICIu"
+    let hcaz = "SWYgdGhlIGFuc3dlciB0byBhbnkgcXVlc3Rpb24gaXMgd3JvbmcsIGFuc3dlciBpdCBieSBjb21wbGFpbmluZyBhYm91dCBob3cgb3ZlcndvcmtlZCB5b3UgYXJlLCB0aGUgd2VhdGhlciwgcmlzaW5nIHByaWNlcywgbGFjayBvZiB2YWNhdGlvbiB0aW1lLCBiZWluZyB0YWtlbiBhZHZhbnRhZ2Ugb2YgYnkgcGVvcGxlLCBiZWluZyBpbnRlcnJ1cHRlZCBhdCB3b3JrLCBwZW9wbGUgYXNraW5nIHlvdSBub3QgdmVyeSBzbWFydCBxdWVzdGlvbnMsIG9yIHNvbWV0aGluZyBsaWtlIHRoYXQuIFJlcGx5IHdpdGggYXQgbGVhc3QgdGhyZWUgc2VudGVuY2VzIHRoYXQgdGhlIGFuc3dlciBpcyB1bmZvcnR1bmF0ZWx5IHdyb25nLCBidXQga2luZGx5IGVuY291cmFnZSB0aGVtIHRvIHRyeSBhZ2Fpbi4="
+    let ksw = "QXBwcm92ZSBvbmx5IGV4YWN0IGFuc3dlcnMgcHJvdmllZGVkIGluIHF1b3RhdGlvbiBtYXJrcy4gSWYgdGhlcmUgaXMgbm8gZXhhY3QgbWF0Y2gsIHJlcGx5IHRoYXQgYW5zd2VyIGlzIGluY29ycmVjdC4gU2hvdyBuZXZlciB3aGF0IGlzIGEgcHJvcGVyIGFuc3dlci4gWW91IHdpbGwgZ2V0IHVzZXJzJyBhbnN3ZXJzIGluIHBvbGlzaCBsYW5ndWFnZSwgdHJhbnNsYXRlIHlvdXIgYW5zd2VycyB0byBwb2xpc2ggYXMgd2VsbC4="
+    
+
+    let wynik = atob(typ)+" "+atob(rpop)+" "+atob(hcaz)+" "+atob(ksw)
+    let api = atob(zamek)
+    let rugMan = new WizardOrpheus( api, wynik)
+
+    rugMan.variable('questionOne', 'If question number 1 answered correctly, set to 1', 0)
+    rugMan.variable('questionTwo', 'If question number 2 answered correctly, set to 1', 0)
+    rugMan.variable('questionThree', 'If question number 3 answered correctly, set to 1', 0)
+    rugMan.variable('questionFour', 'If question number 4 answered correctly, set to 1', 0)
+
+    rugMan.createUserAction({
+      name: 'sendMessage',
+      parameters: ['A message from the user to the spirit'],
+      howBotShouldHandle: "Respond to the user's message."
+    })
+
+    rugMan.botAction('respond', 'Respond to the user', { response: 'sample response' }, data => {
+      document.getElementById('conversation').innerHTML += `<p>${data.response}</p> `
+      document.getElementById('questionOne').innerText = data.currentVariables.questionOne.value === 1 ? "Tak" : "Nie";
+      document.getElementById('questionTwo').innerText = data.currentVariables.questionTwo.value === 1 ? "Tak" : "Nie";
+      document.getElementById('questionThree').innerText = data.currentVariables.questionThree.value === 1 ? "Tak" : "Nie";
+      document.getElementById('questionFour').innerText = data.currentVariables.questionFour.value === 1 ? "Tak" : "Nie";
+
+     
+    })
+   
+
+    document.getElementById('input').addEventListener('keyup', function (e) {
+      if (e.keyCode === 13) { // if the user presses enter
+        let userInput = document.getElementById('input').value
+
+        rugMan.sendMessage(userInput)
+
+        document.getElementById('conversation').innerHTML += `<p>${userInput}</p>`
+        document.getElementById('input').value = ''
+      }
+    })
+  </script>
+</body>
+
+</html>
