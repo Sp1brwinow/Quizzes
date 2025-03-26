@@ -1,0 +1,93 @@
+<!DOCTYPE html> 
+<html lang="pl">
+
+    <head> 
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="quiz_style.css" />
+    </head>
+    <body>
+
+        <div class="container">
+            
+            <div id="naglowek">
+                <h2> Synteza mowy</h2>
+            </div>
+
+            <p> Zdanie warto zacząć od Ehh, wtedy ładniej brzmi, np.: Ehh idę sobie. </p>
+
+            <textarea id="input"></textarea><br>
+
+            <button onclick="speakText()">Mów</button>
+
+        </div>
+
+       
+        
+
+
+        <script>
+
+            async function speak(message, meski, ton, szybkość) {
+                return new Promise((resolve, reject) => {
+                    let synth = window.speechSynthesis
+                    if (synth) {
+                        console.log("Sprawdzenie konsoli")
+                        let utterance = new SpeechSynthesisUtterance(message)
+                        
+                        // Wymuszenie załadowania głosów
+                        console.table(window.speechSynthesis.getVoices(), ["name", "lang"]);
+                        window.speechSynthesis.getVoices();
+
+                        const voices = synth.getVoices()
+                        // utterance.voice = voices[voices.findIndex(voice => voice.name === 'Good News')]
+                        if(meski==true){
+                            utterance.voice = voices[voices.findIndex(voice => voice.name === 'Microsoft Adam - Polish (Poland)')]
+                        } else {
+                            utterance.voice = voices[voices.findIndex(voice => voice.name === 'Microsoft Paulina - Polish (Poland)')]
+                        }
+                        utterance.pitch = ton;
+
+                        utterance.rate = szybkość                        
+                        synth.cancel()
+                        synth.speak(utterance)
+                        utterance.onend = resolve
+                    } else {
+                        reject('speechSynthesis not supported')
+                    }
+                })
+            }
+
+            async function speakText() {
+                /*
+                let text1 = "A  Masz osiem orderów. A niech żyje nasz kochany Pawinek. A matkę mi zabrali, matkę mi oddali, matkę im odukradnę. "                
+                let text2 = "A od dziś mówię tetecznik. A Tatecznik, tatecznik i jeszcze raz tatecznik. A Nie słuchajcie mnie, że się nie zgadzam, bo to krindż. A To nie jest złamanie moich zasad, bo zmieniłem zasady. " 
+                await speak(text1, false, 0.1, 0.9).catch(console.error);
+                await speak(text1, false, 2, 1.1).catch(console.error);
+                await speak(text2, true, 0.1, 0.9).catch(console.error);                
+                await speak(text2, true, 2, 1.1).catch(console.error);
+                */
+                    
+                      
+                let userInput = document.getElementById('input').value
+                await speak(userInput, true, 0.05, 0.85).catch(console.error);
+
+            }
+
+
+                document.getElementById('input').addEventListener('keyup', function (e) {
+                if (e.keyCode === 13) { // if the user presses enter
+                    let userInput = document.getElementById('input').value
+
+                    rugMan.sendMessage(userInput)
+
+                    document.getElementById('conversation').innerHTML += `<p>${userInput}</p>`
+                    document.getElementById('input').value = ''
+                }
+                })
+
+
+        </script>
+   
+       
+    </body>
+</html>
