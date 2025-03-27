@@ -20,12 +20,12 @@
     
     <div id="conversation"></div>
     <textarea id="input"></textarea><br>
-    <i>(press enter to submit)</i>
-    <p>
-      <p>
+    <i>(Naciśnij enter!)</i>
+    
+      <!-- <p>
         Current degree of belief<span id="CurrentDegreeOfBelief">: 0</span><br> 
       </p>
-
+      -->
   </div>
 
   
@@ -37,14 +37,12 @@
    // poczatek_pytania = ' Create ten mathematical problems of addition, subtraction or multiplication of three numbers in range from -100 to 100. '
     poczatek_pytania = ' Create ten math problems of adding two fractions, where the numerator is in the range of 1 to 10 and the denominator is in the range of 1 to 10. '
 
-  
-
     let wspolny_koniec_pytania = '  Show the first problem. When asking a question, do not show the answer. Ask the user to answer the problem. Do not check, if the solution is right. Once you receive users answer,  provide the correct solution every time. Ask to solve the next problem. Translate your answers and questions to Polish. '
-
+    
     let rugMan = new WizardOrpheus('GY38RUSG7MITWR1ZX4O6J8MCKIP8FKGGGQM7U7CZO17CBEH1EIB183KLQPVUJ975',
        poczatek_pytania + ' ' + wspolny_koniec_pytania)
 
-    rugMan.variable(`CurrentDegreeOfBelief', 'The current level of belief ranges from 0 to 100. The initial value is zero. `, 0)
+    //rugMan.variable(`CurrentDegreeOfBelief', 'The current level of belief ranges from 0 to 100. The initial value is zero. `, 0)
 
 
 
