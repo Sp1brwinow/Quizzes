@@ -10,16 +10,22 @@
 
   <div class="container">
     <div id="naglowek">
-      <p>Wklej swoją charakterystykę Hobbita Bilbo Bagginsa, a ja napiszę, co można poprawić </p>      
-      
+      <p>Zadania matematyczne. Klasa 4 dodawanie ułamków </p>      
+      <p>AI zada ci kilka pytań, na które musisz odpowiedzieć.</p>
+      <p>Bardzo rzadko, ale czasami sztuczna inteligencja może się pomylić. Jak to się stanie, to wtedy jest punkt dla ciebie :).</p>
+      <p> Zacznij od powiedzenia cześć.</p>     
+
       <br><br>
     </div>
     
     <div id="conversation"></div>
     <textarea id="input"></textarea><br>
-    <button onclick="wyslijText()">Wyślij</button>
+    <i>(Naciśnij enter!)</i>
     
-     
+      <!-- <p>
+        Current degree of belief<span id="CurrentDegreeOfBelief">: 0</span><br> 
+      </p>
+      -->
   </div>
 
   
@@ -29,14 +35,15 @@
     // If the user lends you a pencil, increase current degree of belief by 35. If the user offers to clean your apartment, increase current degree of belief by another 35. If the user offers to buy chocolate, increase current degree of belief by another 35.
     let poczatek_pytania = ''
    // poczatek_pytania = ' Create ten mathematical problems of addition, subtraction or multiplication of three numbers in range from -100 to 100. '
-    poczatek_pytania = ` Ask to write a characterization of the Hobbit. `
+    poczatek_pytania = ' Create ten math problems of adding two fractions, where the numerator is in the range of 1 to 10 and the denominator is in the range of 1 to 10. '
 
-    let wspolny_koniec_pytania = `  Ask to write a characterization of the Hobbit. Check the user's answer. Check if the user's answer includes the following elements: 1. Introduction - a short introduction to the character (name, surname, where they come from, who they are). 2. Appearance - a description of physical features, e.g. height, build, hairstyle, clothing. 3. Character traits - a description of the personality, e.g. courage, intelligence, laziness, sense of humor. 4. Abilities and interests - a description of the character's skills and passions. 6. Advantages and disadvantages - positive and negative character traits. 7. Summary - an assessment of the character and their role in the story. If any element is missing, write about it to the user. If any elements of the characterization are incorrect, write about it too. The user will write the characterization in Polish Translate your replies to Polish. `
+    let wspolny_koniec_pytania = '  Show the first problem. When asking a question, do not show the answer. Ask the user to answer the problem. Do not check, if the solution is right. Once you receive users answer,  provide the correct solution every time. Ask to solve the next problem. Translate your answers and questions to Polish. '
     
     let rugMan = new WizardOrpheus('GY38RUSG7MITWR1ZX4O6J8MCKIP8FKGGGQM7U7CZO17CBEH1EIB183KLQPVUJ975',
        poczatek_pytania + ' ' + wspolny_koniec_pytania)
 
-    
+    //rugMan.variable(`CurrentDegreeOfBelief', 'The current level of belief ranges from 0 to 100. The initial value is zero. `, 0)
+
 
 
     rugMan.createUserAction({
@@ -52,16 +59,16 @@
     )          
     
 
-    async function wyslijText() {
-      let userInput = document.getElementById('input').value
+    document.getElementById('input').addEventListener('keyup', function (e) {
+      if (e.keyCode === 13) { // if the user presses enter
+        let userInput = document.getElementById('input').value
 
-      rugMan.sendMessage(userInput)
+        rugMan.sendMessage(userInput)
 
-      document.getElementById('conversation').innerHTML += `<p>${userInput}</p>`
-      document.getElementById('input').value = ''                                     
-
-    }
-
+        document.getElementById('conversation').innerHTML += `<p>${userInput}</p>`
+        document.getElementById('input').value = ''
+      }
+    })
   </script>
 </body>
 
