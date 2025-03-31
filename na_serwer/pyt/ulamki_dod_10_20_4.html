@@ -1,0 +1,53 @@
+<html>
+
+<head>
+  <title>Club Noise Generator</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="quiz_style.css" />
+</head>
+
+<body>
+  <div class="container">
+    <div id="naglowek">
+      <p>Zadania matematyczne. Klasa 4 dodawanie ułamków licznik i mianownik od 10 do 20</p>
+      <p>AI zada ci kilka pytań, na które musisz odpowiedzieć.</p>
+      <p>Bardzo rzadko, ale czasami sztuczna inteligencja może się pomylić. Jak to się stanie, to wtedy jest punkt dla ciebie :). </p>
+      <p>Zacznij od powiedzenia cześć.</p>
+      <br><br>
+    </div>
+    
+    <div id="conversation"></div>
+    <textarea id="input"></textarea><br>
+    <i>(Naciśnij enter!)</i>
+  </div>
+
+  <script src="../wizard_orpheus.js"></script>
+  <script>
+    let poczatek_pytania = 'Create ten math problems that involve adding two fractions where the numerator is between 10 and 20 and the denominator is one of the numbers: 10, 12, 15, 18 or 20.';
+    let wspolny_koniec_pytania = `Show the first problem. When asking a question, do not show the answer. Ask the user to answer the problem. After receiving the user's answer, provide the correct solution every time. If fractions can be simplified, then simplify them. Ask for a solution to the next problem. Translate your answers and questions into Polish. `
+    
+    let rugMan = new WizardOrpheus('GY38RUSG7MITWR1ZX4O6J8MCKIP8FKGGGQM7U7CZO17CBEH1EIB183KLQPVUJ975',
+       poczatek_pytania + ' ' + wspolny_koniec_pytania);
+
+    rugMan.createUserAction({
+      name: 'sendMessage',
+      parameters: ['A message from the user to the friend'],
+      howBotShouldHandle: "Respond to the user's message."
+    });
+
+    rugMan.botAction('respond', 'Respond to the user', { response: 'sample response' }, data => {
+      document.getElementById('conversation').innerHTML += `<p>${data.response}</p>`;
+    });
+
+    document.getElementById('input').addEventListener('keyup', function (e) {
+      if (e.keyCode === 13) { // if the user presses enter
+        let userInput = document.getElementById('input').value;
+        rugMan.sendMessage(userInput);
+        document.getElementById('conversation').innerHTML += `<p>${userInput}</p>`;
+        document.getElementById('input').value = '';
+      }
+    });
+  </script>
+</body>
+
+</html>
