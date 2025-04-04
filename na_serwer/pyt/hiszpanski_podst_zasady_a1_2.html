@@ -1,0 +1,66 @@
+<html>
+
+<head><script>/* <![CDATA[ */ ringDataLayer = {"context":{"variant":{"accelerator":"ZG93bmxvYWQucG9jenRhLm9uZXQucGw6OnByb2Rfd2l0aF91c2VyX2RhdGFfZG93bmxvYWRlcl9pbl9hd3NfMg=="},"id":{"website":"9481b0b7-7c3d-463b-8f3c-9de5c8289e21"}}}; /* ]]> */</script><script>/* <![CDATA[ */ accConf = {"events":{"endpointPaths":["/a8f4d8cd95e164917035b64b867a45dd"]}}; /* ]]> */</script>
+  <title>Club Noise Generator</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="quiz_style.css" />
+</head>
+
+<body>
+
+  <div class="container">
+    <div id="naglowek">
+      <p> Zasady z czasowniokiem "być". </p>
+      <p> </p>
+      <p> Napis "jakie są zasady" i dopytuj.</p>
+    </div>
+    
+    <div id="conversation"></div>
+    <textarea id="input"></textarea><br>
+    <i>(naciśnij enter)</i>    
+      
+
+  </div>
+
+  
+
+  <script src="../wizard_orpheus.js"></script>
+  <script>
+ 
+    let rugMan = new WizardOrpheus('',
+       `  The tasks are related to learning Spanish. First, explain the rules for creating sentences like "I am, you are, she, she, it is, we are, you are they are" in combination with a simple adjective or noun in Spanish. Also show how to ask questions to such sentences. Also show what the rules are for using articles in Spanish. Explain the rules in Polish, but show examples in Spanish. `)
+
+
+
+    rugMan.createUserAction({
+      name: 'sendMessage',
+      parameters: ['A message from the user to the friend'],
+      howBotShouldHandle: "Respond to the user's message."
+    })
+
+    rugMan.botAction('respond', 'Respond to the user', { response: 'sample response' }, data => {
+      document.getElementById('conversation').innerHTML += `<p>${data.response}</p> `
+       
+      }
+
+      
+    )
+
+    
+      
+    
+
+    document.getElementById('input').addEventListener('keyup', function (e) {
+      if (e.keyCode === 13) { // if the user presses enter
+        let userInput = document.getElementById('input').value
+
+        rugMan.sendMessage(userInput)
+
+        document.getElementById('conversation').innerHTML += `<p>${userInput}</p>`
+        document.getElementById('input').value = ''
+      }
+    })
+  </script>
+</body>
+
+</html>

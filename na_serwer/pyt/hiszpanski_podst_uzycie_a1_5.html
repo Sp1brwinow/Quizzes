@@ -1,0 +1,67 @@
+<html>
+
+<head><script>/* <![CDATA[ */ ringDataLayer = {"context":{"variant":{"accelerator":"ZG93bmxvYWQucG9jenRhLm9uZXQucGw6OnByb2Rfd2l0aF91c2VyX2RhdGFfZG93bmxvYWRlcl9pbl9hd3NfMg=="},"id":{"website":"9481b0b7-7c3d-463b-8f3c-9de5c8289e21"}}}; /* ]]> */</script><script>/* <![CDATA[ */ accConf = {"events":{"endpointPaths":["/a8f4d8cd95e164917035b64b867a45dd"]}}; /* ]]> */</script>
+  <title>Club Noise Generator</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="quiz_style.css" />
+</head>
+
+<body>
+
+  <div class="container">
+    <div id="naglowek">
+      <p> Oraciones simples con yo soy y preguntas. Empieza "hola"</p>
+      <p> Potem wpisz "Hacer las cuestiones"</p>
+      <p> Wpisuj swoje odpwowiedzi po hiszpańsku. AI postara sią poprawić je, jeśli są błędne.</p>
+      <p> Proste zdania z "jest".</p>
+    </div>
+    
+    <div id="conversation"></div>
+    <textarea id="input"></textarea><br>
+    <i>(naciśnij enter)</i>    
+      
+
+  </div>
+
+  
+
+  <script src="../wizard_orpheus.js"></script>
+  <script>
+ 
+    let rugMan = new WizardOrpheus('',
+       `  Your task is to talk to the user in Spanish. Ask simple questions with the verb "is" in combination with simple nouns and verbs in Spanish. If the user asks a simple question, answer it. Translate your questions and answers into Spanish. Translate your questions and answers into Polish. The user will enter their answers in Spanish. If the user's answer entered in Spanish is grammatically incorrect, try to correct it and show the user's corrected answer. If the answer is correct, write that the answer is correct. Then ask another question.  `)
+
+
+
+    rugMan.createUserAction({
+      name: 'sendMessage',
+      parameters: ['A message from the user to the friend'],
+      howBotShouldHandle: "Respond to the user's message."
+    })
+
+    rugMan.botAction('respond', 'Respond to the user', { response: 'sample response' }, data => {
+      document.getElementById('conversation').innerHTML += `<p>${data.response}</p> `
+       
+      }
+
+      
+    )
+
+    
+      
+    
+
+    document.getElementById('input').addEventListener('keyup', function (e) {
+      if (e.keyCode === 13) { // if the user presses enter
+        let userInput = document.getElementById('input').value
+
+        rugMan.sendMessage(userInput)
+
+        document.getElementById('conversation').innerHTML += `<p>${userInput}</p>`
+        document.getElementById('input').value = ''
+      }
+    })
+  </script>
+</body>
+
+</html>
