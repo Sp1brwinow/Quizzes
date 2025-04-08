@@ -104,6 +104,7 @@ img {
     }
 
     #input {
+        width: 100vw;  
         font-size: 1.25rem;
         height: auto;
         min-height: 80px;
