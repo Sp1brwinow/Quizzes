@@ -3,15 +3,16 @@ img {
 
 }
 
-body {
+/*
+  body {
     transition: background-color 5s ease;
     zoom: 1.25;
 
-    background-color: #000000; /* Granatowy kolor tła */
-    color: white; /* Biały kolor tekstu */
+    background-color: #000000; 
+    color: white; 
     font-family: Arial, sans-serif;
     background-image: radial-gradient(rgb(61, 6, 103) 5%, transparent 10%);
-    background-size: 50px 50px; /* Rozmiar wzoru gwiazdek */
+    background-size: 50px 50px;  
 
     justify-content: center;
     align-items: center;
@@ -19,15 +20,15 @@ body {
   }
  .container {
           display: flex;
-          flex-direction: column; /* Ustawienie elementów w kolumnie */
-          align-items: center; /* Centrowanie w poziomie */
-          gap: 10px; /* Odstęp między elementami */
+          flex-direction: column;
+          align-items: center; 
+          gap: 10px; 
       }
  .naglowek {
       display: flex;
-      flex-direction: column; /* Ustawienie elementów w kolumnie */
-      align-items: center; /* Centrowanie w poziomie */
-      gap: 10px; /* Odstęp między elementami */
+      flex-direction: column; 
+      align-items: center; 
+      gap: 10px; 
   }
  
   #input {
@@ -42,6 +43,75 @@ body {
   @media (max-width: 600px) {
     #input {      
       font-size: 3rem;
-      width: 100%;
+      width: 400px;
+      max-width: 100%;
     }
   }
+  */
+
+  body {
+    transition: background-color 5s ease;
+    margin: 0;
+    padding: 0;
+
+    background-color: #000000;
+    color: white;
+    font-family: Arial, sans-serif;
+    background-image: radial-gradient(rgb(61, 6, 103) 5%, transparent 10%);
+    background-size: 50px 50px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+
+/* Kontenery ogólne */
+.container,
+.naglowek {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 20px;
+    width: 100%;
+    max-width: 600px;
+}
+
+/* Pole tekstowe */
+#input {
+    width: 100%;
+    max-width: 400px;
+    height: 100px;
+
+    font-size: 1rem;
+    padding: 8px;
+    box-sizing: border-box;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+}
+
+/* Styl dla urządzeń mobilnych */
+@media (max-width: 600px) {
+    body {
+        background-size: 30px 30px; /* mniejsze tło na telefonach */
+        font-size: 16px;
+        padding: 10px;
+    }
+
+    #input {
+        font-size: 1.25rem;
+        height: auto;
+        min-height: 80px;
+    }
+
+    .container,
+    .naglowek {
+        padding: 10px;
+        gap: 8px;
+    }
+}
