@@ -1,0 +1,78 @@
+<html>
+
+<head><script>/* <![CDATA[ */ ringDataLayer = {"context":{"variant":{"accelerator":"ZG93bmxvYWQucG9jenRhLm9uZXQucGw6OnByb2Rfd2l0aF91c2VyX2RhdGFfZG93bmxvYWRlcl9pbl9hd3NfMg=="},"id":{"website":"9481b0b7-7c3d-463b-8f3c-9de5c8289e21"}}}; /* ]]> */</script><script>/* <![CDATA[ */ accConf = {"events":{"endpointPaths":["/a8f4d8cd95e164917035b64b867a45dd"]}}; /* ]]> */</script>
+  <title>Club Noise Generator</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="quiz_style.css" />
+</head>
+
+<body>
+
+  <div class="container">
+    <div id="naglowek">
+      <p>Zadania biologiczne. Klasa 7 chemia pierwiastki </p>            
+      <p> Zacznij od powiedzenia cześć. <i>Jeśli sama nie zadam pytań, to napisz mi "zadaj pytanie"</i></p>     
+
+      <br><br>
+    </div>
+    
+    <div id="conversation"></div>
+    <textarea id="input"></textarea><br>
+    <i>(Naciśnij enter!)</i>
+    
+  </div>
+
+  
+
+  <script src="../wizard_orpheus.js"></script>
+  <script>   
+    let poczatek_pytania = ''
+   
+    poczatek_pytania = ` 
+Ask the following 8 questions about the symbols of the chemical elements: helium, neon, argon, krypton, xenon, radon, and oganeson. The Polish names for these elements are:
+hel, neon, argon, krypton, ksenon, radon, oganezon.
+Ask the questions in order. If the answer is incorrect, enter the correct one. Example (in Polish):
+Pytanie: „Symbol pierwiastka Hel” -> Odpowiedź ucznia: „He” -> Odpowiedź AI: „Prawidłowo: He. Ocena: bardzo dobra”.
+    `
+
+    let wspolny_koniec_pytania = `
+        Show the first task. Ask the user to solve the task. After receiving the user's answer, provide the correct solution each time. Evaluate whether the provided solution contains no answer, is incorrect, provides a poor, average, or very good answer. Provide this rating to the user. Ask them to solve the next task. Translate your answers and questions into Polish. ALWAYS answer ONLY in Polish.
+- Do not use English inserts.
+- Provide short, precise answers and correct translations into Polish.   
+    `
+    
+/*
+    let rugMan = new WizardOrpheus('GY38RUSG7MITWR1ZX4O6J8MCKIP8FKGGGQM7U7CZO17CBEH1EIB183KLQPVUJ975',
+       poczatek_pytania + ' ' + wspolny_koniec_pytania)
+       */
+
+    let sessionID = Math.random().toString(36).substring(2);
+    let rugMan = new WizardOrpheus('KLUCZ_API', poczatek_pytania + ' ' + wspolny_koniec_pytania, { session: sessionID });
+
+    rugMan.createUserAction({
+      name: 'sendMessage',
+      parameters: ['A message from the user to the friend'],
+      howBotShouldHandle: "Respond to the user's message."
+    })
+
+    rugMan.botAction('respond', 'Respond to the user', { response: 'sample response' }, data => {
+      document.getElementById('conversation').innerHTML += `<p>${data.response}</p> `
+       
+      }      
+    )          
+    
+
+    document.getElementById('input').addEventListener('keyup', function (e) {
+      if (e.keyCode === 13) { // if the user presses enter
+        let userInput = document.getElementById('input').value
+
+        rugMan.sendMessage(userInput)
+
+        document.getElementById('conversation').innerHTML += `<p>${userInput}</p>`
+        document.getElementById('input').value = ''
+      }
+    })
+  </script>
+</body>
+
+</html>
