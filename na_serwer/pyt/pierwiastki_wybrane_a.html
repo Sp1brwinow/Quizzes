@@ -10,8 +10,9 @@
 
   <div class="container">
     <div id="naglowek">
-      <p>Zadania biologiczne. Klasa 7 chemia pierwiastki </p>            
-      <p> Zacznij od powiedzenia cześć. <i>Jeśli sama nie zadam pytań, to napisz mi "zadaj pytanie"</i></p>     
+      <p> Klasa 7 chemia pierwiastki. Pytania o nazwy. </p>      
+      <p> Zacznij od powiedzenia cześć. <i>Jeśli sama nie zadam pytań, to napisz mi "zadaj pytanie"</i></p>    
+      <p> <i>Jeśli sama nie zadam kolejnego pytania, to napisz mi "i"</i></p>   
 
       <br><br>
     </div>
@@ -19,23 +20,19 @@
     <div id="conversation"></div>
     <textarea id="input"></textarea><br>
     <i>(Naciśnij enter!)</i>
-    
+         
   </div>
 
   
 
   <script src="../wizard_orpheus.js"></script>
   <script>   
-    let poczatek_pytania = ''
-   
+    let poczatek_pytania = ''   
     poczatek_pytania = ` 
-Ask the following 8 questions about the symbols of the chemical elements: helium, neon, argon, krypton, xenon, radon, and oganeson. The Polish names for these elements are:
-hel, neon, argon, krypton, ksenon, radon, oganezon.
-Ask the questions in order. If the answer is incorrect, enter the correct one. 2 Examples (in Polish):
-Question and your replay, if user's answer is correct:
-Pytanie: „Symbol pierwiastka Hel” -> Odpowiedź ucznia: „He” -> Odpowiedź AI: „Prawidłowo: He. Ocena: bardzo dobra”.
-Question and your replay, if user's answer is wrong:
-Pytanie: „Symbol pierwiastka Hel” -> Odpowiedź ucznia: „H” -> Odpowiedź AI: „Prawidłowo: He. Ocena: zła”.
+    Ask 16 questions about the elements: Niobium, chromium, molybdenum, iron, nickel, copper, silver, gold, zinc, cadmium, mercury, aluminum, tin, lead, bismuth. The Polish names for these elements are:
+ niob, chrom, molibden, żelazo, nikiel. miedź, srebo. złoto, cynk, kadm, rtęć, glin, cyna, ołów, bizmut.
+Enter the symbol of the element and ask for its name. Ask questions one at a time. If the answer is incorrect, enter the correct one. Example: (in Polish)
+Pytanie: "Nazwa pierwiastka o symbolu Nb" -> Odpowiedź ucznia: "Niob" -> Odpowiedź AI: 'Prawidłowo: Hel. Ocena: bardzo dobra.'
     `
 
     let wspolny_koniec_pytania = `
@@ -44,13 +41,10 @@ Pytanie: „Symbol pierwiastka Hel” -> Odpowiedź ucznia: „H” -> Odpowied�
 - Provide short, precise answers and correct translations into Polish.   
     `
     
-/*
-    let rugMan = new WizardOrpheus('GY38RUSG7MITWR1ZX4O6J8MCKIP8FKGGGQM7U7CZO17CBEH1EIB183KLQPVUJ975',
-       poczatek_pytania + ' ' + wspolny_koniec_pytania)
-       */
-
     let sessionID = Math.random().toString(36).substring(2);
-    let rugMan = new WizardOrpheus('KLUCZ_API', poczatek_pytania + ' ' + wspolny_koniec_pytania, { session: sessionID });
+  let rugMan = new WizardOrpheus('KLUCZ_API', poczatek_pytania + ' ' + wspolny_koniec_pytania, { session: sessionID });
+
+    
 
     rugMan.createUserAction({
       name: 'sendMessage',

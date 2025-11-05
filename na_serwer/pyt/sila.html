@@ -10,10 +10,10 @@
 
   <div class="container">
     <div id="naglowek">
-      <p>Zadania biologiczne. Klasa 7 chemia symbole pierwiastków, kolumny 1 i 2 układu.  </p>      
+      <p> Klasa 7 fizyka. Pytania o odziałowywania. </p>      
       <p>AI zada ci kilka pytań, na które musisz odpowiedzieć.</p>
       <p>Bardzo rzadko, ale czasami sztuczna inteligencja może się pomylić. Jak to się stanie, to wtedy jest punkt dla ciebie :).</p>
-      <p> Zacznij od powiedzenia cześć. <i>Jeśli sama nie zadam pytań, to napisz mi "zadaj pytanie"</i></p>     
+      <p>  <i>Jeśli sama nie zadam pytań, to napisz mi "zadaj pytanie"</i></p>     
 
       <br><br>
     </div>
@@ -35,28 +35,27 @@
     // If the user lends you a pencil, increase current degree of belief by 35. If the user offers to clean your apartment, increase current degree of belief by another 35. If the user offers to buy chocolate, increase current degree of belief by another 35.
     let poczatek_pytania = ''
    // poczatek_pytania = ' Create ten mathematical problems of addition, subtraction or multiplication of three numbers in range from -100 to 100. '
-    poczatek_pytania = ` 
-    Ask the following 8 questions about the symbols of the chemical elements: hydrogen, lithium, sodium, potassium, rubidium, cesium, francium, beryllium, magnesium, calcium, strontium, barium, and radium. The Polish names for these elements are:
-wodór, lit, sód, potas, rubid, cez, frans, beryl, magnez, wapń, stront, bar i rad.
-Ask the questions one by one. If the answer is incorrect, write the correct one. 2 Examples (in Polish):
-Question and your replay, if user's answer is correct:
-Pytanie: „Symbol pierwiastka Wodór” -> Odpowiedź ucznia: „H” -> Odpowiedź AI: „Prawidłowo: H. Ocena: bardzo dobra”.
-Question and your replay, if user's answer is wrong:
-Pytanie: „Symbol pierwiastka Wodór” -> Odpowiedź ucznia: „He” -> Odpowiedź AI: „Prawidłowo: H. Ocena: zła”.
+    poczatek_pytania = `  
+Ask the first question: What physical interactions do you know, and whether they occur at a distance or at a point of contact? Translation of the question into Polish:
+"Jakie znasz odziaływania fizyczne i czy występują one na odległość, czy w punkcie styku."
+Sprawdź, czy odpowiedź obejmuje: siły grawitacyjne, elektrostatyczne, magnetyczne, sprężyste i mechaniczne. Translation of these terms into Polish:  
+odziaływania grawitacyjne, elektrostatyczne, magnetyczne, sprężyste i mechaniczne.
 
 
-
-
-Pytanie: „Symbol pierwiastka Wodór” -> Odpowiedź ucznia: „H” -> Odpowiedź AI: „Prawidłowo: H. Ocena: bardzo dobra”. 
-    `
+  Ask the second question about the characteristics of the force. Check if the answer includes: direction, point of application, magnitude, and sense.  
+Polskie tłumaczenie tych terminów:
+kierunek, punkt przyłożenia, wartość i zwrot.
+Don't provide the answer in the question; ask one question first, then the other.
+   `
 
     let wspolny_koniec_pytania = ` 
-    Show the first task. Ask the user to solve the task. After receiving the user's answer, provide the correct solution each time. Evaluate whether the provided solution contains no answer, is incorrect, provides a poor, average, or very good answer. Provide this rating to the user. Ask them to solve the next task. Translate your answers and questions into Polish. ALWAYS answer ONLY in Polish.
+    Show the first task. Ask the user to solve the task. After receiving the user's answer, provide the correct solution each time. Rate the provided solution as missing, incorrect, poor, average, or excellent. Pass this rating on to the user. Ask them to solve the next task. Translate your answers and questions into Polish. ALWAYS answer ONLY in Polish.
 - Do not use English inserts.
-- Provide short, precise answers and correct translations into Polish.  
+- Provide short, precise answers and correct translations into Polish.
+- Do not repeat questions.
 `
     
-   let sessionID = Math.random().toString(36).substring(2);
+    let sessionID = Math.random().toString(36).substring(2);
     let rugMan = new WizardOrpheus('KLUCZ_API', poczatek_pytania + ' ' + wspolny_koniec_pytania, { session: sessionID });
 
     //rugMan.variable(`CurrentDegreeOfBelief', 'The current level of belief ranges from 0 to 100. The initial value is zero. `, 0)
