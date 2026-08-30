@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fraktalne Efekty Specjalne: Ogień, Pioruny i Pęknięcia w CGI</title>
+    <link rel="stylesheet" href="../style.css" />
+    <style>
+        body {
+            margin: 0;
+            background-color: #030712;
+            color: #f8fafc;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            text-align: center;
+        }
+
+        .main-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 15px 20px 40px 20px;
+        }
+
+        h2 {
+            color: #f59e0b;
+            margin-bottom: 5px;
+            font-size: 1.8rem;
+            text-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
+        }
+
+        .info-card {
+            background: rgba(15, 23, 42, 0.92);
+            border: 1px solid #f59e0b;
+            border-radius: 12px;
+            padding: 16px 22px;
+            margin: 15px auto 20px auto;
+            text-align: left;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #cbd5e1;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .info-card strong {
+            color: #fbbf24;
+        }
+
+        .controls-panel {
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid #475569;
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin-bottom: 18px;
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .btn-mode {
+            background: #1e293b;
+            color: #f8fafc;
+            border: 2px solid #475569;
+            padding: 9px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.92rem;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-mode:hover {
+            border-color: #f59e0b;
+            background: #334155;
+            transform: translateY(-1px);
+        }
+
+        .btn-mode.active {
+            background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+            border-color: #fbbf24;
+            color: #ffffff;
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.5);
+        }
+
+        .sub-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+            background: #1e293b;
+            padding: 6px 14px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            font-size: 0.88rem;
+            color: #cbd5e1;
+        }
+
+        canvas {
+            border-radius: 12px;
+            border: 2px solid #f59e0b;
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.9);
+            cursor: crosshair;
+            background: #000;
+            display: block;
+            margin: 0 auto;
+            max-width: 100%;
+        }
+
+        .hint {
+            font-size: 0.88rem;
+            color: #94a3b8;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="main-container">
+        <h2>💥 Fraktalne Efekty Specjalne: Ogień, Błyskawice i Pęknięcia</h2>
+        <p style="color: #94a3b8; margin-top: -5px;">Fizyka komputerowa i procedury cząsteczkowe w Hollywood i silnikach gier (Houdini, Unreal Engine)</p>
+
+        <div class="info-card" id="desc-box">
+            <strong>🔥 Ogień, Dym i Eksplozje:</strong> Turbulencje gazów i płynów wykazują zachowania samopodobne. Szum fraktalny (Curl Noise & fBm) moduluje trajektorie cząsteczek, nadając płomieniom i dymowi naturalną, chaotyczną dynamikę.
+        </div>
+
+        <!-- Główny panel wyboru efektu -->
+        <div class="controls-panel">
+            <button type="button" class="btn-mode active" id="btn-fire" onclick="setMode('fire')">🔥 Ogień, Dym i Wybuchy</button>
+            <button type="button" class="btn-mode" id="btn-lightning" onclick="setMode('lightning')">⚡ Pioruny i Wyładowania (DLA)</button>
+            <button type="button" class="btn-mode" id="btn-cracks" onclick="setMode('cracks')">🕸️ Pęknięcia Szkła i Betonu</button>
+
+            <!-- Podopcje w zależności od trybu -->
+            <div id="sub-panel" class="sub-controls">
+                <label for="sub-type">Typ efektu: </label>
+                <select id="sub-type" onchange="changeSubType(this.value)" style="background: #0f172a; color: white; border: 1px solid #475569; padding: 4px 8px; border-radius: 6px;">
+                    <option value="fire">Płomienie z dymem</option>
+                    <option value="smoke">Gęsty dym i kłęby</option>
+                    <option value="explosion">Eksplozje na kliknięcie</option>
+                </select>
+            </div>
+
+            <button type="button" class="btn-mode" onclick="clearCanvas()" style="background: #334155; border-color: #64748b;">🧹 Wyczyść ekran</button>
+            <button type="button" id="btn-audio" class="btn-mode" onclick="toggleAudio()" style="background: #1e293b; border-color: #475569;">🔊 Dźwięki efektów</button>
+        </div>
+
+        <!-- Canvas Renderera -->
+        <canvas id="effectCanvas" width="1000" height="560"></canvas>
+        <div class="hint" id="action-hint">💡 <em>Klikaj lub przeciągaj myszką po ekranie, aby wchodzić w interakcję z symulacją!</em></div>
+
+        <p style="margin-top: 35px;">
+            <a href="../rozrywka.html" style="color: #38bdf8; text-decoration: none; margin: 0 10px; font-weight: bold;">⬅ Powrót do Rozrywki</a> | 
+            <a href="krajobrazy.html" style="color: #38bdf8; text-decoration: none; margin: 0 10px;">🏔️ Krajobrazy i Góry</a> | 
+            <a href="../index.html" style="color: #38bdf8; text-decoration: none; margin: 0 10px;">Strona główna</a>
+        </p>
+    </div>
+
+    <script>
+        // =======================================================
+        // SILNIK FRAKTALNYCH EFEKTÓW SPECJALNYCH (CGI & VFX)
+        // =======================================================
+        const canvas = document.getElementById('effectCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let currentMode = 'fire'; // 'fire', 'lightning', 'cracks'
+        let subType = 'fire';
+        let mouseX = canvas.width / 2;
+        let mouseY = canvas.height * 0.75;
+        let isMouseDown = false;
+        let animTime = 0;
+        let audioEnabled = false;
+        let audioCtx = null;
+
+        // Szum Perlin / fBm do turbulencji cząsteczek
+        function hash(x, y) {
+            const s = Math.sin(x * 12.9898 + y * 78.233) * 43758.5453123;
+            return s - Math.floor(s);
+        }
+
+        function noise2D(x, y) {
+            const i = Math.floor(x);
+            const j = Math.floor(y);
+            const fx = x - i;
+            const fy = y - j;
+            const u = fx * fx * (3 - 2 * fx);
+            const v = fy * fy * (3 - 2 * fy);
+            return hash(i, j) * (1 - u) * (1 - v) +
+                   hash(i + 1, j) * u * (1 - v) +
+                   hash(i, j + 1) * (1 - u) * v +
+                   hash(i + 1, j + 1) * u * v;
+        }
+
+        function fbm(x, y) {
+            return noise2D(x, y) * 0.5 + noise2D(x * 2.1, y * 2.1) * 0.25 + noise2D(x * 4.2, y * 4.2) * 0.125;
+        }
+
+        // =======================================================
+        // 1. MODUŁ OGIEŃ, DYM I EKSPLOZJE (CURL NOISE PARTICLES)
+        // =======================================================
+        let particles = [];
+
+        class Particle {
+            constructor(x, y, type = 'fire') {
+                this.x = x + (Math.random() - 0.5) * 35;
+                this.y = y + (Math.random() - 0.5) * 15;
+                this.type = type;
+                this.life = 0;
+                this.maxLife = type === 'smoke' ? Math.random() * 80 + 70 : (type === 'explosion' ? Math.random() * 50 + 40 : Math.random() * 55 + 35);
+                this.size = type === 'smoke' ? Math.random() * 16 + 10 : (type === 'explosion' ? Math.random() * 22 + 12 : Math.random() * 12 + 6);
+                this.vx = (Math.random() - 0.5) * (type === 'explosion' ? 14 : 2);
+                this.vy = type === 'explosion' ? (Math.random() - 0.5) * 14 : -(Math.random() * 3.5 + 2);
+            }
+
+            update() {
+                this.life++;
+                const progress = this.life / this.maxLife;
+
+                // Modulacja szumem fraktalnym (turbulencja wirowa)
+                const nx = this.x * 0.006;
+                const ny = this.y * 0.006 - animTime * 0.8;
+                const turbulence = (fbm(nx, ny) - 0.5) * 5.5;
+
+                this.x += this.vx + turbulence;
+                this.y += this.vy;
+
+                if (this.type === 'fire') {
+                    this.size *= 0.96;
+                    this.vy *= 0.98;
+                } else if (this.type === 'smoke') {
+                    this.size += 0.45; // Dym rozrasta się fraktalnie
+                    this.vx *= 0.97;
+                    this.vy *= 0.97;
+                } else if (this.type === 'explosion') {
+                    this.size *= 0.95;
+                    this.vx *= 0.94;
+                    this.vy *= 0.94;
+                }
+            }
+
+            draw() {
+                const progress = this.life / this.maxLife;
+                const alpha = Math.max(0, 1 - progress);
+
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, Math.max(1, this.size), 0, Math.PI * 2);
+
+                if (this.type === 'fire' || this.type === 'explosion') {
+                    if (progress < 0.25) {
+                        ctx.fillStyle = `rgba(255, 255, 200, ${alpha * 0.9})`; // Biały/żółty żar
+                    } else if (progress < 0.6) {
+                        ctx.fillStyle = `rgba(249, 115, 22, ${alpha * 0.8})`; // Pomarańczowy płomień
+                    } else if (progress < 0.85) {
+                        ctx.fillStyle = `rgba(220, 38, 38, ${alpha * 0.6})`; // Czerwień
+                    } else {
+                        ctx.fillStyle = `rgba(75, 85, 99, ${alpha * 0.4})`; // Sadza / dym
+                    }
+                } else {
+                    // Dym
+                    const gray = Math.floor(100 + progress * 80);
+                    ctx.fillStyle = `rgba(${gray}, ${gray}, ${gray}, ${alpha * 0.35})`;
+                }
+                ctx.fill();
+            }
+        }
+
+        function createExplosion(x, y) {
+            playExplosionSound();
+            for (let i = 0; i < 90; i++) {
+                particles.push(new Particle(x, y, 'explosion'));
+            }
+            for (let i = 0; i < 40; i++) {
+                particles.push(new Particle(x, y, 'smoke'));
+            }
+        }
+
+        function updateFireSimulation() {
+            ctx.fillStyle = 'rgba(3, 7, 18, 0.28)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Generowanie nowych cząsteczek ognia/dymu
+            if (subType === 'fire') {
+                for (let i = 0; i < 8; i++) {
+                    particles.push(new Particle(mouseX, mouseY, 'fire'));
+                }
+                if (Math.random() < 0.4) {
+                    particles.push(new Particle(mouseX, mouseY - 40, 'smoke'));
+                }
+            } else if (subType === 'smoke') {
+                for (let i = 0; i < 5; i++) {
+                    particles.push(new Particle(mouseX, mouseY, 'smoke'));
+                }
+            } else if (subType === 'explosion' && isMouseDown && Math.random() < 0.15) {
+                createExplosion(mouseX, mouseY);
+            }
+
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                p.update();
+                p.draw();
+                if (p.life >= p.maxLife) {
+                    particles.splice(i, 1);
+                }
+            }
+        }
+
+        // =======================================================
+        // 2. MODUŁ BŁYSKAWICE I WYŁADOWANIA ELEKTRYCZNE (DLA)
+        // =======================================================
+        let lightningFlash = 0;
+
+        function drawLightningSegment(x1, y1, x2, y2, displace, depth, maxDepth, branchProb = 0.55) {
+            if (depth > maxDepth) {
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                ctx.strokeStyle = `rgba(224, 242, 254, ${Math.max(0.2, 1 - depth * 0.12)})`;
+                ctx.lineWidth = Math.max(1, (maxDepth - depth + 1) * 1.5);
+                ctx.shadowColor = '#38bdf8';
+                ctx.shadowBlur = 12;
+                ctx.stroke();
+                ctx.shadowBlur = 0;
+                return;
+            }
+
+            const midX = (x1 + x2) / 2 + (Math.random() - 0.5) * displace;
+            const midY = (y1 + y2) / 2 + (Math.random() - 0.5) * displace;
+
+            drawLightningSegment(x1, y1, midX, midY, displace / 1.85, depth + 1, maxDepth, branchProb);
+            drawLightningSegment(midX, midY, x2, y2, displace / 1.85, depth + 1, maxDepth, branchProb);
+
+            // Fraktalne odgałęzienie (Diffusion-Limited Aggregation)
+            if (Math.random() < branchProb && depth < maxDepth - 1) {
+                const branchAngle = (Math.random() - 0.5) * 1.2;
+                const branchLen = (x2 - x1) * 0.65;
+                const branchX = midX + Math.cos(branchAngle) * branchLen;
+                const branchY = midY + Math.abs(Math.sin(branchAngle)) * branchLen + 30;
+                drawLightningSegment(midX, midY, branchX, branchY, displace / 2, depth + 1, maxDepth - 1, branchProb * 0.6);
+            }
+        }
+
+        function triggerLightning(targetX, targetY) {
+            playThunderSound();
+            lightningFlash = 1.0;
+
+            const startX = targetX + (Math.random() - 0.5) * 180;
+            const startY = 0;
+
+            // Rysowanie 2-3 współbieżnych kanałów plazmy
+            for (let i = 0; i < 2; i++) {
+                drawLightningSegment(startX, startY, targetX, targetY, 120, 0, 7, 0.6);
+            }
+        }
+
+        function updateLightningSimulation() {
+            if (lightningFlash > 0.01) {
+                ctx.fillStyle = `rgba(186, 230, 253, ${lightningFlash * 0.4})`;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                lightningFlash *= 0.82;
+            } else {
+                ctx.fillStyle = 'rgba(3, 7, 18, 0.2)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
+
+            // Ciągłe wyładowania plazmowe, jeśli mysz jest wciśnięta
+            if (isMouseDown) {
+                drawLightningSegment(canvas.width / 2, 0, mouseX, mouseY, 80, 0, 6, 0.5);
+            }
+        }
+
+        // =======================================================
+        // 3. MODUŁ PĘKNIĘCIA I ZNISZCZENIA (FRACTAL CRACK PROPAGATION)
+        // =======================================================
+        let cracks = [];
+
+        class CrackNode {
+            constructor(x, y, angle, length, depth, maxDepth, material = 'glass') {
+                this.x1 = x;
+                this.y1 = y;
+                this.angle = angle + (Math.random() - 0.5) * (material === 'glass' ? 0.35 : 0.8);
+                this.length = length * (material === 'glass' ? 0.92 : 0.85);
+                this.x2 = x + Math.cos(this.angle) * this.length;
+                this.y2 = y + Math.sin(this.angle) * this.length;
+                this.depth = depth;
+                this.maxDepth = maxDepth;
+                this.material = material;
+                this.progress = 0;
+            }
+
+            updateAndDraw() {
+                if (this.progress < 1) {
+                    this.progress += 0.2;
+                }
+
+                const curX = this.x1 + (this.x2 - this.x1) * Math.min(1, this.progress);
+                const curY = this.y1 + (this.y2 - this.y1) * Math.min(1, this.progress);
+
+                ctx.beginPath();
+                ctx.moveTo(this.x1, this.y1);
+                ctx.lineTo(curX, curY);
+
+                if (this.material === 'glass') {
+                    ctx.strokeStyle = `rgba(224, 242, 254, ${Math.max(0.3, 1 - this.depth * 0.12)})`;
+                    ctx.lineWidth = Math.max(1, (this.maxDepth - this.depth) * 0.9);
+                    ctx.shadowColor = '#38bdf8';
+                    ctx.shadowBlur = 6;
+                } else if (this.material === 'concrete') {
+                    ctx.strokeStyle = `rgba(15, 23, 42, 0.9)`;
+                    ctx.lineWidth = Math.max(2, (this.maxDepth - this.depth) * 2.2);
+                    ctx.shadowBlur = 0;
+                } else { // earth
+                    ctx.strokeStyle = '#78350f';
+                    ctx.lineWidth = Math.max(1.5, (this.maxDepth - this.depth) * 1.6);
+                    ctx.shadowBlur = 0;
+                }
+
+                ctx.stroke();
+                ctx.shadowBlur = 0;
+            }
+        }
+
+        function createFractalCracks(originX, originY, material = 'glass') {
+            playShatterSound();
+            const mainRays = material === 'glass' ? 12 : 7;
+            const maxDepth = material === 'glass' ? 7 : 5;
+
+            function branch(x, y, angle, len, depth) {
+                if (depth > maxDepth || len < 4) return;
+                const node = new CrackNode(x, y, angle, len, depth, maxDepth, material);
+                cracks.push(node);
+
+                // Kolejne fraktalne rozgałęzienie
+                branch(node.x2, node.y2, angle + (Math.random() - 0.5) * 0.5, len * 0.78, depth + 1);
+                if (Math.random() < 0.6) {
+                    branch(node.x2, node.y2, angle + (Math.random() < 0.5 ? 0.75 : -0.75), len * 0.65, depth + 1);
+                }
+            }
+
+            for (let i = 0; i < mainRays; i++) {
+                const ang = (i / mainRays) * Math.PI * 2 + (Math.random() - 0.5) * 0.3;
+                branch(originX, originY, ang, Math.random() * 45 + 35, 0);
+            }
+
+            // Pierścienie koncentryczne dla szkła
+            if (material === 'glass') {
+                for (let r = 25; r < 180; r += 30 + Math.random() * 20) {
+                    for (let a = 0; a < Math.PI * 2; a += 0.35) {
+                        const px1 = originX + Math.cos(a) * r + (Math.random() - 0.5) * 8;
+                        const py1 = originY + Math.sin(a) * r + (Math.random() - 0.5) * 8;
+                        const px2 = originX + Math.cos(a + 0.35) * r + (Math.random() - 0.5) * 8;
+                        const py2 = originY + Math.sin(a + 0.35) * r + (Math.random() - 0.5) * 8;
+                        cracks.push(new CrackNode(px1, py1, Math.atan2(py2 - py1, px2 - px1), Math.hypot(px2 - px1, py2 - py1), 2, 6, 'glass'));
+                    }
+                }
+            }
+        }
+
+        function updateCracksSimulation() {
+            // Tło materiału
+            if (subType === 'glass') {
+                ctx.fillStyle = '#0f172a';
+            } else if (subType === 'concrete') {
+                ctx.fillStyle = '#475569';
+            } else { // earth
+                ctx.fillStyle = '#92400e';
+            }
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            for (let c of cracks) {
+                c.updateAndDraw();
+            }
+        }
+
+        // =======================================================
+        // GŁÓWNA PĘTLA RENDERUJĄCA
+        // =======================================================
+        function mainLoop() {
+            animTime += 0.03;
+
+            if (currentMode === 'fire') {
+                updateFireSimulation();
+            } else if (currentMode === 'lightning') {
+                updateLightningSimulation();
+            } else if (currentMode === 'cracks') {
+                updateCracksSimulation();
+            }
+
+            requestAnimationFrame(mainLoop);
+        }
+
+        // =======================================================
+        // OBSŁUGA INTERAKCJI MYSZĄ
+        // =======================================================
+        canvas.addEventListener('mousedown', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            mouseX = (e.clientX - rect.left) * (canvas.width / rect.width);
+            mouseY = (e.clientY - rect.top) * (canvas.height / rect.height);
+            isMouseDown = true;
+
+            if (currentMode === 'fire' && subType === 'explosion') {
+                createExplosion(mouseX, mouseY);
+            } else if (currentMode === 'lightning') {
+                triggerLightning(mouseX, mouseY);
+            } else if (currentMode === 'cracks') {
+                createFractalCracks(mouseX, mouseY, subType);
+            }
+        });
+
+        window.addEventListener('mouseup', () => isMouseDown = false);
+
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            mouseX = (e.clientX - rect.left) * (canvas.width / rect.width);
+            mouseY = (e.clientY - rect.top) * (canvas.height / rect.height);
+        });
+
+        // =======================================================
+        // STEROWANIE TRYBAMI I OPISAMI
+        // =======================================================
+        const descriptions = {
+            fire: "<strong>🔥 Ogień, Dym i Eksplozje:</strong> Turbulencje gazów i płynów wykazują zachowania samopodobne. Szum fraktalny (Curl Noise & fBm) moduluje trajektorie cząsteczek, nadając płomieniom i dymowi naturalną, chaotyczną dynamikę.",
+            lightning: "<strong>⚡ Błyskawice i Wyładowania (DLA):</strong> Pioruny rozgałęziają się według fraktalnych reguł agregacji ograniczonej dyfuzją (Diffusion-Limited Aggregation - DLA). Główny kanał plazmy tworzy miniaturowe kopie samego siebie na każdym poziomie odgałęzienia.",
+            cracks: "<strong>🕸️ Pęknięcia i Zniszczenia:</strong> Modelowanie pękania szkła, betonu, kory drzewnej czy wysuszonej ziemi. Naprężenia w kruchych materiałach rozchodzą się wzdłuż fraktalnych linii najmniejszego oporu."
+        };
+
+        const subOptions = {
+            fire: [
+                { val: 'fire', text: 'Płomienie z dymem' },
+                { val: 'smoke', text: 'Gęsty dym i kłęby' },
+                { val: 'explosion', text: 'Eksplozje na kliknięcie' }
+            ],
+            lightning: [
+                { val: 'lightning', text: 'Błyskawice na kliknięcie' }
+            ],
+            cracks: [
+                { val: 'glass', text: 'Pękanie szkła (Shatter)' },
+                { val: 'concrete', text: 'Pęknięcia betonu / kamienia' },
+                { val: 'earth', text: 'Wysuszona ziemia / glina' }
+            ]
+        };
+
+        function setMode(mode) {
+            currentMode = mode;
+            ['fire', 'lightning', 'cracks'].forEach(m => {
+                document.getElementById('btn-' + m).classList.remove('active');
+            });
+            document.getElementById('btn-' + mode).classList.add('active');
+            document.getElementById('desc-box').innerHTML = descriptions[mode];
+
+            // Aktualizacja listy podopcji
+            const subSelect = document.getElementById('sub-type');
+            subSelect.innerHTML = '';
+            subOptions[mode].forEach(opt => {
+                const el = document.createElement('option');
+                el.value = opt.val;
+                el.textContent = opt.text;
+                subSelect.appendChild(el);
+            });
+            subType = subOptions[mode][0].val;
+
+            clearCanvas();
+        }
+
+        function changeSubType(val) {
+            subType = val;
+            if (currentMode === 'cracks') {
+                clearCanvas();
+            }
+        }
+
+        function clearCanvas() {
+            particles = [];
+            cracks = [];
+            lightningFlash = 0;
+            ctx.fillStyle = '#030712';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+
+        // =======================================================
+        // GENERATOR NASTROJOWEJ MELODII I EFEKTÓW DŹWIĘKOWYCH
+        // =======================================================
+        class VFXAtmosphericMusic {
+            constructor() {
+                this.audioCtx = null;
+                this.isPlaying = false;
+                this.masterGain = null;
+                this.filter = null;
+                this.droneOscs = [];
+                this.arpTimer = null;
+            }
+
+            init() {
+                if (this.audioCtx) return;
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                this.audioCtx = new AudioContext();
+
+                this.masterGain = this.audioCtx.createGain();
+                this.masterGain.gain.setValueAtTime(0.22, this.audioCtx.currentTime);
+
+                this.filter = this.audioCtx.createBiquadFilter();
+                this.filter.type = 'lowpass';
+                this.filter.frequency.setValueAtTime(900, this.audioCtx.currentTime);
+
+                // Przestrzenne echo
+                const delay = this.audioCtx.createDelay();
+                delay.delayTime.setValueAtTime(0.38, this.audioCtx.currentTime);
+                const delayGain = this.audioCtx.createGain();
+                delayGain.gain.setValueAtTime(0.35, this.audioCtx.currentTime);
+
+                delay.connect(delayGain);
+                delayGain.connect(delay);
+                delayGain.connect(this.masterGain);
+
+                this.filter.connect(this.masterGain);
+                this.filter.connect(delay);
+                this.masterGain.connect(this.audioCtx.destination);
+            }
+
+            start() {
+                this.init();
+                if (this.audioCtx.state === 'suspended') {
+                    this.audioCtx.resume();
+                }
+                if (this.isPlaying) return;
+                this.isPlaying = true;
+
+                this.masterGain.gain.cancelScheduledValues(this.audioCtx.currentTime);
+                this.masterGain.gain.setValueAtTime(0.001, this.audioCtx.currentTime);
+                this.masterGain.gain.exponentialRampToValueAtTime(0.22, this.audioCtx.currentTime + 1.0);
+
+                // Akordy D-moll (D, A, F, C)
+                const chordFrequencies = [73.42, 110.00, 146.83, 220.00]; // D2, A2, D3, A3
+                this.droneOscs = chordFrequencies.map((freq, idx) => {
+                    const osc = this.audioCtx.createOscillator();
+                    const gain = this.audioCtx.createGain();
+
+                    osc.type = idx % 2 === 0 ? 'sawtooth' : 'triangle';
+                    osc.frequency.setValueAtTime(freq, this.audioCtx.currentTime);
+
+                    const lfo = this.audioCtx.createOscillator();
+                    const lfoGain = this.audioCtx.createGain();
+                    lfo.frequency.setValueAtTime(0.08 + idx * 0.03, this.audioCtx.currentTime);
+                    lfoGain.gain.setValueAtTime(1.8, this.audioCtx.currentTime);
+                    lfo.connect(lfoGain);
+                    lfoGain.connect(osc.frequency);
+                    lfo.start();
+
+                    gain.gain.setValueAtTime(0.04, this.audioCtx.currentTime);
+                    osc.connect(gain);
+                    gain.connect(this.filter);
+                    osc.start();
+                    return { osc, gain, lfo };
+                });
+
+                // Melodia kinowa (D minor scale)
+                const vfxScale = [220.00, 261.63, 293.66, 349.23, 392.00, 440.00, 523.25];
+                const playVfxNote = () => {
+                    if (!this.isPlaying) return;
+
+                    const freq = vfxScale[Math.floor(Math.random() * vfxScale.length)];
+                    const osc = this.audioCtx.createOscillator();
+                    const gain = this.audioCtx.createGain();
+
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, this.audioCtx.currentTime);
+
+                    const now = this.audioCtx.currentTime;
+                    gain.gain.setValueAtTime(0.0001, now);
+                    gain.gain.exponentialRampToValueAtTime(0.11, now + 0.05);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, now + 2.2);
+
+                    osc.connect(gain);
+                    gain.connect(this.filter);
+
+                    osc.start(now);
+                    osc.stop(now + 2.3);
+
+                    const nextDelay = 350 + Math.random() * 500;
+                    this.arpTimer = setTimeout(playVfxNote, nextDelay);
+                };
+
+                playVfxNote();
+            }
+
+            stop() {
+                if (!this.isPlaying || !this.audioCtx) return;
+                this.isPlaying = false;
+                if (this.arpTimer) clearTimeout(this.arpTimer);
+
+                if (this.masterGain) {
+                    this.masterGain.gain.cancelScheduledValues(this.audioCtx.currentTime);
+                    this.masterGain.gain.setValueAtTime(this.masterGain.gain.value, this.audioCtx.currentTime);
+                    this.masterGain.gain.exponentialRampToValueAtTime(0.0001, this.audioCtx.currentTime + 0.5);
+                }
+
+                setTimeout(() => {
+                    if (!this.isPlaying && this.droneOscs.length) {
+                        this.droneOscs.forEach(({ osc, lfo }) => {
+                            try { osc.stop(); lfo.stop(); } catch (e) {}
+                        });
+                        this.droneOscs = [];
+                    }
+                }, 550);
+            }
+
+            toggle() {
+                if (this.isPlaying) {
+                    this.stop();
+                    return false;
+                } else {
+                    this.start();
+                    return true;
+                }
+            }
+        }
+
+        const vfxMusic = new VFXAtmosphericMusic();
+
+        function toggleAudio() {
+            const isPlaying = vfxMusic.toggle();
+            const btn = document.getElementById('btn-audio');
+            btn.innerText = isPlaying ? '🔇 Wycisz Melodię' : '🔊 Nastrojowa Melodia';
+            btn.style.background = isPlaying ? '#d97706' : '#1e293b';
+        }
+
+        function playThunderSound() {
+            if (!vfxMusic.isPlaying || !vfxMusic.audioCtx) return;
+            const ctxA = vfxMusic.audioCtx;
+            const osc = ctxA.createOscillator();
+            const gain = ctxA.createGain();
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(160, ctxA.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(25, ctxA.currentTime + 0.9);
+
+            gain.gain.setValueAtTime(0.4, ctxA.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, ctxA.currentTime + 1.2);
+
+            osc.connect(gain);
+            gain.connect(ctxA.destination);
+            osc.start();
+            osc.stop(ctxA.currentTime + 1.2);
+        }
+
+        function playExplosionSound() {
+            if (!vfxMusic.isPlaying || !vfxMusic.audioCtx) return;
+            const ctxA = vfxMusic.audioCtx;
+            const bufferSize = ctxA.sampleRate * 0.6;
+            const buffer = ctxA.createBuffer(1, bufferSize, ctxA.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ctxA.sampleRate * 0.15));
+            }
+            const noise = ctxA.createBufferSource();
+            noise.buffer = buffer;
+            const gain = ctxA.createGain();
+            gain.gain.value = 0.6;
+            noise.connect(gain);
+            gain.connect(ctxA.destination);
+            noise.start();
+        }
+
+        function playShatterSound() {
+            if (!vfxMusic.isPlaying || !vfxMusic.audioCtx) return;
+            const ctxA = vfxMusic.audioCtx;
+            const osc = ctxA.createOscillator();
+            const gain = ctxA.createGain();
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(800 + Math.random() * 600, ctxA.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(120, ctxA.currentTime + 0.2);
+
+            gain.gain.setValueAtTime(0.3, ctxA.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, ctxA.currentTime + 0.25);
+
+            osc.connect(gain);
+            gain.connect(ctxA.destination);
+            osc.start();
+            osc.stop(ctxA.currentTime + 0.25);
+        }
+
+        // Start pętli
+        clearCanvas();
+        mainLoop();
+    </script>
+    <script src="nagrywanie_wideo.js"></script>
+</body>
+
+</html>

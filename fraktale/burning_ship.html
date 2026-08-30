@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../style.css" />
+    <title>Burning Ship Fractal – Płonący Statek</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 15px;
+            min-height: 100vh;
+            background: #080202;
+            color: #f1f5f9;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            text-align: center;
+        }
+
+        h1 {
+            color: #f97316;
+            font-size: 2.1rem;
+            margin-bottom: 6px;
+            text-shadow: 0 0 16px rgba(249, 115, 22, 0.6);
+        }
+
+        .subtitle {
+            font-size: 1.05rem;
+            color: #cbd5e1;
+            margin-bottom: 16px;
+            max-width: 860px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.5;
+        }
+
+        .math {
+            font-family: 'Cambria Math', 'Times New Roman', serif;
+            font-style: italic;
+            background: rgba(249, 115, 22, 0.15);
+            padding: 3px 9px;
+            border-radius: 4px;
+            border: 1px solid rgba(249, 115, 22, 0.35);
+            color: #fdba74;
+            font-size: 1.05rem;
+        }
+
+        .controls-top {
+            margin: 10px auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn-start {
+            background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
+            color: #ffffff;
+            font-size: 1.2rem;
+            font-weight: 700;
+            padding: 11px 32px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 18px rgba(234, 88, 12, 0.45);
+            transition: all 0.25s ease;
+        }
+
+        .btn-start:hover {
+            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+            box-shadow: 0 0 24px rgba(249, 115, 22, 0.8);
+            transform: scale(1.03);
+        }
+
+        .btn-secondary {
+            background: rgba(30, 20, 20, 0.85);
+            color: #fed7aa;
+            font-size: 0.92rem;
+            padding: 9px 15px;
+            border: 1px solid #7c2d12;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-secondary:hover {
+            color: #ffffff;
+            border-color: #f97316;
+            background: rgba(67, 20, 7, 0.95);
+        }
+
+        .panel {
+            margin: 12px auto;
+            max-width: 860px;
+            background: rgba(26, 12, 8, 0.85);
+            padding: 12px 18px;
+            border-radius: 12px;
+            border: 1px solid rgba(249, 115, 22, 0.25);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            font-size: 0.92rem;
+        }
+
+        .panel select, .panel input[type="range"] {
+            background: #2a110a;
+            color: #fff7ed;
+            border: 1px solid #7c2d12;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .panel select:focus {
+            border-color: #f97316;
+        }
+
+        .canvas-container {
+            margin: 15px auto 20px auto;
+            max-width: 820px;
+            position: relative;
+        }
+
+        canvas {
+            display: block;
+            margin: 0 auto;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.95), 0 0 30px rgba(249, 115, 22, 0.4);
+            background-color: #000000;
+            cursor: crosshair;
+            max-width: 100%;
+            height: auto;
+        }
+
+        .hud-stats {
+            display: flex;
+            justify-content: space-between;
+            max-width: 800px;
+            margin: 8px auto 0 auto;
+            font-size: 0.85rem;
+            color: #fdba74;
+            font-family: monospace;
+        }
+
+        .hint {
+            font-size: 0.85rem;
+            color: #fdba74;
+            margin-top: 8px;
+        }
+
+        .nav-links {
+            margin-top: 30px;
+            margin-bottom: 25px;
+        }
+
+        .nav-link {
+            color: #94a3b8;
+            text-decoration: none;
+            margin: 0 14px;
+            font-size: 1rem;
+            border-bottom: 1px dashed #64748b;
+            transition: color 0.2s ease;
+        }
+
+        .nav-link:hover {
+            color: #f97316;
+            border-bottom-color: #f97316;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Burning Ship Fractal</h1>
+    <p class="subtitle">
+        Słynny fraktal „Płonący Statek” z wartością bezwzględną: 
+        <span class="math">z<sub>n+1</sub> = (|Re(z<sub>n</sub>)| + i|Im(z<sub>n</sub>)|)<sup>2</sup> + c</span>.
+        Przypomina płonące żaglowce i maszty w bezkresnym morzu płomieni, umożliwiając nieskończenie głębokie przybliżenia (Deep Zoom).
+    </p>
+
+    <div class="controls-top">
+        <button id="startBtn" class="btn-start" onclick="toggleAnimation()">▶ Start Animacji</button>
+        <button id="audioToggleBtn" class="btn-secondary" onclick="toggleAudio()">🔊 Muzyka: WŁ</button>
+        <button class="btn-secondary" onclick="resetView()">↺ Resetuj widok</button>
+    </div>
+
+    <div class="panel">
+        <div>
+            <label for="modeSelect"><strong>Efekt dynamiczny:</strong></label>
+            <select id="modeSelect" onchange="changeMode()">
+                <option value="zoom">🔍 Nieskończony Głęboki Zoom (Maszty i Flotylla)</option>
+                <option value="fire">🔥 Płonące fale i pulsowanie ognia</option>
+                <option value="morph">🌀 Morfowanie struktury płomieni</option>
+            </select>
+        </div>
+
+        <div>
+            <label for="paletteSelect"><strong>Ognista Paleta:</strong></label>
+            <select id="paletteSelect" onchange="changePalette()">
+                <option value="fire">🔥 Płomienie & Żarząca Magma</option>
+                <option value="blue-fire">⚡ Błękitny Płomień Plazmowy</option>
+                <option value="cosmic">🌌 Kosmiczny Pożar (Fiolet & Złoto)</option>
+                <option value="emerald">🟢 Szmaragdowy Ogień Alchemiczny</option>
+            </select>
+        </div>
+
+        <div>
+            <label for="speedSlider">Prędkość:</label>
+            <input type="range" id="speedSlider" min="0.2" max="2.5" step="0.1" value="1.0" oninput="updateSpeed(this.value)">
+            <span id="speedVal" style="font-family: monospace; color: #fdba74; min-width: 35px; display: inline-block;">1.0x</span>
+        </div>
+    </div>
+
+    <div class="canvas-container">
+        <canvas id="burningCanvas" width="640" height="480"></canvas>
+        <div class="hud-stats">
+            <span id="fpsDisplay">FPS: --</span>
+            <span id="modeDisplay">Tryb: Nieskończony Zoom</span>
+            <span id="timeDisplay">Czas: 0.0s</span>
+        </div>
+        <p class="hint">Wskazówka: Kliknij lewym przyciskiem myszy, aby przybliżyć (Zoom In), lub prawym, aby oddalić (Zoom Out).</p>
+    </div>
+
+    <div class="nav-links">
+        <a href="../rozrywka.html" class="nav-link">← Powrót do Rozrywki</a>
+        <a href="zbior_mandelbrota.html" class="nav-link">Zbiór Mandelbrota</a>
+        <a href="penrose.html" class="nav-link">Układanka Penrose’a</a>
+        <a href="mandelbulb.html" class="nav-link">Mandelbulb 3D</a>
+        <a href="../index.html" class="nav-link">Strona główna</a>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('burningCanvas');
+        const ctx = canvas.getContext('2d');
+        const startBtn = document.getElementById('startBtn');
+        const audioToggleBtn = document.getElementById('audioToggleBtn');
+        const modeSelect = document.getElementById('modeSelect');
+        const paletteSelect = document.getElementById('paletteSelect');
+        const speedVal = document.getElementById('speedVal');
+        const fpsDisplay = document.getElementById('fpsDisplay');
+        const modeDisplay = document.getElementById('modeDisplay');
+        const timeDisplay = document.getElementById('timeDisplay');
+
+        const width = canvas.width;
+        const height = canvas.height;
+
+        const imgData = ctx.createImageData(width, height);
+        const buf32 = new Uint32Array(imgData.data.buffer);
+
+        // Prekalkulowana 32-bitowa paleta kolorów
+        const PALETTE_SIZE = 2048;
+        const palette = new Uint32Array(PALETTE_SIZE);
+
+        function generatePalette(type) {
+            for (let i = 0; i < PALETTE_SIZE; i++) {
+                const t = i / PALETTE_SIZE;
+                let r = 0, g = 0, b = 0;
+
+                if (type === 'fire') {
+                    // Płomienie: czerń -> czerwień -> pomarańcz -> złoty -> biały
+                    if (t < 0.25) {
+                        const k = t / 0.25;
+                        r = Math.floor(k * 200);
+                        g = 0;
+                        b = 0;
+                    } else if (t < 0.6) {
+                        const k = (t - 0.25) / 0.35;
+                        r = 200 + Math.floor(k * 55);
+                        g = Math.floor(k * 180);
+                        b = Math.floor(k * 20);
+                    } else if (t < 0.85) {
+                        const k = (t - 0.6) / 0.25;
+                        r = 255;
+                        g = 180 + Math.floor(k * 75);
+                        b = 20 + Math.floor(k * 150);
+                    } else {
+                        const k = (t - 0.85) / 0.15;
+                        r = 255;
+                        g = 255;
+                        b = 170 + Math.floor(k * 85);
+                    }
+                } else if (type === 'blue-fire') {
+                    // Błękitny Płomień
+                    r = Math.floor(Math.sin(t * Math.PI * 2 + 3.8) * 110 + 120);
+                    g = Math.floor(Math.sin(t * Math.PI * 2 + 1.2) * 120 + 135);
+                    b = Math.floor(Math.sin(t * Math.PI * 2) * 120 + 135);
+                } else if (type === 'cosmic') {
+                    // Fiolet & Złoto
+                    r = Math.floor(Math.sin(t * Math.PI * 2 + 0.5) * 125 + 130);
+                    g = Math.floor(Math.sin(t * Math.PI * 2 + 4.0) * 90 + 100);
+                    b = Math.floor(Math.sin(t * Math.PI * 2 + 2.0) * 125 + 130);
+                } else {
+                    // Szmaragd
+                    r = Math.floor(Math.sin(t * Math.PI * 2 + 4.2) * 90 + 100);
+                    g = Math.floor(Math.sin(t * Math.PI * 2) * 120 + 135);
+                    b = Math.floor(Math.sin(t * Math.PI * 2 + 1.8) * 90 + 100);
+                }
+
+                palette[i] = (255 << 24) | (b << 16) | (g << 8) | r;
+            }
+        }
+
+        generatePalette('fire');
+
+        function changePalette() {
+            generatePalette(paletteSelect.value);
+            if (!isRunning) renderFrame(animTime);
+        }
+
+        // Domyślne współrzędne dla statku (zorientowane pionowo)
+        const DEFAULT_X_MIN = -2.05;
+        const DEFAULT_X_MAX = 0.95;
+        const DEFAULT_Y_MIN = -1.85;
+        const DEFAULT_Y_MAX = 0.65;
+
+        let xMin = DEFAULT_X_MIN;
+        let xMax = DEFAULT_X_MAX;
+        let yMin = DEFAULT_Y_MIN;
+        let yMax = DEFAULT_Y_MAX;
+
+        let isRunning = false;
+        let animId = null;
+        let animTime = 0;
+        let speed = 1.0;
+        let currentMode = 'zoom';
+
+        let lastFrameTime = performance.now();
+        let frameCount = 0;
+        let lastFpsUpdate = performance.now();
+
+        function updateSpeed(val) {
+            speed = parseFloat(val);
+            speedVal.innerText = speed.toFixed(1) + 'x';
+        }
+
+        function changeMode() {
+            currentMode = modeSelect.value;
+            const names = {
+                'zoom': 'Tryb: Nieskończony Zoom',
+                'fire': 'Tryb: Płonące fale ognia',
+                'morph': 'Tryb: Morfowanie struktury'
+            };
+            modeDisplay.innerText = names[currentMode] || 'Tryb: Animacja';
+            if (!isRunning) renderFrame(animTime);
+        }
+
+        function resetView() {
+            xMin = DEFAULT_X_MIN;
+            xMax = DEFAULT_X_MAX;
+            yMin = DEFAULT_Y_MIN;
+            yMax = DEFAULT_Y_MAX;
+            animTime = 0;
+            if (!isRunning) renderFrame(animTime);
+        }
+
+        function renderFrame(timeSec) {
+            let maxIter = 80;
+            const t = timeSec;
+
+            let curXMin = xMin;
+            let curXMax = xMax;
+            let curYMin = yMin;
+            let curYMax = yMax;
+
+            let morphX = 0;
+            let morphY = 0;
+            let colorShift = Math.floor(t * 140) % PALETTE_SIZE;
+
+            if (currentMode === 'zoom') {
+                // Słynne współrzędne anteny i masztów Burning Ship
+                const targetX = -1.75;
+                const targetY = -0.035;
+
+                const zoomCycle = (t * 0.4) % 13;
+                const zoomFactor = Math.pow(1.85, zoomCycle);
+
+                const spanX = 3.0 / zoomFactor;
+                const spanY = 2.5 / zoomFactor;
+
+                curXMin = targetX - spanX / 2;
+                curXMax = targetX + spanX / 2;
+                curYMin = targetY - spanY / 2;
+                curYMax = targetY + spanY / 2;
+
+                maxIter = Math.min(220, Math.floor(75 + zoomCycle * 10));
+                colorShift = Math.floor(t * 120) % PALETTE_SIZE;
+            } else if (currentMode === 'fire') {
+                // Szybki wirujący ogień
+                colorShift = Math.floor(t * 300) % PALETTE_SIZE;
+            } else if (currentMode === 'morph') {
+                morphX = Math.sin(t * 0.6) * 0.05;
+                morphY = Math.cos(t * 0.5) * 0.05;
+                colorShift = Math.floor(t * 150) % PALETTE_SIZE;
+            }
+
+            let bufIdx = 0;
+
+            for (let py = 0; py < height; py++) {
+                // Inwersja osi Y, by maszty statku były skierowane do góry
+                const y0 = curYMax - (py / height) * (curYMax - curYMin) + morphY;
+
+                for (let px = 0; px < width; px++) {
+                    const x0 = curXMin + (px / width) * (curXMax - curXMin) + morphX;
+
+                    let x = 0.0;
+                    let y = 0.0;
+                    let iteration = 0;
+
+                    // Formuła Burning Ship: z_{n+1} = (|Re(z)| + i|Im(z)|)^2 + c
+                    while (x * x + y * y <= 4.0 && iteration < maxIter) {
+                        const xTemp = x * x - y * y + x0;
+                        y = Math.abs(2.0 * x * y) + y0;
+                        x = xTemp;
+                        iteration++;
+                    }
+
+                    if (iteration === maxIter) {
+                        // Wnętrze fraktala - głęboka czerń
+                        buf32[bufIdx++] = 0xFF000000;
+                    } else {
+                        const palIdx = Math.floor(iteration * 36 + colorShift) & (PALETTE_SIZE - 1);
+                        buf32[bufIdx++] = palette[palIdx];
+                    }
+                }
+            }
+
+            ctx.putImageData(imgData, 0, 0);
+        }
+
+        function animationLoop(now) {
+            if (!isRunning) return;
+
+            const delta = (now - lastFrameTime) / 1000;
+            lastFrameTime = now;
+
+            if (delta < 0.2) {
+                animTime += delta * speed;
+            }
+
+            renderFrame(animTime);
+
+            frameCount++;
+            if (now - lastFpsUpdate >= 500) {
+                const fps = Math.round((frameCount * 1000) / (now - lastFpsUpdate));
+                fpsDisplay.innerText = `FPS: ${fps}`;
+                timeDisplay.innerText = `Czas: ${animTime.toFixed(1)}s`;
+                frameCount = 0;
+                lastFpsUpdate = now;
+            }
+
+            animId = requestAnimationFrame(animationLoop);
+        }
+
+        // Generator ognistej ambientowej muzyki Web Audio API
+        class AmbientMusicGenerator {
+            constructor() {
+                this.audioCtx = null;
+                this.isPlaying = false;
+                this.masterGain = null;
+                this.filter = null;
+                this.droneOscs = [];
+                this.arpTimer = null;
+                this.isMuted = false;
+            }
+
+            init() {
+                if (this.audioCtx) return;
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                this.audioCtx = new AudioContext();
+
+                this.masterGain = this.audioCtx.createGain();
+                this.masterGain.gain.setValueAtTime(0.18, this.audioCtx.currentTime);
+
+                this.filter = this.audioCtx.createBiquadFilter();
+                this.filter.type = 'lowpass';
+                this.filter.frequency.setValueAtTime(600, this.audioCtx.currentTime);
+
+                const delay = this.audioCtx.createDelay();
+                delay.delayTime.setValueAtTime(0.40, this.audioCtx.currentTime);
+                const delayGain = this.audioCtx.createGain();
+                delayGain.gain.setValueAtTime(0.36, this.audioCtx.currentTime);
+
+                delay.connect(delayGain);
+                delayGain.connect(delay);
+                delayGain.connect(this.masterGain);
+
+                this.filter.connect(this.masterGain);
+                this.filter.connect(delay);
+                this.masterGain.connect(this.audioCtx.destination);
+            }
+
+            start() {
+                if (this.isMuted) return;
+                this.init();
+                if (this.audioCtx.state === 'suspended') {
+                    this.audioCtx.resume();
+                }
+                if (this.isPlaying) return;
+                this.isPlaying = true;
+
+                this.masterGain.gain.cancelScheduledValues(this.audioCtx.currentTime);
+                this.masterGain.gain.setValueAtTime(0.001, this.audioCtx.currentTime);
+                this.masterGain.gain.exponentialRampToValueAtTime(0.18, this.audioCtx.currentTime + 1.2);
+
+                const chordFrequencies = [61.74, 92.50, 123.47, 185.00]; // B1, F#2, B2, F#3 (Ognisty B-moll)
+                this.droneOscs = chordFrequencies.map(freq => {
+                    const osc = this.audioCtx.createOscillator();
+                    const gain = this.audioCtx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(freq, this.audioCtx.currentTime);
+
+                    const lfo = this.audioCtx.createOscillator();
+                    const lfoGain = this.audioCtx.createGain();
+                    lfo.frequency.setValueAtTime(0.11 + Math.random() * 0.07, this.audioCtx.currentTime);
+                    lfoGain.gain.setValueAtTime(0.9, this.audioCtx.currentTime);
+                    lfo.connect(lfoGain);
+                    lfoGain.connect(osc.frequency);
+                    lfo.start();
+
+                    gain.gain.setValueAtTime(0.035, this.audioCtx.currentTime);
+                    osc.connect(gain);
+                    gain.connect(this.filter);
+                    osc.start();
+                    return { osc, gain, lfo };
+                });
+
+                const scale = [246.94, 277.18, 329.63, 369.99, 440.00, 493.88, 554.37, 659.25]; // B dorian fire scale
+
+                const playChime = () => {
+                    if (!this.isPlaying) return;
+
+                    const freq = scale[Math.floor(Math.random() * scale.length)];
+                    const osc = this.audioCtx.createOscillator();
+                    const gain = this.audioCtx.createGain();
+
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, this.audioCtx.currentTime);
+
+                    const now = this.audioCtx.currentTime;
+                    gain.gain.setValueAtTime(0.0001, now);
+                    gain.gain.exponentialRampToValueAtTime(0.07, now + 0.05);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, now + 2.3);
+
+                    osc.connect(gain);
+                    gain.connect(this.filter);
+
+                    osc.start(now);
+                    osc.stop(now + 2.4);
+
+                    const nextDelay = 360 + Math.random() * 540;
+                    this.arpTimer = setTimeout(playChime, nextDelay);
+                };
+
+                playChime();
+            }
+
+            stop() {
+                if (!this.isPlaying || !this.audioCtx) return;
+                this.isPlaying = false;
+                if (this.arpTimer) clearTimeout(this.arpTimer);
+
+                if (this.masterGain) {
+                    this.masterGain.gain.cancelScheduledValues(this.audioCtx.currentTime);
+                    this.masterGain.gain.setValueAtTime(this.masterGain.gain.value, this.audioCtx.currentTime);
+                    this.masterGain.gain.exponentialRampToValueAtTime(0.0001, this.audioCtx.currentTime + 0.6);
+                }
+
+                setTimeout(() => {
+                    if (!this.isPlaying && this.droneOscs.length) {
+                        this.droneOscs.forEach(({ osc, lfo }) => {
+                            try { osc.stop(); lfo.stop(); } catch (e) {}
+                        });
+                        this.droneOscs = [];
+                    }
+                }, 650);
+            }
+
+            toggleMute() {
+                this.isMuted = !this.isMuted;
+                if (this.isMuted) {
+                    this.stop();
+                } else if (isRunning) {
+                    this.start();
+                }
+                return !this.isMuted;
+            }
+        }
+
+        const ambientMusic = new AmbientMusicGenerator();
+
+        function toggleAudio() {
+            const isUnmuted = ambientMusic.toggleMute();
+            audioToggleBtn.innerText = isUnmuted ? '🔊 Muzyka: WŁ' : '🔇 Muzyka: WYŁ';
+            audioToggleBtn.style.color = isUnmuted ? '#fdba74' : '#94a3b8';
+        }
+
+        function toggleAnimation() {
+            if (!isRunning) {
+                isRunning = true;
+                startBtn.innerHTML = '⏸ Pauza';
+                startBtn.style.background = 'linear-gradient(135deg, #e11d48 0%, #be123c 100%)';
+                lastFrameTime = performance.now();
+                lastFpsUpdate = performance.now();
+                frameCount = 0;
+                ambientMusic.start();
+                animId = requestAnimationFrame(animationLoop);
+            } else {
+                isRunning = false;
+                if (animId) cancelAnimationFrame(animId);
+                ambientMusic.stop();
+                startBtn.innerHTML = '▶ Wznów Animację';
+                startBtn.style.background = 'linear-gradient(135deg, #ea580c 0%, #c2410c 100%)';
+            }
+        }
+
+        // Interaktywne przybliżanie kliknięciem LPM
+        canvas.addEventListener('click', function (e) {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = (e.clientX - rect.left) * (canvas.width / rect.width);
+            const mouseY = (e.clientY - rect.top) * (canvas.height / rect.height);
+
+            const clickX = xMin + (mouseX / width) * (xMax - xMin);
+            const clickY = yMax - (mouseY / height) * (yMax - yMin);
+
+            const zoomFactor = 0.5;
+            const curW = (xMax - xMin) * zoomFactor;
+            const curH = (yMax - yMin) * zoomFactor;
+
+            xMin = clickX - curW / 2;
+            xMax = clickX + curW / 2;
+            yMin = clickY - curH / 2;
+            yMax = clickY + curH / 2;
+
+            if (!isRunning) renderFrame(animTime);
+        });
+
+        // Oddalanie PPM
+        canvas.addEventListener('contextmenu', function (e) {
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = (e.clientX - rect.left) * (canvas.width / rect.width);
+            const mouseY = (e.clientY - rect.top) * (canvas.height / rect.height);
+
+            const clickX = xMin + (mouseX / width) * (xMax - xMin);
+            const clickY = yMax - (mouseY / height) * (yMax - yMin);
+
+            const zoomFactor = 2.0;
+            const curW = (xMax - xMin) * zoomFactor;
+            const curH = (yMax - yMin) * zoomFactor;
+
+            xMin = clickX - curW / 2;
+            xMax = clickX + curW / 2;
+            yMin = clickY - curH / 2;
+            yMax = clickY + curH / 2;
+
+            if (!isRunning) renderFrame(animTime);
+        });
+
+        // Pierwsza klatka
+        renderFrame(0);
+    </script>
+    <script src="nagrywanie_wideo.js"></script>
+</body>
+</html>

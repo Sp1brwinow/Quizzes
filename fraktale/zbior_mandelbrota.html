@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../style.css" />
+    <title>Zbiór Mandelbrota – Dynamiczny Fraktal</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            background: #060d17;
+            color: #f1f5f9;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            text-align: center;
+        }
+
+        h1 {
+            color: #38bdf8;
+            font-size: 2.1rem;
+            margin-bottom: 6px;
+            text-shadow: 0 0 14px rgba(56, 189, 248, 0.55);
+        }
+
+        .formula {
+            font-size: 1.15rem;
+            color: #cbd5e1;
+            margin-bottom: 18px;
+            line-height: 1.6;
+        }
+
+        .math {
+            font-family: 'Cambria Math', 'Times New Roman', serif;
+            font-style: italic;
+            background: rgba(56, 189, 248, 0.15);
+            padding: 3px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            color: #7dd3fc;
+            font-size: 1.1rem;
+        }
+
+        .controls-top {
+            margin: 15px auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn-start {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            color: #ffffff;
+            font-size: 1.25rem;
+            font-weight: 700;
+            padding: 12px 36px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 4px 18px rgba(2, 132, 199, 0.45);
+            transition: all 0.25s ease;
+        }
+
+        .btn-start:hover {
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+            box-shadow: 0 0 25px rgba(14, 165, 233, 0.8);
+            transform: scale(1.04);
+        }
+
+        .btn-secondary {
+            background: rgba(30, 41, 59, 0.85);
+            color: #e2e8f0;
+            font-size: 0.95rem;
+            padding: 10px 16px;
+            border: 1px solid #475569;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-secondary:hover {
+            color: #38bdf8;
+            border-color: #38bdf8;
+            background: rgba(51, 65, 85, 0.95);
+        }
+
+        .animation-panel {
+            display: none;
+            margin: 12px auto;
+            max-width: 800px;
+            background: rgba(15, 23, 42, 0.8);
+            padding: 12px 18px;
+            border-radius: 12px;
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .panel-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 18px;
+            flex-wrap: wrap;
+            margin: 6px 0;
+            font-size: 0.95rem;
+            color: #cbd5e1;
+        }
+
+        .panel-row select, .panel-row input[type="range"] {
+            background: #1e293b;
+            color: #f8fafc;
+            border: 1px solid #475569;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .panel-row select:focus {
+            border-color: #38bdf8;
+        }
+
+        .canvas-container {
+            display: none;
+            margin: 16px auto 20px auto;
+            max-width: 820px;
+            position: relative;
+        }
+
+        canvas {
+            display: block;
+            margin: 0 auto;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.85), 0 0 30px rgba(56, 189, 248, 0.4);
+            background-color: #000000;
+            cursor: crosshair;
+            max-width: 100%;
+            height: auto;
+        }
+
+        .hud-stats {
+            display: flex;
+            justify-content: space-between;
+            max-width: 800px;
+            margin: 8px auto 0 auto;
+            font-size: 0.85rem;
+            color: #94a3b8;
+            font-family: monospace;
+        }
+
+        .hint {
+            font-size: 0.88rem;
+            color: #94a3b8;
+            margin-top: 10px;
+        }
+
+        .nav-links {
+            margin-top: 35px;
+            margin-bottom: 25px;
+        }
+
+        .nav-link {
+            color: #94a3b8;
+            text-decoration: none;
+            margin: 0 14px;
+            font-size: 1.05rem;
+            border-bottom: 1px dashed #64748b;
+            transition: color 0.2s ease;
+        }
+
+        .nav-link:hover {
+            color: #38bdf8;
+            border-bottom-color: #38bdf8;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Zbiór Mandelbrota</h1>
+    <p class="formula">
+        Klasyczny fraktal oparty na równaniu rekurencyjnym: <span class="math">z<sub>n+1</sub> = z<sub>n</sub><sup>2</sup> + c</span>
+    </p>
+
+    <!-- Główny przycisk Start na samej górze -->
+    <div class="controls-top">
+        <button id="startBtn" class="btn-start" onclick="toggleAnimation()">▶ Start</button>
+        <button id="audioToggleBtn" class="btn-secondary" onclick="toggleAudio()">🔊 Muzyka: WŁ</button>
+        <button id="resetBtn" class="btn-secondary" onclick="resetView()" style="display: none;">↺ Reset widoku</button>
+    </div>
+
+    <!-- Panel ustawień animacji -->
+    <div id="animPanel" class="animation-panel">
+        <div class="panel-row">
+            <label for="modeSelect"><strong>Efekt dynamiczny:</strong></label>
+            <select id="modeSelect" onchange="changeMode()">
+                <option value="morph">🌀 Dynamiczne morfowanie kształtu</option>
+                <option value="waves">🌊 Hipnotyczny przepływ fal barwnych</option>
+                <option value="zoom">🔍 Płynny nieskończony zoom (Dolina Koników Polnych)</option>
+                <option value="multibrot">✨ Płynna zmiana potęgi (Multibrot 2.0 ↔ 3.5)</option>
+            </select>
+
+            <label for="speedSlider">Prędkość:</label>
+            <input type="range" id="speedSlider" min="0.2" max="2.5" step="0.1" value="1.0" oninput="updateSpeed(this.value)">
+            <span id="speedVal" style="font-family: monospace; min-width: 35px;">1.0x</span>
+
+            <label style="margin-left: 12px;"><input type="checkbox" id="interiorColoringCb" checked> 🌌 Kolorowe wnętrze (Orbit Traps)</label>
+        </div>
+    </div>
+
+    <!-- Płótno z dynamicznym fraktalem umieszczone pod guzikami -->
+    <div id="canvasContainer" class="canvas-container">
+        <canvas id="mandelbrotCanvas" width="640" height="480"></canvas>
+        <div class="hud-stats">
+            <span id="fpsDisplay">FPS: --</span>
+            <span id="modeDisplay">Tryb: Morfowanie</span>
+            <span id="timeDisplay">Czas: 0.0s</span>
+        </div>
+        <p class="hint">Wskazówka: Kliknij lewym przyciskiem myszy na fraktal, aby wyśrodkować i przybliżyć, lub prawym, aby oddalić.</p>
+    </div>
+
+    <div class="nav-links">
+        <a href="../rozrywka.html" class="nav-link">← Powrót do Rozrywki</a>
+        <a href="../index.html" class="nav-link">Strona główna</a>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('mandelbrotCanvas');
+        const ctx = canvas.getContext('2d');
+        const canvasContainer = document.getElementById('canvasContainer');
+        const animPanel = document.getElementById('animPanel');
+        const startBtn = document.getElementById('startBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const modeSelect = document.getElementById('modeSelect');
+        const speedVal = document.getElementById('speedVal');
+        const fpsDisplay = document.getElementById('fpsDisplay');
+        const modeDisplay = document.getElementById('modeDisplay');
+        const timeDisplay = document.getElementById('timeDisplay');
+        const interiorColoringCb = document.getElementById('interiorColoringCb');
+
+        const width = canvas.width;
+        const height = canvas.height;
+
+        const imgData = ctx.createImageData(width, height);
+        const buf32 = new Uint32Array(imgData.data.buffer);
+
+        // Prekalkulowana 32-bitowa paleta kolorów (ABGR little-endian)
+        const PALETTE_SIZE = 2048;
+        const palette = new Uint32Array(PALETTE_SIZE);
+
+        for (let i = 0; i < PALETTE_SIZE; i++) {
+            const t = i / PALETTE_SIZE;
+            
+            // Żywa paleta: błękity, turkus, złocisty, fiolet, neonowy róż
+            const r = Math.floor(Math.sin(t * Math.PI * 2) * 120 + 135);
+            const g = Math.floor(Math.sin(t * Math.PI * 2 + 2.1) * 120 + 135);
+            const b = Math.floor(Math.sin(t * Math.PI * 2 + 4.2) * 120 + 135);
+
+            palette[i] = (255 << 24) | (b << 16) | (g << 8) | r;
+        }
+
+        // Parametry widoku
+        const DEFAULT_X_MIN = -2.1;
+        const DEFAULT_X_MAX = 0.9;
+        const DEFAULT_Y_MIN = -1.15;
+        const DEFAULT_Y_MAX = 1.15;
+
+        let xMin = DEFAULT_X_MIN;
+        let xMax = DEFAULT_X_MAX;
+        let yMin = DEFAULT_Y_MIN;
+        let yMax = DEFAULT_Y_MAX;
+
+        let isRunning = false;
+        let animationId = null;
+        let animTime = 0;
+        let speed = 1.0;
+        let currentMode = 'morph';
+
+        // Pomiary FPS
+        let lastFrameTime = performance.now();
+        let frameCount = 0;
+        let lastFpsUpdate = performance.now();
+
+        function updateSpeed(val) {
+            speed = parseFloat(val);
+            speedVal.innerText = speed.toFixed(1) + 'x';
+        }
+
+        function changeMode() {
+            currentMode = modeSelect.value;
+            const names = {
+                'morph': 'Tryb: Dynamiczne morfowanie',
+                'waves': 'Tryb: Przepływ fal barwnych',
+                'zoom': 'Tryb: Nieskończony Zoom',
+                'multibrot': 'Tryb: Multibrot'
+            };
+            modeDisplay.innerText = names[currentMode] || 'Tryb: Dynamiczny';
+        }
+
+        function resetView() {
+            xMin = DEFAULT_X_MIN;
+            xMax = DEFAULT_X_MAX;
+            yMin = DEFAULT_Y_MIN;
+            yMax = DEFAULT_Y_MAX;
+            animTime = 0;
+        }
+
+        function renderFrame(timeSec) {
+            let maxIter = 70;
+            const t = timeSec;
+
+            // Parametry zależne od wybranego trybu
+            let rotAngle = 0;
+            let morphOffsetX = 0;
+            let morphOffsetY = 0;
+            let power = 2.0;
+            let colorShift = Math.floor(t * 120) % PALETTE_SIZE;
+
+            let curXMin = xMin;
+            let curXMax = xMax;
+            let curYMin = yMin;
+            let curYMax = yMax;
+
+            if (currentMode === 'morph') {
+                // Harmoniczne pulsowanie i delikatny skręt współrzędnych
+                rotAngle = Math.sin(t * 0.7) * 0.15;
+                morphOffsetX = Math.sin(t * 0.5) * 0.08;
+                morphOffsetY = Math.cos(t * 0.6) * 0.08;
+                colorShift = Math.floor(t * 90) % PALETTE_SIZE;
+            } 
+            else if (currentMode === 'waves') {
+                // Szybka fala barw
+                colorShift = Math.floor(t * 260) % PALETTE_SIZE;
+            } 
+            else if (currentMode === 'zoom') {
+                // Płynny, nieprzerwany zoom w głąb struktur Doliny Koników Polnych (Seahorse Valley)
+                const targetX = -0.743643887037158704752191506114774;
+                const targetY = 0.131825904205311970493132056385139;
+
+                // Ciągłe, wykładnicze powiększanie bez resetowania co 20s
+                const zoomFactor = Math.pow(1.45, t * 0.9);
+
+                const spanX = 2.8 / zoomFactor;
+                const spanY = 2.1 / zoomFactor;
+
+                curXMin = targetX - spanX / 2;
+                curXMax = targetX + spanX / 2;
+                curYMin = targetY - spanY / 2;
+                curYMax = targetY + spanY / 2;
+
+                // Dynamiczne zwiększanie maksymalnej liczby iteracji w miarę wnikania w głąb fraktala
+                const zoomLog = Math.log10(Math.max(1, zoomFactor));
+                maxIter = Math.min(450, Math.floor(65 + zoomLog * 28));
+                colorShift = Math.floor(t * 70) % PALETTE_SIZE;
+            } 
+            else if (currentMode === 'multibrot') {
+                // Płynna zmiana wykładnika potęgi
+                power = 2.0 + Math.sin(t * 0.6) * 0.9;
+                colorShift = Math.floor(t * 100) % PALETTE_SIZE;
+            }
+
+            const cosA = Math.cos(rotAngle);
+            const sinA = Math.sin(rotAngle);
+
+            let bufIdx = 0;
+            const useInteriorColor = interiorColoringCb && interiorColoringCb.checked;
+
+            for (let py = 0; py < height; py++) {
+                const y0Base = curYMin + (py / height) * (curYMax - curYMin) + morphOffsetY;
+
+                for (let px = 0; px < width; px++) {
+                    const x0Base = curXMin + (px / width) * (curXMax - curXMin) + morphOffsetX;
+
+                    // Obrót płaszczyzny w trybie morfowania
+                    const x0 = x0Base * cosA - y0Base * sinA;
+                    const y0 = x0Base * sinA + y0Base * cosA;
+
+                    let x = 0.0;
+                    let y = 0.0;
+                    let iteration = 0;
+                    let minDistSq = 1e10;
+
+                    if (currentMode === 'multibrot' && Math.abs(power - 2.0) > 0.02) {
+                        // Obliczanie fraktala z dowolną potęgą (Multibrot)
+                        while (x * x + y * y <= 4.0 && iteration < maxIter) {
+                            const r = Math.sqrt(x * x + y * y);
+                            const theta = Math.atan2(y, x);
+                            const rPow = Math.pow(r, power);
+                            x = rPow * Math.cos(power * theta) + x0;
+                            y = rPow * Math.sin(power * theta) + y0;
+                            
+                            const dSq = x * x + y * y;
+                            if (dSq < minDistSq) minDistSq = dSq;
+                            
+                            iteration++;
+                        }
+                    } else {
+                        // Zoptymalizowana klasyczna formuła z_{n+1} = z_n^2 + c
+                        while (x * x + y * y <= 4.0 && iteration < maxIter) {
+                            const xTemp = x * x - y * y + x0;
+                            y = 2.0 * x * y + y0;
+                            x = xTemp;
+
+                            const dSq = x * x + y * y;
+                            if (dSq < minDistSq) minDistSq = dSq;
+
+                            iteration++;
+                        }
+                    }
+
+                    if (iteration === maxIter) {
+                        if (useInteriorColor) {
+                            // Spektakularne kolorowe wnętrze: pułapki orbit (Orbit Traps) + kąt fazowy + pulsacja energii
+                            const d = Math.sqrt(minDistSq);
+                            const angle = Math.atan2(y, x);
+                            const pattern = Math.sin(d * 28.0 + angle * 4.0 + t * 2.5) * 0.5 + 0.5;
+                            const palIdx = Math.floor((d * 1800 + angle * 240 + colorShift * 1.6 + t * 200)) & (PALETTE_SIZE - 1);
+                            
+                            const rawColor = palette[palIdx];
+                            const r = (rawColor & 0xFF);
+                            const g = ((rawColor >> 8) & 0xFF);
+                            const b = ((rawColor >> 16) & 0xFF);
+                            
+                            const brightness = 0.40 + 0.60 * pattern;
+                            const finalR = Math.floor(r * brightness);
+                            const finalG = Math.floor(g * brightness);
+                            const finalB = Math.floor(b * brightness);
+                            
+                            buf32[bufIdx++] = (255 << 24) | (finalB << 16) | (finalG << 8) | finalR;
+                        } else {
+                            // Klasyczna czerń wnętrza
+                            buf32[bufIdx++] = 0xFF000000;
+                        }
+                    } else {
+                        // Wygładzanie i dynamiczne mapowanie koloru na zewnątrz
+                        const palIdx = Math.floor((iteration * 32 + colorShift)) & (PALETTE_SIZE - 1);
+                        buf32[bufIdx++] = palette[palIdx];
+                    }
+                }
+            }
+
+            ctx.putImageData(imgData, 0, 0);
+        }
+
+        function animationLoop(now) {
+            if (!isRunning) return;
+
+            const delta = (now - lastFrameTime) / 1000;
+            lastFrameTime = now;
+
+            if (delta < 0.2) {
+                animTime += delta * speed;
+            }
+
+            renderFrame(animTime);
+
+            // Aktualizacja licznika FPS i wskaźników
+            frameCount++;
+            if (now - lastFpsUpdate >= 500) {
+                const fps = Math.round((frameCount * 1000) / (now - lastFpsUpdate));
+                fpsDisplay.innerText = `FPS: ${fps}`;
+                
+                let zoomSuffix = '';
+                if (currentMode === 'zoom') {
+                    const zFactor = Math.pow(1.45, animTime * 0.9);
+                    if (zFactor >= 1e5) {
+                        zoomSuffix = ` | Powiększenie: ${zFactor.toExponential(2)}x`;
+                    } else {
+                        zoomSuffix = ` | Powiększenie: ${zFactor.toFixed(1)}x`;
+                    }
+                }
+                timeDisplay.innerText = `Czas: ${animTime.toFixed(1)}s${zoomSuffix}`;
+                frameCount = 0;
+                lastFpsUpdate = now;
+            }
+
+            animationId = requestAnimationFrame(animationLoop);
+        }
+
+        // Generator ambientowej muzyki Web Audio API (Deep Space / Fractal Ambient Synth)
+        class AmbientMusicGenerator {
+            constructor() {
+                this.audioCtx = null;
+                this.isPlaying = false;
+                this.masterGain = null;
+                this.filter = null;
+                this.droneOscs = [];
+                this.arpTimer = null;
+                this.isMuted = false;
+            }
+
+            init() {
+                if (this.audioCtx) return;
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                this.audioCtx = new AudioContext();
+
+                this.masterGain = this.audioCtx.createGain();
+                this.masterGain.gain.setValueAtTime(0.18, this.audioCtx.currentTime);
+
+                // Ciepły filtr dolnoprzepustowy (dźwięk głębokiego kosmosu)
+                this.filter = this.audioCtx.createBiquadFilter();
+                this.filter.type = 'lowpass';
+                this.filter.frequency.setValueAtTime(650, this.audioCtx.currentTime);
+
+                // Przestrzenne echo / delay
+                const delay = this.audioCtx.createDelay();
+                delay.delayTime.setValueAtTime(0.42, this.audioCtx.currentTime);
+                const delayGain = this.audioCtx.createGain();
+                delayGain.gain.setValueAtTime(0.38, this.audioCtx.currentTime);
+
+                delay.connect(delayGain);
+                delayGain.connect(delay);
+                delayGain.connect(this.masterGain);
+
+                this.filter.connect(this.masterGain);
+                this.filter.connect(delay);
+                this.masterGain.connect(this.audioCtx.destination);
+            }
+
+            start() {
+                if (this.isMuted) return;
+                this.init();
+                if (this.audioCtx.state === 'suspended') {
+                    this.audioCtx.resume();
+                }
+                if (this.isPlaying) return;
+                this.isPlaying = true;
+
+                this.masterGain.gain.cancelScheduledValues(this.audioCtx.currentTime);
+                this.masterGain.gain.setValueAtTime(0.001, this.audioCtx.currentTime);
+                this.masterGain.gain.exponentialRampToValueAtTime(0.18, this.audioCtx.currentTime + 1.2);
+
+                // 1. Akordy tła (warm drones) - C-moll / Es / B
+                const chordFrequencies = [65.41, 98.00, 130.81, 196.00]; // C2, G2, C3, G3
+                this.droneOscs = chordFrequencies.map(freq => {
+                    const osc = this.audioCtx.createOscillator();
+                    const gain = this.audioCtx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, this.audioCtx.currentTime);
+
+                    // Płynne wibrato LFO
+                    const lfo = this.audioCtx.createOscillator();
+                    const lfoGain = this.audioCtx.createGain();
+                    lfo.frequency.setValueAtTime(0.1 + Math.random() * 0.08, this.audioCtx.currentTime);
+                    lfoGain.gain.setValueAtTime(0.85, this.audioCtx.currentTime);
+                    lfo.connect(lfoGain);
+                    lfoGain.connect(osc.frequency);
+                    lfo.start();
+
+                    gain.gain.setValueAtTime(0.04, this.audioCtx.currentTime);
+                    osc.connect(gain);
+                    gain.connect(this.filter);
+                    osc.start();
+                    return { osc, gain, lfo };
+                });
+
+                // 2. Generatywne arpeggio fraktalne (Pentatonika kosmiczna)
+                const scale = [261.63, 311.13, 349.23, 392.00, 466.16, 523.25, 622.25, 783.99]; // C minor pentatonic
+
+                const playChime = () => {
+                    if (!this.isPlaying) return;
+
+                    const freq = scale[Math.floor(Math.random() * scale.length)];
+                    const osc = this.audioCtx.createOscillator();
+                    const gain = this.audioCtx.createGain();
+
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, this.audioCtx.currentTime);
+
+                    const now = this.audioCtx.currentTime;
+                    gain.gain.setValueAtTime(0.0001, now);
+                    gain.gain.exponentialRampToValueAtTime(0.07, now + 0.06);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, now + 2.4);
+
+                    osc.connect(gain);
+                    gain.connect(this.filter);
+
+                    osc.start(now);
+                    osc.stop(now + 2.5);
+
+                    const nextDelay = 380 + Math.random() * 520;
+                    this.arpTimer = setTimeout(playChime, nextDelay);
+                };
+
+                playChime();
+            }
+
+            stop() {
+                if (!this.isPlaying || !this.audioCtx) return;
+                this.isPlaying = false;
+                if (this.arpTimer) clearTimeout(this.arpTimer);
+
+                if (this.masterGain) {
+                    this.masterGain.gain.cancelScheduledValues(this.audioCtx.currentTime);
+                    this.masterGain.gain.setValueAtTime(this.masterGain.gain.value, this.audioCtx.currentTime);
+                    this.masterGain.gain.exponentialRampToValueAtTime(0.0001, this.audioCtx.currentTime + 0.6);
+                }
+
+                setTimeout(() => {
+                    if (!this.isPlaying && this.droneOscs.length) {
+                        this.droneOscs.forEach(({ osc, lfo }) => {
+                            try { osc.stop(); lfo.stop(); } catch (e) {}
+                        });
+                        this.droneOscs = [];
+                    }
+                }, 650);
+            }
+
+            toggleMute() {
+                this.isMuted = !this.isMuted;
+                if (this.isMuted) {
+                    this.stop();
+                } else if (isRunning) {
+                    this.start();
+                }
+                return !this.isMuted;
+            }
+        }
+
+        const ambientMusic = new AmbientMusicGenerator();
+        const audioToggleBtn = document.getElementById('audioToggleBtn');
+
+        function toggleAudio() {
+            const isUnmuted = ambientMusic.toggleMute();
+            audioToggleBtn.innerText = isUnmuted ? '🔊 Muzyka: WŁ' : '🔇 Muzyka: WYŁ';
+            audioToggleBtn.style.color = isUnmuted ? '#38bdf8' : '#94a3b8';
+        }
+
+        function toggleAnimation() {
+            if (!isRunning) {
+                // Start animacji
+                isRunning = true;
+                canvasContainer.style.display = 'block';
+                animPanel.style.display = 'block';
+                resetBtn.style.display = 'inline-block';
+                startBtn.innerHTML = '⏸ Pauza';
+                startBtn.style.background = 'linear-gradient(135deg, #e11d48 0%, #be123c 100%)';
+                lastFrameTime = performance.now();
+                lastFpsUpdate = performance.now();
+                frameCount = 0;
+                ambientMusic.start();
+                animationId = requestAnimationFrame(animationLoop);
+            } else {
+                // Pauza animacji
+                isRunning = false;
+                if (animationId) cancelAnimationFrame(animationId);
+                ambientMusic.stop();
+                startBtn.innerHTML = '▶ Wznów';
+                startBtn.style.background = 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)';
+            }
+        }
+
+        // Interaktywne przybliżanie kliknięciem lewym przyciskiem
+        canvas.addEventListener('click', function (e) {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = (e.clientX - rect.left) * (canvas.width / rect.width);
+            const mouseY = (e.clientY - rect.top) * (canvas.height / rect.height);
+
+            const clickX = xMin + (mouseX / width) * (xMax - xMin);
+            const clickY = yMin + (mouseY / height) * (yMax - yMin);
+
+            const zoomFactor = 0.55;
+            const curW = (xMax - xMin) * zoomFactor;
+            const curH = (yMax - yMin) * zoomFactor;
+
+            xMin = clickX - curW / 2;
+            xMax = clickX + curW / 2;
+            yMin = clickY - curH / 2;
+            yMax = clickY + curH / 2;
+        });
+
+        // Oddalanie prawym przyciskiem
+        canvas.addEventListener('contextmenu', function (e) {
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = (e.clientX - rect.left) * (canvas.width / rect.width);
+            const mouseY = (e.clientY - rect.top) * (canvas.height / rect.height);
+
+            const clickX = xMin + (mouseX / width) * (xMax - xMin);
+            const clickY = yMin + (mouseY / height) * (yMax - yMin);
+
+            const zoomFactor = 1.8;
+            const curW = (xMax - xMin) * zoomFactor;
+            const curH = (yMax - yMin) * zoomFactor;
+
+            xMin = clickX - curW / 2;
+            xMax = clickX + curW / 2;
+            yMin = clickY - curH / 2;
+            yMax = clickY + curH / 2;
+        });
+    </script>
+    <script src="nagrywanie_wideo.js"></script>
+</body>
+</html>

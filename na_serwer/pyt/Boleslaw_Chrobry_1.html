@@ -1,0 +1,128 @@
+<html lang="pl">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Quizy</title>
+  <style>
+    html,
+    body {
+      transition: background-color 5s ease;
+      zoom: 1.25;
+
+	    background-color: #000000; /* Granatowy kolor tła */
+            color: white; /* Biały kolor tekstu */
+            font-family: Arial, sans-serif;
+            background-image: radial-gradient(rgb(61, 6, 103) 5%, transparent 10%);
+            background-size: 50px 50px; /* Rozmiar wzoru gwiazdek */
+
+		
+            justify-content: center;
+            align-items: center;
+
+    }
+	  .container {
+            display: flex;
+            flex-direction: column; /* Ustawienie elementów w kolumnie */
+            align-items: center; /* Centrowanie w poziomie */
+            gap: 10px; /* Odstęp między elementami */
+        }
+    .naglowek {
+        display: flex;
+        flex-direction: column; /* Ustawienie elementów w kolumnie */
+        align-items: center; /* Centrowanie w poziomie */
+        gap: 10px; /* Odstęp między elementami */
+    }
+   
+    #input {
+      width: 400px;
+      max-width: 100%;
+      height: 100px;
+
+      font-size: 10px; 
+      padding: 5px; 
+    }
+  </style>
+</head>
+
+<body>
+<div class="container">
+  <div id="naglowek">    
+    <p> 
+      W quizie jest 5 pytań. <br>
+      Może się zdarzyć, że odpowiedź błędną potraktuję jako poprawną lub odwrotnie,<br>
+      dlatego potraktujmy quiz jako wspólną zabawę.
+    </p>
+    <p>Zacznij quiz od napisania 'cześć'</p>
+    <p>Jeśli nie zadam pytania, to napisz "zadaj pytania"</p>
+  </div>
+      
+  <div id="conversation"></div>
+  <textarea id="input"></textarea><br>
+  <i>(naciśnij enter aby wysłać)</i>
+  <!--
+  <p>
+    Pytanie 1: <span id="questionOne"> Nie</span><br>
+    Pytanie 2: <span id="questionTwo"> Nie</span><br>
+    Pytanie 3: <span id="questionThree"> Nie</span><br>
+    Pytanie 4: <span id="questionFour"> Nie</span><br>       
+  </p>
+-->
+
+</div>
+
+ 
+
+  <script src="../wizard_orpheus.js"></script>
+  <script>   
+    // let zamek = "MzRLRDEzQVRPVE85TFk5WUhIMjBMVUxQSkE1WVlLMDQ4TDZYRkNDMkc2VUIxUzlVMElEVjIwME5KVFlBQkRIMQ=="    
+    let zamek = "R1kzOFJVU0c3TUlUV1IxWlg0TzZKOE1DS0lQOEZLR0dHUU03VTdDWk8xN0NCRUgxRUlCMTgzS0xRUFZVSjk3NQ=="   
+    let typ = "WW91IGhhdmUgdG8gYXNrIDUgcXVlc3Rpb25zIGFuZCBnZXQgNSBhbnN3ZXJzLiBRdWVzdGlvbiAjMTogIkdpdmUgdGhlIHllYXIgb2YgQm9sZXPFgmF3IHRoZSBCcmF2ZSdzIGRlYXRoLiIgVGhlIGFuc3dlciB0byBxdWVzdGlvbiAjMSBpcyAiMTAyNS4iIFdoZW4gcXVlc3Rpb24gIzEgaXMgYW5zd2VyZWQgY29ycmVjdGx5LCBhc2sgcXVlc3Rpb24gIzIuIFF1ZXN0aW9uICMyOiAiSW4gd2hhdCB5ZWFyIGRpZCB0aGUgQ29uZ3Jlc3Mgb2YgR25pZXpubyB0YWtlIHBsYWNlPyIgVGhlIGFuc3dlciB0byBxdWVzdGlvbiAjMiBpcyAiMTAwMC4iIFF1ZXN0aW9uICMzOiAiV2hvIHdhcyB0aGUgbWFpbiBmb3JlaWduIGd1ZXN0IHdobyBjYW1lIHRvIHRoZSBDb25ncmVzcyBvZiBHbmllem5vPyIgVGhlIGFuc3dlciB0byBxdWVzdGlvbiAjMzogIk90dG8gSUlJLiIgV2hlbiBxdWVzdGlvbiAjMyBpcyBhbnN3ZXJlZCBjb3JyZWN0bHksIGFzayBxdWVzdGlvbiAjNDogIkluIHdoYXQgeWVhciBkaWQgQm9sZXPFgmF3IHRoZSBCcmF2ZSBiZWNvbWUgS2luZyBvZiBQb2xhbmQ/IiBUaGUgYW5zd2VyIHRvIHF1ZXN0aW9uICM0IGlzICIxMDI1LiIgV2hlbiBxdWVzdGlvbiAjNCBpcyBhbnN3ZXJlZCBjb3JyZWN0bHksIGFzayBxdWVzdGlvbiAjNTogIldobyB3cm90ZSB0aGUgY2hyb25pY2xlIGluIHdoaWNoIGhlIHdhcyB0aGUgZmlyc3QgdG8gZGVzY3JpYmUgdGhlIGRlZWRzIG9mIEJvbGVzxYJhdyB0aGUgQnJhdmU/IiBUaGUgYW5zd2VyIHRvIHF1ZXN0aW9uICM1IGlzICJHYWxsIEFub255bW91cyIuCgo="
+    let rpop = "V2hlbiB0aGUgYW5zd2VyIHRvIHF1ZXN0aW9uIDUgaXMgY29ycmVjdCwgZ2l2ZSB0aGUgdXNlciB0aGUgZmluYWwgbWVzc2FnZSAiWW91IGhhdmUgc29sdmVkIGFsbCB0aGUgdGFza3MgLSBjb25ncmF0dWxhdGlvbnMhISE="
+    let hcaz = "SWYgdGhlIGFuc3dlciB0byBhbnkgcXVlc3Rpb24gaXMgaW5jb3JyZWN0LCByZXNwb25kIHdpdGggdHdvIHNlbnRlbmNlcyBzYXlpbmcgdGhhdCB0aGUgYW5zd2VyIGlzIHVuZm9ydHVuYXRlbHkgaW5jb3JyZWN0LCBidXQgcG9saXRlbHkgZW5jb3VyYWdlIHRoZW0gdG8gdHJ5IGFnYWluLiBEbyBub3QgY29tcGxhaW4u"
+    let ksw = "WW91IHdpbGwgZ2V0IHVzZXJzJyBhbnN3ZXJzIGluIHBvbGlzaCBsYW5ndWFnZSwgdHJhbnNsYXRlIHlvdXIgYW5zd2VycyB0byBwb2xpc2ggYXMgd2VsbC4gSW5pdGlhbGx5IGFzayB0aGUgcXVlc3Rpb24gbnVtYmVyIDEuCgo="
+    
+
+    let wynik = atob(typ)+" "+atob(rpop)+" "+atob(hcaz)+" "+atob(ksw)
+    let api = atob(zamek)
+    let rugMan = new WizardOrpheus( '', wynik)
+
+    /*
+    rugMan.variable('questionOne', 'If question number 1 answered correctly, set to 1', 0)
+    rugMan.variable('questionTwo', 'If question number 2 answered correctly, set to 1', 0)
+    rugMan.variable('questionThree', 'If question number 3 answered correctly, set to 1', 0)
+    rugMan.variable('questionFour', 'If question number 4 answered correctly, set to 1', 0)
+    */
+
+    rugMan.createUserAction({
+      name: 'sendMessage',
+      parameters: ['A message from the user to the spirit'],
+      howBotShouldHandle: "Respond to the user's message."
+    })
+
+    rugMan.botAction('respond', 'Respond to the user', { response: 'sample response' }, data => {
+      document.getElementById('conversation').innerHTML += `<p>${data.response}</p> `
+      /*
+      document.getElementById('questionOne').innerText = data.currentVariables.questionOne.value === 1 ? "Tak" : "Nie";
+      document.getElementById('questionTwo').innerText = data.currentVariables.questionTwo.value === 1 ? "Tak" : "Nie";
+      document.getElementById('questionThree').innerText = data.currentVariables.questionThree.value === 1 ? "Tak" : "Nie";
+      document.getElementById('questionFour').innerText = data.currentVariables.questionFour.value === 1 ? "Tak" : "Nie";
+      */
+
+     
+    })
+   
+
+    document.getElementById('input').addEventListener('keyup', function (e) {
+      if (e.keyCode === 13) { // if the user presses enter
+        let userInput = document.getElementById('input').value
+
+        rugMan.sendMessage(userInput)
+
+        document.getElementById('conversation').innerHTML += `<p>${userInput}</p>`
+        document.getElementById('input').value = ''
+      }
+    })
+  </script>
+</body>
+
+</html>

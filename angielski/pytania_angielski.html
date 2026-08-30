@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Język angielski</title>
+    <link rel="stylesheet" href="../style.css" />
+    <style>
+        .settings-card {
+            max-width: 680px;
+            margin: 25px auto;
+            padding: 22px 26px;
+            background: rgba(15, 23, 42, 0.95);
+            border: 2px solid #0284c7;
+            border-radius: 12px;
+            color: #f8fafc;
+            text-align: left;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .settings-card h3 {
+            color: #38bdf8;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.25rem;
+        }
+
+        .settings-row {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin: 15px 0;
+        }
+
+        .settings-field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex: 1;
+            min-width: 220px;
+        }
+
+        .settings-field label {
+            font-size: 0.92rem;
+            color: #cbd5e1;
+            font-weight: 500;
+        }
+
+        select {
+            background: #1e293b;
+            color: #ffffff;
+            border: 1px solid #475569;
+            padding: 9px 12px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            width: 100%;
+        }
+
+        .btn-test {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.92rem;
+            transition: all 0.2s;
+        }
+
+        .btn-test:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.4);
+        }
+
+        .task-list {
+            max-width: 680px;
+            margin: 30px auto;
+            text-align: center;
+        }
+
+        .task-link {
+            display: inline-block;
+            background: rgba(30, 41, 59, 0.9);
+            border: 1px solid #ef4444;
+            color: #f87171 !important;
+            padding: 14px 24px;
+            border-radius: 8px;
+            font-size: 1.15rem;
+            font-weight: bold;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .task-link:hover {
+            background: #ef4444;
+            color: white !important;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+        }
+    </style>
+</head>
+
+<body>
+    <h2>Język angielski</h2>
+    <p>Quizy, gry konwersacyjne i zadania z języka angielskiego</p>
+
+    <!-- ============================================================ -->
+    <!-- PANEL USTAWIEŃ LEKTORA I SZYBKOŚCI CZYTANIA                -->
+    <!-- ============================================================ -->
+    <div class="settings-card">
+        <h3>🎙️ Ustawienia głosu lektora (Angielski)</h3>
+        
+        <p style="font-size: 0.9rem; color: #94a3b8; margin: 5px 0 15px 0; line-height: 1.5;">
+            Wybierz głos i prędkość odczytywania wypowiedzi przez bota AI. Ustawienia są automatycznie zapisywane i działają we wszystkich zadaniach.
+        </p>
+
+        <div class="settings-row">
+            <div class="settings-field" style="flex: 2;">
+                <label for="tts-voice">Lektor (głos angielski):</label>
+                <select id="tts-voice"></select>
+            </div>
+
+            <div class="settings-field" style="flex: 1;">
+                <label for="tts-rate">Szybkość czytania:</label>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <input type="range" id="tts-rate" min="0.5" max="2.0" step="0.1" value="1.0" style="flex: 1; cursor: pointer;">
+                    <span id="tts-rate-val" style="font-family: monospace; font-weight: bold; min-width: 35px; color: #38bdf8;">1.0x</span>
+                </div>
+            </div>
+
+            <div class="settings-field" style="flex: 1;">
+                <label for="tts-przerwa">Przedrostek / Zmienna „przerwa”:</label>
+                <input type="text" id="tts-przerwa" value="a " placeholder='np. "a ", "hmm "' style="background: #1e293b; color: #ffffff; border: 1px solid #475569; padding: 8px 12px; border-radius: 6px; font-family: monospace; font-size: 0.95rem;">
+            </div>
+        </div>
+
+        <div style="margin-top: 15px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+            <button type="button" id="test-tts-btn" class="btn-test" onclick="speakTextEnglish('Hello! How are you? I am your AI partner. Let\'s practice speaking English together!')">
+                🔊 Przetestuj wybrany głos i przerwę
+            </button>
+            <span style="font-size: 0.85rem; color: #4ade80;">💾 Ustawienia zapisują się automatycznie</span>
+            <span style="font-size: 0.82rem; color: #38bdf8; background: rgba(56, 189, 248, 0.12); padding: 4px 10px; border-radius: 6px; border: 1px solid rgba(56, 189, 248, 0.3);">
+                🛡️ Aktywny filtr wybudzania audio Chrome
+            </span>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- LISTA ZADAŃ                                                -->
+    <!-- ============================================================ -->
+    <div class="task-list">
+        <h3 style="color: #38bdf8; font-size: 1.3rem;">Klasa 7</h3>
+        <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px;">
+            <a class="task-link" href="ang_kl7_unit1.html">
+                📘 Unit 1
+            </a>
+            <a class="task-link" href="../na_serwer/pyt/popros_kolege_o_dlugopis.html">
+                🗣️ Pożycz długopis (Bot AI)
+            </a>
+        </div>
+    </div>
+
+    <p style="margin-top: 40px;">
+        <a href="../pomocnicze.html" style="color: #38bdf8; text-decoration: none; margin: 0 10px;">⬅ Powrót do listy quizów</a> | 
+        <a href="../index.html" style="color: #38bdf8; text-decoration: none; margin: 0 10px;">🏠 Strona główna</a>
+    </p>
+
+    <script src="../na_serwer/pyt/czytanie_angielski.js"></script>
+</body>
+
+</html>

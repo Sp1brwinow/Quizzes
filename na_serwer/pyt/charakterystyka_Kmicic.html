@@ -1,0 +1,68 @@
+<html>
+
+<head><script>/* <![CDATA[ */ ringDataLayer = {"context":{"variant":{"accelerator":"ZG93bmxvYWQucG9jenRhLm9uZXQucGw6OnByb2Rfd2l0aF91c2VyX2RhdGFfZG93bmxvYWRlcl9pbl9hd3NfMg=="},"id":{"website":"9481b0b7-7c3d-463b-8f3c-9de5c8289e21"}}}; /* ]]> */</script><script>/* <![CDATA[ */ accConf = {"events":{"endpointPaths":["/a8f4d8cd95e164917035b64b867a45dd"]}}; /* ]]> */</script>
+  <title>Club Noise Generator</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="quiz_style.css" />
+</head>
+
+<body>
+
+  <div class="container">
+    <div id="naglowek">
+      <p>Wklej swoją charakterystykę Hobbita Bilbo Bagginsa, a ja napiszę, co można poprawić </p>      
+      
+      <br><br>
+    </div>
+    
+    <div id="conversation"></div>
+    <textarea id="input"></textarea><br>
+    <button onclick="wyslijText()">Wyślij</button>
+    
+     
+  </div>
+
+  
+
+  <script src="../wizard_orpheus.js"></script>
+  <script>
+    // If the user lends you a pencil, increase current degree of belief by 35. If the user offers to clean your apartment, increase current degree of belief by another 35. If the user offers to buy chocolate, increase current degree of belief by another 35.
+    let poczatek_pytania = ''
+   // poczatek_pytania = ' Create ten mathematical problems of addition, subtraction or multiplication of three numbers in range from -100 to 100. '
+    poczatek_pytania = ` Ask to write a characterization of the Kmicic. `
+
+    let wspolny_koniec_pytania = `  Check the user's answer. Check if the user's answer contains the following elements: 1. Introduction - a short introduction to the character (name, surname, where he comes from, who he is). 2. Appearance - a description of physical features, e.g. height, body type, hairstyle, clothing. 3. Character traits - a description of the personality, e.g. courage, intelligence, laziness, sense of humor. 4. Abilities and interests - a description of the character's skills and passions. 6. Advantages and disadvantages - positive and negative character traits. 7. Summary - an assessment of the character and his role in the story. 50. Internal transformation: from a brawler to a citizen who respects the law. 51. Transformation from a violent man kidnapping Oleńka to a mature man trying to win her favor. 52. Transformation from a man supporting traitors to an ardent patriot. 53. Transformation from a person who respects personal matters more to a person who is able to put public interest above private interests. If any element is missing, write about it to the user. If any elements of the characterization are incorrect, write about it as well. The user will write the characterization in Polish. Translate your answers to Polish. `
+    
+    let rugMan = new WizardOrpheus('GY38RUSG7MITWR1ZX4O6J8MCKIP8FKGGGQM7U7CZO17CBEH1EIB183KLQPVUJ975',
+       poczatek_pytania + ' ' + wspolny_koniec_pytania)
+
+    
+
+
+    rugMan.createUserAction({
+      name: 'sendMessage',
+      parameters: ['A message from the user to the friend'],
+      howBotShouldHandle: "Respond to the user's message."
+    })
+
+    rugMan.botAction('respond', 'Respond to the user', { response: 'sample response' }, data => {
+      document.getElementById('conversation').innerHTML += `<p>${data.response}</p> `
+       
+      }      
+    )          
+    
+
+    async function wyslijText() {
+      let userInput = document.getElementById('input').value
+
+      rugMan.sendMessage(userInput)
+
+      document.getElementById('conversation').innerHTML += `<p>${userInput}</p>`
+      document.getElementById('input').value = ''                                     
+
+    }
+
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fraktalne Światło (SSS) i Proceduralne Lochy Roguelike</title>
+    <link rel="stylesheet" href="../style.css" />
+    <style>
+        body {
+            margin: 0;
+            background-color: #030712;
+            color: #f8fafc;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            text-align: center;
+        }
+
+        .main-container {
+            max-width: 1120px;
+            margin: 0 auto;
+            padding: 15px 20px 40px 20px;
+        }
+
+        h2 {
+            color: #ec4899;
+            margin-bottom: 5px;
+            font-size: 1.8rem;
+            text-shadow: 0 0 20px rgba(236, 72, 153, 0.5);
+        }
+
+        .info-card {
+            background: rgba(15, 23, 42, 0.92);
+            border: 1px solid #ec4899;
+            border-radius: 12px;
+            padding: 16px 22px;
+            margin: 15px auto 20px auto;
+            text-align: left;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #cbd5e1;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .info-card strong {
+            color: #f472b6;
+        }
+
+        .controls-panel {
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid #475569;
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin-bottom: 18px;
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .btn-mode {
+            background: #1e293b;
+            color: #f8fafc;
+            border: 2px solid #475569;
+            padding: 9px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.92rem;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-mode:hover {
+            border-color: #ec4899;
+            background: #334155;
+            transform: translateY(-1px);
+        }
+
+        .btn-mode.active {
+            background: linear-gradient(135deg, #db2777 0%, #9d174d 100%);
+            border-color: #f472b6;
+            color: #ffffff;
+            box-shadow: 0 0 15px rgba(236, 72, 153, 0.5);
+        }
+
+        .sub-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+            background: #1e293b;
+            padding: 6px 14px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            font-size: 0.88rem;
+            color: #cbd5e1;
+        }
+
+        canvas {
+            border-radius: 12px;
+            border: 2px solid #ec4899;
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.9);
+            cursor: pointer;
+            background: #000;
+            display: block;
+            margin: 0 auto;
+            max-width: 100%;
+        }
+
+        .hint {
+            font-size: 0.88rem;
+            color: #94a3b8;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="main-container">
+        <h2>✨ Fraktalne Rozpraszanie Światła (SSS) & Proceduralne Lochy</h2>
+        <p style="color: #94a3b8; margin-top: -5px;">Zaawansowane techniki renderowania skóry, wosku i liści oraz generowanie nieskończonych map w grach</p>
+
+        <div class="info-card" id="desc-box">
+            <strong>💡 Głębia powierzchni (Sub-surface Scattering - SSS):</strong> Gdy światło wpada w skórę, wosk czy liść, nie odbija się jak od lustra. Wnika w głąb i odbija się miliony razy od mikroskopijnych cząstek o geometrii fraktalnej, po czym wydostaje się z miękkim blaskiem (np. czerwone prześwietlenie uszu czy palców pod słońce).
+        </div>
+
+        <!-- Panel sterowania -->
+        <div class="controls-panel">
+            <button type="button" class="btn-mode active" id="btn-sss" onclick="setMainMode('sss')">💡 Rozpraszanie Podpowierzchniowe (SSS)</button>
+            <button type="button" class="btn-mode" id="btn-dungeon" onclick="setMainMode('dungeon')">🏰 Nieskończone Lochy i Jaskinie (Roguelike)</button>
+
+            <!-- Podopcje dla SSS -->
+            <div id="sss-controls" class="sub-controls">
+                <label for="material-select">Materiał: </label>
+                <select id="material-select" onchange="changeMaterial(this.value)" style="background: #0f172a; color: white; border: 1px solid #475569; padding: 4px 8px; border-radius: 6px;">
+                    <option value="skin">🧑 Ludzka skóra (z krwioobiegiem)</option>
+                    <option value="wax">🕯️ Świeca i wosk</option>
+                    <option value="leaf">🍃 Liść (zielony z żyłkami)</option>
+                    <option value="jade">🟢 Jadeit / Marmur</option>
+                </select>
+
+                <label for="depth-slider" style="margin-left: 8px;">Głębokość SSS:</label>
+                <input type="range" id="depth-slider" min="10" max="90" value="45" oninput="sssDepth = this.value">
+            </div>
+
+            <!-- Podopcje dla Lochów -->
+            <div id="dungeon-controls" class="sub-controls" style="display: none;">
+                <label for="dungeon-algo">Algorytm: </label>
+                <select id="dungeon-algo" onchange="changeDungeonAlgo(this.value)" style="background: #0f172a; color: white; border: 1px solid #475569; padding: 4px 8px; border-radius: 6px;">
+                    <option value="cellular">🕳️ Jaskinie (Automaty komórkowe)</option>
+                    <option value="bsp">🏛️ Lochy i pokoje (Fraktalny podział BSP)</option>
+                    <option value="maze">🌀 Labirynt rekurencyjny</option>
+                </select>
+                <button type="button" class="btn-mode" onclick="generateNewDungeon()" style="background: #059669; border-color: #10b981; padding: 5px 12px;">🎲 Nowy loch (Seed)</button>
+                <button type="button" class="btn-mode" onclick="stepCellularAutomata()" id="btn-step" style="background: #0284c7; border-color: #38bdf8; padding: 5px 12px;">▶ Krok ewolucji</button>
+            </div>
+
+            <button type="button" id="btn-audio" class="btn-mode" onclick="toggleAudio()" style="background: #334155; border-color: #64748b;">🔊 Nastrojowa Melodia</button>
+        </div>
+
+        <!-- Główny Canvas -->
+        <canvas id="viewCanvas" width="1000" height="560"></canvas>
+        <div class="hint" id="action-hint">💡 <em>Wskazówka: Przesuwaj myszką po ekranie, aby sterować źródłem światła i obserwować wnikanie pod powierzchnię!</em></div>
+
+        <p style="margin-top: 35px;">
+            <a href="../rozrywka.html" style="color: #38bdf8; text-decoration: none; margin: 0 10px; font-weight: bold;">⬅ Powrót do Rozrywki</a> | 
+            <a href="efekty_specjalne.html" style="color: #38bdf8; text-decoration: none; margin: 0 10px;">💥 Ogień, Pioruny i Pęknięcia</a> | 
+            <a href="krajobrazy.html" style="color: #38bdf8; text-decoration: none; margin: 0 10px;">🏔️ Krajobrazy i Góry</a> | 
+            <a href="../index.html" style="color: #38bdf8; text-decoration: none; margin: 0 10px;">Strona główna</a>
+        </p>
+    </div>
+
+    <script>
+        // =======================================================
+        // INICJALIZACJA I ZARZĄDZANIE MODUŁAMI
+        // =======================================================
+        const canvas = document.getElementById('viewCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let mainMode = 'sss'; // 'sss' lub 'dungeon'
+        let sssMaterial = 'skin';
+        let sssDepth = 45;
+        let mouseX = canvas.width * 0.35;
+        let mouseY = canvas.height * 0.45;
+        let isMouseDown = false;
+        let animTime = 0;
+
+        // =======================================================
+        // 1. MODUŁ SUBSURFACE SCATTERING (SSS) - FRAKTALNE ŚWIATŁO
+        // =======================================================
+        const materials = {
+            skin: {
+                surfaceColor: [245, 195, 165],
+                scatterColor: [239, 68, 68], // Krew podskórna (czerwony)
+                specular: 'rgba(255, 255, 255, 0.4)',
+                title: "🧑 Ludzka skóra (Rozpraszanie światła przez naczynia krwionośne)"
+            },
+            wax: {
+                surfaceColor: [254, 240, 138],
+                scatterColor: [245, 158, 11], // Ciepły bursztyn
+                specular: 'rgba(255, 255, 230, 0.7)',
+                title: "🕯️ Wosk świecy (Głębokie przenikanie przez krystaliczną strukturę wosku)"
+            },
+            leaf: {
+                surfaceColor: [34, 197, 94],
+                scatterColor: [234, 179, 8], // Żółto-zielony chlorofil
+                specular: 'rgba(200, 255, 200, 0.5)',
+                title: "🍃 Liść rośliny (Fraktalne żyłki i tkanka miękiszowa widoczna pod światło)"
+            },
+            jade: {
+                surfaceColor: [20, 184, 166],
+                scatterColor: [13, 148, 136],
+                specular: 'rgba(240, 255, 250, 0.8)',
+                title: "🟢 Jadeit / Marmur (Mleczno-mineralne rozpraszanie fotonów)"
+            }
+        };
+
+        function drawSSSObject() {
+            ctx.fillStyle = '#090d16';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            const mat = materials[sssMaterial];
+            const objX = canvas.width * 0.55;
+            const objY = canvas.height * 0.5;
+            const radius = 160;
+
+            // Pozycja światła
+            const lightX = mouseX;
+            const lightY = mouseY;
+
+            // 1. Rysowanie źródła światła (Żarówka / Latarka)
+            const lightGlow = ctx.createRadialGradient(lightX, lightY, 5, lightX, lightY, 180);
+            lightGlow.addColorStop(0, 'rgba(255, 255, 230, 1)');
+            lightGlow.addColorStop(0.3, 'rgba(254, 240, 138, 0.4)');
+            lightGlow.addColorStop(1, 'rgba(254, 240, 138, 0)');
+            ctx.fillStyle = lightGlow;
+            ctx.beginPath();
+            ctx.arc(lightX, lightY, 180, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 2. Fraktalne promienie światła wnikające pod powierzchnię
+            const numRays = 18;
+            for (let i = 0; i < numRays; i++) {
+                const ang = (i / numRays) * Math.PI * 2 + animTime * 0.2;
+                const rx = lightX + Math.cos(ang) * 90;
+                const ry = lightY + Math.sin(ang) * 90;
+
+                ctx.beginPath();
+                ctx.moveTo(lightX, lightY);
+                ctx.lineTo(rx, ry);
+                ctx.strokeStyle = 'rgba(254, 240, 138, 0.15)';
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+            }
+
+            // 3. Renderowanie bryły z Subsurface Scattering (BSSRDF dipole approximation)
+            const distToLight = Math.hypot(lightX - objX, lightY - objY);
+            const angleToLight = Math.atan2(lightY - objY, lightX - objX);
+
+            // Wewnętrzne rozproszenie podpowierzchniowe (SSS Bleed)
+            const sssGrad = ctx.createRadialGradient(
+                objX + Math.cos(angleToLight) * 60,
+                objY + Math.sin(angleToLight) * 60,
+                20,
+                objX,
+                objY,
+                radius + sssDepth * 0.8
+            );
+
+            const [sr, sg, sb] = mat.scatterColor;
+            const [br, bg, bb] = mat.surfaceColor;
+
+            // Prześwietlenie krawędzi (Subsurface glow)
+            sssGrad.addColorStop(0, `rgba(${sr}, ${sg}, ${sb}, 0.95)`);
+            sssGrad.addColorStop(0.45, `rgba(${Math.floor((sr + br) / 2)}, ${Math.floor((sg + bg) / 2)}, ${Math.floor((sb + bb) / 2)}, 0.8)`);
+            sssGrad.addColorStop(0.85, `rgba(${br}, ${bg}, ${bb}, 0.95)`);
+            sssGrad.addColorStop(1, `rgba(15, 23, 42, 0.9)`);
+
+            ctx.beginPath();
+            if (sssMaterial === 'leaf') {
+                // Kształt liścia
+                ctx.ellipse(objX, objY, radius * 0.7, radius * 1.2, 0.2, 0, Math.PI * 2);
+            } else {
+                // Kula / profil biologiczny
+                ctx.arc(objX, objY, radius, 0, Math.PI * 2);
+            }
+            ctx.fillStyle = sssGrad;
+            ctx.fill();
+
+            // 4. Fraktalne naczynia krwionośne / żyłki liścia widoczne pod światłem
+            if (sssMaterial === 'skin' || sssMaterial === 'leaf') {
+                drawSubsurfaceVeins(objX, objY, radius, lightX, lightY, sssMaterial);
+            }
+
+            // 5. Odbłysk zwierciadlany (Specular highlight) na powierzchni
+            const specX = objX + Math.cos(angleToLight) * (radius * 0.65);
+            const specY = objY + Math.sin(angleToLight) * (radius * 0.65);
+            const specGrad = ctx.createRadialGradient(specX, specY, 2, specX, specY, 45);
+            specGrad.addColorStop(0, mat.specular);
+            specGrad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+
+            ctx.beginPath();
+            ctx.arc(specX, specY, 45, 0, Math.PI * 2);
+            ctx.fillStyle = specGrad;
+            ctx.fill();
+
+            // Etykieta informacyjna
+            ctx.fillStyle = '#f8fafc';
+            ctx.font = 'bold 16px Segoe UI';
+            ctx.fillText(mat.title, 30, 40);
+
+            ctx.font = '13px Segoe UI';
+            ctx.fillStyle = '#94a3b8';
+            ctx.fillText('Odległość światła: ' + Math.round(distToLight) + 'px | Głębokość penetracji fotonów: ' + sssDepth + 'mm', 30, 65);
+        }
+
+        // Rekurencyjne rysowanie żyłek / naczyń krwionośnych w SSS
+        function drawSubsurfaceVeins(ox, oy, rad, lx, ly, type) {
+            ctx.save();
+            ctx.beginPath();
+            if (type === 'leaf') {
+                ctx.ellipse(ox, oy, rad * 0.7, rad * 1.2, 0.2, 0, Math.PI * 2);
+            } else {
+                ctx.arc(ox, oy, rad, 0, Math.PI * 2);
+            }
+            ctx.clip();
+
+            function branchVein(x, y, angle, length, depth) {
+                if (depth > 5 || length < 4) return;
+                const x2 = x + Math.cos(angle) * length;
+                const y2 = y + Math.sin(angle) * length;
+
+                // Odległość od światła wzmacnia widoczność żyłek
+                const dist = Math.hypot(lx - x2, ly - y2);
+                const glow = Math.max(0.1, 1 - dist / 350);
+
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+                ctx.lineTo(x2, y2);
+                ctx.lineWidth = Math.max(1, (6 - depth) * 1.2);
+                ctx.strokeStyle = type === 'leaf' ? `rgba(254, 240, 138, ${glow * 0.8})` : `rgba(185, 28, 28, ${glow * 0.75})`;
+                ctx.stroke();
+
+                branchVein(x2, y2, angle + 0.35, length * 0.72, depth + 1);
+                branchVein(x2, y2, angle - 0.35, length * 0.72, depth + 1);
+            }
+
+            if (type === 'leaf') {
+                // Główny nerw liścia
+                branchVein(ox, oy + rad * 0.9, -Math.PI / 2 + 0.1, 65, 0);
+            } else {
+                // Naczynia krwionośne pod skórą
+                branchVein(ox - 60, oy - 20, 0.2, 50, 0);
+                branchVein(ox + 10, oy + 40, -1.1, 45, 0);
+            }
+
+            ctx.restore();
+        }
+
+        // =======================================================
+        // 2. MODUŁ PROCEDURALNE LOCHY I LABIRYNTY ROGUELIKE
+        // =======================================================
+        const gridCols = 50;
+        const gridRows = 28;
+        let dungeonGrid = [];
+        let dungeonAlgo = 'cellular';
+        let playerPos = { x: 5, y: 5 };
+
+        function initDungeon() {
+            dungeonGrid = [];
+            for (let r = 0; r < gridRows; r++) {
+                dungeonGrid[r] = [];
+                for (let c = 0; c < gridCols; c++) {
+                    // Początkowy szum 45% ścian
+                    dungeonGrid[r][c] = (Math.random() < 0.46 || r === 0 || c === 0 || r === gridRows - 1 || c === gridCols - 1) ? 1 : 0;
+                }
+            }
+        }
+
+        // Automaty komórkowe (Cellular Automata - Cave Generation B5678/S45678)
+        function stepCellularAutomata() {
+            const newGrid = [];
+            for (let r = 0; r < gridRows; r++) {
+                newGrid[r] = [];
+                for (let c = 0; c < gridCols; c++) {
+                    if (r === 0 || c === 0 || r === gridRows - 1 || c === gridCols - 1) {
+                        newGrid[r][c] = 1;
+                        continue;
+                    }
+
+                    // Liczenie sąsiadujących ścian w promieniu 1
+                    let wallCount = 0;
+                    for (let dr = -1; dr <= 1; dr++) {
+                        for (let dc = -1; dc <= 1; dc++) {
+                            if (dr === 0 && dc === 0) continue;
+                            if (dungeonGrid[r + dr][c + dc] === 1) wallCount++;
+                        }
+                    }
+
+                    // Reguła ewolucji jaskini
+                    newGrid[r][c] = (wallCount >= 5) ? 1 : 0;
+                }
+            }
+            dungeonGrid = newGrid;
+            findFreePlayerSpot();
+        }
+
+        // Fraktalny podział przestrzeni (Binary Space Partitioning - BSP)
+        function generateBSPDungeon() {
+            initDungeon();
+            // Wypełnij ścianami
+            for (let r = 0; r < gridRows; r++) {
+                for (let c = 0; c < gridCols; c++) {
+                    dungeonGrid[r][c] = 1;
+                }
+            }
+
+            function splitArea(x, y, w, h, depth) {
+                if (depth > 4 || (w < 10 && h < 8)) {
+                    // Utwórz pokój w tym segmencie
+                    const roomW = Math.floor(Math.random() * (w - 4)) + 4;
+                    const roomH = Math.floor(Math.random() * (h - 4)) + 4;
+                    const roomX = x + Math.floor((w - roomW) / 2);
+                    const roomY = y + Math.floor((h - roomH) / 2);
+
+                    for (let r = roomY; r < roomY + roomH; r++) {
+                        for (let c = roomX; c < roomX + roomW; c++) {
+                            if (r > 0 && c > 0 && r < gridRows - 1 && c < gridCols - 1) {
+                                dungeonGrid[r][c] = 0;
+                            }
+                        }
+                    }
+                    return { cx: Math.floor(roomX + roomW / 2), cy: Math.floor(roomY + roomH / 2) };
+                }
+
+                const splitHoriz = w < h || (w === h && Math.random() < 0.5);
+                let p1, p2;
+
+                if (splitHoriz) {
+                    const splitY = Math.floor(h / 2);
+                    p1 = splitArea(x, y, w, splitY, depth + 1);
+                    p2 = splitArea(x, y + splitY, w, h - splitY, depth + 1);
+                } else {
+                    const splitX = Math.floor(w / 2);
+                    p1 = splitArea(x, y, splitX, h, depth + 1);
+                    p2 = splitArea(x + splitX, y, w - splitX, h, depth + 1);
+                }
+
+                // Połącz pokoje korytarzem
+                if (p1 && p2) {
+                    for (let c = Math.min(p1.cx, p2.cx); c <= Math.max(p1.cx, p2.cx); c++) {
+                        if (p1.cy > 0 && p1.cy < gridRows - 1 && c > 0 && c < gridCols - 1) dungeonGrid[p1.cy][c] = 0;
+                    }
+                    for (let r = Math.min(p1.cy, p2.cy); r <= Math.max(p1.cy, p2.cy); r++) {
+                        if (r > 0 && r < gridRows - 1 && p2.cx > 0 && p2.cx < gridCols - 1) dungeonGrid[r][p2.cx] = 0;
+                    }
+                }
+                return p1 || p2;
+            }
+
+            splitArea(1, 1, gridCols - 2, gridRows - 2, 0);
+            findFreePlayerSpot();
+        }
+
+        function findFreePlayerSpot() {
+            for (let r = 2; r < gridRows - 2; r++) {
+                for (let c = 2; c < gridCols - 2; c++) {
+                    if (dungeonGrid[r][c] === 0) {
+                        playerPos = { x: c, y: r };
+                        return;
+                    }
+                }
+            }
+        }
+
+        function generateNewDungeon() {
+            if (dungeonAlgo === 'cellular') {
+                initDungeon();
+                for (let i = 0; i < 4; i++) stepCellularAutomata();
+            } else if (dungeonAlgo === 'bsp') {
+                generateBSPDungeon();
+            } else { // maze
+                initDungeon();
+                for (let r = 0; r < gridRows; r++) for (let c = 0; c < gridCols; c++) dungeonGrid[r][c] = 1;
+                // Prosty rekurencyjny maze
+                for (let r = 1; r < gridRows - 1; r += 2) {
+                    for (let c = 1; c < gridCols - 1; c += 2) {
+                        dungeonGrid[r][c] = 0;
+                        if (Math.random() < 0.5 && r + 1 < gridRows - 1) dungeonGrid[r + 1][c] = 0;
+                        else if (c + 1 < gridCols - 1) dungeonGrid[r][c + 1] = 0;
+                    }
+                }
+                findFreePlayerSpot();
+            }
+        }
+
+        function drawDungeon() {
+            ctx.fillStyle = '#030712';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            const cellW = canvas.width / gridCols;
+            const cellH = canvas.height / gridRows;
+
+            for (let r = 0; r < gridRows; r++) {
+                for (let c = 0; c < gridCols; c++) {
+                    const x = c * cellW;
+                    const y = r * cellH;
+
+                    // Odległość od gracza / światła pochodni
+                    const distToPlayer = Math.hypot(c - playerPos.x, r - playerPos.y);
+                    const isVisible = distToPlayer < 9;
+                    const lightIntensity = Math.max(0.15, 1 - distToPlayer / 9);
+
+                    if (!isVisible) {
+                        ctx.fillStyle = '#050811';
+                        ctx.fillRect(x, y, cellW, cellH);
+                        continue;
+                    }
+
+                    if (dungeonGrid[r][c] === 1) {
+                        // Ściana
+                        ctx.fillStyle = `rgb(${Math.floor(30 * lightIntensity)}, ${Math.floor(41 * lightIntensity)}, ${Math.floor(59 * lightIntensity)})`;
+                        ctx.fillRect(x, y, cellW, cellH);
+                        ctx.strokeStyle = `rgba(51, 65, 85, ${lightIntensity * 0.4})`;
+                        ctx.strokeRect(x, y, cellW, cellH);
+                    } else {
+                        // Podłoga lochu
+                        ctx.fillStyle = `rgb(${Math.floor(15 * lightIntensity + 20)}, ${Math.floor(23 * lightIntensity + 25)}, ${Math.floor(42 * lightIntensity + 30)})`;
+                        ctx.fillRect(x, y, cellW, cellH);
+                    }
+                }
+            }
+
+            // Gracz (Bohater z pochodnią)
+            const px = playerPos.x * cellW + cellW / 2;
+            const py = playerPos.y * cellH + cellH / 2;
+
+            // Poświata pochodni
+            const torchGrad = ctx.createRadialGradient(px, py, 4, px, py, cellW * 7);
+            torchGrad.addColorStop(0, 'rgba(251, 191, 36, 0.4)');
+            torchGrad.addColorStop(1, 'rgba(251, 191, 36, 0)');
+            ctx.fillStyle = torchGrad;
+            ctx.beginPath();
+            ctx.arc(px, py, cellW * 7, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Awatar gracza
+            ctx.beginPath();
+            ctx.arc(px, py, cellW * 0.4, 0, Math.PI * 2);
+            ctx.fillStyle = '#38bdf8';
+            ctx.shadowColor = '#38bdf8';
+            ctx.shadowBlur = 10;
+            ctx.fill();
+            ctx.shadowBlur = 0;
+
+            // Etykieta
+            ctx.fillStyle = '#f8fafc';
+            ctx.font = 'bold 15px Segoe UI';
+            ctx.fillText('🏰 Proceduralny Loch Roguelike | Użyj Strzałek / WASD lub klikaj kafelki, aby eksplorować!', 25, 30);
+        }
+
+        // =======================================================
+        // GŁÓWNA PĘTLA RENDERUJĄCA
+        // =======================================================
+        function mainLoop() {
+            animTime += 0.025;
+
+            if (mainMode === 'sss') {
+                drawSSSObject();
+            } else {
+                drawDungeon();
+            }
+
+            requestAnimationFrame(mainLoop);
+        }
+
+        // =======================================================
+        // OBSŁUGA STEROWANIA I MYSZY
+        // =======================================================
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            mouseX = (e.clientX - rect.left) * (canvas.width / rect.width);
+            mouseY = (e.clientY - rect.top) * (canvas.height / rect.height);
+        });
+
+        canvas.addEventListener('mousedown', (e) => {
+            if (mainMode === 'dungeon') {
+                const rect = canvas.getBoundingClientRect();
+                const clickX = (e.clientX - rect.left) * (canvas.width / rect.width);
+                const clickY = (e.clientY - rect.top) * (canvas.height / rect.height);
+                const col = Math.floor(clickX / (canvas.width / gridCols));
+                const row = Math.floor(clickY / (canvas.height / gridRows));
+
+                if (row >= 0 && row < gridRows && col >= 0 && col < gridCols && dungeonGrid[row][col] === 0) {
+                    playerPos = { x: col, y: row };
+                }
+            }
+        });
+
+        // Klawiatura dla gracza w lochu
+        window.addEventListener('keydown', (e) => {
+            if (mainMode !== 'dungeon') return;
+            let nx = playerPos.x;
+            let ny = playerPos.y;
+
+            if (e.key === 'ArrowUp' || e.key === 'w') ny--;
+            if (e.key === 'ArrowDown' || e.key === 's') ny++;
+            if (e.key === 'ArrowLeft' || e.key === 'a') nx--;
+            if (e.key === 'ArrowRight' || e.key === 'd') nx++;
+
+            if (ny >= 0 && ny < gridRows && nx >= 0 && nx < gridCols && dungeonGrid[ny][nx] === 0) {
+                playerPos = { x: nx, y: ny };
+            }
+        });
+
+        function setMainMode(mode) {
+            mainMode = mode;
+            ['sss', 'dungeon'].forEach(m => {
+                document.getElementById('btn-' + m).classList.remove('active');
+            });
+            document.getElementById('btn-' + mode).classList.add('active');
+
+            if (mode === 'sss') {
+                document.getElementById('sss-controls').style.display = 'flex';
+                document.getElementById('dungeon-controls').style.display = 'none';
+                document.getElementById('desc-box').innerHTML = '<strong>💡 Głębia powierzchni (Sub-surface Scattering - SSS):</strong> Gdy światło wpada w skórę, wosk czy liść, nie odbija się jak od lustra. Wnika w głąb i odbija się miliony razy od mikroskopijnych cząstek o geometrii fraktalnej, po czym wydostaje się z miękkim blaskiem (np. czerwone prześwietlenie uszu czy palców pod słońce).';
+                document.getElementById('action-hint').innerHTML = '💡 <em>Wskazówka: Przesuwaj myszką po ekranie, aby sterować źródłem światła i obserwować wnikanie pod powierzchnię!</em>';
+            } else {
+                document.getElementById('sss-controls').style.display = 'none';
+                document.getElementById('dungeon-controls').style.display = 'flex';
+                document.getElementById('desc-box').innerHTML = '<strong>🏰 Nieskończone lochy i labirynty Roguelike:</strong> Zamiast projektować setki poziomów ręcznie, silniki gier stosują podział fraktalny (Binary Space Partitioning) oraz automaty komórkowe wygładzające jaskinie. Każda rozgrywka oferuje unikalny, nieskończony świat.';
+                document.getElementById('action-hint').innerHTML = '💡 <em>Wskazówka: Poruszaj się bohaterem za pomocą Strzałek / WASD lub klikaj myszką na mapie!</em>';
+                generateNewDungeon();
+            }
+        }
+
+        function changeMaterial(val) {
+            sssMaterial = val;
+        }
+
+        function changeDungeonAlgo(val) {
+            dungeonAlgo = val;
+            const stepBtn = document.getElementById('btn-step');
+            if (val === 'cellular') {
+                stepBtn.style.display = 'inline-block';
+            } else {
+                stepBtn.style.display = 'none';
+            }
+            generateNewDungeon();
+        }
+
+        // =======================================================
+        // GENERATOR NASTROJOWEJ MELODII (WEB AUDIO API)
+        // =======================================================
+        class DungeonLightAtmosphericMusic {
+            constructor() {
+                this.audioCtx = null;
+                this.isPlaying = false;
+                this.masterGain = null;
+                this.filter = null;
+                this.droneOscs = [];
+                this.arpTimer = null;
+            }
+
+            init() {
+                if (this.audioCtx) return;
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                this.audioCtx = new AudioContext();
+
+                this.masterGain = this.audioCtx.createGain();
+                this.masterGain.gain.setValueAtTime(0.22, this.audioCtx.currentTime);
+
+                this.filter = this.audioCtx.createBiquadFilter();
+                this.filter.type = 'lowpass';
+                this.filter.frequency.setValueAtTime(850, this.audioCtx.currentTime);
+
+                // Przestrzenny reverb delay
+                const delay = this.audioCtx.createDelay();
+                delay.delayTime.setValueAtTime(0.42, this.audioCtx.currentTime);
+                const delayGain = this.audioCtx.createGain();
+                delayGain.gain.setValueAtTime(0.36, this.audioCtx.currentTime);
+
+                delay.connect(delayGain);
+                delayGain.connect(delay);
+                delayGain.connect(this.masterGain);
+
+                this.filter.connect(this.masterGain);
+                this.filter.connect(delay);
+                this.masterGain.connect(this.audioCtx.destination);
+            }
+
+            start() {
+                this.init();
+                if (this.audioCtx.state === 'suspended') {
+                    this.audioCtx.resume();
+                }
+                if (this.isPlaying) return;
+                this.isPlaying = true;
+
+                this.masterGain.gain.cancelScheduledValues(this.audioCtx.currentTime);
+                this.masterGain.gain.setValueAtTime(0.001, this.audioCtx.currentTime);
+                this.masterGain.gain.exponentialRampToValueAtTime(0.22, this.audioCtx.currentTime + 1.0);
+
+                // Ciepłe akordy A-moll mistyczne (A2, E3, A3, C4)
+                const chordFrequencies = [110.00, 164.81, 220.00, 261.63];
+                this.droneOscs = chordFrequencies.map((freq, idx) => {
+                    const osc = this.audioCtx.createOscillator();
+                    const gain = this.audioCtx.createGain();
+
+                    osc.type = idx % 2 === 0 ? 'sine' : 'triangle';
+                    osc.frequency.setValueAtTime(freq, this.audioCtx.currentTime);
+
+                    const lfo = this.audioCtx.createOscillator();
+                    const lfoGain = this.audioCtx.createGain();
+                    lfo.frequency.setValueAtTime(0.07 + idx * 0.03, this.audioCtx.currentTime);
+                    lfoGain.gain.setValueAtTime(1.5, this.audioCtx.currentTime);
+                    lfo.connect(lfoGain);
+                    lfoGain.connect(osc.frequency);
+                    lfo.start();
+
+                    gain.gain.setValueAtTime(0.05, this.audioCtx.currentTime);
+                    osc.connect(gain);
+                    gain.connect(this.filter);
+                    osc.start();
+                    return { osc, gain, lfo };
+                });
+
+                // Spokojna melodia dzwonków i harfy
+                const mysticScale = [220.00, 261.63, 329.63, 392.00, 440.00, 523.25, 659.25]; // A minor pentatonic
+                const playNote = () => {
+                    if (!this.isPlaying) return;
+
+                    const freq = mysticScale[Math.floor(Math.random() * mysticScale.length)];
+                    const osc = this.audioCtx.createOscillator();
+                    const gain = this.audioCtx.createGain();
+
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, this.audioCtx.currentTime);
+
+                    const now = this.audioCtx.currentTime;
+                    gain.gain.setValueAtTime(0.0001, now);
+                    gain.gain.exponentialRampToValueAtTime(0.10, now + 0.04);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, now + 2.1);
+
+                    osc.connect(gain);
+                    gain.connect(this.filter);
+
+                    osc.start(now);
+                    osc.stop(now + 2.2);
+
+                    const nextDelay = 380 + Math.random() * 550;
+                    this.arpTimer = setTimeout(playNote, nextDelay);
+                };
+
+                playNote();
+            }
+
+            stop() {
+                if (!this.isPlaying || !this.audioCtx) return;
+                this.isPlaying = false;
+                if (this.arpTimer) clearTimeout(this.arpTimer);
+
+                if (this.masterGain) {
+                    this.masterGain.gain.cancelScheduledValues(this.audioCtx.currentTime);
+                    this.masterGain.gain.setValueAtTime(this.masterGain.gain.value, this.audioCtx.currentTime);
+                    this.masterGain.gain.exponentialRampToValueAtTime(0.0001, this.audioCtx.currentTime + 0.5);
+                }
+
+                setTimeout(() => {
+                    if (!this.isPlaying && this.droneOscs.length) {
+                        this.droneOscs.forEach(({ osc, lfo }) => {
+                            try { osc.stop(); lfo.stop(); } catch (e) {}
+                        });
+                        this.droneOscs = [];
+                    }
+                }, 550);
+            }
+
+            toggle() {
+                if (this.isPlaying) {
+                    this.stop();
+                    return false;
+                } else {
+                    this.start();
+                    return true;
+                }
+            }
+        }
+
+        const dungeonMusic = new DungeonLightAtmosphericMusic();
+
+        function toggleAudio() {
+            const isPlaying = dungeonMusic.toggle();
+            const btn = document.getElementById('btn-audio');
+            btn.innerText = isPlaying ? '🔇 Wycisz Melodię' : '🔊 Nastrojowa Melodia';
+            btn.style.background = isPlaying ? '#db2777' : '#334155';
+        }
+
+        // Start
+        initDungeon();
+        for (let i = 0; i < 4; i++) stepCellularAutomata();
+        mainLoop();
+    </script>
+    <script src="nagrywanie_wideo.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fraktale – HACK CLUB</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+        :root {
+            --bg-dark: #07152b;
+            --card-bg: rgba(14, 30, 56, 0.75);
+            --card-border: rgba(56, 189, 248, 0.25);
+            --primary: #38bdf8;
+            --accent-gold: #fbbf24;
+            --accent-purple: #c084fc;
+            --accent-green: #34d399;
+            --accent-orange: #fb923c;
+            --accent-pink: #f472b6;
+            --accent-cyan: #22d3ee;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(180deg, #07152b 0%, #0d2852 45%, #184e77 100%);
+            color: #ffffff;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            padding: 30px 20px 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        #snow-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1050px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 26px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Belka nawigacji */
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .nav-btn {
+            background: rgba(14, 30, 56, 0.8);
+            border: 1px solid rgba(125, 211, 252, 0.4);
+            color: #7dd3fc;
+            text-decoration: none;
+            padding: 8px 18px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(8px);
+        }
+
+        .nav-btn:hover {
+            color: #ffffff;
+            border-color: #38bdf8;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.5);
+            transform: translateY(-2px);
+            background: rgba(20, 45, 85, 0.9);
+        }
+
+        /* Nagłówek */
+        .header {
+            text-align: center;
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.8) 100%);
+            border: 1px solid rgba(251, 191, 36, 0.35);
+            padding: 28px 24px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6), 0 0 25px rgba(251, 191, 36, 0.15);
+            backdrop-filter: blur(12px);
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(251, 191, 36, 0.15);
+            border: 1px solid #fbbf24;
+            color: #fde68a;
+            font-size: 0.85rem;
+            font-weight: 700;
+            padding: 5px 14px;
+            border-radius: 9999px;
+            margin-bottom: 12px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 0%, #fbbf24 50%, #f59e0b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #cbd5e1;
+            font-size: 1.05rem;
+            max-width: 750px;
+            margin: 0 auto;
+            line-height: 1.5;
+        }
+
+        /* Sekcje kategorii */
+        .section-title {
+            color: #bae6fd;
+            font-size: 1.45rem;
+            margin-top: 10px;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-shadow: 0 0 12px rgba(186, 230, 253, 0.4);
+        }
+
+        /* Siatka kart fraktali */
+        .links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 18px;
+        }
+
+        .link-card {
+            background: var(--card-bg);
+            border: 2px solid rgba(251, 191, 36, 0.3);
+            border-radius: 14px;
+            padding: 20px;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+        }
+
+        .link-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: currentColor;
+            opacity: 0.8;
+            transition: height 0.3s;
+        }
+
+        .link-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6), 0 0 20px currentColor;
+        }
+
+        .link-card:hover::before {
+            height: 5px;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .card-icon {
+            font-size: 1.8rem;
+            line-height: 1;
+            flex-shrink: 0;
+        }
+
+        .card-name {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #ffffff;
+            line-height: 1.35;
+        }
+
+        .card-desc {
+            font-size: 0.92rem;
+            color: #94a3b8;
+            line-height: 1.45;
+            margin-bottom: 14px;
+            flex-grow: 1;
+        }
+
+        .card-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: inherit;
+            transition: gap 0.2s;
+        }
+
+        .link-card:hover .card-action {
+            gap: 10px;
+        }
+
+        /* Kolorystyka wariantów */
+        .color-gold {
+            color: var(--accent-gold);
+            border-color: rgba(251, 191, 36, 0.35);
+        }
+        .color-purple {
+            color: var(--accent-purple);
+            border-color: rgba(192, 132, 252, 0.35);
+        }
+        .color-cyan {
+            color: var(--accent-cyan);
+            border-color: rgba(34, 211, 238, 0.35);
+        }
+        .color-orange {
+            color: var(--accent-orange);
+            border-color: rgba(251, 146, 60, 0.35);
+        }
+        .color-pink {
+            color: var(--accent-pink);
+            border-color: rgba(244, 114, 182, 0.35);
+        }
+        .color-blue {
+            color: var(--primary);
+            border-color: rgba(56, 189, 248, 0.35);
+        }
+
+        /* Stopka */
+        .footer-nav {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="snow-canvas"></canvas>
+
+    <div class="container">
+        <!-- Górna belka nawigacji -->
+        <nav class="top-nav">
+            <a href="rozrywka.html" class="nav-btn">← Powrót do Rozrywki</a>
+            <a href="index.html" class="nav-btn">🏠 Strona Główna</a>
+        </nav>
+
+        <!-- Nagłówek -->
+        <header class="header">
+            <div class="badge">🔮 Geometria Chaosu i Samopodobieństwo</div>
+            <h1 class="title">Fraktale</h1>
+            <p class="subtitle">
+                Odkryj fascynujący świat struktur samopodobnych, matematycznych wizualizacji 2D i 3D, raymarchingu oraz generowania proceduralnego krajobrazów i efektów CGI.
+            </p>
+        </header>
+
+        <!-- Sekcja 1: Klasyczne Fraktale 2D -->
+        <h2 class="section-title">✨ Klasyczne Fraktale 2D</h2>
+        <div class="links-grid">
+            <!-- Mandelbrot -->
+            <a href="fraktale/zbior_mandelbrota.html" class="link-card color-gold">
+                <div>
+                    <div class="card-header">
+                        <span class="card-icon">🌀</span>
+                        <div class="card-name">Zbiór Mandelbrota</div>
+                    </div>
+                    <p class="card-desc">
+                        Najsłynniejszy fraktal świata bazujący na iteracji liczb zespolonych. Eksploruj nieskończone zbliżenia i palety barw.
+                    </p>
+                </div>
+                <div class="card-action">
+                    <span>Uruchom symulację</span>
+                    <span>→</span>
+                </div>
+            </a>
+
+            <!-- Julia -->
+            <a href="fraktale/zbior_julii.html" class="link-card color-purple">
+                <div>
+                    <div class="card-header">
+                        <span class="card-icon">🔮</span>
+                        <div class="card-name">Zbiory Julii</div>
+                    </div>
+                    <p class="card-desc">
+                        Dynamiczne, hipnotyzujące zbiory powiązane z Mandelbrotem przy stałym parametrze zespolonym c.
+                    </p>
+                </div>
+                <div class="card-action">
+                    <span>Uruchom symulację</span>
+                    <span>→</span>
+                </div>
+            </a>
+
+            <!-- Burning Ship -->
+            <a href="fraktale/burning_ship.html" class="link-card color-orange">
+                <div>
+                    <div class="card-header">
+                        <span class="card-icon">🔥</span>
+                        <div class="card-name">Burning Ship Fractal</div>
+                    </div>
+                    <p class="card-desc">
+                        Fraktal „Płonący Statek” z wartością bezwzględną w równaniu. Przypomina płomienie i maszty na morzu.
+                    </p>
+                </div>
+                <div class="card-action">
+                    <span>Uruchom symulację</span>
+                    <span>→</span>
+                </div>
+            </a>
+
+            <!-- Penrose -->
+            <a href="fraktale/penrose.html" class="link-card color-blue">
+                <div>
+                    <div class="card-header">
+                        <span class="card-icon">📐</span>
+                        <div class="card-name">Układanka Penrose’a & Escher</div>
+                    </div>
+                    <p class="card-desc">
+                        Rekurencyjna układanka pentagonalna w stylu M.C. Eschera – aokresowe parkietaże o niezwykłej symetrii.
+                    </p>
+                </div>
+                <div class="card-action">
+                    <span>Uruchom symulację</span>
+                    <span>→</span>
+                </div>
+            </a>
+        </div>
+
+        <!-- Sekcja 2: Fraktale 3D i Raymarching -->
+        <h2 class="section-title">🪐 Fraktale 3D i Raymarching</h2>
+        <div class="links-grid">
+            <!-- Mandelbulb -->
+            <a href="fraktale/mandelbulb.html" class="link-card color-gold">
+                <div>
+                    <div class="card-header">
+                        <span class="card-icon">🪐</span>
+                        <div class="card-name">Mandelbulb 3D</div>
+                    </div>
+                    <p class="card-desc">
+                        Trójwymiarowy odpowiednik zbioru Mandelbrota. Generowany w czasie rzeczywistym z oświetleniem i cieniami.
+                    </p>
+                </div>
+                <div class="card-action">
+                    <span>Uruchom symulację</span>
+                    <span>→</span>
+                </div>
+            </a>
+
+            <!-- Mandelbox i Mandelbulb 3D -->
+            <a href="fraktale/mandelbox_mandelbulb_3d.html" class="link-card color-purple">
+                <div>
+                    <div class="card-header">
+                        <span class="card-icon">🛸</span>
+                        <div class="card-name">Mandelbox i Mandelbulb 3D (Lot Kamerą)</div>
+                    </div>
+                    <p class="card-desc">
+                        Nieskończony lot kamerą wewnątrz fraktala 3D z zaawansowanym cieniowaniem Raymarching i dynamiczną kamerą.
+                    </p>
+                </div>
+                <div class="card-action">
+                    <span>Uruchom symulację</span>
+                    <span>→</span>
+                </div>
+            </a>
+        </div>
+
+        <!-- Sekcja 3: Zastosowania w CGI, Grach i Przyrodzie -->
+        <h2 class="section-title">🎮 CGI, Gry i Natura Fraktalna</h2>
+        <div class="links-grid">
+            <!-- Krajobrazy -->
+            <a href="fraktale/krajobrazy.html" class="link-card color-cyan">
+                <div>
+                    <div class="card-header">
+                        <span class="card-icon">🏔️</span>
+                        <div class="card-name">Generowanie Krajobrazów i Przyrody</div>
+                    </div>
+                    <p class="card-desc">
+                        Proceduralne góry, chmury, rzeki i roślinność w grach oraz filmach przy użyciu szumu Perlina i fraktali.
+                    </p>
+                </div>
+                <div class="card-action">
+                    <span>Uruchom symulację</span>
+                    <span>→</span>
+                </div>
+            </a>
+
+            <!-- Efekty specjalne -->
+            <a href="fraktale/efekty_specjalne.html" class="link-card color-orange">
+                <div>
+                    <div class="card-header">
+                        <span class="card-icon">💥</span>
+                        <div class="card-name">Fraktalne Efekty Specjalne CGI</div>
+                    </div>
+                    <p class="card-desc">
+                        Symulacja ognia, dymu, błyskawic, wyładowań plazmowych i pęknięć powierzchni w grafice komputerowej.
+                    </p>
+                </div>
+                <div class="card-action">
+                    <span>Uruchom symulację</span>
+                    <span>→</span>
+                </div>
+            </a>
+
+            <!-- Światło i lochy -->
+            <a href="fraktale/swiatlo_i_lochy.html" class="link-card color-pink">
+                <div>
+                    <div class="card-header">
+                        <span class="card-icon">✨</span>
+                        <div class="card-name">Głębia Powierzchni (SSS) i Lochy Roguelike</div>
+                    </div>
+                    <p class="card-desc">
+                        Rozpraszanie podpowierzchniowe (skóra/wosk) oraz fraktalne generowanie nieskończonych lochów w grach.
+                    </p>
+                </div>
+                <div class="card-action">
+                    <span>Uruchom symulację</span>
+                    <span>→</span>
+                </div>
+            </a>
+
+            <!-- Podwodne jezioro -->
+            <a href="fraktale/podwodne_jezioro.html" class="link-card color-cyan">
+                <div>
+                    <div class="card-header">
+                        <span class="card-icon">🌊</span>
+                        <div class="card-name">Głębia Jeziora 3D i Ławice Ryb</div>
+                    </div>
+                    <p class="card-desc">
+                        Nieskończony męt, dno fraktalne, dynamiczna kaustyka świetlna i symulacja zachowań ławic ryb (Boids).
+                    </p>
+                </div>
+                <div class="card-action">
+                    <span>Uruchom symulację</span>
+                    <span>→</span>
+                </div>
+            </a>
+        </div>
+
+        <!-- Stopka nawigacyjna -->
+        <div class="footer-nav">
+            <a href="rozrywka.html" class="nav-btn">← Powrót do Rozrywki</a>
+            <a href="index.html" class="nav-btn">🏠 Strona Główna</a>
+        </div>
+    </div>
+
+    <!-- Animacja tła śniegu / cząsteczek -->
+    <script>
+        const canvas = document.getElementById('snow-canvas');
+        const ctx = canvas.getContext('2d');
+
+        let width = window.innerWidth;
+        let height = window.innerHeight;
+
+        function resizeCanvas() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        const flakeCount = 100;
+        const flakes = [];
+
+        for (let i = 0; i < flakeCount; i++) {
+            flakes.push({
+                x: Math.random() * width,
+                y: Math.random() * height,
+                radius: Math.random() * 2.5 + 1,
+                speed: Math.random() * 1.2 + 0.6,
+                wind: Math.random() * 0.5 - 0.25,
+                opacity: Math.random() * 0.5 + 0.3,
+                swing: Math.random() * Math.PI * 2,
+                swingSpeed: Math.random() * 0.02 + 0.01
+            });
+        }
+
+        function updateSnow() {
+            ctx.clearRect(0, 0, width, height);
+
+            for (let i = 0; i < flakeCount; i++) {
+                const f = flakes[i];
+
+                ctx.beginPath();
+                ctx.arc(f.x, f.y, f.radius, 0, Math.PI * 2, false);
+                ctx.fillStyle = `rgba(255, 255, 255, ${f.opacity})`;
+                ctx.shadowBlur = 4;
+                ctx.shadowColor = 'rgba(255, 255, 255, 0.7)';
+                ctx.fill();
+
+                f.swing += f.swingSpeed;
+                f.y += f.speed;
+                f.x += Math.sin(f.swing) * 0.7 + f.wind;
+
+                if (f.y > height + 10) {
+                    f.y = -10;
+                    f.x = Math.random() * width;
+                }
+                if (f.x > width + 10) {
+                    f.x = -10;
+                } else if (f.x < -10) {
+                    f.x = width + 10;
+                }
+            }
+
+            requestAnimationFrame(updateSnow);
+        }
+
+        updateSnow();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generowanie Krajobrazów, Gór, Chmur i Roślinności w Grach i Filmach</title>
+    <link rel="stylesheet" href="../style.css" />
+    <style>
+        body {
+            margin: 0;
+            background-color: #030712;
+            color: #f8fafc;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            text-align: center;
+        }
+
+        .main-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 15px 20px 40px 20px;
+        }
+
+        h2 {
+            color: #38bdf8;
+            margin-bottom: 5px;
+            font-size: 1.8rem;
+            text-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+        }
+
+        .info-card {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid #38bdf8;
+            border-radius: 12px;
+            padding: 16px 22px;
+            margin: 15px auto 20px auto;
+            text-align: left;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #cbd5e1;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .controls-panel {
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid #475569;
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin-bottom: 18px;
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .btn-mode {
+            background: #1e293b;
+            color: #f8fafc;
+            border: 2px solid #475569;
+            padding: 9px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .btn-mode:hover {
+            border-color: #38bdf8;
+            background: #334155;
+            transform: translateY(-1px);
+        }
+
+        .btn-mode.active {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            border-color: #38bdf8;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+        }
+
+        .slider-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.88rem;
+            color: #cbd5e1;
+            background: #1e293b;
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+        }
+
+        canvas {
+            border-radius: 12px;
+            border: 2px solid #38bdf8;
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.8);
+            cursor: grab;
+            background: #000;
+            display: block;
+            margin: 0 auto;
+            max-width: 100%;
+        }
+
+        canvas:active {
+            cursor: grabbing;
+        }
+
+        .hint {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="main-container">
+        <h2>🏔️ Generowanie Krajobrazów, Gór, Chmur i Roślinności</h2>
+        <p style="color: #94a3b8; margin-top: -5px;">Matematyka fraktalna i szum proceduralny w filmach CGI oraz grach komputerowych</p>
+
+        <div class="info-card">
+            <strong style="color: #38bdf8; font-size: 1.05rem;">Jak to działa w branży gier i filmów?</strong><br>
+            W produkcjach takich jak <em>Minecraft, No Man's Sky, Avatar</em> czy <em>Wiedźmin</em>, gigantyczne góry i lasy nie są modelowane ręcznie przez grafików. Zamiast tego stosuje się <strong>geometrię fraktalną i szum Perlina (Fractional Brownian Motion - fBm)</strong>. Ta sama prosta formuła matematyczna powtórzona na różnych poziomach skali (oktawach) tworzy naturalne granie górskie, pasma chmur oraz pnie i korony drzew (L-Systemy).
+        </div>
+
+        <!-- Panel sterowania -->
+        <div class="controls-panel">
+            <button type="button" class="btn-mode active" id="btn-scene" onclick="setMode('scene')">🎬 Pełny Krajobraz 3D</button>
+            <button type="button" class="btn-mode" id="btn-mountains" onclick="setMode('mountains')">🏔️ Góry i Ukształtowanie</button>
+            <button type="button" class="btn-mode" id="btn-clouds" onclick="setMode('clouds')">☁️ Chmury i Niebo</button>
+            <button type="button" class="btn-mode" id="btn-trees" onclick="setMode('trees')">🌲 Fraktalny Las (L-System)</button>
+
+            <div class="slider-group">
+                <label for="time-slider">Pora dnia:</label>
+                <input type="range" id="time-slider" min="0" max="100" value="35" oninput="updateTime(this.value)">
+                <span id="time-val" style="font-family: monospace; min-width: 60px; color: #38bdf8;">Zachód</span>
+            </div>
+
+            <div class="slider-group">
+                <label for="wind-slider">Wiatr:</label>
+                <input type="range" id="wind-slider" min="0" max="100" value="50" oninput="updateWind(this.value)">
+                <span id="wind-val" style="font-family: monospace; min-width: 35px; color: #38bdf8;">50%</span>
+            </div>
+
+            <button type="button" class="btn-mode" onclick="randomizeSeed()" style="background: #059669; border-color: #10b981;">🎲 Nowy świat (Seed)</button>
+            <button type="button" id="btn-audio" class="btn-mode" onclick="toggleAudio()" style="background: #334155; border-color: #64748b;">🔊 Dźwięk wiatru</button>
+        </div>
+
+        <!-- Główny Canvas Renderera -->
+        <canvas id="renderCanvas" width="1000" height="560"></canvas>
+        <div class="hint">💡 <em>Wskazówka: Przeciągaj myszką po ekranie, aby rozglądać się kamerą 3D.</em></div>
+
+        <p style="margin-top: 35px;">
+            <a href="../rozrywka.html" style="color: #38bdf8; text-decoration: none; margin: 0 10px; font-weight: bold;">⬅ Powrót do Rozrywki</a> | 
+            <a href="../pomocnicze.html" style="color: #38bdf8; text-decoration: none; margin: 0 10px;">Quizy szkolne</a> | 
+            <a href="../index.html" style="color: #38bdf8; text-decoration: none; margin: 0 10px;">Strona główna</a>
+        </p>
+    </div>
+
+    <script>
+        // =======================================================
+        // SILNIK FRAKTALNEJ GENERACJI KRAJOBRAZU I ROŚLINNOŚCI
+        // =======================================================
+        const canvas = document.getElementById('renderCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let mode = 'scene'; // 'scene', 'mountains', 'clouds', 'trees'
+        let seed = 42.1337;
+        let timeOfDay = 0.35; // 0.0 (południe), 0.35 (złota godzina/zachód), 0.75 (noc)
+        let windStrength = 1.0;
+        let camRotX = 0;
+        let camRotY = 0;
+        let isDragging = false;
+        let lastMouseX = 0, lastMouseY = 0;
+        let animTime = 0;
+
+        // Szum pseudolosowy i fraktalny (Fractional Brownian Motion 2D)
+        function hash(x, y) {
+            const sin = Math.sin(x * 127.1 + y * 311.7 + seed) * 43758.5453123;
+            return sin - Math.floor(sin);
+        }
+
+        function smoothNoise(x, y) {
+            const i = Math.floor(x);
+            const j = Math.floor(y);
+            const fx = x - i;
+            const fy = y - j;
+
+            const u = fx * fx * (3.0 - 2.0 * fx);
+            const v = fy * fy * (3.0 - 2.0 * fy);
+
+            const a = hash(i, j);
+            const b = hash(i + 1, j);
+            const c = hash(i, j + 1);
+            const d = hash(i + 1, j + 1);
+
+            return a * (1 - u) * (1 - v) + b * u * (1 - v) + c * (1 - u) * v + d * u * v;
+        }
+
+        // Fractional Brownian Motion (fBm)
+        function fbm(x, y, octaves = 5) {
+            let val = 0;
+            let amp = 0.5;
+            let freq = 1.0;
+            for (let i = 0; i < octaves; i++) {
+                val += smoothNoise(x * freq, y * freq) * amp;
+                freq *= 2.02;
+                amp *= 0.5;
+            }
+            return val;
+        }
+
+        // Kolory nieba w zależności od pory dnia
+        function getSkyGradient() {
+            const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            if (timeOfDay < 0.25) { // Dzień
+                grad.addColorStop(0, '#0284c7');
+                grad.addColorStop(0.7, '#7dd3fc');
+                grad.addColorStop(1, '#e0f2fe');
+            } else if (timeOfDay < 0.6) { // Zachód słońca
+                grad.addColorStop(0, '#1e1b4b');
+                grad.addColorStop(0.3, '#701a75');
+                grad.addColorStop(0.6, '#ea580c');
+                grad.addColorStop(0.9, '#fde047');
+                grad.addColorStop(1, '#ffedd5');
+            } else { // Noc
+                grad.addColorStop(0, '#030712');
+                grad.addColorStop(0.6, '#0f172a');
+                grad.addColorStop(1, '#1e293b');
+            }
+            return grad;
+        }
+
+        // Rysowanie proceduralnych chmur
+        function drawClouds() {
+            const cloudLayers = 3;
+            for (let l = 0; l < cloudLayers; l++) {
+                const speed = (l + 1) * 0.008 * windStrength;
+                const cloudYBase = 80 + l * 45;
+                const density = 0.45 + l * 0.05;
+
+                for (let x = 0; x < canvas.width; x += 6) {
+                    const nx = (x * 0.004) + (animTime * speed) + l * 10;
+                    const ny = (cloudYBase * 0.005) + l * 5;
+                    const n = fbm(nx, ny, 4);
+
+                    if (n > density) {
+                        const h = (n - density) * 140;
+                        const y = cloudYBase - h * 0.5 + Math.sin(x * 0.01 + animTime) * 8;
+                        
+                        let alpha = (n - density) * 2.2;
+                        if (alpha > 0.8) alpha = 0.8;
+
+                        if (timeOfDay > 0.6) { // Nocne chmury
+                            ctx.fillStyle = `rgba(148, 163, 184, ${alpha * 0.3})`;
+                        } else if (timeOfDay > 0.25) { // Chmury o zachodzie
+                            ctx.fillStyle = `rgba(254, 215, 170, ${alpha * 0.75})`;
+                        } else {
+                            ctx.fillStyle = `rgba(255, 255, 255, ${alpha * 0.85})`;
+                        }
+                        ctx.fillRect(x, y, 7, h);
+                    }
+                }
+            }
+        }
+
+        // Rysowanie pasm górskich (Ray-cast / Isometric slice)
+        function drawMountains() {
+            const layers = 5;
+            for (let l = 0; l < layers; l++) {
+                const depth = (layers - l);
+                const baseY = 240 + l * 55 + camRotY * 15;
+                const scale = 0.0025 * depth;
+                const heightMult = 130 + depth * 35;
+
+                ctx.beginPath();
+                ctx.moveTo(0, canvas.height);
+
+                for (let x = 0; x <= canvas.width; x += 4) {
+                    const nx = (x + camRotX * 60) * scale + l * 25;
+                    const h = fbm(nx, l * 3.7, 6) * heightMult;
+                    const y = baseY - h;
+                    ctx.lineTo(x, y);
+                }
+
+                ctx.lineTo(canvas.width, canvas.height);
+                ctx.closePath();
+
+                // Cieniowanie warstw gór
+                if (timeOfDay > 0.6) { // Noc
+                    ctx.fillStyle = `rgb(${10 + l * 12}, ${15 + l * 14}, ${28 + l * 18})`;
+                } else if (timeOfDay > 0.25) { // Zachód słońca
+                    ctx.fillStyle = `rgb(${45 + l * 25}, ${15 + l * 12}, ${55 - l * 5})`;
+                } else { // Dzień
+                    const c = Math.floor(40 + l * 35);
+                    ctx.fillStyle = `rgb(${c - 10}, ${c + 20}, ${c - 5})`;
+                }
+                ctx.fill();
+
+                // Dodanie śniegu na szczytach
+                if (l <= 2) {
+                    ctx.strokeStyle = timeOfDay > 0.25 ? 'rgba(254, 240, 138, 0.4)' : 'rgba(255, 255, 255, 0.6)';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                }
+            }
+        }
+
+        // Fraktalne drzewo L-System (rekurencyjne rozgałęzianie)
+        function drawFractalTree(x, y, length, angle, depth, maxDepth) {
+            if (depth > maxDepth) return;
+
+            const wind = Math.sin(animTime * 2.5 + depth) * 0.04 * windStrength;
+            const x2 = x + Math.cos(angle + wind) * length;
+            const y2 = y - Math.sin(angle + wind) * length;
+
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.lineTo(x2, y2);
+            ctx.lineWidth = Math.max(1, (maxDepth - depth) * 2.2);
+
+            if (depth === maxDepth || depth === maxDepth - 1) {
+                // Korona drzewa / liście
+                ctx.strokeStyle = timeOfDay > 0.6 ? '#14532d' : (timeOfDay > 0.25 ? '#b45309' : '#16a34a');
+            } else {
+                // Pień i konary
+                ctx.strokeStyle = timeOfDay > 0.6 ? '#1e293b' : '#78350f';
+            }
+            ctx.stroke();
+
+            const nextLen = length * (0.68 + Math.sin(depth + seed) * 0.06);
+            const branchSpread = 0.45;
+
+            drawFractalTree(x2, y2, nextLen, angle - branchSpread, depth + 1, maxDepth);
+            drawFractalTree(x2, y2, nextLen, angle + branchSpread, depth + 1, maxDepth);
+            if (depth === 1) {
+                drawFractalTree(x2, y2, nextLen * 0.85, angle + 0.1, depth + 1, maxDepth);
+            }
+        }
+
+        // Rysowanie lasu
+        function drawForest() {
+            const treePositions = [
+                { x: 120, y: 530, len: 75, depth: 7 },
+                { x: 260, y: 550, len: 90, depth: 8 },
+                { x: 420, y: 520, len: 65, depth: 7 },
+                { x: 600, y: 545, len: 85, depth: 8 },
+                { x: 780, y: 535, len: 70, depth: 7 },
+                { x: 910, y: 560, len: 95, depth: 8 }
+            ];
+
+            treePositions.forEach(t => {
+                drawFractalTree(t.x + camRotX * 30, t.y, t.len, Math.PI / 2, 0, t.depth);
+            });
+        }
+
+        // Główna pętla renderująca klatki
+        function render() {
+            animTime += 0.02;
+
+            // 1. Tło i niebo
+            ctx.fillStyle = getSkyGradient();
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Słońce lub księżyc
+            if (timeOfDay < 0.6) {
+                const sunY = 100 + timeOfDay * 250;
+                const sunX = canvas.width * 0.75 - timeOfDay * 150;
+                ctx.beginPath();
+                ctx.arc(sunX, sunY, 38, 0, Math.PI * 2);
+                ctx.fillStyle = timeOfDay > 0.25 ? '#fbbf24' : '#fffbeb';
+                ctx.shadowColor = timeOfDay > 0.25 ? '#ea580c' : '#fef08a';
+                ctx.shadowBlur = 35;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            } else {
+                // Księżyc
+                ctx.beginPath();
+                ctx.arc(canvas.width * 0.8, 100, 26, 0, Math.PI * 2);
+                ctx.fillStyle = '#f8fafc';
+                ctx.shadowColor = '#38bdf8';
+                ctx.shadowBlur = 25;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            }
+
+            // 2. Renderowanie wg wybranego trybu
+            if (mode === 'scene') {
+                drawClouds();
+                drawMountains();
+                drawForest();
+            } else if (mode === 'mountains') {
+                drawMountains();
+            } else if (mode === 'clouds') {
+                drawClouds();
+            } else if (mode === 'trees') {
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(0, 520, canvas.width, 40);
+                drawForest();
+            }
+
+            requestAnimationFrame(render);
+        }
+
+        // Interakcja myszą (obracanie kamery)
+        canvas.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            lastMouseX = e.clientX;
+            lastMouseY = e.clientY;
+        });
+
+        window.addEventListener('mouseup', () => isDragging = false);
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            const dx = e.clientX - lastMouseX;
+            const dy = e.clientY - lastMouseY;
+            camRotX += dx * 0.05;
+            camRotY = Math.max(-5, Math.min(5, camRotY + dy * 0.03));
+            lastMouseX = e.clientX;
+            lastMouseY = e.clientY;
+        });
+
+        // Przełączanie trybów
+        function setMode(newMode) {
+            mode = newMode;
+            ['scene', 'mountains', 'clouds', 'trees'].forEach(m => {
+                const btn = document.getElementById('btn-' + m);
+                if (btn) btn.classList.remove('active');
+            });
+            const activeBtn = document.getElementById('btn-' + newMode);
+            if (activeBtn) activeBtn.classList.add('active');
+        }
+
+        function updateTime(val) {
+            timeOfDay = val / 100;
+            const label = document.getElementById('time-val');
+            if (timeOfDay < 0.25) label.innerText = 'Dzień';
+            else if (timeOfDay < 0.6) label.innerText = 'Zachód';
+            else label.innerText = 'Noc';
+        }
+
+        function updateWind(val) {
+            windStrength = val / 50;
+            document.getElementById('wind-val').innerText = val + '%';
+        }
+
+        function randomizeSeed() {
+            seed = Math.random() * 10000;
+        }
+
+        // =======================================================
+        // GENERATOR NASTROJOWEJ MELODII GÓRSKIEJ (WEB AUDIO API)
+        // =======================================================
+        class LandscapeAtmosphericMusic {
+            constructor() {
+                this.audioCtx = null;
+                this.isPlaying = false;
+                this.masterGain = null;
+                this.filter = null;
+                this.droneOscs = [];
+                this.noiseNode = null;
+                this.arpTimer = null;
+            }
+
+            init() {
+                if (this.audioCtx) return;
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                this.audioCtx = new AudioContext();
+
+                this.masterGain = this.audioCtx.createGain();
+                this.masterGain.gain.setValueAtTime(0.24, this.audioCtx.currentTime);
+
+                this.filter = this.audioCtx.createBiquadFilter();
+                this.filter.type = 'lowpass';
+                this.filter.frequency.setValueAtTime(1000, this.audioCtx.currentTime);
+
+                // Przestrzenny delay
+                const delay = this.audioCtx.createDelay();
+                delay.delayTime.setValueAtTime(0.45, this.audioCtx.currentTime);
+                const delayGain = this.audioCtx.createGain();
+                delayGain.gain.setValueAtTime(0.35, this.audioCtx.currentTime);
+
+                delay.connect(delayGain);
+                delayGain.connect(delay);
+                delayGain.connect(this.masterGain);
+
+                this.filter.connect(this.masterGain);
+                this.filter.connect(delay);
+                this.masterGain.connect(this.audioCtx.destination);
+
+                // Szum wiatru w tle
+                const bufferSize = this.audioCtx.sampleRate * 2;
+                const buffer = this.audioCtx.createBuffer(1, bufferSize, this.audioCtx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    data[i] = Math.random() * 2 - 1;
+                }
+                this.noiseNode = this.audioCtx.createBufferSource();
+                this.noiseNode.buffer = buffer;
+                this.noiseNode.loop = true;
+
+                const windFilter = this.audioCtx.createBiquadFilter();
+                windFilter.type = 'lowpass';
+                windFilter.frequency.setValueAtTime(320, this.audioCtx.currentTime);
+                const windGain = this.audioCtx.createGain();
+                windGain.gain.setValueAtTime(0.06, this.audioCtx.currentTime);
+
+                this.noiseNode.connect(windFilter);
+                windFilter.connect(windGain);
+                windGain.connect(this.masterGain);
+                this.noiseNode.start();
+            }
+
+            start() {
+                this.init();
+                if (this.audioCtx.state === 'suspended') {
+                    this.audioCtx.resume();
+                }
+                if (this.isPlaying) return;
+                this.isPlaying = true;
+
+                this.masterGain.gain.cancelScheduledValues(this.audioCtx.currentTime);
+                this.masterGain.gain.setValueAtTime(0.001, this.audioCtx.currentTime);
+                this.masterGain.gain.exponentialRampToValueAtTime(0.24, this.audioCtx.currentTime + 1.2);
+
+                // Ciepłe akordy C-dur / Lydian (C, G, E, B)
+                const chordFrequencies = [130.81, 196.00, 261.63, 329.63]; // C3, G3, C4, E4
+                this.droneOscs = chordFrequencies.map((freq, idx) => {
+                    const osc = this.audioCtx.createOscillator();
+                    const gain = this.audioCtx.createGain();
+
+                    osc.type = idx % 2 === 0 ? 'sine' : 'triangle';
+                    osc.frequency.setValueAtTime(freq, this.audioCtx.currentTime);
+
+                    const lfo = this.audioCtx.createOscillator();
+                    const lfoGain = this.audioCtx.createGain();
+                    lfo.frequency.setValueAtTime(0.09 + idx * 0.04, this.audioCtx.currentTime);
+                    lfoGain.gain.setValueAtTime(1.6, this.audioCtx.currentTime);
+                    lfo.connect(lfoGain);
+                    lfoGain.connect(osc.frequency);
+                    lfo.start();
+
+                    gain.gain.setValueAtTime(0.05, this.audioCtx.currentTime);
+                    osc.connect(gain);
+                    gain.connect(this.filter);
+                    osc.start();
+                    return { osc, gain, lfo };
+                });
+
+                // Melodia dzwonków / fletu natury
+                const natureScale = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33, 659.25]; // C major pentatonic
+                const playNatureNote = () => {
+                    if (!this.isPlaying) return;
+
+                    const freq = natureScale[Math.floor(Math.random() * natureScale.length)];
+                    const osc = this.audioCtx.createOscillator();
+                    const gain = this.audioCtx.createGain();
+
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, this.audioCtx.currentTime);
+
+                    const now = this.audioCtx.currentTime;
+                    gain.gain.setValueAtTime(0.0001, now);
+                    gain.gain.exponentialRampToValueAtTime(0.10, now + 0.05);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, now + 2.0);
+
+                    osc.connect(gain);
+                    gain.connect(this.filter);
+
+                    osc.start(now);
+                    osc.stop(now + 2.1);
+
+                    const nextDelay = 400 + Math.random() * 600;
+                    this.arpTimer = setTimeout(playNatureNote, nextDelay);
+                };
+
+                playNatureNote();
+            }
+
+            stop() {
+                if (!this.isPlaying || !this.audioCtx) return;
+                this.isPlaying = false;
+                if (this.arpTimer) clearTimeout(this.arpTimer);
+
+                if (this.masterGain) {
+                    this.masterGain.gain.cancelScheduledValues(this.audioCtx.currentTime);
+                    this.masterGain.gain.setValueAtTime(this.masterGain.gain.value, this.audioCtx.currentTime);
+                    this.masterGain.gain.exponentialRampToValueAtTime(0.0001, this.audioCtx.currentTime + 0.5);
+                }
+
+                setTimeout(() => {
+                    if (!this.isPlaying && this.droneOscs.length) {
+                        this.droneOscs.forEach(({ osc, lfo }) => {
+                            try { osc.stop(); lfo.stop(); } catch (e) {}
+                        });
+                        this.droneOscs = [];
+                    }
+                }, 550);
+            }
+
+            toggle() {
+                if (this.isPlaying) {
+                    this.stop();
+                    return false;
+                } else {
+                    this.start();
+                    return true;
+                }
+            }
+        }
+
+        const landscapeMusic = new LandscapeAtmosphericMusic();
+
+        function toggleAudio() {
+            const isPlaying = landscapeMusic.toggle();
+            const btn = document.getElementById('btn-audio');
+            btn.innerText = isPlaying ? '🔇 Wycisz Melodię' : '🔊 Nastrojowa Melodia';
+            btn.style.background = isPlaying ? '#0284c7' : '#334155';
+        }
+
+        // Uruchomienie pętli
+        render();
+    </script>
+    <script src="nagrywanie_wideo.js"></script>
+</body>
+
+</html>

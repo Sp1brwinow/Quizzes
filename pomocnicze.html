@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quizy Szkolne i Narzędzia Pomocnicze</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+        :root {
+            --bg-dark: #070d18;
+            --card-bg: rgba(15, 23, 42, 0.85);
+            --card-border: rgba(56, 189, 248, 0.25);
+            --primary: #38bdf8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: #f1f5f9;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            padding: 30px 20px 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 26px;
+        }
+
+        /* Górna belka nawigacji */
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .back-link {
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            color: #38bdf8;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            backdrop-filter: blur(8px);
+        }
+
+        .back-link:hover {
+            background: #0284c7;
+            color: #ffffff;
+            transform: translateX(-2px);
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
+        }
+
+        /* Główny nagłówek strony */
+        .header-card {
+            text-align: center;
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.8) 100%);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            border-radius: 20px;
+            padding: 24px 30px;
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(12px);
+        }
+
+        .header-card h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 0%, #38bdf8 60%, #818cf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 6px;
+        }
+
+        .header-card p {
+            color: #94a3b8;
+            font-size: 1rem;
+        }
+
+        /* Wyszukiwarka quizów */
+        .search-box {
+            position: relative;
+            width: 100%;
+        }
+
+        .search-input {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            border-radius: 12px;
+            padding: 12px 18px 12px 44px;
+            color: #ffffff;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.2s;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .search-input:focus {
+            border-color: #38bdf8;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.35);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.1rem;
+            color: #94a3b8;
+            pointer-events: none;
+        }
+
+        /* Karta konfiguracji Gemini API */
+        .api-card {
+            background: rgba(15, 23, 42, 0.9);
+            border: 2px solid #0284c7;
+            border-radius: 18px;
+            padding: 24px;
+            color: #f8fafc;
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.6), 0 0 15px rgba(2, 132, 199, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .api-card h3 {
+            color: #38bdf8;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .api-desc {
+            background: rgba(30, 41, 59, 0.8);
+            border-left: 4px solid #38bdf8;
+            padding: 14px 18px;
+            border-radius: 8px;
+            margin-bottom: 18px;
+            line-height: 1.6;
+            font-size: 0.92rem;
+            color: #cbd5e1;
+        }
+
+        .api-desc ul {
+            margin: 8px 0 8px 20px;
+        }
+
+        .api-controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 14px;
+        }
+
+        .api-input {
+            flex: 1;
+            min-width: 260px;
+            padding: 10px 14px;
+            background: #0b1120;
+            border: 1px solid #475569;
+            border-radius: 8px;
+            color: #ffffff;
+            font-family: monospace;
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        .api-input:focus {
+            border-color: #38bdf8;
+        }
+
+        .api-btn {
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.92rem;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .api-btn-save {
+            background: #0284c7;
+            color: white;
+        }
+
+        .api-btn-save:hover {
+            background: #0369a1;
+            transform: translateY(-1px);
+        }
+
+        .api-btn-sec {
+            background: #334155;
+            color: #cbd5e1;
+            border: 1px solid #64748b;
+        }
+
+        .api-btn-sec:hover {
+            background: #475569;
+        }
+
+        .api-btn-del {
+            background: #dc2626;
+            color: white;
+        }
+
+        .api-btn-del:hover {
+            background: #b91c1c;
+        }
+
+        .api-status-badge {
+            display: inline-block;
+            font-weight: bold;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 0.88rem;
+        }
+
+        .api-tutorial {
+            font-size: 0.88rem;
+            color: #94a3b8;
+            margin-top: 14px;
+            line-height: 1.5;
+        }
+
+        .api-tutorial a {
+            color: #38bdf8 !important;
+            text-decoration: underline;
+        }
+
+        /* Siatka kategorii przedmiotów */
+        .subjects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+            gap: 20px;
+            width: 100%;
+        }
+
+        .subject-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .subject-card:hover {
+            border-color: rgba(56, 189, 248, 0.5);
+            transform: translateY(-3px);
+        }
+
+        .subject-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(56, 189, 248, 0.15);
+            padding-bottom: 10px;
+        }
+
+        .subject-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #f8fafc;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .subject-badge {
+            font-size: 0.75rem;
+            padding: 3px 8px;
+            border-radius: 999px;
+            background: rgba(56, 189, 248, 0.15);
+            color: #38bdf8;
+            font-weight: 600;
+        }
+
+        .quiz-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .quiz-link {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(56, 189, 248, 0.18);
+            color: #e2e8f0;
+            text-decoration: none;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 0.92rem;
+            font-weight: 500;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s;
+            line-height: 1.4;
+        }
+
+        .quiz-link:hover {
+            background: rgba(2, 132, 199, 0.25);
+            border-color: #38bdf8;
+            color: #ffffff;
+            transform: translateX(4px);
+        }
+
+        .quiz-link .arrow {
+            color: #38bdf8;
+            font-weight: bold;
+            opacity: 0.7;
+            transition: transform 0.2s, opacity 0.2s;
+            margin-left: 8px;
+            flex-shrink: 0;
+        }
+
+        .quiz-link:hover .arrow {
+            opacity: 1;
+            transform: translateX(3px);
+        }
+
+        /* Akcenty kolorystyczne dla przedmiotów */
+        .theme-english { border-top: 3px solid #38bdf8; }
+        .theme-math { border-top: 3px solid #818cf8; }
+        .theme-bio { border-top: 3px solid #34d399; }
+        .theme-geo { border-top: 3px solid #fbbf24; }
+        .theme-pol { border-top: 3px solid #f87171; }
+        .theme-esp { border-top: 3px solid #fb923c; }
+        .theme-chem { border-top: 3px solid #22d3ee; }
+        .theme-phys { border-top: 3px solid #e879f9; }
+        .theme-tools { border-top: 3px solid #a78bfa; }
+
+        @media (max-width: 640px) {
+            .header-card h1 { font-size: 1.6rem; }
+            .subjects-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <!-- Nawigacja powrotna -->
+        <div class="top-nav">
+            <a href="index.html" class="back-link">← Powrót do strony głównej</a>
+            <a href="rozrywka.html" class="back-link">🪐 Strefa Rozrywki</a>
+        </div>
+
+        <!-- Nagłówek -->
+        <header class="header-card">
+            <h1>Baza Quizów Szkolnych i Narzędzi</h1>
+            <p>Wybierz przedmiot i sprawdź swoją wiedzę w interaktywnych testach oraz zadaniach z AI</p>
+        </header>
+
+        <!-- Wyszukiwarka quizów -->
+        <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="quiz-search" class="search-input" placeholder="Szukaj quizu (np. ułamki, pierwiastki, angielski, stolice...)" oninput="filterQuizzes(this.value)">
+        </div>
+
+        <!-- Panel Gemini API -->
+        <div class="api-card">
+            <h3>🔑 Konfiguracja Sztucznej Inteligencji (Google Gemini API)</h3>
+
+            <div class="api-desc">
+                <strong style="color: #ffffff; font-size: 1.02rem;">Po co jest ten klucz?</strong><br>
+                Klucz API jest potrzebny do obsługi interaktywnych quizów i gier konwersacyjnych ze sztuczną inteligencją (np. zadanie <em>„Pożycz długopis”</em> czy <em>Unit 1 Klasa 7</em>). Pozwala na bezpłatne łączenie z modelem <strong>Google Gemini Flash</strong>.<br><br>
+                <strong>Co umożliwia ten klucz w quizach:</strong>
+                <ul>
+                    <li>Uruchamia bota, który rozmawia i negocjuje z uczniem po angielsku w czasie rzeczywistym.</li>
+                    <li>Automatycznie sprawdza gramatykę wypowiedzi ucznia i podpowiada poprawne zwroty.</li>
+                    <li>Dynamicznie przelicza stopień przekonania bota (<em>Current degree of belief</em>).</li>
+                </ul>
+                🔒 <em>Bezpieczeństwo: Klucz jest zapisywany wyłącznie w pamięci Twojej przeglądarki (localStorage). Nie jest wysyłany na żadne prywatne serwery.</em>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 14px;">
+                <span style="font-size: 0.95rem;">Status klucza:</span>
+                <span id="gemini-key-status" class="api-status-badge" style="background: #334155; color: #fca5a5;">
+                    ❌ Brak zapisanego klucza
+                </span>
+            </div>
+
+            <div class="api-controls">
+                <input type="password" id="gemini-key-input" class="api-input" placeholder="Wklej tutaj swój klucz API (np. AIzaSy...)">
+                <button type="button" class="api-btn api-btn-sec" onclick="toggleKeyVisibility()" id="toggle-vis-btn">👁️ Pokaż</button>
+                <button type="button" class="api-btn api-btn-save" onclick="saveGeminiKey()">💾 Zapisz klucz</button>
+                <button type="button" class="api-btn api-btn-del" onclick="removeGeminiKey()">🗑️ Usuń</button>
+            </div>
+
+            <div class="api-tutorial">
+                💡 <strong>Jak bezpłatnie uzyskać swój klucz:</strong>
+                <ol style="margin: 6px 0 0 20px;">
+                    <li>Wejdź na oficjalną stronę: <a href="https://aistudio.google.com/app/apikey" target="_blank">Google AI Studio (Get API Key)</a></li>
+                    <li>Zaloguj się kontem Google i kliknij <strong>„Create API key”</strong>.</li>
+                    <li>Skopiuj wygenerowany klucz, wklej go w powyższym polu i naciśnij <strong>„Zapisz klucz”</strong>.</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- Siatka Przedmiotów Szkolnych -->
+        <div class="subjects-grid">
+
+            <!-- 1. Język angielski -->
+            <div class="subject-card theme-english">
+                <div class="subject-header">
+                    <div class="subject-title">🇬🇧 Język Angielski</div>
+                    <span class="subject-badge">AI & Dialogi</span>
+                </div>
+                <div class="quiz-list">
+                    <a href="angielski/pytania_angielski.html" class="quiz-link">
+                        <span>Zadania i Konwersacje AI (Klasa 7 i dialogi)</span>
+                        <span class="arrow">→</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 2. Matematyka -->
+            <div class="subject-card theme-math">
+                <div class="subject-header">
+                    <div class="subject-title">📐 Matematyka</div>
+                    <span class="subject-badge">5 quizów</span>
+                </div>
+                <div class="quiz-list">
+                    <a href="na_serwer/pyt/mat_podst_oper_1.html" class="quiz-link">
+                        <span>Kl. 6 Podstawowe operacje (+, -, *) w zakresie -100 do 100</span>
+                        <span class="arrow">→</span>
+                    </a>
+                    <a href="na_serwer/pyt/ulamki_dodawanie_3.html" class="quiz-link">
+                        <span>Kl. 4 Dodawanie ułamków zwykłych (zakres 1-10)</span>
+                        <span class="arrow">→</span>
+                    </a>
+                    <a href="na_serwer/pyt/ulamki_dod_10_20_4.html" class="quiz-link">
+                        <span>Dodawanie ułamków (licznik i mianownik 10-20)</span>
+                        <span class="arrow">→</span>
+                    </a>
+                    <a href="na_serwer/pyt/wyrazenia_algebr_8.html" class="quiz-link">
+                        <span>Wyrażenia algebraiczne</span>
+                        <span class="arrow">→</span>
+                    </a>
+                    <a href="na_serwer/pyt/liczby_calkowite.html" class="quiz-link">
+                        <span>Liczby całkowite</span>
+                        <span class="arrow">→</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 3. Biologia -->
+            <div class="subject-card theme-bio">
+                <div class="subject-header">
+                    <div class="subject-title">🔬 Biologia</div>
+                    <span class="subject-badge">2 quizy</span>
+                </div>
+                <div class="quiz-list">
+                    <a href="na_serwer/pyt/mieczaki.html" class="quiz-link">
+                        <span>Mięczaki</span>
+                        <span class="arrow">→</span>
+                    </a>
+                    <a href="na_serwer/pyt/ryby_4.html" class="quiz-link">
+                        <span>Ryby</span>
+                        <span class="arrow">→</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 4. Geografia -->
+            <div class="subject-card theme-geo">
+                <div class="subject-header">
+                    <div class="subject-title">🌍 Geografia</div>
+                    <span class="subject-badge">1 quiz</span>
+                </div>
+                <div class="quiz-list">
+                    <a href="na_serwer/pyt/stolice.html" class="quiz-link">
+                        <span>Europejskie stolice</span>
+                        <span class="arrow">→</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 5. Język polski -->
+            <div class="subject-card theme-pol">
+                <div class="subject-header">
+                    <div class="subject-title">📖 Język Polski</div>
+                    <span class="subject-badge">Lektury</span>
+                </div>
+                <div class="quiz-list">
+                    <a href="na_serwer/pyt/charakterystyka_Hobbit.html" class="quiz-link">
+                        <span>Charakterystyka Hobbita</span>
+                        <span class="arrow">→</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 6. Język hiszpański -->
+            <div class="subject-card theme-esp">
+                <div class="subject-header">
+                    <div class="subject-title">🇪🇸 Język Hiszpański</div>
+                    <span class="subject-badge">3 quizy</span>
+                </div>
+                <div class="quiz-list">
+                    <a href="na_serwer/pyt/hiszpanski_podst_zasady_a1_2.html" class="quiz-link">
+                        <span>Podstawy "jest" – zasady</span>
+                        <span class="arrow">→</span>
+                    </a>
+                    <a href="na_serwer/pyt/hiszpanski_podst_uzycie_a1_5.html" class="quiz-link">
+                        <span>Podstawy "jest" – użycie</span>
+                        <span class="arrow">→</span>
+                    </a>
+                    <a href="na_serwer/pyt/hiszpanski_podst_uzycie_a2_1.html" class="quiz-link">
+                        <span>Podstawy "jest" – odmiana</span>
+                        <span class="arrow">→</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 7. Chemia -->
+            <div class="subject-card theme-chem">
+                <div class="subject-header">
+                    <div class="subject-title">🧪 Chemia</div>
+                    <span class="subject-badge">6 quizów</span>
+                </div>
+                <div class="quiz-list">
+                    <a href="na_serwer/pyt/pierwiastki1.html" class="quiz-link">
+                        <span>Pierwiastki kolumn 1 i 2 – pytania o symbole</span>
+                        <span class="arrow">→</span>
+                    </a>
+                    <a href="na_serwer/pyt/pierwiastki1a.html" class="quiz-link">
+                        <span>Pierwiastki kolumn 1 i 2 – pytania o nazwy</span>
+                        <span class="arrow">→</span>
+                    </a>
+                    <a href="na_serwer/pyt/pierwiastki18.html" class="quiz-link">
+                        <span>Pierwiastki kolumny 18 – pytania o symbole</span>
+                        <span class="arrow">→</span>
+                    </a>
+                    <a href="na_serwer/pyt/pierwiastki18a.html" class="quiz-link">
+                        <span>Pierwiastki kolumny 18 – pytania o nazwy</span>
+                        <span class="arrow">→</span>
+                    </a>
+                    <a href="na_serwer/pyt/pierwiastki_wybrane.html" class="quiz-link">
+                        <span>Wybrane inne pierwiastki – pytania o symbole</span>
+                        <span class="arrow">→</span>
+                    </a>
+                    <a href="na_serwer/pyt/pierwiastki_wybrane_a.html" class="quiz-link">
+                        <span>Wybrane inne pierwiastki – pytania o nazwy</span>
+                        <span class="arrow">→</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 8. Fizyka -->
+            <div class="subject-card theme-phys">
+                <div class="subject-header">
+                    <div class="subject-title">⚡ Fizyka</div>
+                    <span class="subject-badge">1 quiz</span>
+                </div>
+                <div class="quiz-list">
+                    <a href="na_serwer/pyt/sila.html" class="quiz-link">
+                        <span>Pytania o siłę i dynamikę</span>
+                        <span class="arrow">→</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 9. Narzędzia pomocnicze -->
+            <div class="subject-card theme-tools">
+                <div class="subject-header">
+                    <div class="subject-title">🎙️ Narzędzia AI</div>
+                    <span class="subject-badge">Audio</span>
+                </div>
+                <div class="quiz-list">
+                    <a href="na_serwer/pyt/glos.html" class="quiz-link">
+                        <span>Narrator AI (Synteza mowy)</span>
+                        <span class="arrow">→</span>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Logika zarządzania kluczem Gemini API
+        function updateKeyStatusDisplay() {
+            const saved = localStorage.getItem('gemini_api_key');
+            const statusEl = document.getElementById('gemini-key-status');
+            const inputEl = document.getElementById('gemini-key-input');
+
+            if (saved && saved.trim().length > 10) {
+                statusEl.innerText = '✅ Klucz aktywny (' + saved.substring(0, 6) + '...' + saved.substring(saved.length - 4) + ')';
+                statusEl.style.background = 'rgba(22, 101, 52, 0.9)';
+                statusEl.style.color = '#4ade80';
+                inputEl.value = saved;
+            } else {
+                statusEl.innerText = '❌ Brak zapisanego klucza';
+                statusEl.style.background = 'rgba(153, 27, 27, 0.9)';
+                statusEl.style.color = '#fca5a5';
+                inputEl.value = '';
+            }
+        }
+
+        function saveGeminiKey() {
+            const input = document.getElementById('gemini-key-input').value.trim();
+            if (input.length < 10) {
+                alert('Wprowadź prawidłowy klucz Google Gemini API!');
+                return;
+            }
+            localStorage.setItem('gemini_api_key', input);
+            updateKeyStatusDisplay();
+            alert('Klucz Gemini API został pomyślnie zapisany w przeglądarce!\nWszystkie quizy i gry AI będą teraz z niego automatycznie korzystać.');
+        }
+
+        function removeGeminiKey() {
+            if (confirm('Czy na pewno chcesz usunąć zapisany klucz API z pamięci przeglądarki?')) {
+                localStorage.removeItem('gemini_api_key');
+                updateKeyStatusDisplay();
+            }
+        }
+
+        function toggleKeyVisibility() {
+            const input = document.getElementById('gemini-key-input');
+            const btn = document.getElementById('toggle-vis-btn');
+            if (input.type === 'password') {
+                input.type = 'text';
+                btn.innerText = '🔒 Ukryj';
+            } else {
+                input.type = 'password';
+                btn.innerText = '👁️ Pokaż';
+            }
+        }
+
+        // Dynamiczny filtr wyszukiwania quizów
+        function filterQuizzes(query) {
+            const q = query.toLowerCase().trim();
+            const cards = document.querySelectorAll('.subject-card');
+
+            cards.forEach(card => {
+                const links = card.querySelectorAll('.quiz-link');
+                let hasVisible = false;
+
+                links.forEach(link => {
+                    const text = link.innerText.toLowerCase();
+                    if (text.includes(q) || q === '') {
+                        link.style.display = 'flex';
+                        hasVisible = true;
+                    } else {
+                        link.style.display = 'none';
+                    }
+                });
+
+                if (hasVisible) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', updateKeyStatusDisplay);
+        updateKeyStatusDisplay();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HACK CLUB – Szkoła Podstawowa nr 1 w Brwinowie</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+        :root {
+            --primary-glow: #38bdf8;
+            --quiz-color: #ef4444;
+            --rozrywka-color: #f59e0b;
+            --hack-color: #06b6d4;
+            --bg-dark: #070d18;
+            --card-bg: rgba(15, 23, 42, 0.75);
+            --card-border: rgba(56, 189, 248, 0.25);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: #f1f5f9;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            overflow-x: hidden;
+            position: relative;
+            padding: 40px 20px 60px;
+        }
+
+        /* Tło z animowanymi cząsteczkami kosmosu */
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .main-container {
+            max-width: 1000px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 28px;
+            z-index: 1;
+        }
+
+        /* Nagłówek główny */
+        .hero-header {
+            text-align: center;
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.8) 100%);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            padding: 24px 32px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7), 0 0 20px rgba(56, 189, 248, 0.15);
+            backdrop-filter: blur(12px);
+            width: 100%;
+        }
+
+        .badge-club {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(6, 182, 212, 0.15);
+            border: 1px solid #06b6d4;
+            color: #67e8f9;
+            font-size: 0.85rem;
+            font-weight: 700;
+            padding: 6px 14px;
+            border-radius: 9999px;
+            margin-bottom: 12px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .hero-title {
+            font-size: 2.1rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 0%, #38bdf8 50%, #818cf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+            line-height: 1.25;
+        }
+
+        .hero-subtitle {
+            font-size: 1.1rem;
+            color: #94a3b8;
+            font-weight: 400;
+        }
+
+        /* Karta powitalna AI */
+        .ai-welcome-card {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(129, 140, 248, 0.3);
+            border-radius: 16px;
+            padding: 20px 28px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+        }
+
+        .ai-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #06b6d4, #8b5cf6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.5);
+            flex-shrink: 0;
+            animation: pulse-avatar 3s infinite ease-in-out;
+        }
+
+        @keyframes pulse-avatar {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 15px rgba(6, 182, 212, 0.4); }
+            50% { transform: scale(1.05); box-shadow: 0 0 25px rgba(139, 92, 246, 0.7); }
+        }
+
+        .ai-text h4 {
+            color: #e0e7ff;
+            font-size: 1.15rem;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ai-status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #10b981;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 8px #10b981;
+        }
+
+        .ai-text p {
+            color: #94a3b8;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        /* Siatka głównych sekcji (Kafle nawigacyjne) */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 22px;
+            width: 100%;
+        }
+
+        .nav-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 24px;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .nav-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: currentColor;
+            opacity: 0.8;
+            transition: height 0.3s;
+        }
+
+        .nav-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7), 0 0 25px currentColor;
+        }
+
+        .nav-card:hover::before {
+            height: 6px;
+        }
+
+        .card-icon {
+            font-size: 2.2rem;
+            margin-bottom: 12px;
+            display: inline-block;
+            transition: transform 0.3s;
+        }
+
+        .nav-card:hover .card-icon {
+            transform: scale(1.15) rotate(5deg);
+        }
+
+        .card-title {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+
+        .card-desc {
+            font-size: 0.92rem;
+            color: #94a3b8;
+            line-height: 1.45;
+            margin-bottom: 20px;
+            flex-grow: 1;
+        }
+
+        .card-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: inherit;
+            transition: gap 0.2s;
+        }
+
+        .nav-card:hover .card-action {
+            gap: 10px;
+        }
+
+        /* Kolory specyficzne dla kart */
+        .card-quiz {
+            color: #f87171;
+            border-color: rgba(239, 68, 68, 0.35);
+        }
+        .card-quiz:hover {
+            border-color: #ef4444;
+            color: #ef4444;
+        }
+
+        .card-rozrywka {
+            color: #fbbf24;
+            border-color: rgba(245, 158, 11, 0.35);
+        }
+        .card-rozrywka:hover {
+            border-color: #f59e0b;
+            color: #f59e0b;
+        }
+
+        .card-hack {
+            color: #38bdf8;
+            border-color: rgba(6, 182, 212, 0.35);
+        }
+        .card-hack:hover {
+            border-color: #06b6d4;
+            color: #06b6d4;
+        }
+
+        /* Stopka i licznik */
+        .footer-section {
+            margin-top: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            color: #64748b;
+            font-size: 0.82rem;
+        }
+
+        #sfcf6k7ajzr2quygt5cp9cycrfdabry7y56 {
+            transform: scale(0.72);
+            transform-origin: center center;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+
+        #sfcf6k7ajzr2quygt5cp9cycrfdabry7y56:hover {
+            opacity: 1;
+        }
+
+        @media (max-width: 640px) {
+            .hero-title { font-size: 1.6rem; }
+            .ai-welcome-card { flex-direction: column; text-align: center; }
+            .cards-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <canvas id="bg-canvas"></canvas>
+
+    <div class="main-container">
+        <!-- Nagłówek -->
+        <header class="hero-header">
+            <div class="badge-club">🚀 Szkoła Podstawowa nr 1 w Brwinowie</div>
+            <h1 class="hero-title">Witaj w HACK CLUB</h1>
+            <p class="hero-subtitle">Centrum wiedzy, edukacji z AI, quizów szkolnych i symulacji 3D</p>
+        </header>
+
+        <!-- Karta powitania AI -->
+        <div class="ai-welcome-card">
+            <div class="ai-avatar">🤖</div>
+            <div class="ai-text">
+                <h4><span class="ai-status-dot"></span> Cześć, jestem Twoją Wirtualną Prowadzącą!</h4>
+                <p>
+                    Jestem Sztuczną Inteligencją, która towarzyszy Ci podczas quizów i nauki.
+                    Zadaję inspirujące pytania, sprawdzam odpowiedzi, tłumaczę gramatykę i dbam o świetną zabawę!
+                </p>
+            </div>
+        </div>
+
+        <!-- Siatka kart głównych modułów -->
+        <div class="cards-grid">
+            <!-- Karta 1: Quizy Szkolne -->
+            <a href="pomocnicze.html" class="nav-card card-quiz">
+                <div>
+                    <span class="card-icon">📚</span>
+                    <h3 class="card-title">Quizy Szkolne</h3>
+                    <p class="card-desc">
+                        Interaktywne pytania z języka angielskiego, polskiego, historii, geografii i matematyki. Ucz się z asystentem głosowym AI!
+                    </p>
+                </div>
+                <div class="card-action">
+                    <span>Otwórz Quizy</span>
+                    <span>→</span>
+                </div>
+            </a>
+
+            <!-- Karta 2: Strefa Rozrywki i Fraktali -->
+            <a href="rozrywka.html" class="nav-card card-rozrywka">
+                <div>
+                    <span class="card-icon">🪐</span>
+                    <h3 class="card-title">Strefa Rozrywki</h3>
+                    <p class="card-desc">
+                        Nieskończony Zoom, Mandelbulb 3D, generowanie gór i chmur, efekty ognia i błyskawic oraz 3D głębia jeziora!
+                    </p>
+                </div>
+                <div class="card-action">
+                    <span>Odkryj Świat 3D</span>
+                    <span>→</span>
+                </div>
+            </a>
+
+            <!-- Karta 3: Hack Club -->
+            <a href="hack_club.html" class="nav-card card-hack">
+                <div>
+                    <span class="card-icon">💻</span>
+                    <h3 class="card-title">Hack Club</h3>
+                    <p class="card-desc">
+                        Poznaj nasz klub programistyczny, projekty kodowania, warsztaty i technologiczne wyzwania dla uczniów.
+                    </p>
+                </div>
+                <div class="card-action">
+                    <span>Zobacz Projekty</span>
+                    <span>→</span>
+                </div>
+            </a>
+        </div>
+
+        <!-- Stopka, licznik i analityka -->
+        <footer class="footer-section">
+            <div id="sfcf6k7ajzr2quygt5cp9cycrfdabry7y56"></div>
+            <p>© HACK CLUB – Szkoła Podstawowa nr 1 w Brwinowie</p>
+        </footer>
+    </div>
+
+    <!-- Tło z ruchomymi gwiazdami (Starfield) -->
+    <script>
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let stars = [];
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            initStars();
+        }
+
+        function initStars() {
+            stars = [];
+            const numStars = Math.floor((canvas.width * canvas.height) / 8000);
+            for (let i = 0; i < numStars; i++) {
+                stars.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    radius: Math.random() * 1.5 + 0.5,
+                    alpha: Math.random() * 0.7 + 0.3,
+                    speed: Math.random() * 0.4 + 0.1
+                });
+            }
+        }
+
+        function animateStars() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let star of stars) {
+                star.y -= star.speed;
+                if (star.y < 0) {
+                    star.y = canvas.height;
+                    star.x = Math.random() * canvas.width;
+                }
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(125, 211, 252, ${star.alpha})`;
+                ctx.shadowBlur = star.radius * 4;
+                ctx.shadowColor = '#38bdf8';
+                ctx.fill();
+            }
+            ctx.shadowBlur = 0;
+            requestAnimationFrame(animateStars);
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+        animateStars();
+    </script>
+
+    <!-- Licznik i statystyki -->
+    <script type="text/javascript"
+        src="https://counter4.optistats.ovh/private/counter.js?c=f6k7ajzr2quygt5cp9cycrfdabry7y56&down=async"
+        async></script>
+    <noscript><a href="https://www.freecounterstat.com" title="page counter"><img
+                src="https://counter4.optistats.ovh/private/freecounterstat.php?c=f6k7ajzr2quygt5cp9cycrfdabry7y56"
+                border="0" title="page counter" alt="page counter"></a></noscript>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZP827DTZJ5"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-ZP827DTZJ5');
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../style.css" />
+    <title>Zbiory Julii – Dynamiczny Fraktal</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            background: #060d17;
+            color: #f1f5f9;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            text-align: center;
+        }
+
+        h1 {
+            color: #a855f7;
+            font-size: 2.2rem;
+            margin-bottom: 6px;
+            text-shadow: 0 0 16px rgba(168, 85, 247, 0.55);
+        }
+
+        .formula {
+            font-size: 1.12rem;
+            color: #cbd5e1;
+            margin-bottom: 18px;
+            line-height: 1.6;
+        }
+
+        .math {
+            font-family: 'Cambria Math', 'Times New Roman', serif;
+            font-style: italic;
+            background: rgba(168, 85, 247, 0.15);
+            padding: 3px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(168, 85, 247, 0.35);
+            color: #d8b4fe;
+            font-size: 1.1rem;
+        }
+
+        .controls-top {
+            margin: 15px auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn-start {
+            background: linear-gradient(135deg, #9333ea 0%, #7e22ce 100%);
+            color: #ffffff;
+            font-size: 1.25rem;
+            font-weight: 700;
+            padding: 12px 36px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 4px 18px rgba(147, 51, 234, 0.45);
+            transition: all 0.25s ease;
+        }
+
+        .btn-start:hover {
+            background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%);
+            box-shadow: 0 0 25px rgba(168, 85, 247, 0.8);
+            transform: scale(1.04);
+        }
+
+        .btn-secondary {
+            background: rgba(30, 41, 59, 0.85);
+            color: #e2e8f0;
+            font-size: 0.95rem;
+            padding: 10px 16px;
+            border: 1px solid #475569;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-secondary:hover {
+            color: #d8b4fe;
+            border-color: #a855f7;
+            background: rgba(51, 65, 85, 0.95);
+        }
+
+        .animation-panel {
+            display: none;
+            margin: 12px auto;
+            max-width: 860px;
+            background: rgba(15, 23, 42, 0.85);
+            padding: 14px 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45);
+        }
+
+        .panel-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin: 8px 0;
+            font-size: 0.95rem;
+            color: #cbd5e1;
+        }
+
+        .panel-row select, .panel-row input[type="range"] {
+            background: #1e293b;
+            color: #f8fafc;
+            border: 1px solid #475569;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .panel-row select:focus {
+            border-color: #a855f7;
+        }
+
+        .c-params-display {
+            font-family: monospace;
+            background: rgba(30, 41, 59, 0.9);
+            padding: 5px 12px;
+            border-radius: 6px;
+            border: 1px solid #64748b;
+            color: #38bdf8;
+            font-size: 0.95rem;
+        }
+
+        .canvas-container {
+            display: none;
+            margin: 16px auto 20px auto;
+            max-width: 820px;
+            position: relative;
+        }
+
+        canvas {
+            display: block;
+            margin: 0 auto;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.85), 0 0 32px rgba(168, 85, 247, 0.4);
+            background-color: #000000;
+            cursor: crosshair;
+            max-width: 100%;
+            height: auto;
+        }
+
+        .hud-stats {
+            display: flex;
+            justify-content: space-between;
+            max-width: 800px;
+            margin: 8px auto 0 auto;
+            font-size: 0.85rem;
+            color: #94a3b8;
+            font-family: monospace;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .hint {
+            font-size: 0.88rem;
+            color: #94a3b8;
+            margin-top: 10px;
+        }
+
+        .nav-links {
+            margin-top: 35px;
+            margin-bottom: 25px;
+        }
+
+        .nav-link {
+            color: #94a3b8;
+            text-decoration: none;
+            margin: 0 14px;
+            font-size: 1.05rem;
+            border-bottom: 1px dashed #64748b;
+            transition: color 0.2s ease;
+        }
+
+        .nav-link:hover {
+            color: #a855f7;
+            border-bottom-color: #a855f7;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Zbiory Julii</h1>
+    <p class="formula">
+        Rodzina fraktali generowana przez równanie: <span class="math">z<sub>n+1</sub> = z<sub>n</sub><sup>2</sup> + c</span> 
+        gdzie każda wartość stałej zespolonej <span class="math">c = c<sub>r</sub> + i·c<sub>i</sub></span> tworzy całkowicie unikalny fraktalny wszechświat!
+    </p>
+
+    <!-- Główny przycisk Start na samej górze -->
+    <div class="controls-top">
+        <button id="startBtn" class="btn-start" onclick="toggleAnimation()">▶ Start</button>
+        <button id="audioToggleBtn" class="btn-secondary" onclick="toggleAudio()">🔊 Muzyka: WŁ</button>
+        <button id="resetBtn" class="btn-secondary" onclick="resetView()" style="display: none;">↺ Reset widoku</button>
+    </div>
+
+    <!-- Panel ustawień animacji -->
+    <div id="animPanel" class="animation-panel">
+        <div class="panel-row">
+            <label for="presetSelect"><strong>Preset kształtu:</strong></label>
+            <select id="presetSelect" onchange="applyPreset()">
+                <option value="rabbit" selected>🐇 Smok Douady'ego (Douady's Rabbit)</option>
+                <option value="dendrite">❄️ Drzewo Dendrytowe (Dendrite)</option>
+                <option value="san_marco">🏛️ Fraktal San Marco</option>
+                <option value="siebel">🌀 Błękitna Spirala Siebela</option>
+                <option value="star">🌌 Kosmiczny Wir Gwiazdy</option>
+                <option value="cauliflower">🥦 Kalafior Fatou (Fatou Dust)</option>
+                <option value="medusa">⚡ Elektryczna Meduza</option>
+                <option value="golden">🔮 Złoty Wir (Golden Ratio)</option>
+            </select>
+
+            <label for="modeSelect"><strong>Efekt:</strong></label>
+            <select id="modeSelect" onchange="changeMode()">
+                <option value="orbit" selected>🌀 Wędrówka stałej C (Taniec kształtów)</option>
+                <option value="mouse">🖱️ Sterowanie myszą (Ruch myszką = zmiana C)</option>
+                <option value="zoom">🔍 Płynny nieskończony zoom</option>
+                <option value="waves">🌊 Hipnotyczny przepływ fal barwnych</option>
+                <option value="static">⏸️ Statyczny kadr (Ręczna edycja C)</option>
+            </select>
+        </div>
+
+        <div class="panel-row">
+            <label for="speedSlider">Prędkość:</label>
+            <input type="range" id="speedSlider" min="0.2" max="2.5" step="0.1" value="1.0" oninput="updateSpeed(this.value)">
+            <span id="speedVal" style="font-family: monospace; min-width: 35px;">1.0x</span>
+
+            <span class="c-params-display" id="cDisplay">c = -0.1230 + 0.7450i</span>
+
+            <label><input type="checkbox" id="interiorColoringCb" checked onchange="if(!isRunning) renderFrame(animTime)"> 🌌 Kolorowe wnętrze (Orbit Traps)</label>
+        </div>
+
+        <div class="panel-row" id="manualCRow" style="font-size: 0.88rem; color: #94a3b8;">
+            <label>Ręczne c<sub>r</sub>: <input type="range" id="crSlider" min="-2.0" max="2.0" step="0.001" value="-0.123" oninput="manualCChange()" style="width: 130px;"></label>
+            <label>c<sub>i</sub>: <input type="range" id="ciSlider" min="-2.0" max="2.0" step="0.001" value="0.745" oninput="manualCChange()" style="width: 130px;"></label>
+        </div>
+    </div>
+
+    <!-- Płótno z dynamicznym fraktalem umieszczone pod guzikami -->
+    <div id="canvasContainer" class="canvas-container">
+        <canvas id="juliaCanvas" width="640" height="480"></canvas>
+        <div class="hud-stats">
+            <span id="fpsDisplay">FPS: --</span>
+            <span id="modeDisplay">Tryb: Wędrówka C</span>
+            <span id="timeDisplay">Czas: 0.0s</span>
+        </div>
+        <p class="hint">Wskazówka: Kliknij lewym przyciskiem myszy, aby przybliżyć; prawym, aby oddalić; lub włącz tryb „Sterowanie myszą”, aby badać kształty ruchem kursora!</p>
+    </div>
+
+    <div class="nav-links">
+        <a href="../rozrywka.html" class="nav-link">← Powrót do Rozrywki</a>
+        <a href="zbior_mandelbrota.html" class="nav-link">Zbiór Mandelbrota</a>
+        <a href="../index.html" class="nav-link">Strona główna</a>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('juliaCanvas');
+        const ctx = canvas.getContext('2d');
+        const canvasContainer = document.getElementById('canvasContainer');
+        const animPanel = document.getElementById('animPanel');
+        const startBtn = document.getElementById('startBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const presetSelect = document.getElementById('presetSelect');
+        const modeSelect = document.getElementById('modeSelect');
+        const speedSlider = document.getElementById('speedSlider');
+        const speedVal = document.getElementById('speedVal');
+        const fpsDisplay = document.getElementById('fpsDisplay');
+        const modeDisplay = document.getElementById('modeDisplay');
+        const timeDisplay = document.getElementById('timeDisplay');
+        const cDisplay = document.getElementById('cDisplay');
+        const interiorColoringCb = document.getElementById('interiorColoringCb');
+        const crSlider = document.getElementById('crSlider');
+        const ciSlider = document.getElementById('ciSlider');
+
+        const width = canvas.width;
+        const height = canvas.height;
+
+        const imgData = ctx.createImageData(width, height);
+        const buf32 = new Uint32Array(imgData.data.buffer);
+
+        // Prekalkulowana 32-bitowa paleta barw (ABGR little-endian: fiolety, purpura, szmaragd, błękit, złoto)
+        const PALETTE_SIZE = 2048;
+        const palette = new Uint32Array(PALETTE_SIZE);
+
+        for (let i = 0; i < PALETTE_SIZE; i++) {
+            const t = i / PALETTE_SIZE;
+            const r = Math.floor(Math.sin(t * Math.PI * 2 + 0.5) * 115 + 135);
+            const g = Math.floor(Math.sin(t * Math.PI * 2 + 2.4) * 115 + 135);
+            const b = Math.floor(Math.sin(t * Math.PI * 2 + 4.5) * 115 + 135);
+            palette[i] = (255 << 24) | (b << 16) | (g << 8) | r;
+        }
+
+        // Domyślne granice widoku
+        const DEFAULT_SPAN_X = 3.2;
+        const DEFAULT_SPAN_Y = 2.4;
+        let centerX = 0.0;
+        let centerY = 0.0;
+        let spanX = DEFAULT_SPAN_X;
+        let spanY = DEFAULT_SPAN_Y;
+
+        // Parametry stałej zespolonej c
+        let cr = -0.123;
+        let ci = 0.745;
+
+        // Presety stałej C
+        const presets = {
+            'rabbit':      { cr: -0.123,   ci: 0.745 },
+            'dendrite':    { cr: -0.400,   ci: 0.600 },
+            'san_marco':   { cr: -0.750,   ci: 0.000 },
+            'siebel':      { cr: -0.700,   ci: 0.27015 },
+            'star':        { cr: -0.800,   ci: 0.156 },
+            'cauliflower': { cr: 0.285,    ci: 0.010 },
+            'medusa':      { cr: -0.7269,  ci: 0.1889 },
+            'golden':      { cr: -0.74543, ci: 0.11301 }
+        };
+
+        let isRunning = false;
+        let animationId = null;
+        let animTime = 0;
+        let speed = 1.0;
+        let currentMode = 'orbit';
+
+        // Pomiary FPS
+        let lastFrameTime = performance.now();
+        let frameCount = 0;
+        let lastFpsUpdate = performance.now();
+
+        function updateSpeed(val) {
+            speed = parseFloat(val);
+            speedVal.innerText = speed.toFixed(1) + 'x';
+        }
+
+        function applyPreset() {
+            const p = presets[presetSelect.value];
+            if (p) {
+                cr = p.cr;
+                ci = p.ci;
+                crSlider.value = cr;
+                ciSlider.value = ci;
+                updateCDisplay();
+                if (!isRunning) renderFrame(animTime);
+            }
+        }
+
+        function changeMode() {
+            currentMode = modeSelect.value;
+            const names = {
+                'orbit': 'Tryb: Wędrówka C',
+                'mouse': 'Tryb: Sterowanie myszą',
+                'zoom': 'Tryb: Nieskończony Zoom',
+                'waves': 'Tryb: Przepływ fal barwnych',
+                'static': 'Tryb: Statyczny kadr'
+            };
+            modeDisplay.innerText = names[currentMode] || 'Tryb: Dynamiczny';
+            if (!isRunning) renderFrame(animTime);
+        }
+
+        function manualCChange() {
+            cr = parseFloat(crSlider.value);
+            ci = parseFloat(ciSlider.value);
+            updateCDisplay();
+            if (!isRunning) renderFrame(animTime);
+        }
+
+        function updateCDisplay() {
+            const sign = ci >= 0 ? '+' : '-';
+            cDisplay.innerText = `c = ${cr.toFixed(4)} ${sign} ${Math.abs(ci).toFixed(4)}i`;
+        }
+
+        function resetView() {
+            centerX = 0.0;
+            centerY = 0.0;
+            spanX = DEFAULT_SPAN_X;
+            spanY = DEFAULT_SPAN_Y;
+            animTime = 0;
+            applyPreset();
+            if (!isRunning) renderFrame(0);
+        }
+
+        function renderFrame(timeSec) {
+            let maxIter = 85;
+            const t = timeSec;
+
+            let curCr = cr;
+            let curCi = ci;
+            let colorShift = Math.floor(t * 110) % PALETTE_SIZE;
+
+            let curSpanX = spanX;
+            let curSpanY = spanY;
+
+            if (currentMode === 'orbit') {
+                // Harmoniczna pętla stałej C wokół kardioidy Mandelbrota
+                const baseP = presets[presetSelect.value] || presets['rabbit'];
+                const radius = 0.12;
+                curCr = baseP.cr + Math.sin(t * 0.45) * radius * 0.8;
+                curCi = baseP.ci + Math.cos(t * 0.45) * radius;
+                cr = curCr;
+                ci = curCi;
+                crSlider.value = cr;
+                ciSlider.value = ci;
+                updateCDisplay();
+            } 
+            else if (currentMode === 'zoom') {
+                // Ciągłe, płynne powiększanie w głąb struktur Julii
+                const zoomFactor = Math.pow(1.45, t * 0.85);
+                curSpanX = DEFAULT_SPAN_X / zoomFactor;
+                curSpanY = DEFAULT_SPAN_Y / zoomFactor;
+                const zoomLog = Math.log10(Math.max(1, zoomFactor));
+                maxIter = Math.min(450, Math.floor(80 + zoomLog * 32));
+                colorShift = Math.floor(t * 80) % PALETTE_SIZE;
+            } 
+            else if (currentMode === 'waves') {
+                colorShift = Math.floor(t * 260) % PALETTE_SIZE;
+            }
+
+            const xMin = centerX - curSpanX / 2;
+            const xMax = centerX + curSpanX / 2;
+            const yMin = centerY - curSpanY / 2;
+            const yMax = centerY + curSpanY / 2;
+
+            const useInteriorColor = interiorColoringCb && interiorColoringCb.checked;
+            let bufIdx = 0;
+
+            for (let py = 0; py < height; py++) {
+                const y0 = yMin + (py / height) * (yMax - yMin);
+
+                for (let px = 0; px < width; px++) {
+                    let x = xMin + (px / width) * (xMax - xMin);
+                    let y = y0;
+
+                    let iteration = 0;
+                    let minDistSq = 1e10;
+
+                    // Formuła Zioru Julii: z_{n+1} = z_n^2 + c
+                    while (x * x + y * y <= 4.0 && iteration < maxIter) {
+                        const xTemp = x * x - y * y + curCr;
+                        y = 2.0 * x * y + curCi;
+                        x = xTemp;
+
+                        const dSq = x * x + y * y;
+                        if (dSq < minDistSq) minDistSq = dSq;
+
+                        iteration++;
+                    }
+
+                    if (iteration === maxIter) {
+                        if (useInteriorColor) {
+                            // Orbit Traps + kąt fazowy wnętrza
+                            const d = Math.sqrt(minDistSq);
+                            const angle = Math.atan2(y, x);
+                            const pattern = Math.sin(d * 26.0 + angle * 4.0 + t * 2.2) * 0.5 + 0.5;
+                            const palIdx = Math.floor((d * 1700 + angle * 220 + colorShift * 1.5 + t * 160)) & (PALETTE_SIZE - 1);
+
+                            const rawColor = palette[palIdx];
+                            const r = (rawColor & 0xFF);
+                            const g = ((rawColor >> 8) & 0xFF);
+                            const b = ((rawColor >> 16) & 0xFF);
+
+                            const brightness = 0.40 + 0.60 * pattern;
+                            const finalR = Math.floor(r * brightness);
+                            const finalG = Math.floor(g * brightness);
+                            const finalB = Math.floor(b * brightness);
+
+                            buf32[bufIdx++] = (255 << 24) | (finalB << 16) | (finalG << 8) | finalR;
+                        } else {
+                            buf32[bufIdx++] = 0xFF000000;
+                        }
+                    } else {
+                        // Ciągłe wygładzanie iteracji (Smooth coloring)
+                        const palIdx = Math.floor((iteration * 28 + colorShift)) & (PALETTE_SIZE - 1);
+                        buf32[bufIdx++] = palette[palIdx];
+                    }
+                }
+            }
+
+            ctx.putImageData(imgData, 0, 0);
+        }
+
+        function animationLoop(now) {
+            if (!isRunning) return;
+
+            const delta = (now - lastFrameTime) / 1000;
+            lastFrameTime = now;
+
+            if (delta < 0.2) {
+                animTime += delta * speed;
+            }
+
+            renderFrame(animTime);
+
+            frameCount++;
+            if (now - lastFpsUpdate >= 500) {
+                const fps = Math.round((frameCount * 1000) / (now - lastFpsUpdate));
+                fpsDisplay.innerText = `FPS: ${fps}`;
+
+                let zoomSuffix = '';
+                if (currentMode === 'zoom') {
+                    const zFactor = Math.pow(1.45, animTime * 0.85);
+                    if (zFactor >= 1e5) {
+                        zoomSuffix = ` | Powiększenie: ${zFactor.toExponential(2)}x`;
+                    } else {
+                        zoomSuffix = ` | Powiększenie: ${zFactor.toFixed(1)}x`;
+                    }
+                }
+                timeDisplay.innerText = `Czas: ${animTime.toFixed(1)}s${zoomSuffix}`;
+                frameCount = 0;
+                lastFpsUpdate = now;
+            }
+
+            animationId = requestAnimationFrame(animationLoop);
+        }
+
+        // Generator ambientowej muzyki Web Audio API (Crystal Purple Julia Ambient)
+        class JuliaAmbientSynth {
+            constructor() {
+                this.audioCtx = null;
+                this.isPlaying = false;
+                this.masterGain = null;
+                this.filter = null;
+                this.droneOscs = [];
+                this.arpTimer = null;
+                this.isMuted = false;
+            }
+
+            init() {
+                if (this.audioCtx) return;
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                this.audioCtx = new AudioContext();
+
+                this.masterGain = this.audioCtx.createGain();
+                this.masterGain.gain.setValueAtTime(0.18, this.audioCtx.currentTime);
+
+                this.filter = this.audioCtx.createBiquadFilter();
+                this.filter.type = 'lowpass';
+                this.filter.frequency.setValueAtTime(750, this.audioCtx.currentTime);
+                this.filter.Q.setValueAtTime(3.5, this.audioCtx.currentTime);
+
+                this.filter.connect(this.masterGain);
+                this.masterGain.connect(this.audioCtx.destination);
+            }
+
+            start() {
+                if (this.isMuted) return;
+                this.init();
+                if (this.audioCtx.state === 'suspended') {
+                    this.audioCtx.resume();
+                }
+                if (this.isPlaying) return;
+                this.isPlaying = true;
+
+                this.masterGain.gain.cancelScheduledValues(this.audioCtx.currentTime);
+                this.masterGain.gain.setValueAtTime(0.0001, this.audioCtx.currentTime);
+                this.masterGain.gain.exponentialRampToValueAtTime(0.18, this.audioCtx.currentTime + 1.2);
+
+                const freqs = [65.41, 98.00, 130.81, 196.00]; // C2, G2, C3, G3
+                freqs.forEach((freq, idx) => {
+                    const osc = this.audioCtx.createOscillator();
+                    const gain = this.audioCtx.createGain();
+
+                    osc.type = idx % 2 === 0 ? 'sine' : 'triangle';
+                    osc.frequency.setValueAtTime(freq, this.audioCtx.currentTime);
+
+                    const lfo = this.audioCtx.createOscillator();
+                    const lfoGain = this.audioCtx.createGain();
+                    lfo.frequency.setValueAtTime(0.08 + idx * 0.04, this.audioCtx.currentTime);
+                    lfoGain.gain.setValueAtTime(1.8, this.audioCtx.currentTime);
+                    lfo.connect(lfoGain);
+                    lfoGain.connect(osc.frequency);
+                    lfo.start();
+
+                    gain.gain.setValueAtTime(0.22 / (idx + 1), this.audioCtx.currentTime);
+                    osc.connect(gain);
+                    gain.connect(this.filter);
+                    osc.start();
+
+                    this.droneOscs.push({ osc, lfo });
+                });
+
+                // Spokojne kryształowe akcenty arpeggio
+                const scaleNotes = [261.63, 311.13, 392.00, 466.16, 523.25, 622.25]; // C-moll / Eteryczna skala
+                const playChime = () => {
+                    if (!this.isPlaying) return;
+                    const note = scaleNotes[Math.floor(Math.random() * scaleNotes.length)];
+                    const osc = this.audioCtx.createOscillator();
+                    const gain = this.audioCtx.createGain();
+
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(note, this.audioCtx.currentTime);
+
+                    const now = this.audioCtx.currentTime;
+                    gain.gain.setValueAtTime(0.0001, now);
+                    gain.gain.exponentialRampToValueAtTime(0.06, now + 0.15);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, now + 2.8);
+
+                    osc.connect(gain);
+                    gain.connect(this.masterGain);
+
+                    osc.start(now);
+                    osc.stop(now + 3.0);
+
+                    const nextTime = 1200 + Math.random() * 2200;
+                    this.arpTimer = setTimeout(playChime, nextTime);
+                };
+
+                this.arpTimer = setTimeout(playChime, 1500);
+            }
+
+            stop() {
+                if (!this.isPlaying) return;
+                this.isPlaying = false;
+                if (this.arpTimer) clearTimeout(this.arpTimer);
+
+                if (this.masterGain && this.audioCtx) {
+                    this.masterGain.gain.cancelScheduledValues(this.audioCtx.currentTime);
+                    this.masterGain.gain.setValueAtTime(this.masterGain.gain.value, this.audioCtx.currentTime);
+                    this.masterGain.gain.exponentialRampToValueAtTime(0.0001, this.audioCtx.currentTime + 0.6);
+                }
+
+                setTimeout(() => {
+                    if (!this.isPlaying && this.droneOscs.length) {
+                        this.droneOscs.forEach(({ osc, lfo }) => {
+                            try { osc.stop(); lfo.stop(); } catch (e) {}
+                        });
+                        this.droneOscs = [];
+                    }
+                }, 650);
+            }
+
+            toggleMute() {
+                this.isMuted = !this.isMuted;
+                if (this.isMuted) {
+                    this.stop();
+                } else if (isRunning) {
+                    this.start();
+                }
+                return !this.isMuted;
+            }
+        }
+
+        const juliaAudio = new JuliaAmbientSynth();
+        const audioToggleBtn = document.getElementById('audioToggleBtn');
+
+        function toggleAudio() {
+            const isUnmuted = juliaAudio.toggleMute();
+            audioToggleBtn.innerText = isUnmuted ? '🔊 Muzyka: WŁ' : '🔇 Muzyka: WYŁ';
+            audioToggleBtn.style.color = isUnmuted ? '#d8b4fe' : '#94a3b8';
+        }
+
+        function toggleAnimation() {
+            if (!isRunning) {
+                isRunning = true;
+                canvasContainer.style.display = 'block';
+                animPanel.style.display = 'block';
+                resetBtn.style.display = 'inline-block';
+                startBtn.innerHTML = '⏸ Pauza';
+                startBtn.style.background = 'linear-gradient(135deg, #e11d48 0%, #be123c 100%)';
+                lastFrameTime = performance.now();
+                lastFpsUpdate = performance.now();
+                frameCount = 0;
+                juliaAudio.start();
+                animationId = requestAnimationFrame(animationLoop);
+            } else {
+                isRunning = false;
+                if (animationId) cancelAnimationFrame(animationId);
+                juliaAudio.stop();
+                startBtn.innerHTML = '▶ Wznów';
+                startBtn.style.background = 'linear-gradient(135deg, #9333ea 0%, #7e22ce 100%)';
+            }
+        }
+
+        // Interaktywna zmiana stałej C ruchem myszy
+        canvas.addEventListener('mousemove', function (e) {
+            if (currentMode === 'mouse') {
+                const rect = canvas.getBoundingClientRect();
+                const mouseX = (e.clientX - rect.left) / rect.width;
+                const mouseY = (e.clientY - rect.top) / rect.height;
+
+                // Mapowanie pozycji kursora na płaszczyznę zespoloną stałej C
+                cr = (mouseX - 0.5) * 2.2;
+                ci = (mouseY - 0.5) * 2.2;
+                crSlider.value = cr;
+                ciSlider.value = ci;
+                updateCDisplay();
+                if (!isRunning) renderFrame(animTime);
+            }
+        });
+
+        // Interaktywne przybliżanie kliknięciem lewym przyciskiem myszy
+        canvas.addEventListener('click', function (e) {
+            if (currentMode === 'mouse') return;
+
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = (e.clientX - rect.left) * (canvas.width / rect.width);
+            const mouseY = (e.clientY - rect.top) * (canvas.height / rect.height);
+
+            const clickX = centerX - spanX / 2 + (mouseX / width) * spanX;
+            const clickY = centerY - spanY / 2 + (mouseY / height) * spanY;
+
+            const zoomFactor = 0.55;
+            centerX = clickX;
+            centerY = clickY;
+            spanX *= zoomFactor;
+            spanY *= zoomFactor;
+
+            if (!isRunning) renderFrame(animTime);
+        });
+
+        // Oddalanie prawym przyciskiem myszy
+        canvas.addEventListener('contextmenu', function (e) {
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = (e.clientX - rect.left) * (canvas.width / rect.width);
+            const mouseY = (e.clientY - rect.top) * (canvas.height / rect.height);
+
+            const clickX = centerX - spanX / 2 + (mouseX / width) * spanX;
+            const clickY = centerY - spanY / 2 + (mouseY / height) * spanY;
+
+            const zoomFactor = 1.8;
+            centerX = clickX;
+            centerY = clickY;
+            spanX *= zoomFactor;
+            spanY *= zoomFactor;
+
+            if (!isRunning) renderFrame(animTime);
+        });
+
+        // Obsługa kółka myszy (Scroll Zoom)
+        canvas.addEventListener('wheel', function (e) {
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = (e.clientX - rect.left) * (canvas.width / rect.width);
+            const mouseY = (e.clientY - rect.top) * (canvas.height / rect.height);
+
+            const targetX = centerX - spanX / 2 + (mouseX / width) * spanX;
+            const targetY = centerY - spanY / 2 + (mouseY / height) * spanY;
+
+            const zoomRate = e.deltaY < 0 ? 0.8 : 1.25;
+            centerX = targetX + (centerX - targetX) * zoomRate;
+            centerY = targetY + (centerY - targetY) * zoomRate;
+            spanX *= zoomRate;
+            spanY *= zoomRate;
+
+            if (!isRunning) renderFrame(animTime);
+        }, { passive: false });
+
+        // Inicjalny podgląd
+        applyPreset();
+    </script>
+    <script src="nagrywanie_wideo.js"></script>
+</body>
+</html>

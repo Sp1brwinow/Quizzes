@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../style.css" />
+    <title>Rekurencyjna Układanka Pentagonalna Penrose’a w kompozycji Escherowskiej</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 15px;
+            min-height: 100vh;
+            background: #040914;
+            color: #f1f5f9;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            text-align: center;
+        }
+
+        h1 {
+            color: #f59e0b;
+            font-size: 1.85rem;
+            margin-bottom: 6px;
+            text-shadow: 0 0 14px rgba(245, 158, 11, 0.5);
+        }
+
+        .subtitle {
+            font-size: 1.05rem;
+            color: #94a3b8;
+            margin-bottom: 16px;
+            max-width: 860px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.5;
+        }
+
+        .golden-ratio {
+            color: #fcd34d;
+            font-weight: 600;
+            background: rgba(245, 158, 11, 0.15);
+            padding: 2px 6px;
+            border-radius: 4px;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .controls-top {
+            margin: 10px auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-start {
+            background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+            color: #ffffff;
+            font-size: 1.15rem;
+            font-weight: 700;
+            padding: 10px 28px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(217, 119, 6, 0.4);
+            transition: all 0.25s ease;
+        }
+
+        .btn-start:hover {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.7);
+            transform: scale(1.03);
+        }
+
+        .btn-secondary {
+            background: rgba(30, 41, 59, 0.85);
+            color: #e2e8f0;
+            font-size: 0.9rem;
+            padding: 8px 14px;
+            border: 1px solid #475569;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-secondary:hover {
+            color: #fcd34d;
+            border-color: #f59e0b;
+            background: rgba(51, 65, 85, 0.95);
+        }
+
+        .panel {
+            margin: 12px auto;
+            max-width: 880px;
+            background: rgba(15, 23, 42, 0.85);
+            padding: 12px 18px;
+            border-radius: 12px;
+            border: 1px solid rgba(245, 158, 11, 0.25);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            font-size: 0.92rem;
+        }
+
+        .panel label {
+            color: #cbd5e1;
+            font-weight: 500;
+        }
+
+        .panel select, .panel input[type="range"] {
+            background: #1e293b;
+            color: #f8fafc;
+            border: 1px solid #475569;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .panel select:focus {
+            border-color: #f59e0b;
+        }
+
+        .canvas-container {
+            margin: 15px auto 20px auto;
+            max-width: 840px;
+            position: relative;
+        }
+
+        canvas {
+            display: block;
+            margin: 0 auto;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.85), 0 0 25px rgba(245, 158, 11, 0.35);
+            background-color: #020617;
+            cursor: grab;
+            max-width: 100%;
+            height: auto;
+        }
+
+        canvas:active {
+            cursor: grabbing;
+        }
+
+        .hud-stats {
+            display: flex;
+            justify-content: space-between;
+            max-width: 820px;
+            margin: 8px auto 0 auto;
+            font-size: 0.85rem;
+            color: #94a3b8;
+            font-family: monospace;
+        }
+
+        .hint {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-top: 8px;
+        }
+
+        .nav-links {
+            margin-top: 30px;
+            margin-bottom: 25px;
+        }
+
+        .nav-link {
+            color: #94a3b8;
+            text-decoration: none;
+            margin: 0 14px;
+            font-size: 1rem;
+            border-bottom: 1px dashed #64748b;
+            transition: color 0.2s ease;
+        }
+
+        .nav-link:hover {
+            color: #f59e0b;
+            border-bottom-color: #f59e0b;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Rekurencyjna Układanka Pentagonalna Penrose’a</h1>
+    <p class="subtitle">
+        Aperiodyczny parkietaż fraktalny oparty na Złotym Podziale (<span class="golden-ratio">&phi; &approx; 1.618</span>) 
+        w hipnotycznej, symetrycznej kompozycji w stylu M.C. Eschera z łukami Ammanna i wstęgami harmonicznymi.
+    </p>
+
+    <div class="controls-top">
+        <button id="startBtn" class="btn-start" onclick="toggleAnimation()">▶ Start Animacji</button>
+        <button id="audioToggleBtn" class="btn-secondary" onclick="toggleAudio()">🔊 Muzyka: WŁ</button>
+        <button class="btn-secondary" onclick="stepDepth(-1)">➖ Zmniejsz rekurencję</button>
+        <span id="depthLabel" style="font-weight: bold; color: #fcd34d; min-width: 90px;">Poziom: 5</span>
+        <button class="btn-secondary" onclick="stepDepth(1)">➕ Zwiększ rekurencję</button>
+        <button class="btn-secondary" onclick="resetTransform()">↺ Resetuj widok</button>
+    </div>
+
+    <div class="panel">
+        <div>
+            <label for="patternSelect"><strong>Układ:</strong></label>
+            <select id="patternSelect" onchange="regenerate()">
+                <option value="sun">🌟 Słońce (10-krotna symetria)</option>
+                <option value="star">⭐ Gwiazda Pentagonalna</option>
+                <option value="pentagon">⬠ Pentagram Centralny</option>
+            </select>
+        </div>
+
+        <div>
+            <label for="paletteSelect"><strong>Paleta Escherowska:</strong></label>
+            <select id="paletteSelect" onchange="draw()">
+                <option value="gold-cobalt">Złoto & Królewski Kobalt</option>
+                <option value="escher-woodcut">Drzeworyt Eschera (Biel, Sepia, Heban)</option>
+                <option value="neon-cyber">Neonowy Cyberpunk (Turkus & Magenta)</option>
+                <option value="emerald-ruby">Szmaragd & Rubin</option>
+            </select>
+        </div>
+
+        <div>
+            <label><input type="checkbox" id="showRibbons" checked onchange="draw()"> Wstęgi Ammanna / Łuki Eschera</label>
+        </div>
+
+        <div>
+            <label><input type="checkbox" id="showBorders" checked onchange="draw()"> Krawędzie płytek</label>
+        </div>
+    </div>
+
+    <div class="canvas-container">
+        <canvas id="penroseCanvas" width="820" height="620"></canvas>
+        <div class="hud-stats">
+            <span id="tileCount">Liczba trójkątów: 0</span>
+            <span id="fpsDisplay">FPS: --</span>
+            <span id="scaleDisplay">Skala: 1.0x</span>
+        </div>
+        <p class="hint">Wskazówka: Możesz przeciągać płótno myszką (Pan) oraz przybliżać/oddalać kółkiem myszy (Zoom).</p>
+    </div>
+
+    <div class="nav-links">
+        <a href="../rozrywka.html" class="nav-link">← Powrót do Rozrywki</a>
+        <a href="zbior_mandelbrota.html" class="nav-link">Zbiór Mandelbrota</a>
+        <a href="../index.html" class="nav-link">Strona główna</a>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('penroseCanvas');
+        const ctx = canvas.getContext('2d');
+        const depthLabel = document.getElementById('depthLabel');
+        const tileCountEl = document.getElementById('tileCount');
+        const fpsDisplay = document.getElementById('fpsDisplay');
+        const scaleDisplay = document.getElementById('scaleDisplay');
+        const startBtn = document.getElementById('startBtn');
+        const patternSelect = document.getElementById('patternSelect');
+        const paletteSelect = document.getElementById('paletteSelect');
+        const showRibbonsCb = document.getElementById('showRibbons');
+        const showBordersCb = document.getElementById('showBorders');
+
+        const PHI = (1 + Math.sqrt(5)) / 2; // Złoty podział ~1.61803398875
+
+        let currentDepth = 5;
+        let triangles = [];
+
+        // Widok transformacji (Pan & Zoom & Rotate)
+        let panX = canvas.width / 2;
+        let panY = canvas.height / 2;
+        let scale = 360;
+        let baseRotation = 0;
+        let animRotation = 0;
+        let animWave = 0;
+
+        let isRunning = false;
+        let animFrameId = null;
+        let lastFrameTime = performance.now();
+        let frameCount = 0;
+        let lastFpsTime = performance.now();
+
+        // Obsługa myszy (Pan & Zoom)
+        let isDragging = false;
+        let dragStartX = 0;
+        let dragStartY = 0;
+
+        canvas.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            dragStartX = e.clientX - panX;
+            dragStartY = e.clientY - panY;
+        });
+
+        window.addEventListener('mouseup', () => { isDragging = false; });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            panX = e.clientX - dragStartX;
+            panY = e.clientY - dragStartY;
+            if (!isRunning) draw();
+        });
+
+        canvas.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const zoomFactor = e.deltaY < 0 ? 1.1 : 0.9;
+            scale *= zoomFactor;
+            scaleDisplay.innerText = `Skala: ${(scale / 360).toFixed(2)}x`;
+            if (!isRunning) draw();
+        }, { passive: false });
+
+        function resetTransform() {
+            panX = canvas.width / 2;
+            panY = canvas.height / 2;
+            scale = 360;
+            baseRotation = 0;
+            animRotation = 0;
+            scaleDisplay.innerText = `Skala: 1.0x`;
+            if (!isRunning) draw();
+        }
+
+        function stepDepth(delta) {
+            currentDepth = Math.max(0, Math.min(7, currentDepth + delta));
+            depthLabel.innerText = `Poziom: ${currentDepth}`;
+            regenerate();
+        }
+
+        // Definicja trójkątów Robinsona (A, B, C)
+        // type 0: Ostrokątny złoty trójkąt (72, 72, 36) - Pół rombu grubego / latawiec
+        // type 1: Rozwartokątny złoty trójkąt (36, 36, 108) - Pół rombu cienkiego / grot
+        function subdivide(trigList) {
+            const nextList = [];
+
+            for (let i = 0; i < trigList.length; i++) {
+                const t = trigList[i];
+                if (t.type === 0) {
+                    // Trójkąt ostrokątny (A: kąt 36, B: kąt 72, C: kąt 72)
+                    // P = A + (B - A) / PHI
+                    const P = {
+                        x: t.A.x + (t.B.x - t.A.x) / PHI,
+                        y: t.A.y + (t.B.y - t.A.y) / PHI
+                    };
+                    nextList.push({ type: 0, A: t.C, B: P, C: t.A });
+                    nextList.push({ type: 1, A: P, B: t.C, C: t.B });
+                } else {
+                    // Trójkąt rozwartokątny (A: kąt 108, B: kąt 36, C: kąt 36)
+                    // Q = B + (A - B) / PHI
+                    // R = B + (C - B) / PHI
+                    const Q = {
+                        x: t.B.x + (t.A.x - t.B.x) / PHI,
+                        y: t.B.y + (t.A.y - t.B.y) / PHI
+                    };
+                    const R = {
+                        x: t.B.x + (t.C.x - t.B.x) / PHI,
+                        y: t.B.y + (t.C.y - t.B.y) / PHI
+                    };
+                    nextList.push({ type: 1, A: R, B: t.C, C: t.A });
+                    nextList.push({ type: 0, A: Q, B: R, C: t.B });
+                }
+            }
+            return nextList;
+        }
+
+        function createInitialPattern(pattern) {
+            const baseTrigs = [];
+            const count = 10;
+            const angleStep = Math.PI * 2 / count;
+
+            if (pattern === 'sun') {
+                // 10 trójkątów ostrokątnych stykających się wierzchołkami A w środku
+                for (let i = 0; i < count; i++) {
+                    const a1 = (i - 0.5) * angleStep;
+                    const a2 = (i + 0.5) * angleStep;
+                    const A = { x: 0, y: 0 };
+                    let B = { x: Math.cos(a1), y: Math.sin(a1) };
+                    let C = { x: Math.cos(a2), y: Math.sin(a2) };
+
+                    if (i % 2 === 0) {
+                        baseTrigs.push({ type: 0, A: A, B: B, C: C });
+                    } else {
+                        baseTrigs.push({ type: 0, A: A, B: C, C: B });
+                    }
+                }
+            } else if (pattern === 'star') {
+                // 10 trójkątów rozwartokątnych
+                for (let i = 0; i < count; i++) {
+                    const a1 = i * angleStep;
+                    const a2 = (i + 1) * angleStep;
+                    const A = { x: 0, y: 0 };
+                    const B = { x: Math.cos(a1) * PHI, y: Math.sin(a1) * PHI };
+                    const C = { x: Math.cos(a2) * PHI, y: Math.sin(a2) * PHI };
+
+                    if (i % 2 === 0) {
+                        baseTrigs.push({ type: 1, A: A, B: B, C: C });
+                    } else {
+                        baseTrigs.push({ type: 1, A: A, B: C, C: B });
+                    }
+                }
+            } else {
+                // Pentagram
+                for (let i = 0; i < 5; i++) {
+                    const a1 = i * (Math.PI * 2 / 5);
+                    const a2 = (i + 1) * (Math.PI * 2 / 5);
+                    const A = { x: 0, y: 0 };
+                    const B = { x: Math.cos(a1), y: Math.sin(a1) };
+                    const C = { x: Math.cos(a2), y: Math.sin(a2) };
+                    baseTrigs.push({ type: 0, A: A, B: B, C: C });
+                }
+            }
+            return baseTrigs;
+        }
+
+        function regenerate() {
+            let trigs = createInitialPattern(patternSelect.value);
+            for (let d = 0; d < currentDepth; d++) {
+                trigs = subdivide(trigs);
+            }
+            triangles = trigs;
+            tileCountEl.innerText = `Liczba trójkątów: ${triangles.length}`;
+            draw();
+        }
+
+        function getColors() {
+            const pal = paletteSelect.value;
+            if (pal === 'gold-cobalt') {
+                return {
+                    acute: ['#d97706', '#b45309', '#f59e0b', '#78350f'],
+                    obtuse: ['#1d4ed8', '#1e40af', '#2563eb', '#1e3a8a'],
+                    border: '#0f172a',
+                    ribbon1: '#fef08a',
+                    ribbon2: '#60a5fa'
+                };
+            } else if (pal === 'escher-woodcut') {
+                return {
+                    acute: ['#e2e8f0', '#cbd5e1', '#f8fafc', '#94a3b8'],
+                    obtuse: ['#1e293b', '#0f172a', '#334155', '#020617'],
+                    border: '#000000',
+                    ribbon1: '#f59e0b',
+                    ribbon2: '#e11d48'
+                };
+            } else if (pal === 'neon-cyber') {
+                return {
+                    acute: ['#06b6d4', '#0891b2', '#22d3ee', '#0e7490'],
+                    obtuse: ['#ec4899', '#db2777', '#f472b6', '#be185d'],
+                    border: '#030712',
+                    ribbon1: '#a855f7',
+                    ribbon2: '#38bdf8'
+                };
+            } else {
+                return {
+                    acute: ['#10b981', '#059669', '#34d399', '#047857'],
+                    obtuse: ['#e11d48', '#be123c', '#f43f5e', '#9f1239'],
+                    border: '#0f172a',
+                    ribbon1: '#fde047',
+                    ribbon2: '#a7f3d0'
+                };
+            }
+        }
+
+        function draw() {
+            ctx.save();
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Wypełnienie tła
+            ctx.fillStyle = '#020617';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Transformacja widoku
+            ctx.translate(panX, panY);
+            ctx.rotate(baseRotation + animRotation);
+            ctx.scale(scale, scale);
+
+            const colors = getColors();
+            const showRibbons = showRibbonsCb.checked;
+            const showBorders = showBordersCb.checked;
+
+            // Rysowanie płytek Penrose'a
+            for (let i = 0; i < triangles.length; i++) {
+                const t = triangles[i];
+                ctx.beginPath();
+                ctx.moveTo(t.A.x, t.A.y);
+                ctx.lineTo(t.B.x, t.B.y);
+                ctx.lineTo(t.C.x, t.C.y);
+                ctx.closePath();
+
+                // Dynamiczny odcień zależny od orientacji i fali animacji
+                const angle = Math.atan2((t.B.y + t.C.y)/2 - t.A.y, (t.B.x + t.C.x)/2 - t.A.x);
+                const colorIdx = Math.floor(Math.abs(Math.sin(angle * 2.5 + animWave) * 4)) % 4;
+
+                if (t.type === 0) {
+                    ctx.fillStyle = colors.acute[colorIdx];
+                } else {
+                    ctx.fillStyle = colors.obtuse[colorIdx];
+                }
+                ctx.fill();
+
+                if (showBorders) {
+                    ctx.lineWidth = 0.5 / scale;
+                    ctx.strokeStyle = colors.border;
+                    ctx.stroke();
+                }
+
+                // Escherowskie łuki Ammanna (wstęgi łączące sąsiadujące płytki)
+                if (showRibbons) {
+                    if (t.type === 0) {
+                        // Łuk na ostrokątnym trójkącie wokół A i B
+                        const r1 = 1 / PHI;
+                        ctx.beginPath();
+                        ctx.arc(t.A.x, t.A.y, r1 * 0.7, 0, Math.PI * 2);
+                        ctx.lineWidth = 1.2 / scale;
+                        ctx.strokeStyle = colors.ribbon1;
+                        ctx.stroke();
+                    } else {
+                        // Łuk na rozwartokątnym wokół C
+                        const r2 = 1 / (PHI * PHI);
+                        ctx.beginPath();
+                        ctx.arc(t.C.x, t.C.y, r2 * 1.1, 0, Math.PI * 2);
+                        ctx.lineWidth = 1.2 / scale;
+                        ctx.strokeStyle = colors.ribbon2;
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            ctx.restore();
+        }
+
+        function animationLoop(now) {
+            if (!isRunning) return;
+
+            const delta = (now - lastFrameTime) / 1000;
+            lastFrameTime = now;
+
+            if (delta < 0.2) {
+                animRotation += delta * 0.15; // Płynny powolny obrót
+                animWave += delta * 1.2;      // Falowanie barw
+            }
+
+            draw();
+
+            frameCount++;
+            if (now - lastFpsTime >= 500) {
+                const fps = Math.round((frameCount * 1000) / (now - lastFpsTime));
+                fpsDisplay.innerText = `FPS: ${fps}`;
+                frameCount = 0;
+                lastFpsTime = now;
+            }
+
+            animFrameId = requestAnimationFrame(animationLoop);
+        }
+
+        // Generator ambientowej muzyki Web Audio API (Fibonacci / Pentatonic Ambient Synth)
+        class AmbientMusicGenerator {
+            constructor() {
+                this.audioCtx = null;
+                this.isPlaying = false;
+                this.masterGain = null;
+                this.filter = null;
+                this.droneOscs = [];
+                this.arpTimer = null;
+                this.isMuted = false;
+            }
+
+            init() {
+                if (this.audioCtx) return;
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                this.audioCtx = new AudioContext();
+
+                this.masterGain = this.audioCtx.createGain();
+                this.masterGain.gain.setValueAtTime(0.18, this.audioCtx.currentTime);
+
+                // Ciepły filtr dolnoprzepustowy (dźwięk głębokiego kosmosu)
+                this.filter = this.audioCtx.createBiquadFilter();
+                this.filter.type = 'lowpass';
+                this.filter.frequency.setValueAtTime(700, this.audioCtx.currentTime);
+
+                // Przestrzenne echo / delay
+                const delay = this.audioCtx.createDelay();
+                delay.delayTime.setValueAtTime(0.38, this.audioCtx.currentTime);
+                const delayGain = this.audioCtx.createGain();
+                delayGain.gain.setValueAtTime(0.35, this.audioCtx.currentTime);
+
+                delay.connect(delayGain);
+                delayGain.connect(delay);
+                delayGain.connect(this.masterGain);
+
+                this.filter.connect(this.masterGain);
+                this.filter.connect(delay);
+                this.masterGain.connect(this.audioCtx.destination);
+            }
+
+            start() {
+                if (this.isMuted) return;
+                this.init();
+                if (this.audioCtx.state === 'suspended') {
+                    this.audioCtx.resume();
+                }
+                if (this.isPlaying) return;
+                this.isPlaying = true;
+
+                this.masterGain.gain.cancelScheduledValues(this.audioCtx.currentTime);
+                this.masterGain.gain.setValueAtTime(0.001, this.audioCtx.currentTime);
+                this.masterGain.gain.exponentialRampToValueAtTime(0.18, this.audioCtx.currentTime + 1.2);
+
+                // 1. Akordy tła (warm drones)
+                const chordFrequencies = [73.42, 110.00, 146.83, 220.00]; // D2, A2, D3, A3
+                this.droneOscs = chordFrequencies.map(freq => {
+                    const osc = this.audioCtx.createOscillator();
+                    const gain = this.audioCtx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, this.audioCtx.currentTime);
+
+                    // Płynne wibrato LFO
+                    const lfo = this.audioCtx.createOscillator();
+                    const lfoGain = this.audioCtx.createGain();
+                    lfo.frequency.setValueAtTime(0.12 + Math.random() * 0.08, this.audioCtx.currentTime);
+                    lfoGain.gain.setValueAtTime(0.9, this.audioCtx.currentTime);
+                    lfo.connect(lfoGain);
+                    lfoGain.connect(osc.frequency);
+                    lfo.start();
+
+                    gain.gain.setValueAtTime(0.04, this.audioCtx.currentTime);
+                    osc.connect(gain);
+                    gain.connect(this.filter);
+                    osc.start();
+                    return { osc, gain, lfo };
+                });
+
+                // 2. Generatywne dzwonki pentatoniczne / złotej proporcji
+                const scale = [293.66, 329.63, 369.99, 440.00, 554.37, 587.33, 659.25, 739.99, 880.00]; // D-dur / pentatonika
+
+                const playChime = () => {
+                    if (!this.isPlaying) return;
+
+                    const freq = scale[Math.floor(Math.random() * scale.length)];
+                    const osc = this.audioCtx.createOscillator();
+                    const gain = this.audioCtx.createGain();
+
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, this.audioCtx.currentTime);
+
+                    const now = this.audioCtx.currentTime;
+                    gain.gain.setValueAtTime(0.0001, now);
+                    gain.gain.exponentialRampToValueAtTime(0.07, now + 0.06);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, now + 2.2);
+
+                    osc.connect(gain);
+                    gain.connect(this.filter);
+
+                    osc.start(now);
+                    osc.stop(now + 2.3);
+
+                    // Rytm oparty na złotej proporcji
+                    const nextDelay = 350 + Math.random() * 500;
+                    this.arpTimer = setTimeout(playChime, nextDelay);
+                };
+
+                playChime();
+            }
+
+            stop() {
+                if (!this.isPlaying || !this.audioCtx) return;
+                this.isPlaying = false;
+                if (this.arpTimer) clearTimeout(this.arpTimer);
+
+                if (this.masterGain) {
+                    this.masterGain.gain.cancelScheduledValues(this.audioCtx.currentTime);
+                    this.masterGain.gain.setValueAtTime(this.masterGain.gain.value, this.audioCtx.currentTime);
+                    this.masterGain.gain.exponentialRampToValueAtTime(0.0001, this.audioCtx.currentTime + 0.6);
+                }
+
+                setTimeout(() => {
+                    if (!this.isPlaying && this.droneOscs.length) {
+                        this.droneOscs.forEach(({ osc, lfo }) => {
+                            try { osc.stop(); lfo.stop(); } catch (e) {}
+                        });
+                        this.droneOscs = [];
+                    }
+                }, 650);
+            }
+
+            toggleMute() {
+                this.isMuted = !this.isMuted;
+                if (this.isMuted) {
+                    this.stop();
+                } else if (isRunning) {
+                    this.start();
+                }
+                return !this.isMuted;
+            }
+        }
+
+        const ambientMusic = new AmbientMusicGenerator();
+        const audioToggleBtn = document.getElementById('audioToggleBtn');
+
+        function toggleAudio() {
+            const isUnmuted = ambientMusic.toggleMute();
+            audioToggleBtn.innerText = isUnmuted ? '🔊 Muzyka: WŁ' : '🔇 Muzyka: WYŁ';
+            audioToggleBtn.style.color = isUnmuted ? '#fcd34d' : '#94a3b8';
+        }
+
+        function toggleAnimation() {
+            if (!isRunning) {
+                isRunning = true;
+                startBtn.innerHTML = '⏸ Pauza';
+                startBtn.style.background = 'linear-gradient(135deg, #e11d48 0%, #be123c 100%)';
+                lastFrameTime = performance.now();
+                lastFpsTime = performance.now();
+                frameCount = 0;
+                ambientMusic.start();
+                animFrameId = requestAnimationFrame(animationLoop);
+            } else {
+                isRunning = false;
+                if (animFrameId) cancelAnimationFrame(animFrameId);
+                ambientMusic.stop();
+                startBtn.innerHTML = '▶ Wznów Animację';
+                startBtn.style.background = 'linear-gradient(135deg, #d97706 0%, #b45309 100%)';
+            }
+        }
+
+        // Pierwsza inicjalizacja
+        regenerate();
+    </script>
+    <script src="nagrywanie_wideo.js"></script>
+</body>
+</html>

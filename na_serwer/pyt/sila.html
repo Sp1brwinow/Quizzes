@@ -1,0 +1,91 @@
+<html>
+
+<head><script>/* <![CDATA[ */ ringDataLayer = {"context":{"variant":{"accelerator":"ZG93bmxvYWQucG9jenRhLm9uZXQucGw6OnByb2Rfd2l0aF91c2VyX2RhdGFfZG93bmxvYWRlcl9pbl9hd3NfMg=="},"id":{"website":"9481b0b7-7c3d-463b-8f3c-9de5c8289e21"}}}; /* ]]> */</script><script>/* <![CDATA[ */ accConf = {"events":{"endpointPaths":["/a8f4d8cd95e164917035b64b867a45dd"]}}; /* ]]> */</script>
+  <title>Club Noise Generator</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="quiz_style.css" />
+</head>
+
+<body>
+
+  <div class="container">
+    <div id="naglowek">
+      <p> Klasa 7 fizyka. Pytania o odziałowywania. </p>      
+      <p>AI zada ci kilka pytań, na które musisz odpowiedzieć.</p>
+      <p>Bardzo rzadko, ale czasami sztuczna inteligencja może się pomylić. Jak to się stanie, to wtedy jest punkt dla ciebie :).</p>
+      <p>  <i>Jeśli sama nie zadam pytań, to napisz mi "zadaj pytanie"</i></p>     
+
+      <br><br>
+    </div>
+    
+    <div id="conversation"></div>
+    <textarea id="input"></textarea><br>
+    <i>(Naciśnij enter!)</i>
+    
+      <!-- <p>
+        Current degree of belief<span id="CurrentDegreeOfBelief">: 0</span><br> 
+      </p>
+      -->
+  </div>
+
+  
+
+  <script src="../wizard_orpheus.js"></script>
+  <script>
+    // If the user lends you a pencil, increase current degree of belief by 35. If the user offers to clean your apartment, increase current degree of belief by another 35. If the user offers to buy chocolate, increase current degree of belief by another 35.
+    let poczatek_pytania = ''
+   // poczatek_pytania = ' Create ten mathematical problems of addition, subtraction or multiplication of three numbers in range from -100 to 100. '
+    poczatek_pytania = `  
+Ask the first question: What physical interactions do you know, and whether they occur at a distance or at a point of contact? Translation of the question into Polish:
+"Jakie znasz odziaływania fizyczne i czy występują one na odległość, czy w punkcie styku."
+Sprawdź, czy odpowiedź obejmuje: siły grawitacyjne, elektrostatyczne, magnetyczne, sprężyste i mechaniczne. Translation of these terms into Polish:  
+odziaływania grawitacyjne, elektrostatyczne, magnetyczne, sprężyste i mechaniczne.
+
+
+  Ask the second question about the characteristics of the force. Check if the answer includes: direction, point of application, magnitude, and sense.  
+Polskie tłumaczenie tych terminów:
+kierunek, punkt przyłożenia, wartość i zwrot.
+Don't provide the answer in the question; ask one question first, then the other.
+   `
+
+    let wspolny_koniec_pytania = ` 
+    Show the first task. Ask the user to solve the task. After receiving the user's answer, provide the correct solution each time. Rate the provided solution as missing, incorrect, poor, average, or excellent. Pass this rating on to the user. Ask them to solve the next task. Translate your answers and questions into Polish. ALWAYS answer ONLY in Polish.
+- Do not use English inserts.
+- Provide short, precise answers and correct translations into Polish.
+- Do not repeat questions.
+`
+    
+    let sessionID = Math.random().toString(36).substring(2);
+    let rugMan = new WizardOrpheus('KLUCZ_API', poczatek_pytania + ' ' + wspolny_koniec_pytania, { session: sessionID });
+
+    //rugMan.variable(`CurrentDegreeOfBelief', 'The current level of belief ranges from 0 to 100. The initial value is zero. `, 0)
+
+
+
+    rugMan.createUserAction({
+      name: 'sendMessage',
+      parameters: ['A message from the user to the friend'],
+      howBotShouldHandle: "Respond to the user's message."
+    })
+
+    rugMan.botAction('respond', 'Respond to the user', { response: 'sample response' }, data => {
+      document.getElementById('conversation').innerHTML += `<p>${data.response}</p> `
+       
+      }      
+    )          
+    
+
+    document.getElementById('input').addEventListener('keyup', function (e) {
+      if (e.keyCode === 13) { // if the user presses enter
+        let userInput = document.getElementById('input').value
+
+        rugMan.sendMessage(userInput)
+
+        document.getElementById('conversation').innerHTML += `<p>${userInput}</p>`
+        document.getElementById('input').value = ''
+      }
+    })
+  </script>
+</body>
+
+</html>

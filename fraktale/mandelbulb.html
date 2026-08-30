@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../style.css" />
+    <title>Mandelbulb – Trójwymiarowy Fraktal (Lot 3D)</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 15px;
+            min-height: 100vh;
+            background: #030712;
+            color: #f1f5f9;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            text-align: center;
+        }
+
+        h1 {
+            color: #38bdf8;
+            font-size: 1.95rem;
+            margin-bottom: 6px;
+            text-shadow: 0 0 16px rgba(56, 189, 248, 0.6);
+        }
+
+        .subtitle {
+            font-size: 1.05rem;
+            color: #94a3b8;
+            margin-bottom: 16px;
+            max-width: 860px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.5;
+        }
+
+        .math {
+            font-family: 'Cambria Math', 'Times New Roman', serif;
+            font-style: italic;
+            background: rgba(56, 189, 248, 0.15);
+            padding: 2px 8px;
+            border-radius: 4px;
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            color: #7dd3fc;
+        }
+
+        .controls-top {
+            margin: 10px auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn-start {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            color: #ffffff;
+            font-size: 1.15rem;
+            font-weight: 700;
+            padding: 10px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(2, 132, 199, 0.45);
+            transition: all 0.25s ease;
+        }
+
+        .btn-start:hover {
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+            box-shadow: 0 0 22px rgba(14, 165, 233, 0.8);
+            transform: scale(1.03);
+        }
+
+        .btn-secondary {
+            background: rgba(30, 41, 59, 0.85);
+            color: #e2e8f0;
+            font-size: 0.9rem;
+            padding: 8px 14px;
+            border: 1px solid #475569;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-secondary:hover {
+            color: #38bdf8;
+            border-color: #38bdf8;
+            background: rgba(51, 65, 85, 0.95);
+        }
+
+        .panel {
+            margin: 12px auto;
+            max-width: 860px;
+            background: rgba(15, 23, 42, 0.85);
+            padding: 12px 18px;
+            border-radius: 12px;
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            font-size: 0.92rem;
+        }
+
+        .panel select, .panel input[type="range"] {
+            background: #1e293b;
+            color: #f8fafc;
+            border: 1px solid #475569;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .panel select:focus {
+            border-color: #38bdf8;
+        }
+
+        .canvas-container {
+            margin: 15px auto 20px auto;
+            max-width: 820px;
+            position: relative;
+        }
+
+        canvas {
+            display: block;
+            margin: 0 auto;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.9), 0 0 30px rgba(56, 189, 248, 0.35);
+            background-color: #000000;
+            cursor: grab;
+            max-width: 100%;
+            height: auto;
+        }
+
+        canvas:active {
+            cursor: grabbing;
+        }
+
+        .hud-stats {
+            display: flex;
+            justify-content: space-between;
+            max-width: 800px;
+            margin: 8px auto 0 auto;
+            font-size: 0.85rem;
+            color: #94a3b8;
+            font-family: monospace;
+        }
+
+        .hint {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-top: 8px;
+        }
+
+        .nav-links {
+            margin-top: 30px;
+            margin-bottom: 25px;
+        }
+
+        .nav-link {
+            color: #94a3b8;
+            text-decoration: none;
+            margin: 0 14px;
+            font-size: 1rem;
+            border-bottom: 1px dashed #64748b;
+            transition: color 0.2s ease;
+        }
+
+        .nav-link:hover {
+            color: #38bdf8;
+            border-bottom-color: #38bdf8;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Mandelbulb – Trójwymiarowy Fraktal 3D</h1>
+    <p class="subtitle">
+        Trójwymiarowy odpowiednik zbioru Mandelbrota w przestrzeni sferycznej: 
+        <span class="math">v &mapsto; v<sup>n</sup> + c</span>. Płynny rendering wolumetryczny z promieniami (Raymarching) 
+        oraz hipnotyczny lot przez wnętrze fraktala.
+    </p>
+
+    <div class="controls-top">
+        <button id="startBtn" class="btn-start" onclick="toggleAnimation()">▶ Start Animacji</button>
+        <button id="audioToggleBtn" class="btn-secondary" onclick="toggleAudio()">🔊 Muzyka: WŁ</button>
+        <button class="btn-secondary" onclick="resetView()">↺ Resetuj kamerę</button>
+    </div>
+
+    <div class="panel">
+        <div>
+            <label for="cameraMode"><strong>Tryb kamery:</strong></label>
+            <select id="cameraMode" onchange="changeCameraMode()">
+                <option value="fly">🛸 Lot przez wnętrze fraktala</option>
+                <option value="orbit">🔄 Orbita 360° dookoła</option>
+                <option value="manual">🎮 Sterowanie manualne myszą</option>
+            </select>
+        </div>
+
+        <div>
+            <label for="powerSlider">Potęga <span class="math">n</span>:</label>
+            <input type="range" id="powerSlider" min="2" max="10" step="0.1" value="8" oninput="updatePower(this.value)">
+            <span id="powerVal" style="font-family: monospace; color: #7dd3fc; min-width: 32px; display: inline-block;">8.0</span>
+        </div>
+
+        <div>
+            <label for="paletteSelect"><strong>Paleta 3D:</strong></label>
+            <select id="paletteSelect" onchange="updatePalette()">
+                <option value="0">🌌 Kosmiczny Fiolet & Złoto</option>
+                <option value="1">🪐 Obcy Minerał & Turkus</option>
+                <option value="2">🔥 Płynna Magma</option>
+                <option value="3">💠 Neonowy Cyberpunk</option>
+            </select>
+        </div>
+
+        <div>
+            <label><input type="checkbox" id="morphPower" onchange="toggleMorphPower()"> 🌀 Animacja potęgi <span class="math">n(t)</span></label>
+        </div>
+    </div>
+
+    <div class="canvas-container">
+        <canvas id="mandelbulbCanvas" width="640" height="480"></canvas>
+        <div class="hud-stats">
+            <span id="fpsDisplay">FPS: --</span>
+            <span id="modeDisplay">Tryb: Lot przez fraktal</span>
+            <span id="timeDisplay">Czas: 0.0s</span>
+        </div>
+        <p class="hint">Wskazówka: W trybie manualnym przeciągaj myszką, aby obracać Mandelbulba, oraz użyj kółka myszy, aby przybliżać/oddalać.</p>
+    </div>
+
+    <div class="nav-links">
+        <a href="../rozrywka.html" class="nav-link">← Powrót do Rozrywki</a>
+        <a href="zbior_mandelbrota.html" class="nav-link">Zbiór Mandelbrota</a>
+        <a href="penrose.html" class="nav-link">Układanka Penrose’a</a>
+        <a href="../index.html" class="nav-link">Strona główna</a>
+    </div>
+
+    <!-- Vertex Shader -->
+    <script id="vs" type="x-shader/x-vertex">
+        attribute vec2 a_position;
+        void main() {
+            gl_Position = vec4(a_position, 0.0, 1.0);
+        }
+    </script>
+
+    <!-- Fragment Shader (Raymarching Mandelbulb DE) -->
+    <script id="fs" type="x-shader/x-fragment">
+        precision highp float;
+
+        uniform vec2 u_resolution;
+        uniform float u_time;
+        uniform vec3 u_camPos;
+        uniform vec3 u_camTarget;
+        uniform float u_power;
+        uniform int u_palette;
+
+        // Mandelbulb Signed Distance Function (Raymarching DE)
+        float mandelbulbDE(vec3 p, out float trap) {
+            vec3 z = p;
+            float dr = 1.0;
+            float r = 0.0;
+            float minTrap = 1e10;
+
+            for (int i = 0; i < 12; i++) {
+                r = length(z);
+                if (r > 2.5) break;
+
+                minTrap = min(minTrap, length(z));
+
+                // Przekształcenie współrzędnych sferycznych
+                float theta = acos(clamp(z.z / r, -1.0, 1.0));
+                float phi = atan(z.y, z.x);
+
+                dr = pow(r, u_power - 1.0) * u_power * dr + 1.0;
+
+                // Skalowanie i obrót w potędze n
+                float zr = pow(r, u_power);
+                theta = theta * u_power;
+                phi = phi * u_power;
+
+                // Powrót do współrzędnych kartezjańskich
+                z = zr * vec3(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta)) + p;
+            }
+
+            trap = minTrap;
+            return 0.5 * log(r) * r / dr;
+        }
+
+        vec3 calcNormal(vec3 pos) {
+            float dummy;
+            vec2 eps = vec2(0.001, 0.0);
+            return normalize(vec3(
+                mandelbulbDE(pos + eps.xyy, dummy) - mandelbulbDE(pos - eps.xyy, dummy),
+                mandelbulbDE(pos + eps.yxy, dummy) - mandelbulbDE(pos - eps.yxy, dummy),
+                mandelbulbDE(pos + eps.yyx, dummy) - mandelbulbDE(pos - eps.yyx, dummy)
+            ));
+        }
+
+        // Ambient Occlusion
+        float calcAO(vec3 pos, vec3 nor) {
+            float occ = 0.0;
+            float sca = 1.0;
+            float dummy;
+            for (int i = 0; i < 4; i++) {
+                float hr = 0.015 + 0.04 * float(i);
+                vec3 aopos = pos + nor * hr;
+                float d = mandelbulbDE(aopos, dummy);
+                occ += -(d - hr) * sca;
+                sca *= 0.75;
+            }
+            return clamp(1.0 - 2.0 * occ, 0.0, 1.0);
+        }
+
+        vec3 getPaletteColor(float trap, vec3 normal, vec3 rd, float ao) {
+            float t = clamp(trap * 2.0, 0.0, 1.0);
+            vec3 col;
+
+            if (u_palette == 0) {
+                // Kosmiczny Fiolet & Złoto
+                vec3 c1 = vec3(0.12, 0.05, 0.28);
+                vec3 c2 = vec3(0.95, 0.75, 0.25);
+                vec3 c3 = vec3(0.25, 0.65, 0.95);
+                col = mix(c1, c2, t);
+                col = mix(col, c3, max(0.0, dot(normal, -rd)) * 0.4);
+            } else if (u_palette == 1) {
+                // Obcy Minerał & Turkus
+                vec3 c1 = vec3(0.02, 0.20, 0.22);
+                vec3 c2 = vec3(0.15, 0.85, 0.75);
+                vec3 c3 = vec3(0.95, 0.85, 0.50);
+                col = mix(c1, c2, t);
+                col = mix(col, c3, pow(t, 2.0));
+            } else if (u_palette == 2) {
+                // Płynna Magma
+                vec3 c1 = vec3(0.15, 0.02, 0.01);
+                vec3 c2 = vec3(0.95, 0.35, 0.05);
+                vec3 c3 = vec3(1.0, 0.85, 0.3);
+                col = mix(c1, c2, t);
+                col = mix(col, c3, pow(t, 3.0));
+            } else {
+                // Neonowy Cyberpunk
+                vec3 c1 = vec3(0.05, 0.05, 0.18);
+                vec3 c2 = vec3(0.95, 0.15, 0.65);
+                vec3 c3 = vec3(0.10, 0.85, 0.95);
+                col = mix(c1, c2, t);
+                col = mix(col, c3, max(0.0, normal.y) * 0.5);
+            }
+
+            // Oświetlenie kierunkowe
+            vec3 lightDir1 = normalize(vec3(0.8, 1.2, 0.9));
+            vec3 lightDir2 = normalize(vec3(-0.8, -0.5, -0.6));
+
+            float diff1 = max(dot(normal, lightDir1), 0.0);
+            float diff2 = max(dot(normal, lightDir2), 0.0) * 0.35;
+
+            // Błysk specular
+            vec3 ref = reflect(rd, normal);
+            float spec = pow(max(dot(ref, lightDir1), 0.0), 16.0) * 0.6;
+
+            vec3 finalCol = col * (diff1 + diff2 + 0.15) * ao + vec3(spec);
+            return finalCol;
+        }
+
+        void main() {
+            vec2 uv = (gl_FragCoord.xy - 0.5 * u_resolution) / u_resolution.y;
+
+            // Konfiguracja kamery
+            vec3 ro = u_camPos;
+            vec3 ta = u_camTarget;
+            vec3 ww = normalize(ta - ro);
+            vec3 uu = normalize(cross(ww, vec3(0.0, 1.0, 0.0)));
+            vec3 vv = normalize(cross(uu, ww));
+
+            vec3 rd = normalize(uv.x * uu + uv.y * vv + 1.35 * ww);
+
+            // Raymarching
+            float t = 0.0;
+            float trap = 0.0;
+            float maxDist = 7.0;
+            bool hit = false;
+            vec3 p = ro;
+
+            for (int i = 0; i < 75; i++) {
+                p = ro + rd * t;
+                float d = mandelbulbDE(p, trap);
+                if (d < 0.0012 * (1.0 + t * 0.5)) {
+                    hit = true;
+                    break;
+                }
+                t += d * 0.75;
+                if (t > maxDist) break;
+            }
+
+            if (hit) {
+                vec3 nor = calcNormal(p);
+                float ao = calcAO(p, nor);
+                vec3 col = getPaletteColor(trap, nor, rd, ao);
+
+                // Mgła atmosferyczna (Depth fog)
+                col = mix(col, vec3(0.02, 0.04, 0.08), 1.0 - exp(-0.08 * t * t));
+                gl_FragColor = vec4(col, 1.0);
+            } else {
+                // Tło kosmiczne z delikatnym gradientem
+                float bg = clamp(0.03 + 0.04 * uv.y, 0.0, 1.0);
+                gl_FragColor = vec4(vec3(bg * 0.3, bg * 0.5, bg * 0.9), 1.0);
+            }
+        }
+    </script>
+
+    <script>
+        const canvas = document.getElementById('mandelbulbCanvas');
+        const gl = canvas.getContext('webgl');
+
+        if (!gl) {
+            alert('Twoja przeglądarka nie obsługuje WebGL.');
+        }
+
+        // Kompilacja Shaderów
+        function createShader(gl, type, source) {
+            const shader = gl.createShader(type);
+            gl.shaderSource(shader, source);
+            gl.compileShader(shader);
+            if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+                console.error(gl.getShaderInfoLog(shader));
+                gl.deleteShader(shader);
+                return null;
+            }
+            return shader;
+        }
+
+        const vsSource = document.getElementById('vs').text;
+        const fsSource = document.getElementById('fs').text;
+
+        const vertexShader = createShader(gl, gl.VERTEX_SHADER, vsSource);
+        const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fsSource);
+
+        const program = gl.createProgram();
+        gl.attachShader(program, vertexShader);
+        gl.attachShader(program, fragmentShader);
+        gl.linkProgram(program);
+
+        if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+            console.error(gl.getProgramInfoLog(program));
+        }
+
+        gl.useProgram(program);
+
+        // Bufor pełnoekranowego prostokąta
+        const positionBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+            -1, -1,
+             1, -1,
+            -1,  1,
+            -1,  1,
+             1, -1,
+             1,  1
+        ]), gl.STATIC_DRAW);
+
+        const posAttr = gl.getAttribLocation(program, 'a_position');
+        gl.enableVertexAttribArray(posAttr);
+        gl.vertexAttribPointer(posAttr, 2, gl.FLOAT, false, 0, 0);
+
+        // Uniforms
+        const uRes = gl.getUniformLocation(program, 'u_resolution');
+        const uTime = gl.getUniformLocation(program, 'u_time');
+        const uCamPos = gl.getUniformLocation(program, 'u_camPos');
+        const uCamTarget = gl.getUniformLocation(program, 'u_camTarget');
+        const uPower = gl.getUniformLocation(program, 'u_power');
+        const uPalette = gl.getUniformLocation(program, 'u_palette');
+
+        let isRunning = false;
+        let animId = null;
+        let animTime = 0;
+        let lastFrameTime = performance.now();
+        let frameCount = 0;
+        let lastFpsUpdate = performance.now();
+
+        let power = 8.0;
+        let isPowerMorphing = false;
+        let paletteIndex = 0;
+        let cameraMode = 'fly';
+
+        // Parametry manualnej kamery
+        let camDistance = 2.4;
+        let camRotX = 0.35;
+        let camRotY = 0.55;
+        let isDragging = false;
+        let lastMouseX = 0;
+        let lastMouseY = 0;
+
+        const startBtn = document.getElementById('startBtn');
+        const cameraModeSelect = document.getElementById('cameraMode');
+        const powerSlider = document.getElementById('powerSlider');
+        const powerVal = document.getElementById('powerVal');
+        const paletteSelect = document.getElementById('paletteSelect');
+        const morphPowerCb = document.getElementById('morphPower');
+        const fpsDisplay = document.getElementById('fpsDisplay');
+        const modeDisplay = document.getElementById('modeDisplay');
+        const timeDisplay = document.getElementById('timeDisplay');
+        const audioToggleBtn = document.getElementById('audioToggleBtn');
+
+        function updatePower(val) {
+            power = parseFloat(val);
+            powerVal.innerText = power.toFixed(1);
+            if (!isRunning) render();
+        }
+
+        function toggleMorphPower() {
+            isPowerMorphing = morphPowerCb.checked;
+        }
+
+        function updatePalette() {
+            paletteIndex = parseInt(paletteSelect.value);
+            if (!isRunning) render();
+        }
+
+        function changeCameraMode() {
+            cameraMode = cameraModeSelect.value;
+            const names = {
+                'fly': 'Tryb: Lot przez wnętrze fraktala',
+                'orbit': 'Tryb: Orbita 360° dookoła',
+                'manual': 'Tryb: Sterowanie myszą'
+            };
+            modeDisplay.innerText = names[cameraMode] || 'Tryb: 3D';
+            if (!isRunning) render();
+        }
+
+        function resetView() {
+            camDistance = 2.4;
+            camRotX = 0.35;
+            camRotY = 0.55;
+            animTime = 0;
+            if (!isRunning) render();
+        }
+
+        // Obsługa interakcji myszy w trybie manualnym
+        canvas.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            lastMouseX = e.clientX;
+            lastMouseY = e.clientY;
+        });
+
+        window.addEventListener('mouseup', () => { isDragging = false; });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            const dx = e.clientX - lastMouseX;
+            const dy = e.clientY - lastMouseY;
+            lastMouseX = e.clientX;
+            lastMouseY = e.clientY;
+
+            camRotY += dx * 0.008;
+            camRotX += dy * 0.008;
+            camRotX = Math.max(-Math.PI / 2 + 0.05, Math.min(Math.PI / 2 - 0.05, camRotX));
+
+            if (!isRunning) render();
+        });
+
+        canvas.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            camDistance += e.deltaY * 0.002;
+            camDistance = Math.max(0.7, Math.min(6.0, camDistance));
+            if (!isRunning) render();
+        }, { passive: false });
+
+        function getCameraPos(t) {
+            if (cameraMode === 'fly') {
+                // Hipnotyczna trajektoria lotu przez korytarze i jaskinie Mandelbulba
+                const pathRadius = 1.15 + 0.45 * Math.sin(t * 0.22);
+                const camX = pathRadius * Math.cos(t * 0.28) + 0.15 * Math.sin(t * 0.7);
+                const camY = 0.65 * Math.sin(t * 0.35) + 0.12 * Math.cos(t * 0.6);
+                const camZ = pathRadius * Math.sin(t * 0.28) + 0.15 * Math.cos(t * 0.5);
+
+                const targetX = 0.4 * Math.cos(t * 0.28 + 0.5);
+                const targetY = 0.2 * Math.sin(t * 0.35 + 0.5);
+                const targetZ = 0.4 * Math.sin(t * 0.28 + 0.5);
+
+                return {
+                    pos: [camX, camY, camZ],
+                    target: [targetX, targetY, targetZ]
+                };
+            } else if (cameraMode === 'orbit') {
+                // Płynna orbita wokół fraktala
+                const r = 2.4;
+                const camX = r * Math.cos(t * 0.3);
+                const camY = 0.8 * Math.sin(t * 0.2) + 0.4;
+                const camZ = r * Math.sin(t * 0.3);
+                return {
+                    pos: [camX, camY, camZ],
+                    target: [0.0, 0.0, 0.0]
+                };
+            } else {
+                // Kamera manualna
+                const camX = camDistance * Math.cos(camRotX) * Math.sin(camRotY);
+                const camY = camDistance * Math.sin(camRotX);
+                const camZ = camDistance * Math.cos(camRotX) * Math.cos(camRotY);
+                return {
+                    pos: [camX, camY, camZ],
+                    target: [0.0, 0.0, 0.0]
+                };
+            }
+        }
+
+        function render() {
+            gl.viewport(0, 0, canvas.width, canvas.height);
+
+            let currentPower = power;
+            if (isPowerMorphing) {
+                currentPower = 6.0 + 3.5 * Math.sin(animTime * 0.4);
+                powerVal.innerText = currentPower.toFixed(1);
+            }
+
+            const cam = getCameraPos(animTime);
+
+            gl.uniform2f(uRes, canvas.width, canvas.height);
+            gl.uniform1f(uTime, animTime);
+            gl.uniform3fv(uCamPos, cam.pos);
+            gl.uniform3fv(uCamTarget, cam.target);
+            gl.uniform1f(uPower, currentPower);
+            gl.uniform1i(uPalette, paletteIndex);
+
+            gl.drawArrays(gl.TRIANGLES, 0, 6);
+        }
+
+        function animationLoop(now) {
+            if (!isRunning) return;
+
+            const delta = (now - lastFrameTime) / 1000;
+            lastFrameTime = now;
+
+            if (delta < 0.2) {
+                animTime += delta;
+            }
+
+            render();
+
+            frameCount++;
+            if (now - lastFpsUpdate >= 500) {
+                const fps = Math.round((frameCount * 1000) / (now - lastFpsUpdate));
+                fpsDisplay.innerText = `FPS: ${fps}`;
+                timeDisplay.innerText = `Czas: ${animTime.toFixed(1)}s`;
+                frameCount = 0;
+                lastFpsUpdate = now;
+            }
+
+            animId = requestAnimationFrame(animationLoop);
+        }
+
+        // Generator ambientowej muzyki Web Audio API (Cosmic 3D Synth)
+        class AmbientMusicGenerator {
+            constructor() {
+                this.audioCtx = null;
+                this.isPlaying = false;
+                this.masterGain = null;
+                this.filter = null;
+                this.droneOscs = [];
+                this.arpTimer = null;
+                this.isMuted = false;
+            }
+
+            init() {
+                if (this.audioCtx) return;
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                this.audioCtx = new AudioContext();
+
+                this.masterGain = this.audioCtx.createGain();
+                this.masterGain.gain.setValueAtTime(0.18, this.audioCtx.currentTime);
+
+                this.filter = this.audioCtx.createBiquadFilter();
+                this.filter.type = 'lowpass';
+                this.filter.frequency.setValueAtTime(680, this.audioCtx.currentTime);
+
+                const delay = this.audioCtx.createDelay();
+                delay.delayTime.setValueAtTime(0.45, this.audioCtx.currentTime);
+                const delayGain = this.audioCtx.createGain();
+                delayGain.gain.setValueAtTime(0.40, this.audioCtx.currentTime);
+
+                delay.connect(delayGain);
+                delayGain.connect(delay);
+                delayGain.connect(this.masterGain);
+
+                this.filter.connect(this.masterGain);
+                this.filter.connect(delay);
+                this.masterGain.connect(this.audioCtx.destination);
+            }
+
+            start() {
+                if (this.isMuted) return;
+                this.init();
+                if (this.audioCtx.state === 'suspended') {
+                    this.audioCtx.resume();
+                }
+                if (this.isPlaying) return;
+                this.isPlaying = true;
+
+                this.masterGain.gain.cancelScheduledValues(this.audioCtx.currentTime);
+                this.masterGain.gain.setValueAtTime(0.001, this.audioCtx.currentTime);
+                this.masterGain.gain.exponentialRampToValueAtTime(0.18, this.audioCtx.currentTime + 1.2);
+
+                const chordFrequencies = [55.00, 82.41, 110.00, 164.81]; // A1, E2, A2, E3 (Głęboki Kosmos)
+                this.droneOscs = chordFrequencies.map(freq => {
+                    const osc = this.audioCtx.createOscillator();
+                    const gain = this.audioCtx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(freq, this.audioCtx.currentTime);
+
+                    const lfo = this.audioCtx.createOscillator();
+                    const lfoGain = this.audioCtx.createGain();
+                    lfo.frequency.setValueAtTime(0.09 + Math.random() * 0.05, this.audioCtx.currentTime);
+                    lfoGain.gain.setValueAtTime(0.9, this.audioCtx.currentTime);
+                    lfo.connect(lfoGain);
+                    lfoGain.connect(osc.frequency);
+                    lfo.start();
+
+                    gain.gain.setValueAtTime(0.03, this.audioCtx.currentTime);
+                    osc.connect(gain);
+                    gain.connect(this.filter);
+                    osc.start();
+                    return { osc, gain, lfo };
+                });
+
+                const scale = [220.00, 261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 659.25]; // A minor pentatonic
+
+                const playChime = () => {
+                    if (!this.isPlaying) return;
+
+                    const freq = scale[Math.floor(Math.random() * scale.length)];
+                    const osc = this.audioCtx.createOscillator();
+                    const gain = this.audioCtx.createGain();
+
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, this.audioCtx.currentTime);
+
+                    const now = this.audioCtx.currentTime;
+                    gain.gain.setValueAtTime(0.0001, now);
+                    gain.gain.exponentialRampToValueAtTime(0.07, now + 0.06);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, now + 2.5);
+
+                    osc.connect(gain);
+                    gain.connect(this.filter);
+
+                    osc.start(now);
+                    osc.stop(now + 2.6);
+
+                    const nextDelay = 400 + Math.random() * 600;
+                    this.arpTimer = setTimeout(playChime, nextDelay);
+                };
+
+                playChime();
+            }
+
+            stop() {
+                if (!this.isPlaying || !this.audioCtx) return;
+                this.isPlaying = false;
+                if (this.arpTimer) clearTimeout(this.arpTimer);
+
+                if (this.masterGain) {
+                    this.masterGain.gain.cancelScheduledValues(this.audioCtx.currentTime);
+                    this.masterGain.gain.setValueAtTime(this.masterGain.gain.value, this.audioCtx.currentTime);
+                    this.masterGain.gain.exponentialRampToValueAtTime(0.0001, this.audioCtx.currentTime + 0.6);
+                }
+
+                setTimeout(() => {
+                    if (!this.isPlaying && this.droneOscs.length) {
+                        this.droneOscs.forEach(({ osc, lfo }) => {
+                            try { osc.stop(); lfo.stop(); } catch (e) {}
+                        });
+                        this.droneOscs = [];
+                    }
+                }, 650);
+            }
+
+            toggleMute() {
+                this.isMuted = !this.isMuted;
+                if (this.isMuted) {
+                    this.stop();
+                } else if (isRunning) {
+                    this.start();
+                }
+                return !this.isMuted;
+            }
+        }
+
+        const ambientMusic = new AmbientMusicGenerator();
+
+        function toggleAudio() {
+            const isUnmuted = ambientMusic.toggleMute();
+            audioToggleBtn.innerText = isUnmuted ? '🔊 Muzyka: WŁ' : '🔇 Muzyka: WYŁ';
+            audioToggleBtn.style.color = isUnmuted ? '#38bdf8' : '#94a3b8';
+        }
+
+        function toggleAnimation() {
+            if (!isRunning) {
+                isRunning = true;
+                startBtn.innerHTML = '⏸ Pauza';
+                startBtn.style.background = 'linear-gradient(135deg, #e11d48 0%, #be123c 100%)';
+                lastFrameTime = performance.now();
+                lastFpsUpdate = performance.now();
+                frameCount = 0;
+                ambientMusic.start();
+                animId = requestAnimationFrame(animationLoop);
+            } else {
+                isRunning = false;
+                if (animId) cancelAnimationFrame(animId);
+                ambientMusic.stop();
+                startBtn.innerHTML = '▶ Wznów Animację';
+                startBtn.style.background = 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)';
+            }
+        }
+
+        // Pierwsze wyrenderowanie pojedynczej klatki początkowej
+        render();
+    </script>
+    <script src="nagrywanie_wideo.js"></script>
+</body>
+</html>

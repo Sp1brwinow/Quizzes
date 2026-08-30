@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Głębia Jeziora 3D – Fraktalny Męt, Dno, Kaustyka i Życie Podwodne</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            background-color: #020b14;
+            color: #e2e8f0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        #canvas-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        #glCanvas, #overlayCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        #overlayCanvas {
+            pointer-events: none;
+        }
+
+        /* Górny panel nawigacyjny */
+        .top-bar {
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(4, 19, 36, 0.85);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            border-radius: 16px;
+            padding: 10px 22px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.6), 0 0 15px rgba(56, 189, 248, 0.2);
+            z-index: 10;
+        }
+
+        .title-badge {
+            font-weight: 800;
+            font-size: 1.05rem;
+            color: #38bdf8;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-ui {
+            background: #0c2a4d;
+            color: #f8fafc;
+            border: 1px solid rgba(56, 189, 248, 0.6);
+            padding: 7px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-ui:hover {
+            background: #0284c7;
+            border-color: #38bdf8;
+            transform: translateY(-1px);
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.5);
+        }
+
+        .btn-ui.active {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            border-color: #7dd3fc;
+            box-shadow: 0 0 14px rgba(56, 189, 248, 0.6);
+        }
+
+        /* Lewy panel telemetryczny (HUD) */
+        .hud-left {
+            position: absolute;
+            top: 80px;
+            left: 20px;
+            background: rgba(4, 19, 36, 0.82);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            border-radius: 14px;
+            padding: 16px 20px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.88rem;
+            color: #7dd3fc;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+        }
+
+        .hud-left h4 {
+            color: #38bdf8;
+            font-size: 0.95rem;
+            border-bottom: 1px solid rgba(56, 189, 248, 0.3);
+            padding-bottom: 6px;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .hud-stat-val {
+            color: #ffffff;
+            font-weight: bold;
+        }
+
+        /* Prawy panel kontroli parametrów wody i zjawisk */
+        .hud-right {
+            position: absolute;
+            top: 80px;
+            right: 20px;
+            background: rgba(4, 19, 36, 0.85);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            border-radius: 14px;
+            padding: 16px 20px;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 290px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .control-group label {
+            font-size: 0.82rem;
+            color: #94a3b8;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .control-group input[type="range"] {
+            accent-color: #38bdf8;
+            cursor: pointer;
+        }
+
+        .control-group select {
+            background: #0a192f;
+            color: #f8fafc;
+            border: 1px solid #38bdf8;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            outline: none;
+            cursor: pointer;
+        }
+
+        /* Dolny pasek instrukcji */
+        .bottom-hint {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(4, 19, 36, 0.85);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 10px;
+            padding: 10px 16px;
+            font-size: 0.82rem;
+            color: #94a3b8;
+            z-index: 10;
+            backdrop-filter: blur(6px);
+        }
+
+        .bottom-hint kbd {
+            background: #0f2744;
+            border: 1px solid #38bdf8;
+            color: #38bdf8;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.78rem;
+        }
+
+        .back-btn {
+            color: #94a3b8;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            transition: color 0.2s;
+        }
+
+        .back-btn:hover {
+            color: #38bdf8;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="canvas-container">
+        <!-- 3D Raymarched Shaders (Dno, Kaustyka, Słońce, Woda) -->
+        <canvas id="glCanvas"></canvas>
+        <!-- 3D Projected Dynamic Objects (Wodorosty L-systemów, Ławice Ryb, Plankton, Bąbelki) -->
+        <canvas id="overlayCanvas"></canvas>
+    </div>
+
+    <!-- Górny pasek menu -->
+    <div class="top-bar">
+        <a href="../rozrywka.html" class="back-btn">← Wróć do menu</a>
+        <div class="title-badge">🌊 Głębia Jeziora 3D</div>
+        <button type="button" class="btn-ui" id="btn-autopilot" onclick="toggleAutopilot()">🚀 Autopilot Nurkowania</button>
+        <button type="button" class="btn-ui" id="btn-flashlight" onclick="toggleFlashlight()">🔦 Latarka Nurka: WŁ</button>
+        <button type="button" class="btn-ui" id="btn-audio" onclick="toggleAudio()">🔊 Nastrojowa Melodia Głębin</button>
+    </div>
+
+    <!-- HUD Telemetria Nurka -->
+    <div class="hud-left">
+        <h4>🧭 TELEMETRIA NURKA</h4>
+        <div>Głębokość: <span id="hud-depth" class="hud-stat-val">12.4 m</span></div>
+        <div>Mętność (Turbidity): <span id="hud-turbidity" class="hud-stat-val">Średnia</span></div>
+        <div>Widoczność: <span id="hud-vis" class="hud-stat-val">6.8 m</span></div>
+        <div>Flora (L-Systemy): <span id="hud-plants" class="hud-stat-val">24 wodorosty</span></div>
+        <div>Fauna (Ławica Boids): <span id="hud-fish" class="hud-stat-val">70 ryb</span></div>
+        <div>Temperatura wody: <span id="hud-temp" class="hud-stat-val">9.5 °C</span></div>
+    </div>
+
+    <!-- Panel kontroli parametrów wody i zjawisk -->
+    <div class="hud-right">
+        <div style="font-weight: bold; color: #38bdf8; font-size: 0.92rem; border-bottom: 1px solid rgba(56,189,248,0.25); padding-bottom: 6px;">
+            🎛️ KONTROLA ŚRODOWISKA
+        </div>
+
+        <div class="control-group">
+            <label>Sceneria i Biom:</label>
+            <select id="preset-select" onchange="applyBiomePreset(this.value)">
+                <option value="default">🌊 Błękitna Toń Jeziora (Średnia)</option>
+                <option value="shallows">☀️ Słoneczna Płycizna (Dużo światła)</option>
+                <option value="deep">🌑 Mroczna Głębia Równinna</option>
+                <option value="algae">🌿 Gęsta Łąka Glonów (Szmaragd)</option>
+            </select>
+        </div>
+
+        <div class="control-group">
+            <label><span>Męt i zawiesina (Fog Noise):</span> <span id="val-fog">Gęsty</span></label>
+            <input type="range" id="slider-fog" min="0.1" max="1.5" step="0.05" value="0.8" oninput="updateFogDensity(this.value)">
+        </div>
+
+        <div class="control-group">
+            <label><span>Światło i Kaustyka (Refrakcja):</span> <span id="val-caustics">100%</span></label>
+            <input type="range" id="slider-caustics" min="0.0" max="2.0" step="0.1" value="1.0" oninput="updateCaustics(this.value)">
+        </div>
+
+        <div class="control-group">
+            <label><span>Gęstość cząstek planktonu:</span> <span id="val-particles">2200</span></label>
+            <input type="range" id="slider-particles" min="500" max="3000" step="100" value="2200" oninput="updateParticles(this.value)">
+        </div>
+
+        <div class="control-group">
+            <label><span>Prąd wody (Falowanie wodorostów):</span> <span id="val-current">Normalny</span></label>
+            <input type="range" id="slider-current" min="0.2" max="3.0" step="0.1" value="1.0" oninput="updateCurrent(this.value)">
+        </div>
+    </div>
+
+    <!-- Dolny pasek pomocy -->
+    <div class="bottom-hint">
+        🎮 <strong>Sterowanie:</strong> <kbd>W</kbd><kbd>S</kbd><kbd>A</kbd><kbd>D</kbd> – Pływanie | <kbd>Spacja</kbd> – Wynurzanie | <kbd>Shift</kbd> – Zanurzanie | 🖱️ <strong>Mysz</strong> – Rozglądanie
+    </div>
+
+    <script>
+        /**
+         * ============================================================================
+         * SILNIK 3D GŁĘBIN JEZIORA Z RENDEREREM HYBRYDOWYM (RAYMARCHING + 3D OVERLAY)
+         * 1. Shader WebGL: Dno jeziora (fBm), Refrakcja kaustyczna, Promienie słońca
+         * 2. Overlay 3D: Wodorosty fraktalne L-Systemów, Ławica ryb Boids, Plankton i Bąbelki
+         * ============================================================================
+         */
+
+        const glCanvas = document.getElementById('glCanvas');
+        const overlayCanvas = document.getElementById('overlayCanvas');
+        const gl = glCanvas.getContext('webgl') || glCanvas.getContext('experimental-webgl');
+        const ctx = overlayCanvas.getContext('2d');
+
+        // ==========================================
+        // SHADER SCENY (RAYMARCHING)
+        // ==========================================
+        const vsSource = `
+            attribute vec2 a_position;
+            varying vec2 v_uv;
+            void main() {
+                v_uv = a_position * 0.5 + 0.5;
+                gl_Position = vec4(a_position, 0.0, 1.0);
+            }
+        `;
+
+        const fsSource = `
+            precision highp float;
+            varying vec2 v_uv;
+
+            uniform vec2 u_resolution;
+            uniform vec3 u_camPos;
+            uniform vec2 u_camRot;
+            uniform float u_time;
+            uniform float u_fogDensity;
+            uniform float u_causticsIntensity;
+            uniform float u_flashlight;
+            uniform float u_currentSpeed;
+            uniform int u_biome;
+
+            float hash(vec2 p) {
+                return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
+            }
+
+            float noise2D(vec2 p) {
+                vec2 i = floor(p);
+                vec2 f = fract(p);
+                vec2 u = f * f * (3.0 - 2.0 * f);
+                return mix(mix(hash(i + vec2(0.0, 0.0)), hash(i + vec2(1.0, 0.0)), u.x),
+                           mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), u.x), u.y);
+            }
+
+            float terrainFBM(vec2 p) {
+                float v = 0.0;
+                float a = 0.55;
+                mat2 rot = mat2(0.8, -0.6, 0.6, 0.8);
+                for (int i = 0; i < 5; i++) {
+                    v += a * noise2D(p);
+                    p = rot * p * 2.02;
+                    a *= 0.48;
+                }
+                return v;
+            }
+
+            float sandRipples(vec2 p) {
+                return sin(p.x * 5.0 + p.y * 3.0 + noise2D(p * 2.0) * 2.0) * 0.06;
+            }
+
+            float getSeabedHeight(vec2 xz) {
+                float macro = terrainFBM(xz * 0.04) * 14.0;
+                float micro = sandRipples(xz) * 0.4;
+                return -28.0 + macro + micro;
+            }
+
+            float getCaustics(vec2 p, float time) {
+                vec2 p1 = p * 0.35 + vec2(time * 0.3, time * 0.2);
+                vec2 p2 = p * 0.42 - vec2(time * 0.25, -time * 0.35);
+                float n1 = noise2D(p1 + noise2D(p2 * 1.5) * 0.8);
+                float n2 = noise2D(p2 + noise2D(p1 * 1.5) * 0.8);
+                float c = pow(abs(n1 + n2 - 1.0), 0.35);
+                return smoothstep(0.18, 0.0, c) * 1.8;
+            }
+
+            vec3 getSeabedNormal(vec2 p) {
+                float eps = 0.1;
+                float h = getSeabedHeight(p);
+                float hx = getSeabedHeight(p + vec2(eps, 0.0));
+                float hz = getSeabedHeight(p + vec2(0.0, eps));
+                return normalize(vec3(h - hx, eps, h - hz));
+            }
+
+            void main() {
+                vec2 uv = (gl_FragCoord.xy - 0.5 * u_resolution) / u_resolution.y;
+
+                vec3 ro = u_camPos;
+                vec3 rd = normalize(vec3(uv, 1.25));
+
+                float cy = cos(u_camRot.y), sy = sin(u_camRot.y);
+                float cp = cos(u_camRot.x), sp = sin(u_camRot.x);
+
+                mat3 rotY = mat3(cy, 0.0, sy, 0.0, 1.0, 0.0, -sy, 0.0, cy);
+                mat3 rotX = mat3(1.0, 0.0, 0.0, 0.0, cp, -sp, 0.0, sp, cp);
+                rd = rotY * rotX * rd;
+
+                float depthFactor = clamp((-ro.y) / 35.0, 0.0, 1.0);
+                
+                // Kolory wg biomu
+                vec3 waterDeepColor = vec3(0.02, 0.18, 0.24);
+                vec3 waterShallowColor = vec3(0.08, 0.45, 0.55);
+                if (u_biome == 1) { // shallows
+                    waterDeepColor = vec3(0.04, 0.28, 0.38);
+                    waterShallowColor = vec3(0.12, 0.65, 0.75);
+                } else if (u_biome == 2) { // deep
+                    waterDeepColor = vec3(0.005, 0.03, 0.06);
+                    waterShallowColor = vec3(0.02, 0.15, 0.22);
+                } else if (u_biome == 3) { // algae
+                    waterDeepColor = vec3(0.02, 0.22, 0.16);
+                    waterShallowColor = vec3(0.09, 0.52, 0.35);
+                }
+
+                waterDeepColor = mix(waterDeepColor, vec3(0.005, 0.03, 0.06), depthFactor * 0.85);
+
+                // Promienie słońca
+                float sunShafts = max(0.0, dot(rd, normalize(vec3(0.3, 0.9, 0.4))));
+                sunShafts = pow(sunShafts, 4.0) * (1.0 - depthFactor * 0.8) * (0.8 + 0.2 * sin(u_time * 1.5 + uv.x * 8.0));
+
+                vec3 col = mix(waterDeepColor, waterShallowColor, max(0.0, rd.y) * 0.6) + vec3(0.2, 0.6, 0.7) * sunShafts * 0.5;
+
+                // Raymarching dna
+                float t = 0.0;
+                float hit = 0.0;
+                vec3 hitPos = vec3(0.0);
+
+                for (int i = 0; i < 70; i++) {
+                    vec3 p = ro + rd * t;
+                    float groundY = getSeabedHeight(p.xz);
+                    float d = p.y - groundY;
+
+                    if (d < 0.05) {
+                        hit = 1.0;
+                        hitPos = p;
+                        break;
+                    }
+                    t += max(d * 0.5, 0.2);
+                    if (t > 75.0) break;
+                }
+
+                if (hit > 0.5) {
+                    vec3 norm = getSeabedNormal(hitPos.xz);
+
+                    vec3 lightDir = normalize(vec3(0.2, 0.95, 0.3));
+                    float diff = max(dot(norm, lightDir), 0.15);
+
+                    float sandN = noise2D(hitPos.xz * 1.5);
+                    vec3 sandColor = mix(vec3(0.22, 0.20, 0.14), vec3(0.35, 0.32, 0.22), sandN);
+                    if (u_biome == 3) sandColor = mix(sandColor, vec3(0.12, 0.28, 0.14), 0.5);
+
+                    float caust = getCaustics(hitPos.xz, u_time * u_currentSpeed) * u_causticsIntensity;
+                    caust *= clamp(1.0 - (-hitPos.y) / 32.0, 0.1, 1.0);
+
+                    vec3 groundCol = sandColor * (diff + caust * 0.8);
+
+                    // Latarka
+                    if (u_flashlight > 0.5) {
+                        vec3 spotDir = rotY * rotX * vec3(0.0, 0.0, 1.0);
+                        vec3 toPoint = normalize(hitPos - ro);
+                        float spot = max(0.0, dot(spotDir, toPoint));
+                        spot = pow(spot, 12.0);
+                        float distAtten = 1.0 / (1.0 + t * 0.08 + t * t * 0.005);
+                        groundCol += vec3(0.9, 0.95, 1.0) * spot * distAtten * 2.5;
+                    }
+
+                    float fogFactor = 1.0 - exp(-t * 0.055 * u_fogDensity);
+                    col = mix(groundCol, waterDeepColor, clamp(fogFactor, 0.0, 1.0));
+                }
+
+                // Tafla jeziora
+                if (rd.y > 0.0) {
+                    float waterSurfaceDist = (2.0 - ro.y) / max(rd.y, 0.001);
+                    if (waterSurfaceDist > 0.0 && waterSurfaceDist < 70.0) {
+                        vec2 surfPos = ro.xz + rd.xz * waterSurfaceDist;
+                        float surfNoise = noise2D(surfPos * 0.5 + vec2(u_time * 0.4));
+                        vec3 surfaceGlow = vec3(0.4, 0.85, 0.95) * (0.8 + 0.4 * surfNoise);
+                        float surfFog = 1.0 - exp(-waterSurfaceDist * 0.04 * u_fogDensity);
+                        col = mix(mix(col, surfaceGlow, 0.65), waterDeepColor, clamp(surfFog, 0.0, 1.0));
+                    }
+                }
+
+                gl_FragColor = vec4(col, 1.0);
+            }
+        `;
+
+        function createShader(gl, type, source) {
+            const shader = gl.createShader(type);
+            gl.shaderSource(shader, source);
+            gl.compileShader(shader);
+            return shader;
+        }
+
+        const vs = createShader(gl, gl.VERTEX_SHADER, vsSource);
+        const fs = createShader(gl, gl.FRAGMENT_SHADER, fsSource);
+        const program = gl.createProgram();
+        gl.attachShader(program, vs);
+        gl.attachShader(program, fs);
+        gl.linkProgram(program);
+
+        const posBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, posBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+            -1, -1, 1, -1, -1, 1,
+            -1, 1, 1, -1, 1, 1
+        ]), gl.STATIC_DRAW);
+
+        const aPosLoc = gl.getAttribLocation(program, 'a_position');
+        const uResLoc = gl.getUniformLocation(program, 'u_resolution');
+        const uCamPosLoc = gl.getUniformLocation(program, 'u_camPos');
+        const uCamRotLoc = gl.getUniformLocation(program, 'u_camRot');
+        const uTimeLoc = gl.getUniformLocation(program, 'u_time');
+        const uFogLoc = gl.getUniformLocation(program, 'u_fogDensity');
+        const uCaustLoc = gl.getUniformLocation(program, 'u_causticsIntensity');
+        const uFlashLoc = gl.getUniformLocation(program, 'u_flashlight');
+        const uCurrLoc = gl.getUniformLocation(program, 'u_currentSpeed');
+        const uBiomeLoc = gl.getUniformLocation(program, 'u_biome');
+
+        // ==========================================
+        // STRUKTURY DANYCH DLA FLORY, FAUNY I CZĄSTEK
+        // ==========================================
+        let currentBiome = 0;
+        let fogDensity = 0.8;
+        let causticsIntensity = 1.0;
+        let currentSpeed = 1.0;
+        let flashlightOn = 1.0;
+        let autopilot = false;
+        let simTime = 0.0;
+
+        const cam = {
+            x: 0.0,
+            y: -10.0,
+            z: 0.0,
+            pitch: 0.0,
+            yaw: 0.0,
+            speed: 0.25
+        };
+
+        // 1. Plankton / Marine snow
+        let maxParticles = 2200;
+        let particles = [];
+
+        function initParticles() {
+            particles = [];
+            for (let i = 0; i < maxParticles; i++) {
+                particles.push({
+                    x: (Math.random() - 0.5) * 50,
+                    y: (Math.random() - 0.5) * 40 - 12,
+                    z: Math.random() * 40 + 0.5,
+                    size: Math.random() * 2.2 + 0.6,
+                    speedY: (Math.random() - 0.5) * 0.012,
+                    glow: Math.random() * 0.6 + 0.4
+                });
+            }
+        }
+        initParticles();
+
+        // 2. Bąbelki powietrza
+        let bubbles = [];
+        for (let i = 0; i < 40; i++) {
+            bubbles.push({
+                x: (Math.random() - 0.5) * 30,
+                y: -25 + Math.random() * 20,
+                z: Math.random() * 30 + 1.0,
+                radius: Math.random() * 4.0 + 1.5,
+                speedY: Math.random() * 0.08 + 0.04,
+                wobble: Math.random() * Math.PI * 2
+            });
+        }
+
+        // 3. Ławica ryb (Boids 3D)
+        class Fish3D {
+            constructor() {
+                this.x = (Math.random() - 0.5) * 30;
+                this.y = -8 - Math.random() * 14;
+                this.z = 10 + Math.random() * 25;
+                this.vx = (Math.random() - 0.5) * 0.07;
+                this.vy = (Math.random() - 0.5) * 0.02;
+                this.vz = (Math.random() - 0.5) * 0.07;
+                this.size = Math.random() * 0.5 + 0.8;
+                this.finPhase = Math.random() * Math.PI * 2;
+                this.color = Math.random() > 0.4 ? '#38bdf8' : '#fbbf24';
+            }
+
+            update(flock, camPos) {
+                let alignX = 0, alignY = 0, alignZ = 0;
+                let cohX = 0, cohY = 0, cohZ = 0;
+                let sepX = 0, sepY = 0, sepZ = 0;
+                let neighbors = 0;
+
+                for (let other of flock) {
+                    if (other === this) continue;
+                    let dx = other.x - this.x;
+                    let dy = other.y - this.y;
+                    let dz = other.z - this.z;
+                    let dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
+
+                    if (dist < 6.0 && dist > 0.001) {
+                        alignX += other.vx; alignY += other.vy; alignZ += other.vz;
+                        cohX += other.x; cohY += other.y; cohZ += other.z;
+                        if (dist < 2.0) {
+                            sepX -= dx / dist; sepY -= dy / dist; sepZ -= dz / dist;
+                        }
+                        neighbors++;
+                    }
+                }
+
+                if (neighbors > 0) {
+                    this.vx += (alignX / neighbors - this.vx) * 0.04;
+                    this.vy += (alignY / neighbors - this.vy) * 0.04;
+                    this.vz += (alignZ / neighbors - this.vz) * 0.04;
+
+                    this.vx += ((cohX / neighbors - this.x) * 0.006);
+                    this.vy += ((cohY / neighbors - this.y) * 0.006);
+                    this.vz += ((cohZ / neighbors - this.z) * 0.006);
+
+                    this.vx += sepX * 0.04;
+                    this.vy += sepY * 0.04;
+                    this.vz += sepZ * 0.04;
+                }
+
+                let spd = Math.sqrt(this.vx * this.vx + this.vy * this.vy + this.vz * this.vz);
+                if (spd > 0.14) {
+                    this.vx = (this.vx / spd) * 0.14;
+                    this.vy = (this.vy / spd) * 0.14;
+                    this.vz = (this.vz / spd) * 0.14;
+                }
+
+                this.x += this.vx;
+                this.y += this.vy;
+                this.z += this.vz;
+                this.finPhase += 0.28;
+
+                if (this.x < camPos.x - 30) this.x = camPos.x + 30;
+                if (this.x > camPos.x + 30) this.x = camPos.x - 30;
+                if (this.z < camPos.z - 30) this.z = camPos.z + 30;
+                if (this.z > camPos.z + 30) this.z = camPos.z - 30;
+                if (this.y > -2) this.vy -= 0.01;
+                if (this.y < -25) this.vy += 0.01;
+            }
+        }
+
+        const fishSchool = [];
+        for (let i = 0; i < 70; i++) {
+            fishSchool.push(new Fish3D());
+        }
+
+        // 4. Roślinność podwodna (L-System Kelp Forest)
+        const kelpForest = [];
+        for (let i = 0; i < 24; i++) {
+            kelpForest.push({
+                x: (Math.random() - 0.5) * 45,
+                z: Math.random() * 40 + 5.0,
+                baseY: -26.0 + Math.random() * 4.0,
+                height: 8.0 + Math.random() * 10.0,
+                branches: Math.floor(Math.random() * 4 + 4),
+                swayOffset: Math.random() * Math.PI * 2,
+                color: Math.random() > 0.5 ? '#15803d' : '#047857'
+            });
+        }
+
+        // ==========================================
+        // PROJEKCJA 3D DO 2D NA OVERLAY CANVAS
+        // ==========================================
+        function project3D(x, y, z) {
+            // Transformacja relatywna do kamery
+            let dx = x - cam.x;
+            let dy = y - cam.y;
+            let dz = z - cam.z;
+
+            // Obrót kamery Yaw (Y)
+            let cy = Math.cos(-cam.yaw), sy = Math.sin(-cam.yaw);
+            let x1 = dx * cy - dz * sy;
+            let z1 = dx * sy + dz * cy;
+
+            // Obrót kamery Pitch (X)
+            let cp = Math.cos(-cam.pitch), sp = Math.sin(-cam.pitch);
+            let y2 = dy * cp - z1 * sp;
+            let z2 = dy * sp + z1 * cp;
+
+            if (z2 <= 0.2) return null; // poza polem widzenia
+
+            const fov = 1.25;
+            const aspect = overlayCanvas.width / overlayCanvas.height;
+            const screenX = (x1 / (z2 * fov * aspect)) * (overlayCanvas.width / 2) + (overlayCanvas.width / 2);
+            const screenY = (-y2 / (z2 * fov)) * (overlayCanvas.height / 2) + (overlayCanvas.height / 2);
+
+            return { x: screenX, y: screenY, depth: z2 };
+        }
+
+        // Rysowanie wodorostów L-systemów
+        function drawKelpForest(time) {
+            for (let kelp of kelpForest) {
+                const segCount = kelp.branches * 3;
+                let curX = kelp.x;
+                let curY = kelp.baseY;
+                let curZ = kelp.z;
+
+                ctx.beginPath();
+                let p0 = project3D(curX, curY, curZ);
+                if (!p0) continue;
+                ctx.moveTo(p0.x, p0.y);
+
+                for (let s = 1; s <= segCount; s++) {
+                    const sway = Math.sin(time * 1.8 * currentSpeed + kelp.swayOffset + s * 0.4) * (s * 0.18);
+                    curX += sway * 0.2;
+                    curY += (kelp.height / segCount);
+                    curZ += sway * 0.1;
+
+                    let p = project3D(curX, curY, curZ);
+                    if (p) {
+                        ctx.lineTo(p.x, p.y);
+                        // Rysuj listki L-systemu co 2 segmenty
+                        if (s % 2 === 0) {
+                            let leafP = project3D(curX + (s % 4 === 0 ? 0.6 : -0.6), curY - 0.2, curZ);
+                            if (leafP) {
+                                ctx.strokeStyle = '#22c55e';
+                                ctx.lineWidth = Math.max(1, 14 / p.depth);
+                                ctx.stroke();
+                                ctx.beginPath();
+                                ctx.moveTo(p.x, p.y);
+                                ctx.lineTo(leafP.x, leafP.y);
+                                ctx.stroke();
+                                ctx.beginPath();
+                                ctx.moveTo(p.x, p.y);
+                            }
+                        }
+                    }
+                }
+                ctx.strokeStyle = kelp.color;
+                ctx.lineWidth = Math.max(1.5, 25 / p0.depth);
+                ctx.stroke();
+            }
+        }
+
+        // Rysowanie ławicy ryb 3D
+        function drawFishSchool(time) {
+            for (let fish of fishSchool) {
+                fish.update(fishSchool, cam);
+
+                let p = project3D(fish.x, fish.y, fish.z);
+                if (!p || p.depth > 40) continue;
+
+                const scale = Math.max(2, (20 / p.depth) * fish.size);
+                const angle = Math.atan2(fish.vx, fish.vz) - cam.yaw;
+                const tailWag = Math.sin(fish.finPhase) * 0.4;
+
+                ctx.save();
+                ctx.translate(p.x, p.y);
+                ctx.rotate(angle);
+
+                // Ciało ryby
+                ctx.beginPath();
+                ctx.ellipse(0, 0, scale * 1.6, scale * 0.6, 0, 0, Math.PI * 2);
+                ctx.fillStyle = fish.color;
+                ctx.fill();
+
+                // Płetwa ogonowa
+                ctx.beginPath();
+                ctx.moveTo(-scale * 1.4, 0);
+                ctx.lineTo(-scale * 2.2 + tailWag * scale, -scale * 0.8);
+                ctx.lineTo(-scale * 2.2 + tailWag * scale, scale * 0.8);
+                ctx.closePath();
+                ctx.fillStyle = '#f8fafc';
+                ctx.fill();
+
+                // Oko
+                ctx.beginPath();
+                ctx.arc(scale * 0.9, -scale * 0.15, Math.max(1, scale * 0.2), 0, Math.PI * 2);
+                ctx.fillStyle = '#0f172a';
+                ctx.fill();
+
+                ctx.restore();
+            }
+        }
+
+        // Rysowanie cząsteczek planktonu / morskiego śniegu
+        function drawPlankton() {
+            for (let pt of particles) {
+                pt.y += pt.speedY;
+                if (pt.y > cam.y + 15) pt.y = cam.y - 15;
+                if (pt.y < cam.y - 15) pt.y = cam.y + 15;
+
+                let p = project3D(pt.x, pt.y, pt.z);
+                if (!p || p.depth > 35) continue;
+
+                const rad = Math.max(0.8, (pt.size * 12) / p.depth);
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, rad, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(186, 230, 253, ${Math.max(0.1, 0.7 - p.depth * 0.018)})`;
+                ctx.fill();
+            }
+        }
+
+        // Rysowanie bąbelków
+        function drawBubbles() {
+            for (let b of bubbles) {
+                b.y += b.speedY;
+                b.wobble += 0.08;
+                b.x += Math.sin(b.wobble) * 0.02;
+
+                if (b.y > 1.5) {
+                    b.y = cam.y - 12 - Math.random() * 8;
+                    b.x = cam.x + (Math.random() - 0.5) * 20;
+                    b.z = cam.z + Math.random() * 20 + 2.0;
+                }
+
+                let p = project3D(b.x, b.y, b.z);
+                if (!p || p.depth > 35) continue;
+
+                const rad = Math.max(1.2, (b.radius * 16) / p.depth);
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, rad, 0, Math.PI * 2);
+                ctx.strokeStyle = `rgba(224, 242, 254, ${Math.max(0.2, 0.85 - p.depth * 0.02)})`;
+                ctx.lineWidth = 1.2;
+                ctx.stroke();
+
+                // Błysk światła na bąbelku
+                ctx.beginPath();
+                ctx.arc(p.x - rad * 0.35, p.y - rad * 0.35, rad * 0.3, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+                ctx.fill();
+            }
+        }
+
+        // ==========================================
+        // STEROWANIE & INTERAKCJA
+        // ==========================================
+        const keys = {};
+        let isMouseDown = false;
+        let lastMouseX = 0, lastMouseY = 0;
+
+        window.addEventListener('keydown', (e) => { keys[e.key.toLowerCase()] = true; });
+        window.addEventListener('keyup', (e) => { keys[e.key.toLowerCase()] = false; });
+
+        window.addEventListener('mousedown', (e) => {
+            if (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+            isMouseDown = true;
+            lastMouseX = e.clientX;
+            lastMouseY = e.clientY;
+        });
+
+        window.addEventListener('mouseup', () => { isMouseDown = false; });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!isMouseDown) return;
+            const dx = e.clientX - lastMouseX;
+            const dy = e.clientY - lastMouseY;
+            lastMouseX = e.clientX;
+            lastMouseY = e.clientY;
+
+            cam.yaw += dx * 0.004;
+            cam.pitch += dy * 0.004;
+            cam.pitch = Math.max(-1.4, Math.min(1.4, cam.pitch));
+        });
+
+        function resize() {
+            glCanvas.width = window.innerWidth;
+            glCanvas.height = window.innerHeight;
+            overlayCanvas.width = window.innerWidth;
+            overlayCanvas.height = window.innerHeight;
+            gl.viewport(0, 0, glCanvas.width, glCanvas.height);
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        function toggleAutopilot() {
+            autopilot = !autopilot;
+            const btn = document.getElementById('btn-autopilot');
+            btn.classList.toggle('active', autopilot);
+            btn.innerText = autopilot ? '⏸ Wyłącz Autopilota' : '🚀 Autopilot Nurkowania';
+        }
+
+        function toggleFlashlight() {
+            flashlightOn = flashlightOn > 0.5 ? 0.0 : 1.0;
+            const btn = document.getElementById('btn-flashlight');
+            btn.innerText = flashlightOn > 0.5 ? '🔦 Latarka Nurka: WŁ' : '🔦 Latarka Nurka: WYŁ';
+            btn.classList.toggle('active', flashlightOn > 0.5);
+        }
+
+        function applyBiomePreset(val) {
+            const select = document.getElementById('preset-select');
+            if (val === 'shallows') {
+                currentBiome = 1;
+                fogDensity = 0.45;
+                causticsIntensity = 1.6;
+            } else if (val === 'deep') {
+                currentBiome = 2;
+                fogDensity = 1.1;
+                causticsIntensity = 0.3;
+            } else if (val === 'algae') {
+                currentBiome = 3;
+                fogDensity = 0.95;
+                causticsIntensity = 0.9;
+            } else {
+                currentBiome = 0;
+                fogDensity = 0.8;
+                causticsIntensity = 1.0;
+            }
+            document.getElementById('slider-fog').value = fogDensity;
+            document.getElementById('slider-caustics').value = causticsIntensity;
+            document.getElementById('val-fog').innerText = fogDensity > 1.0 ? 'Bardzo gęsty' : (fogDensity > 0.6 ? 'Średni' : 'Lekki');
+            document.getElementById('val-caustics').innerText = Math.round(causticsIntensity * 100) + '%';
+        }
+
+        function updateFogDensity(val) {
+            fogDensity = parseFloat(val);
+            document.getElementById('val-fog').innerText = fogDensity > 1.0 ? 'Bardzo gęsty' : (fogDensity > 0.6 ? 'Średni' : 'Lekki');
+        }
+
+        function updateCaustics(val) {
+            causticsIntensity = parseFloat(val);
+            document.getElementById('val-caustics').innerText = Math.round(causticsIntensity * 100) + '%';
+        }
+
+        function updateParticles(val) {
+            maxParticles = parseInt(val);
+            document.getElementById('val-particles').innerText = maxParticles;
+            initParticles();
+        }
+
+        function updateCurrent(val) {
+            currentSpeed = parseFloat(val);
+            document.getElementById('val-current').innerText = currentSpeed > 1.8 ? 'Silny' : (currentSpeed > 0.8 ? 'Normalny' : 'Spokojny');
+        }
+
+        function updateCamera() {
+            if (autopilot) {
+                simTime += 0.012;
+                cam.x = Math.sin(simTime * 0.35) * 16.0;
+                cam.z = simTime * 4.2;
+                cam.y = -14.0 + Math.sin(simTime * 0.25) * 8.0;
+                cam.yaw = Math.sin(simTime * 0.35) * 0.45;
+                cam.pitch = Math.cos(simTime * 0.25) * 0.12;
+            } else {
+                let forward = 0, right = 0, up = 0;
+                if (keys['w'] || keys['arrowup']) forward += 1;
+                if (keys['s'] || keys['arrowdown']) forward -= 1;
+                if (keys['a'] || keys['arrowleft']) right -= 1;
+                if (keys['d'] || keys['arrowright']) right += 1;
+                if (keys[' ']) up += 1;
+                if (keys['shift']) up -= 1;
+
+                const cy = Math.cos(cam.yaw), sy = Math.sin(cam.yaw);
+                cam.x += (cy * right + sy * forward) * cam.speed;
+                cam.z += (-sy * right + cy * forward) * cam.speed;
+                cam.y += up * cam.speed * 0.75;
+
+                cam.y = Math.min(-0.8, Math.max(-27.0, cam.y));
+            }
+
+            const depth = (-cam.y).toFixed(1);
+            document.getElementById('hud-depth').innerText = `${depth} m`;
+            const vis = (8.5 / fogDensity).toFixed(1);
+            document.getElementById('hud-vis').innerText = `${vis} m`;
+            const temp = Math.max(4.2, 18.0 - (depth * 0.5)).toFixed(1);
+            document.getElementById('hud-temp').innerText = `${temp} °C`;
+        }
+
+        // ==========================================
+        // GŁÓWNA PĘTLA RENDERUJĄCA
+        // ==========================================
+        function render(now) {
+            updateCamera();
+
+            const timeSec = now * 0.001;
+
+            // 1. Render tła, dna i kaustyki w WebGL
+            gl.useProgram(program);
+            gl.bindBuffer(gl.ARRAY_BUFFER, posBuffer);
+            gl.enableVertexAttribArray(aPosLoc);
+            gl.vertexAttribPointer(aPosLoc, 2, gl.FLOAT, false, 0, 0);
+
+            gl.uniform2f(uResLoc, glCanvas.width, glCanvas.height);
+            gl.uniform3f(uCamPosLoc, cam.x, cam.y, cam.z);
+            gl.uniform2f(uCamRotLoc, cam.pitch, cam.yaw);
+            gl.uniform1f(uTimeLoc, timeSec);
+            gl.uniform1f(uFogLoc, fogDensity);
+            gl.uniform1f(uCaustLoc, causticsIntensity);
+            gl.uniform1f(uFlashLoc, flashlightOn);
+            gl.uniform1f(uCurrLoc, currentSpeed);
+            gl.uniform1i(uBiomeLoc, currentBiome);
+
+            gl.drawArrays(gl.TRIANGLES, 0, 6);
+
+            // 2. Render obiektów 3D na płótnie Canvas 2D
+            ctx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
+
+            drawKelpForest(timeSec);
+            drawFishSchool(timeSec);
+            drawPlankton();
+            drawBubbles();
+
+            requestAnimationFrame(render);
+        }
+
+        // ==========================================
+        // SYNTEZATOR PODWODNEJ MELODII I DŹWIĘKÓW
+        // ==========================================
+        class UnderwaterAtmosphericMusic {
+            constructor() {
+                this.audioCtx = null;
+                this.isPlaying = false;
+                this.masterGain = null;
+                this.filter = null;
+                this.droneOscs = [];
+                this.arpTimer = null;
+            }
+
+            init() {
+                if (this.audioCtx) return;
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                this.audioCtx = new AudioContext();
+
+                this.masterGain = this.audioCtx.createGain();
+                this.masterGain.gain.setValueAtTime(0.24, this.audioCtx.currentTime);
+
+                this.filter = this.audioCtx.createBiquadFilter();
+                this.filter.type = 'lowpass';
+                this.filter.frequency.setValueAtTime(650, this.audioCtx.currentTime);
+
+                const delay = this.audioCtx.createDelay();
+                delay.delayTime.setValueAtTime(0.48, this.audioCtx.currentTime);
+                const delayGain = this.audioCtx.createGain();
+                delayGain.gain.setValueAtTime(0.42, this.audioCtx.currentTime);
+
+                delay.connect(delayGain);
+                delayGain.connect(delay);
+                delayGain.connect(this.masterGain);
+
+                this.filter.connect(this.masterGain);
+                this.filter.connect(delay);
+                this.masterGain.connect(this.audioCtx.destination);
+            }
+
+            start() {
+                this.init();
+                if (this.audioCtx.state === 'suspended') {
+                    this.audioCtx.resume();
+                }
+                if (this.isPlaying) return;
+                this.isPlaying = true;
+
+                this.masterGain.gain.cancelScheduledValues(this.audioCtx.currentTime);
+                this.masterGain.gain.setValueAtTime(0.001, this.audioCtx.currentTime);
+                this.masterGain.gain.exponentialRampToValueAtTime(0.24, this.audioCtx.currentTime + 1.2);
+
+                const chordFrequencies = [77.78, 116.54, 155.56, 233.08]; // Eb2, Bb2, Eb3, Bb3
+                this.droneOscs = chordFrequencies.map((freq, idx) => {
+                    const osc = this.audioCtx.createOscillator();
+                    const gain = this.audioCtx.createGain();
+
+                    osc.type = idx % 2 === 0 ? 'sine' : 'triangle';
+                    osc.frequency.setValueAtTime(freq, this.audioCtx.currentTime);
+
+                    const lfo = this.audioCtx.createOscillator();
+                    const lfoGain = this.audioCtx.createGain();
+                    lfo.frequency.setValueAtTime(0.06 + idx * 0.03, this.audioCtx.currentTime);
+                    lfoGain.gain.setValueAtTime(1.8, this.audioCtx.currentTime);
+                    lfo.connect(lfoGain);
+                    lfoGain.connect(osc.frequency);
+                    lfo.start();
+
+                    gain.gain.setValueAtTime(0.05, this.audioCtx.currentTime);
+                    osc.connect(gain);
+                    gain.connect(this.filter);
+                    osc.start();
+                    return { osc, gain, lfo };
+                });
+
+                const oceanScale = [233.08, 261.63, 311.13, 349.23, 392.00, 466.16, 523.25];
+                const playBubbleChime = () => {
+                    if (!this.isPlaying) return;
+
+                    const freq = oceanScale[Math.floor(Math.random() * oceanScale.length)];
+                    const osc = this.audioCtx.createOscillator();
+                    const gain = this.audioCtx.createGain();
+
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, this.audioCtx.currentTime);
+
+                    const now = this.audioCtx.currentTime;
+                    gain.gain.setValueAtTime(0.0001, now);
+                    gain.gain.exponentialRampToValueAtTime(0.12, now + 0.06);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, now + 2.4);
+
+                    osc.connect(gain);
+                    gain.connect(this.filter);
+
+                    osc.start(now);
+                    osc.stop(now + 2.5);
+
+                    const nextDelay = 450 + Math.random() * 650;
+                    this.arpTimer = setTimeout(playBubbleChime, nextDelay);
+                };
+
+                playBubbleChime();
+            }
+
+            stop() {
+                if (!this.isPlaying || !this.audioCtx) return;
+                this.isPlaying = false;
+                if (this.arpTimer) clearTimeout(this.arpTimer);
+
+                if (this.masterGain) {
+                    this.masterGain.gain.cancelScheduledValues(this.audioCtx.currentTime);
+                    this.masterGain.gain.setValueAtTime(this.masterGain.gain.value, this.audioCtx.currentTime);
+                    this.masterGain.gain.exponentialRampToValueAtTime(0.0001, this.audioCtx.currentTime + 0.5);
+                }
+
+                setTimeout(() => {
+                    if (!this.isPlaying && this.droneOscs.length) {
+                        this.droneOscs.forEach(({ osc, lfo }) => {
+                            try { osc.stop(); lfo.stop(); } catch (e) {}
+                        });
+                        this.droneOscs = [];
+                    }
+                }, 550);
+            }
+
+            toggle() {
+                if (this.isPlaying) {
+                    this.stop();
+                    return false;
+                } else {
+                    this.start();
+                    return true;
+                }
+            }
+        }
+
+        const aquaticMusic = new UnderwaterAtmosphericMusic();
+
+        function toggleAudio() {
+            const isPlaying = aquaticMusic.toggle();
+            const btn = document.getElementById('btn-audio');
+            btn.innerText = isPlaying ? '🔇 Wycisz Melodię' : '🔊 Nastrojowa Melodia Głębin';
+            btn.style.background = isPlaying ? '#0284c7' : '#0c2a4d';
+        }
+
+        // Start
+        requestAnimationFrame(render);
+    </script>
+    <!-- Uniwersalny rejestrator wideo MP4 -->
+    <script src="nagrywanie_wideo.js"></script>
+</body>
+
+</html>

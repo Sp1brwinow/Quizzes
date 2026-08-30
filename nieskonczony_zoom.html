@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nieskończony Zoom – HACK CLUB</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+        :root {
+            --bg-dark: #07152b;
+            --card-bg: rgba(14, 30, 56, 0.75);
+            --card-border: rgba(56, 189, 248, 0.25);
+            --primary: #38bdf8;
+            --accent-cyan: #38bdf8;
+            --accent-purple: #c084fc;
+            --accent-pink: #f472b6;
+            --accent-gold: #fbbf24;
+            --accent-teal: #2dd4bf;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(180deg, #050d1a 0%, #0c1e3d 45%, #133b5c 100%);
+            color: #ffffff;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            padding: 30px 20px 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        #snow-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1050px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 26px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Belka nawigacji */
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .nav-btn {
+            background: rgba(14, 30, 56, 0.8);
+            border: 1px solid rgba(125, 211, 252, 0.4);
+            color: #7dd3fc;
+            text-decoration: none;
+            padding: 8px 18px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(8px);
+        }
+
+        .nav-btn:hover {
+            color: #ffffff;
+            border-color: #38bdf8;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.5);
+            transform: translateY(-2px);
+            background: rgba(20, 45, 85, 0.9);
+        }
+
+        /* Nagłówek */
+        .header {
+            text-align: center;
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.8) 100%);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            padding: 28px 24px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6), 0 0 25px rgba(56, 189, 248, 0.2);
+            backdrop-filter: blur(12px);
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(6, 182, 212, 0.15);
+            border: 1px solid #06b6d4;
+            color: #67e8f9;
+            font-size: 0.85rem;
+            font-weight: 700;
+            padding: 5px 14px;
+            border-radius: 9999px;
+            margin-bottom: 12px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 0%, #38bdf8 50%, #818cf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #cbd5e1;
+            font-size: 1.05rem;
+            max-width: 750px;
+            margin: 0 auto;
+            line-height: 1.5;
+        }
+
+        /* Sekcje kategorii */
+        .section-title {
+            color: #bae6fd;
+            font-size: 1.45rem;
+            margin-top: 10px;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-shadow: 0 0 12px rgba(186, 230, 253, 0.4);
+        }
+
+        /* Siatka kart */
+        .links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .link-card {
+            background: var(--card-bg);
+            border: 2px solid rgba(56, 189, 248, 0.3);
+            border-radius: 16px;
+            padding: 24px;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 6px 22px rgba(0, 0, 0, 0.4);
+        }
+
+        .link-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: currentColor;
+            opacity: 0.85;
+            transition: height 0.3s;
+        }
+
+        .link-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 14px 34px rgba(0, 0, 0, 0.7), 0 0 24px currentColor;
+        }
+
+        .link-card:hover::before {
+            height: 6px;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            margin-bottom: 12px;
+        }
+
+        .card-icon {
+            font-size: 2.2rem;
+            line-height: 1;
+            flex-shrink: 0;
+        }
+
+        .card-name {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #ffffff;
+            line-height: 1.35;
+        }
+
+        .card-desc {
+            font-size: 0.95rem;
+            color: #94a3b8;
+            line-height: 1.5;
+            margin-bottom: 16px;
+            flex-grow: 1;
+        }
+
+        .tags-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+
+        .tag-pill {
+            font-size: 0.8rem;
+            padding: 3px 9px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            color: #cbd5e1;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .card-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: inherit;
+            transition: gap 0.2s;
+        }
+
+        .link-card:hover .card-action {
+            gap: 10px;
+        }
+
+        /* Kolory wariantów */
+        .color-teal {
+            color: #2dd4bf;
+            border-color: rgba(45, 212, 191, 0.4);
+        }
+        .color-cyan {
+            color: #38bdf8;
+            border-color: rgba(56, 189, 248, 0.4);
+        }
+        .color-purple {
+            color: #c084fc;
+            border-color: rgba(192, 132, 252, 0.4);
+        }
+        .color-gold {
+            color: #fbbf24;
+            border-color: rgba(251, 191, 36, 0.4);
+        }
+
+        /* Stopka */
+        .footer-nav {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="snow-canvas"></canvas>
+
+    <div class="container">
+        <!-- Górna belka nawigacji -->
+        <nav class="top-nav">
+            <a href="rozrywka.html" class="nav-btn">← Powrót do Rozrywki</a>
+            <a href="index.html" class="nav-btn">🏠 Strona Główna</a>
+        </nav>
+
+        <!-- Nagłówek -->
+        <header class="header">
+            <div class="badge">🔍 Płynna Skala i Wieloświaty</div>
+            <h1 class="title">Nieskończony Zoom</h1>
+            <p class="subtitle">
+                Zanurz się w hipnotyzujących, wielopoziomowych animacjach wektorowych oraz trójwymiarowych lotach w głąb skali mikro i makro.
+            </p>
+        </header>
+
+        <!-- Sekcja z projektami zoomu -->
+        <h2 class="section-title">🌀 Projekty Nieskończonego Zoomu</h2>
+        <div class="links-grid">
+            <!-- NOWOŚĆ: Zoom Jezioro i Głębia -->
+            <a href="fraktale/zoom_jezioro.html" class="link-card color-teal">
+                <div>
+                    <div class="card-header">
+                        <span class="card-icon">🌊</span>
+                        <div class="card-name">Nieskończony Zoom: Kosmos → Ziemia → Chmury → Jezioro z góry → Powierzchnia wody → Głębia otchłani</div>
+                    </div>
+                    <p class="card-desc">
+                        Niezwykła podróż w głąb błękitu: od bezkresu gwiazd, przez atmosferę Ziemi, krystaliczne górskie jezioro z lotu ptaka, refleksy na powierzchni wody aż po podwodną ciemną otchłań!
+                    </p>
+                    <div class="tags-row">
+                        <span class="tag-pill">Jezioro z lotu ptaka</span>
+                        <span class="tag-pill">Powierzchnia wody</span>
+                        <span class="tag-pill">Głębia otchłani</span>
+                        <span class="tag-pill">Pętla 60 FPS</span>
+                    </div>
+                </div>
+                <div class="card-action">
+                    <span>Uruchom animację jeziora</span>
+                    <span>→</span>
+                </div>
+            </a>
+
+            <!-- Zoom: Kosmos i Gwiazdy -> Ziemia -> Chmura -> Stadion -> Zawodnik -> Piłka -->
+            <a href="fraktale/sloncefraktal.html" class="link-card color-purple">
+                <div>
+                    <div class="card-header">
+                        <span class="card-icon">🌌</span>
+                        <div class="card-name">Nieskończony Zoom: Kosmos → Ziemia → Chmury → Stadion → Zawodnik → Piłka</div>
+                    </div>
+                    <p class="card-desc">
+                        Monumentalna podróż od bezkresnego wszechświata i galaktyk, przez atmosferę Ziemi, stadion sportowy, zawodnika aż po strukturę piłki i powrót do kosmosu.
+                    </p>
+                    <div class="tags-row">
+                        <span class="tag-pill">Kosmos i Ziemia</span>
+                        <span class="tag-pill">Stadion & Murawa</span>
+                        <span class="tag-pill">Płynny zoom</span>
+                    </div>
+                </div>
+                <div class="card-action">
+                    <span>Uruchom animację</span>
+                    <span>→</span>
+                </div>
+            </a>
+
+            <!-- Zoom: Zegar -> Miasto -> Komputer -> Pokój -->
+            <a href="fraktale/zoom_zegar.html" class="link-card color-cyan">
+                <div>
+                    <div class="card-header">
+                        <span class="card-icon">🌀</span>
+                        <div class="card-name">Nieskończony Zoom Wektorowy: Zegar → Miasto → Komputer → Pokój</div>
+                    </div>
+                    <p class="card-desc">
+                        Płynna pętla wieloświatowa: wnikaj w tarczę zegara, odkrywaj tętniące życiem miasto, wchodź w ekran komputera i wracaj do pokoju w niekończącym się cyklu wektorowym.
+                    </p>
+                    <div class="tags-row">
+                        <span class="tag-pill">Wektorowy</span>
+                        <span class="tag-pill">Pętla 60 FPS</span>
+                        <span class="tag-pill">Canvas 2D</span>
+                    </div>
+                </div>
+                <div class="card-action">
+                    <span>Uruchom animację</span>
+                    <span>→</span>
+                </div>
+            </a>
+
+            <!-- Zoom: Mandelbox i Mandelbulb 3D: Nieskończony lot kamerą wewnątrz fraktala -->
+            <a href="fraktale/mandelbox_mandelbulb_3d.html" class="link-card color-gold">
+                <div>
+                    <div class="card-header">
+                        <span class="card-icon">🪐</span>
+                        <div class="card-name">Mandelbox & Mandelbulb 3D: Nieskończony Lot Kamerą</div>
+                    </div>
+                    <p class="card-desc">
+                        Trójwymiarowy nieskończony przelot w głąb struktur geometrycznych Mandelbox i Mandelbulb za pomocą algorytmu Raymarching w czasie rzeczywistym.
+                    </p>
+                    <div class="tags-row">
+                        <span class="tag-pill">3D Raymarching</span>
+                        <span class="tag-pill">Nieskończony lot</span>
+                        <span class="tag-pill">GPU Shader</span>
+                    </div>
+                </div>
+                <div class="card-action">
+                    <span>Uruchom animację 3D</span>
+                    <span>→</span>
+                </div>
+            </a>
+        </div>
+
+        <!-- Stopka nawigacyjna -->
+        <div class="footer-nav">
+            <a href="rozrywka.html" class="nav-btn">← Powrót do Rozrywki</a>
+            <a href="index.html" class="nav-btn">🏠 Strona Główna</a>
+        </div>
+    </div>
+
+    <!-- Animacja tła śniegu / cząsteczek -->
+    <script>
+        const canvas = document.getElementById('snow-canvas');
+        const ctx = canvas.getContext('2d');
+
+        let width = window.innerWidth;
+        let height = window.innerHeight;
+
+        function resizeCanvas() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        const flakeCount = 100;
+        const flakes = [];
+
+        for (let i = 0; i < flakeCount; i++) {
+            flakes.push({
+                x: Math.random() * width,
+                y: Math.random() * height,
+                radius: Math.random() * 2.5 + 1,
+                speed: Math.random() * 1.2 + 0.6,
+                wind: Math.random() * 0.5 - 0.25,
+                opacity: Math.random() * 0.5 + 0.3,
+                swing: Math.random() * Math.PI * 2,
+                swingSpeed: Math.random() * 0.02 + 0.01
+            });
+        }
+
+        function updateSnow() {
+            ctx.clearRect(0, 0, width, height);
+
+            for (let i = 0; i < flakeCount; i++) {
+                const f = flakes[i];
+
+                ctx.beginPath();
+                ctx.arc(f.x, f.y, f.radius, 0, Math.PI * 2, false);
+                ctx.fillStyle = `rgba(255, 255, 255, ${f.opacity})`;
+                ctx.shadowBlur = 4;
+                ctx.shadowColor = 'rgba(255, 255, 255, 0.7)';
+                ctx.fill();
+
+                f.swing += f.swingSpeed;
+                f.y += f.speed;
+                f.x += Math.sin(f.swing) * 0.7 + f.wind;
+
+                if (f.y > height + 10) {
+                    f.y = -10;
+                    f.x = Math.random() * width;
+                }
+                if (f.x > width + 10) {
+                    f.x = -10;
+                } else if (f.x < -10) {
+                    f.x = width + 10;
+                }
+            }
+
+            requestAnimationFrame(updateSnow);
+        }
+
+        updateSnow();
+    </script>
+</body>
+
+</html>

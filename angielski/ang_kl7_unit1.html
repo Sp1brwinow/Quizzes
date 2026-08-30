@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Klasa 7 - Unit 1 (Słówka, Gramatyka, Konwersacja)</title>
+    <link rel="stylesheet" href="../style.css" />
+    <style>
+        .unit-container {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 10px 15px 40px 15px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .options-box {
+            background: rgba(15, 23, 42, 0.95);
+            border: 2px solid #0284c7;
+            border-radius: 12px;
+            padding: 18px 22px;
+            margin: 15px auto 25px auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            text-align: left;
+        }
+
+        .options-box h3 {
+            color: #38bdf8;
+            margin-top: 0;
+            margin-bottom: 12px;
+            font-size: 1.15rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 10px;
+        }
+
+        .opt-btn {
+            background: #1e293b;
+            border: 2px solid #475569;
+            color: #f8fafc;
+            padding: 12px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.92rem;
+            font-weight: bold;
+            text-align: left;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .opt-btn:hover {
+            border-color: #38bdf8;
+            background: #334155;
+            transform: translateY(-2px);
+        }
+
+        .opt-btn.active {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            border-color: #38bdf8;
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4);
+        }
+
+        .workspace-card {
+            background: rgba(15, 23, 42, 0.92);
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 24px;
+            margin-top: 15px;
+            text-align: left;
+            color: #f8fafc;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #334155;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            color: #38bdf8;
+            margin: 0;
+            font-weight: bold;
+        }
+
+        .score-badge {
+            background: #1e293b;
+            border: 1px solid #0284c7;
+            color: #38bdf8;
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .prompt-box {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid #475569;
+            border-left: 4px solid #0284c7;
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin-bottom: 18px;
+        }
+
+        .prompt-label {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #94a3b8;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+
+        .prompt-text {
+            font-size: 1.35rem;
+            font-weight: bold;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .grammar-tag {
+            font-size: 0.82rem;
+            background: rgba(16, 185, 129, 0.2);
+            color: #34d399;
+            border: 1px solid #059669;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: normal;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .custom-input {
+            flex: 1;
+            min-width: 250px;
+            padding: 11px 15px;
+            background: #0f172a;
+            border: 1px solid #475569;
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 1.02rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .custom-input:focus {
+            border-color: #38bdf8;
+            box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+        }
+
+        .btn-action {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.92rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .btn-check {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            color: white;
+        }
+
+        .btn-check:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.4);
+        }
+
+        .btn-next {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-next:hover {
+            background: #059669;
+        }
+
+        .btn-mic {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            color: white;
+            border: none;
+            padding: 10px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-listen {
+            background: #334155;
+            color: #38bdf8;
+            border: 1px solid #64748b;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        .btn-listen:hover {
+            background: #475569;
+        }
+
+        .feedback-box {
+            margin-top: 15px;
+            padding: 14px 18px;
+            border-radius: 8px;
+            line-height: 1.5;
+            font-size: 0.98rem;
+            display: none;
+        }
+
+        .feedback-correct {
+            background: rgba(6, 78, 59, 0.85);
+            border: 1px solid #10b981;
+            color: #a7f3d0;
+        }
+
+        .feedback-incorrect {
+            background: rgba(127, 29, 29, 0.85);
+            border: 1px solid #ef4444;
+            color: #fecaca;
+        }
+
+        /* Panel czatu AI */
+        #conversation-log {
+            max-height: 380px;
+            overflow-y: auto;
+            background: #0b1120;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .chat-bubble {
+            padding: 10px 14px;
+            border-radius: 8px;
+            max-width: 85%;
+            line-height: 1.5;
+            font-size: 0.95rem;
+        }
+
+        .chat-ai {
+            background: #1e293b;
+            border-left: 4px solid #0284c7;
+            align-self: flex-start;
+            color: #f1f5f9;
+        }
+
+        .chat-user {
+            background: #0369a1;
+            align-self: flex-end;
+            color: #ffffff;
+        }
+
+        .correction-tip {
+            background: rgba(220, 38, 38, 0.25);
+            border: 1px solid #ef4444;
+            color: #fca5a5;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.88rem;
+            margin-top: 6px;
+        }
+
+        .recording-pulse {
+            animation: pulse-red 1.2s infinite ease-in-out;
+        }
+
+        @keyframes pulse-red {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            50% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="unit-container">
+        <h2>Język angielski – Klasa 7</h2>
+        <p style="color: #94a3b8; margin-top: -5px;">Unit 1: Jobs, Work & Future Grammar (Present Continuous, Going to, Will)</p>
+
+        <!-- ============================================================ -->
+        <!-- BOX Z 4 OPCJAMI                                              -->
+        <!-- ============================================================ -->
+        <div class="options-box">
+            <h3>🎯 Wybierz tryb nauki / ćwiczeń:</h3>
+            <div class="options-grid">
+                <button type="button" class="opt-btn active" id="tab-1" onclick="switchMode(1)">
+                    🇵🇱 1. Słówka (ANG ➔ POL)
+                </button>
+                <button type="button" class="opt-btn" id="tab-2" onclick="switchMode(2)">
+                    🇬🇧 2. Słówka (POL ➔ ANG)
+                </button>
+                <button type="button" class="opt-btn" id="tab-3" onclick="switchMode(3)">
+                    📝 3. Tłumaczenie zdań (10)
+                </button>
+                <button type="button" class="opt-btn" id="tab-4" onclick="switchMode(4)">
+                    💬 4. Konwersacja z AI
+                </button>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- TRYB 1: SŁÓWKA (ANG -> POL)                                  -->
+        <!-- ============================================================ -->
+        <div id="mode-1-container" class="workspace-card">
+            <div class="card-header">
+                <h3 class="card-title">1. Tłumaczenie słówek: z angielskiego na polski</h3>
+                <span class="score-badge" id="m1-score">Poprawne: 0 / 0</span>
+            </div>
+
+            <div class="prompt-box">
+                <div class="prompt-label">Słowo / wyrażenie po angielsku:</div>
+                <div class="prompt-text">
+                    <span id="m1-en-word">architect</span>
+                    <button type="button" class="btn-listen" onclick="speakCurrentWord(1)">🔊 Wymowa</button>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <input type="text" id="m1-input" class="custom-input" placeholder="Wpisz znaczenie po polsku..." onkeydown="if(event.key==='Enter') checkWordTranslation(1)">
+                <button type="button" id="mic-m1-btn" class="btn-mic" onclick="toggleVoiceInput('m1-input', 'pl-PL', 'mic-m1-btn', () => checkWordTranslation(1))">🎤 Mów</button>
+                <button type="button" class="btn-action btn-check" onclick="checkWordTranslation(1)">✓ Sprawdź</button>
+                <button type="button" class="btn-action btn-next" onclick="nextWord(1)">Następne ➔</button>
+            </div>
+
+            <div id="m1-feedback" class="feedback-box"></div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- TRYB 2: SŁÓWKA (POL -> ANG)                                  -->
+        <!-- ============================================================ -->
+        <div id="mode-2-container" class="workspace-card" style="display: none;">
+            <div class="card-header">
+                <h3 class="card-title">2. Tłumaczenie słówek: z polskiego na angielski</h3>
+                <span class="score-badge" id="m2-score">Poprawne: 0 / 0</span>
+            </div>
+
+            <div class="prompt-box">
+                <div class="prompt-label">Słowo / wyrażenie po polsku:</div>
+                <div class="prompt-text">
+                    <span id="m2-pl-word">architekt</span>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <input type="text" id="m2-input" class="custom-input" placeholder="Wpisz tłumaczenie po angielsku..." onkeydown="if(event.key==='Enter') checkWordTranslation(2)">
+                <button type="button" id="mic-m2-btn" class="btn-mic" onclick="toggleVoiceInput('m2-input', 'en-US', 'mic-m2-btn', () => checkWordTranslation(2))">🎤 Mów</button>
+                <button type="button" class="btn-action btn-check" onclick="checkWordTranslation(2)">✓ Sprawdź</button>
+                <button type="button" class="btn-action btn-next" onclick="nextWord(2)">Następne ➔</button>
+            </div>
+
+            <div id="m2-feedback" class="feedback-box"></div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- TRYB 3: TŁUMACZENIE 10 ZDAŃ Z GRAMATYKĄ                     -->
+        <!-- ============================================================ -->
+        <div id="mode-3-container" class="workspace-card" style="display: none;">
+            <div class="card-header">
+                <h3 class="card-title">3. Tłumaczenie 10 zdań (Gramatyka i Słownictwo)</h3>
+                <span class="score-badge" id="m3-progress">Zdanie: 1 / 10</span>
+            </div>
+
+            <div class="prompt-box">
+                <div class="prompt-label">Przetłumacz poniższe zdanie na język angielski:</div>
+                <div class="prompt-text" style="font-size: 1.15rem; margin-bottom: 8px;">
+                    <span id="m3-sentence-pl">1. W przyszłym tygodniu spotykam się z moim szefem o 9:00.</span>
+                </div>
+                <div id="m3-grammar-hint" class="grammar-tag">💡 Wskazówka: Plany na najbliższą przyszłość (znany czas/miejsce) ➔ Present continuous</div>
+            </div>
+
+            <div class="input-group">
+                <input type="text" id="m3-input" class="custom-input" placeholder="Wpisz zdanie po angielsku..." onkeydown="if(event.key==='Enter') checkSentenceTranslation()">
+                <button type="button" id="mic-m3-btn" class="btn-mic" onclick="toggleVoiceInput('m3-input', 'en-US', 'mic-m3-btn', () => checkSentenceTranslation())">🎤 Mów</button>
+                <button type="button" class="btn-action btn-check" onclick="checkSentenceTranslation()">✓ Sprawdź zdanie</button>
+                <button type="button" class="btn-action btn-next" onclick="nextSentence()">Następne zdanie ➔</button>
+            </div>
+
+            <div id="m3-feedback" class="feedback-box"></div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- TRYB 4: KONWERSACJA Z AI                                     -->
+        <!-- ============================================================ -->
+        <div id="mode-4-container" class="workspace-card" style="display: none;">
+            <div class="card-header">
+                <h3 class="card-title">4. Konwersacja z AI o pracy i planach</h3>
+            </div>
+
+            <!-- Panel sterowania lektorem i głosem (jak w popros_kolege_o_dlugopis.html) -->
+            <div style="margin: 0 0 15px 0; padding: 10px 14px; background: rgba(30, 41, 59, 0.85); border: 1px solid #475569; border-radius: 8px; font-size: 0.9rem;">
+                <div style="display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+                    <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                        <button id="tts-btn" type="button" onclick="toggleSpeechEnglish()" style="background: #0284c7; color: white; border: none; padding: 7px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.9rem;">
+                            🔊 Przeczytaj odpowiedź AI
+                        </button>
+                        <label style="cursor: pointer; display: flex; align-items: center; gap: 6px; color: #f1f5f9;">
+                            <input type="checkbox" id="tts-auto-read" checked> ⚡ Czytaj automatycznie odpowiedź AI
+                        </label>
+                    </div>
+                    <div style="display: flex; gap: 8px; margin-left: auto;">
+                        <a href="pytania_angielski.html" style="background: #334155; color: #93c5fd; border: 1px solid #64748b; padding: 6px 12px; border-radius: 6px; text-decoration: none; font-size: 0.85rem; display: flex; align-items: center; gap: 4px;">
+                            🎙️ Ustawienia lektora
+                        </a>
+                        <a href="../pomocnicze.html" style="background: #334155; color: #93c5fd; border: 1px solid #64748b; padding: 6px 12px; border-radius: 6px; text-decoration: none; font-size: 0.85rem; display: flex; align-items: center; gap: 4px;">
+                            🔑 Klucz API
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Okno dialogu -->
+            <div id="conversation-log">
+                <div class="chat-bubble chat-ai">
+                    <strong>AI Teacher:</strong> Hello! Welcome to our English practice. Let's talk about jobs and your future plans! What kind of job would you like to have in the future?
+                </div>
+            </div>
+
+            <!-- Pole wprowadzania odpowiedzi -->
+            <div style="margin-top: 15px;">
+                <textarea id="m4-input" class="custom-input" style="width: 100%; min-height: 75px; padding: 10px; font-size: 1rem; border-radius: 6px; box-sizing: border-box;" placeholder="Wpisz odpowiedź po angielsku lub kliknij 'Odpowiedz głosem'..." onkeydown="if(event.key==='Enter' && !event.shiftKey){ event.preventDefault(); sendChatMessage(); }"></textarea>
+                
+                <div style="display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; margin-top: 8px;">
+                    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                        <button id="mic-btn" type="button" onclick="toggleSpeechRecognitionChat()" style="background: linear-gradient(135deg, #059669 0%, #047857 100%); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.95rem;">
+                            🎤 Odpowiedz głosem (Mów)
+                        </button>
+
+                        <label style="cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 0.88rem; color: #cbd5e1;">
+                            <input type="checkbox" id="stt-auto-send" checked> 
+                            ⚡ Wyślij automatycznie po zakończeniu mowy
+                        </label>
+                    </div>
+
+                    <button id="send-btn" type="button" onclick="sendChatMessage()" style="background: #2563eb; color: white; border: none; padding: 8px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.95rem;">
+                        📤 Wyślij wiadomość (Enter)
+                    </button>
+                </div>
+
+                <div id="m4-status" style="font-size: 0.85rem; color: #38bdf8; margin-top: 6px; font-weight: bold;"></div>
+            </div>
+        </div>
+
+        <p style="margin-top: 40px; text-align: center;">
+            <a href="pytania_angielski.html" style="color: #38bdf8; text-decoration: none; margin: 0 10px;">⬅ Powrót do menu angielskiego</a> | 
+            <a href="../pomocnicze.html" style="color: #38bdf8; text-decoration: none; margin: 0 10px;">Quizy szkolne</a> | 
+            <a href="../index.html" style="color: #38bdf8; text-decoration: none; margin: 0 10px;">Strona główna</a>
+        </p>
+    </div>
+
+    <!-- Skrypty lektora, rozpoznawania mowy i AI -->
+    <script src="../na_serwer/pyt/czytanie_angielski.js"></script>
+    <script src="../na_serwer/wizard_orpheus.js"></script>
+
+    <script>
+        // =========================================================
+        // BAZA SŁOWNICTWA Z UNIT 1 (Z PODRĘCZNIKA)
+        // =========================================================
+        const wordlist = [
+            // Zawody i ludzie
+            { en: "architect", pl: ["architekt", "architektka"] },
+            { en: "blogger", pl: ["bloger", "blogerka"] },
+            { en: "bus driver", pl: ["kierowca autobusu"] },
+            { en: "chef", pl: ["kucharz", "kucharka", "szef kuchni", "szefowa kuchni"] },
+            { en: "doctor", pl: ["lekarz", "lekarka"] },
+            { en: "engineer", pl: ["inżynier"] },
+            { en: "IT worker", pl: ["pracownik działu IT", "informatyk", "pracownik IT"] },
+            { en: "journalist", pl: ["dziennikarz", "dziennikarka"] },
+            { en: "lawyer", pl: ["prawnik", "prawniczka"] },
+            { en: "programmer", pl: ["programista", "programistka"] },
+            { en: "shop assistant", pl: ["sprzedawca", "sprzedawczyni"] },
+            { en: "social media consultant", pl: ["specjalista ds. mediów społecznościowych", "konsultant mediów społecznościowych"] },
+            { en: "taxi driver", pl: ["kierowca taksówki", "taksówkarz"] },
+            { en: "teacher", pl: ["nauczyciel", "nauczycielka"] },
+            { en: "web designer", pl: ["projektant stron internetowych", "projektant stron", "twórca stron www"] },
+            { en: "vlogger", pl: ["vloger", "vlogerka"] },
+            { en: "au pair", pl: ["au pair", "pomoc domowa", "opiekunka w zamian za naukę"] },
+            { en: "freelancer", pl: ["freelancer", "wolny strzelec", "pracownik nieetatowy"] },
+            { en: "personal trainer", pl: ["trener personalny", "trener osobisty"] },
+            { en: "social worker", pl: ["pracownik socjalny", "pracownica socjalna"] },
+            { en: "volunteer", pl: ["wolontariusz", "wolontariuszka"] },
+            { en: "boss", pl: ["szef", "szefowa"] },
+            { en: "businessman", pl: ["biznesmen", "przedsiębiorca"] },
+            { en: "businesswoman", pl: ["bizneswoman", "kobieta przedsiębiorca", "przedsiębiorca"] },
+            { en: "candidate", pl: ["kandydat", "kandydatka"] },
+            { en: "client", pl: ["klient", "klientka"] },
+            { en: "colleague", pl: ["kolega z pracy", "koleżanka z pracy", "współpracownik"] },
+            { en: "employee", pl: ["pracownik", "pracownica"] },
+            { en: "office manager", pl: ["kierownik biura", "menedżer biura"] },
+            { en: "staff", pl: ["personel", "kadra", "pracownicy"] },
+
+            // Czasowniki i czynności
+            { en: "be interested in", pl: ["interesować się", "być zainteresowanym"] },
+            { en: "earn money", pl: ["zarabiać pieniądze", "zarobić pieniądze"] },
+            { en: "think of", pl: ["myśleć o"] },
+            { en: "work at home", pl: ["pracować w domu"] },
+            { en: "work in an office", pl: ["pracować w biurze"] },
+            { en: "work outdoors", pl: ["pracować na zewnątrz", "pracować na świeżym powietrzu"] },
+            { en: "full-time job", pl: ["praca na pełny etat", "pełny etat"] },
+            { en: "part-time job", pl: ["praca na niepełny etat", "niepełny etat"] },
+            { en: "well-paid job", pl: ["dobrze płatna praca", "dobrze płatny"] },
+            { en: "do for a living", pl: ["zarabiać na życie"] },
+            { en: "make a living", pl: ["zarabiać na życie", "utrzymywać się"] },
+            { en: "get a job", pl: ["dostać pracę", "znaleźć zatrudnienie"] },
+            { en: "get a pay rise", pl: ["dostać podwyżkę", "otrzymać podwyżkę"] },
+            { en: "get a salary", pl: ["dostać pensję", "otrzymać pensję", "dostać wynagrodzenie"] },
+            { en: "help people", pl: ["pomagać ludziom"] },
+            { en: "make phone calls", pl: ["prowadzić rozmowy telefoniczne", "dzwonić", "robić telefony"] },
+            { en: "meet clients", pl: ["spotykać się z klientami"] },
+            { en: "organise meetings", pl: ["organizować spotkania"] },
+            { en: "send emails", pl: ["wysyłać e-maile", "wysyłać maile"] },
+            { en: "work hard", pl: ["ciężko pracować"] },
+            { en: "work on a computer", pl: ["pracować na komputerze", "pracować przy komputerze"] },
+            { en: "advertise a job", pl: ["zamieścić ogłoszenie o pracę", "ogłosić pracę"] },
+            { en: "apply for a job", pl: ["ubiegać się o pracę", "aplikować o pracę", "składać podanie o pracę"] },
+            { en: "find a job", pl: ["znaleźć pracę"] },
+            { en: "get fired", pl: ["zostać zwolnionym", "wylecieć z pracy"] },
+            { en: "get work experience", pl: ["zdobywać doświadczenie zawodowe", "zdobyć doświadczenie zawodowe"] },
+            { en: "have an interview", pl: ["mieć rozmowę o pracę", "mieć rozmowę kwalifikacyjną"] },
+            { en: "look for a job", pl: ["szukać pracy"] },
+
+            // Dodatkowe
+            { en: "career", pl: ["kariera"] },
+            { en: "CV", pl: ["CV", "życiorys"] },
+            { en: "deadline", pl: ["termin", "ostateczny termin", "deadline"] },
+            { en: "qualification", pl: ["kwalifikacja", "umiejętność"] },
+            { en: "training", pl: ["szkolenie", "trening"] }
+        ];
+
+        // =========================================================
+        // BAZA 10 ZDAŃ Z GRAMATYKĄ I SŁOWNICTWEM (OPCJA 3)
+        // =========================================================
+        const sentencesList = [
+            {
+                pl: "W przyszłym tygodniu spotykam się z moim szefem o 9:00.",
+                enAnswers: [
+                    "I am meeting my boss at 9:00 next week.",
+                    "I'm meeting my boss at 9:00 next week.",
+                    "I'm meeting my boss at 9 next week.",
+                    "I am meeting with my boss at 9:00 next week."
+                ],
+                rule: "Present continuous (plany na najbliższą przyszłość, ustalony czas i miejsce: I'm meeting...).",
+                hint: "💡 Wskazówka: Plany na najbliższą przyszłość (znany czas/miejsce) ➔ Present continuous"
+            },
+            {
+                pl: "Zamierzam szukać nowej, dobrze płatnej pracy.",
+                enAnswers: [
+                    "I am going to look for a new, well-paid job.",
+                    "I'm going to look for a new well-paid job.",
+                    "I'm going to look for a new, well paid job."
+                ],
+                rule: "Be going to (wyrażanie planów i zamiarów: I'm going to look for...).",
+                hint: "💡 Wskazówka: Zamiar i plan ➔ be going to + czasownik"
+            },
+            {
+                pl: "Myślę, że dostaniesz tę pracę jako programista.",
+                enAnswers: [
+                    "I think you will get this job as a programmer.",
+                    "I think you'll get this job as a programmer.",
+                    "I think that you will get this job as a programmer."
+                ],
+                rule: "Future simple (wyrażanie opinii o przyszłości: I think you'll get...).",
+                hint: "💡 Wskazówka: Opinia o przyszłości (I think...) ➔ Future simple (will / 'll)"
+            },
+            {
+                pl: "Eric nie przychodzi na dzisiejsze spotkanie z klientami.",
+                enAnswers: [
+                    "Eric isn't coming to today's meeting with clients.",
+                    "Eric is not coming to today's meeting with clients.",
+                    "Eric isn't coming to the meeting with clients today."
+                ],
+                rule: "Present continuous (przeczenie w planach: isn't coming...).",
+                hint: "💡 Wskazówka: Ustalony plan na dziś (przeczenie) ➔ Present continuous (isn't coming)"
+            },
+            {
+                pl: "Czy zamierzasz wysłać swoje CV przed terminem?",
+                enAnswers: [
+                    "Are you going to send your CV before the deadline?",
+                    "Are you going to send your resume before the deadline?"
+                ],
+                rule: "Be going to (pytanie o zamiar: Are you going to send...).",
+                hint: "💡 Wskazówka: Pytanie o zamiary ➔ Are you going to + czasownik"
+            },
+            {
+                pl: "Jestem zmęczony, pomogę ci wysyłać e-maile później.",
+                enAnswers: [
+                    "I am tired, I will help you send emails later.",
+                    "I'm tired, I'll help you send emails later.",
+                    "I'm tired, I'll help you to send emails later."
+                ],
+                rule: "Future simple (spontaniczna decyzja w chwili mówienia: I'll help...).",
+                hint: "💡 Wskazówka: Spontaniczna decyzja w chwili mówienia ➔ Future simple (I'll help...)"
+            },
+            {
+                pl: "Mój brat zamierza pracować jako wolontariusz i pomagać ludziom.",
+                enAnswers: [
+                    "My brother is going to work as a volunteer and help people.",
+                    "My brother's going to work as a volunteer and help people."
+                ],
+                rule: "Be going to (zamiar osoby trzeciej: is going to work...).",
+                hint: "💡 Wskazówka: Zamiar (on) ➔ is going to work as a volunteer"
+            },
+            {
+                pl: "Kiedy spotykasz się ze swoim kierownikiem biura?",
+                enAnswers: [
+                    "When are you seeing your office manager?",
+                    "When are you meeting your office manager?",
+                    "When are you meeting with your office manager?"
+                ],
+                rule: "Present continuous (pytanie o ustalony termin spotkania: When are you seeing/meeting...).",
+                hint: "💡 Wskazówka: Pytanie o ustalony termin ➔ Present continuous (When are you seeing/meeting...)"
+            },
+            {
+                pl: "W przyszłym tygodniu będę mieć 14 lat i chcę zdobyć doświadczenie zawodowe.",
+                enAnswers: [
+                    "I will be 14 next week and I want to get work experience.",
+                    "I'll be 14 next week and I want to get work experience.",
+                    "Next week I'll be 14 and I want to get work experience."
+                ],
+                rule: "Future simple (fakty z przyszłości: I'll be 14 next week).",
+                hint: "💡 Wskazówka: Fakt dotyczący przyszłości (wiek/urodziny) ➔ Future simple (I will be...)"
+            },
+            {
+                pl: "Moim zdaniem ona nie zostanie zwolniona, ponieważ ciężko pracuje.",
+                enAnswers: [
+                    "In my opinion, she won't get fired because she works hard.",
+                    "In my opinion she will not get fired because she works hard.",
+                    "In my opinion, she will not get fired because she works hard."
+                ],
+                rule: "Wyrażanie opinii (In my opinion...) + Future simple (she won't get fired...).",
+                hint: "💡 Wskazówka: Opinia (In my opinion) + przyszłość (she won't get fired)"
+            }
+        ];
+
+        // =========================================================
+        // ZMIENNE STANU
+        // =========================================================
+        let currentMode = 1;
+        let m1Index = 0, m1Correct = 0, m1Total = 0;
+        let m2Index = 0, m2Correct = 0, m2Total = 0;
+        let m3Index = 0, m3Correct = 0;
+        let speechRecognitionChat = null;
+        let genericSpeechRecognition = null;
+
+        // =========================================================
+        // INICJALIZACJA I PRZEŁĄCZANIE TRYBÓW
+        // =========================================================
+        function switchMode(modeNum) {
+            currentMode = modeNum;
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById('tab-' + i).classList.remove('active');
+                document.getElementById(`mode-${i}-container`).style.display = 'none';
+            }
+            document.getElementById('tab-' + modeNum).classList.add('active');
+            document.getElementById(`mode-${modeNum}-container`).style.display = 'block';
+
+            if (modeNum === 1) loadWordM1();
+            if (modeNum === 2) loadWordM2();
+            if (modeNum === 3) loadSentenceM3();
+        }
+
+        // =========================================================
+        // OBSŁUGA TRYBU 1 (ANG -> POL)
+        // =========================================================
+        function loadWordM1() {
+            const item = wordlist[m1Index];
+            document.getElementById('m1-en-word').innerText = item.en;
+            document.getElementById('m1-input').value = '';
+            document.getElementById('m1-feedback').style.display = 'none';
+            document.getElementById('m1-input').focus();
+        }
+
+        function checkWordTranslation(mode) {
+            const inputEl = document.getElementById(`m${mode}-input`);
+            const feedbackEl = document.getElementById(`m${mode}-feedback`);
+            const userVal = inputEl.value.trim().toLowerCase();
+
+            if (!userVal) return;
+
+            if (mode === 1) {
+                const item = wordlist[m1Index];
+                m1Total++;
+                const isMatch = item.pl.some(p => userVal.includes(p.toLowerCase()) || p.toLowerCase().includes(userVal));
+
+                feedbackEl.style.display = 'block';
+                if (isMatch) {
+                    m1Correct++;
+                    feedbackEl.className = 'feedback-box feedback-correct';
+                    feedbackEl.innerHTML = `✅ <strong>Świetnie!</strong> Poprawne znaczenie: <em>${item.pl.join(', ')}</em>`;
+                } else {
+                    feedbackEl.className = 'feedback-box feedback-incorrect';
+                    feedbackEl.innerHTML = `❌ <strong>Niezbyt dokładnie.</strong> Słowo <strong>${item.en}</strong> oznacza: <strong>${item.pl.join(', ')}</strong>.`;
+                }
+                document.getElementById('m1-score').innerText = `Poprawne: ${m1Correct} / ${m1Total}`;
+            } else if (mode === 2) {
+                const item = wordlist[m2Index];
+                m2Total++;
+                const expectedEn = item.en.toLowerCase();
+                const isMatch = (userVal === expectedEn) || expectedEn.includes(userVal);
+
+                feedbackEl.style.display = 'block';
+                if (isMatch) {
+                    m2Correct++;
+                    feedbackEl.className = 'feedback-box feedback-correct';
+                    feedbackEl.innerHTML = `✅ <strong>Doskonale!</strong> Angielskie słowo to: <strong>${item.en}</strong>`;
+                } else {
+                    feedbackEl.className = 'feedback-box feedback-incorrect';
+                    feedbackEl.innerHTML = `❌ <strong>Poprawna wersja:</strong> <strong>${item.en}</strong> (Twoja odpowiedź: <em>${inputEl.value}</em>)`;
+                }
+                speakTextEnglish(item.en); // Odsłuchanie słowa lektorem
+                document.getElementById('m2-score').innerText = `Poprawne: ${m2Correct} / ${m2Total}`;
+            }
+        }
+
+        function nextWord(mode) {
+            if (mode === 1) {
+                m1Index = (m1Index + 1) % wordlist.length;
+                loadWordM1();
+            } else if (mode === 2) {
+                m2Index = (m2Index + 1) % wordlist.length;
+                loadWordM2();
+            }
+        }
+
+        function speakCurrentWord(mode) {
+            if (mode === 1) {
+                speakTextEnglish(wordlist[m1Index].en);
+            }
+        }
+
+        // =========================================================
+        // OBSŁUGA TRYBU 2 (POL -> ANG)
+        // =========================================================
+        function loadWordM2() {
+            const item = wordlist[m2Index];
+            document.getElementById('m2-pl-word').innerText = item.pl[0];
+            document.getElementById('m2-input').value = '';
+            document.getElementById('m2-feedback').style.display = 'none';
+            document.getElementById('m2-input').focus();
+        }
+
+        // =========================================================
+        // OBSŁUGA TRYBU 3: 10 ZDAŃ Z GRAMATYKĄ
+        // =========================================================
+        function loadSentenceM3() {
+            const item = sentencesList[m3Index];
+            document.getElementById('m3-progress').innerText = `Zdanie: ${m3Index + 1} / ${sentencesList.length}`;
+            document.getElementById('m3-sentence-pl').innerText = `${m3Index + 1}. ${item.pl}`;
+            document.getElementById('m3-grammar-hint').innerText = item.hint;
+            document.getElementById('m3-input').value = '';
+            document.getElementById('m3-feedback').style.display = 'none';
+            document.getElementById('m3-input').focus();
+        }
+
+        function normalizeSentence(s) {
+            return s.toLowerCase().replace(/[.,!?'"`]/g, '').replace(/\s+/g, ' ').trim();
+        }
+
+        function checkSentenceTranslation() {
+            const inputEl = document.getElementById('m3-input');
+            const feedbackEl = document.getElementById('m3-feedback');
+            const userVal = inputEl.value.trim();
+
+            if (!userVal) return;
+
+            const item = sentencesList[m3Index];
+            const normUser = normalizeSentence(userVal);
+            const isMatch = item.enAnswers.some(ans => normalizeSentence(ans) === normUser);
+
+            feedbackEl.style.display = 'block';
+            if (isMatch) {
+                feedbackEl.className = 'feedback-box feedback-correct';
+                feedbackEl.innerHTML = `✅ <strong>Bardzo dobrze!</strong> Poprawnie zastosowano regułę gramatyczną.<br>
+                <em>Wzorcowe zdanie:</em> <strong>${item.enAnswers[0]}</strong><br>
+                <small style="color: #6ee7b7;">📚 Reguła: ${item.rule}</small>`;
+                speakTextEnglish(item.enAnswers[0]);
+            } else {
+                feedbackEl.className = 'feedback-box feedback-incorrect';
+                feedbackEl.innerHTML = `❌ <strong>Wymaga poprawy.</strong><br>
+                Twoja odpowiedź: <em>${userVal}</em><br>
+                Prawidłowe tłumaczenie: <strong>${item.enAnswers[0]}</strong><br>
+                <small style="color: #fca5a5;">📚 Wyjaśnienie gramatyczne: ${item.rule}</small>`;
+                speakTextEnglish(item.enAnswers[0]);
+            }
+        }
+
+        function nextSentence() {
+            m3Index = (m3Index + 1) % sentencesList.length;
+            loadSentenceM3();
+        }
+
+        // =========================================================
+        // OBSŁUGA TRYBU 4: KONWERSACJA Z AI I KOREKTA BŁĘDÓW
+        // =========================================================
+        const botPrompt = `You are a friendly British/American English Teacher practicing Unit 1 English conversation with a 7th-grade student.
+TOPICS: Jobs and professions (architect, chef, IT worker, programmer, shop assistant, etc.), work routines (work outdoors, earn money, meet clients, send emails), and future grammar:
+- Present continuous for fixed plans (e.g. "I'm meeting my friend at 5").
+- Be going to for intentions (e.g. "I'm going to apply for a job").
+- Future simple (will) for opinions/facts (e.g. "I think I will be a doctor").
+
+RULES:
+1. Converse naturally in simple English (A2-B1 level).
+2. If the user makes grammatical or vocabulary mistakes in their message, provide a gentle, clear correction in Polish/English showing the correct version.
+3. Always keep your main conversational reply in English and ask a follow-up question related to jobs, career dreams, or future plans.
+4. Output in JSON format:
+{
+  "correction": "Optional grammatical correction note if student made a mistake (otherwise null)",
+  "reply": "Your spoken conversational English reply to the student"
+}`;
+
+        let aiBot = new WizardOrpheus(botPrompt);
+
+        aiBot.createUserAction({
+            name: 'sendChat',
+            parameters: ['StudentMessage'],
+            howBotShouldHandle: "Respond to the student, provide grammar corrections if needed, and continue the interview about jobs/future."
+        });
+
+        aiBot.botAction('respond', 'Teacher responds', { reply: 'reply' }, data => {
+            const chatLog = document.getElementById('conversation-log');
+            const raw = data.response || '';
+            
+            let replyText = raw;
+            let correctionText = null;
+
+            try {
+                const parsed = JSON.parse(raw);
+                if (parsed.reply) replyText = parsed.reply;
+                if (parsed.correction) correctionText = parsed.correction;
+            } catch (e) {
+                // jeśli nie JSON, użyj tekstu
+            }
+
+            let htmlContent = `<strong>AI Teacher:</strong> ${replyText}`;
+            if (correctionText) {
+                htmlContent += `<div class="correction-tip">✏️ <strong>Korekta gramatyczna:</strong> ${correctionText}</div>`;
+            }
+
+            chatLog.innerHTML += `<div class="chat-bubble chat-ai">${htmlContent}</div>`;
+            chatLog.scrollTop = chatLog.scrollHeight;
+            document.getElementById('m4-status').innerText = '';
+
+            // Wywołanie automatycznego lub ręcznego czytania z czytanie_angielski.js
+            onAIResponseReceived(replyText);
+        });
+
+        function sendChatMessage() {
+            const inputEl = document.getElementById('m4-input');
+            const text = inputEl.value.trim();
+            if (!text) return;
+
+            const chatLog = document.getElementById('conversation-log');
+            chatLog.innerHTML += `<div class="chat-bubble chat-user"><strong>Ty:</strong> ${text}</div>`;
+            chatLog.scrollTop = chatLog.scrollHeight;
+            inputEl.value = '';
+
+            document.getElementById('m4-status').innerText = '🤖 AI pisze odpowiedź i sprawdza gramatykę...';
+            aiBot.sendChat(text);
+        }
+
+        // =========================================================
+        // ROZPOZNAWANIE MOWY (SPEECH-TO-TEXT) DLA CZATU
+        // =========================================================
+        let isRecordingChat = false;
+        let accumulatedChatTranscript = '';
+        let shouldSendChatOnStop = false;
+
+        function toggleSpeechRecognitionChat() {
+            const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRec) {
+                alert('Twoja przeglądarka nie obsługuje rozpoznawania mowy. Skorzystaj z Google Chrome lub Edge.');
+                return;
+            }
+
+            const micBtn = document.getElementById('mic-btn');
+            const inputField = document.getElementById('m4-input');
+            const autoSendCb = document.getElementById('stt-auto-send');
+
+            if (!speechRecognitionChat) {
+                speechRecognitionChat = new SpeechRec();
+                speechRecognitionChat.lang = 'en-US';
+                speechRecognitionChat.interimResults = true;
+                speechRecognitionChat.continuous = true;
+
+                speechRecognitionChat.onstart = function () {
+                    isRecordingChat = true;
+                    accumulatedChatTranscript = inputField ? inputField.value.trim() : '';
+                    if (accumulatedChatTranscript.length > 0) accumulatedChatTranscript += ' ';
+
+                    micBtn.innerHTML = '⏹️ STOP i Wyślij';
+                    micBtn.classList.add('recording-pulse');
+                    micBtn.style.background = 'linear-gradient(135deg, #dc2626 0%, #991b1b 100%)';
+                };
+
+                speechRecognitionChat.onresult = function (event) {
+                    let currentFinal = '';
+                    let currentInterim = '';
+
+                    for (let i = event.resultIndex; i < event.results.length; ++i) {
+                        if (event.results[i].isFinal) {
+                            currentFinal += event.results[i][0].transcript + ' ';
+                        } else {
+                            currentInterim += event.results[i][0].transcript;
+                        }
+                    }
+
+                    if (currentFinal) {
+                        accumulatedChatTranscript += currentFinal;
+                    }
+
+                    inputField.value = (accumulatedChatTranscript + currentInterim).trim();
+                };
+
+                speechRecognitionChat.onerror = speechRecognitionChat.onend = function () {
+                    const wasRecording = isRecordingChat;
+                    isRecordingChat = false;
+                    micBtn.innerHTML = '🎤 Odpowiedz głosem (Start)';
+                    micBtn.classList.remove('recording-pulse');
+                    micBtn.style.background = 'linear-gradient(135deg, #059669 0%, #047857 100%)';
+
+                    if (shouldSendChatOnStop || (autoSendCb && autoSendCb.checked && wasRecording)) {
+                        shouldSendChatOnStop = false;
+                        const val = inputField.value.trim();
+                        if (val.length > 0) {
+                            setTimeout(() => {
+                                sendChatMessage();
+                            }, 250);
+                        }
+                    }
+                };
+            }
+
+            if (isRecordingChat) {
+                shouldSendChatOnStop = true;
+                try {
+                    speechRecognitionChat.stop();
+                } catch (e) {}
+            } else {
+                shouldSendChatOnStop = false;
+                try {
+                    speechRecognitionChat.start();
+                } catch (e) {
+                    try {
+                        speechRecognitionChat.stop();
+                        setTimeout(() => speechRecognitionChat.start(), 150);
+                    } catch (err) {}
+                }
+            }
+        }
+
+        // Rozpoznawanie mowy dla trybów 1, 2, 3 (z obsługą STOP i Sprawdź)
+        let activeVoiceRecInstance = null;
+        let activeVoiceBtn = null;
+
+        function toggleVoiceInput(targetInputId, lang, btnId, autoSubmitCallback) {
+            const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRec) {
+                alert('Rozpoznawanie mowy nie jest wspierane w tej przeglądarce.');
+                return;
+            }
+
+            const btn = document.getElementById(btnId);
+            const inputField = document.getElementById(targetInputId);
+
+            if (activeVoiceRecInstance) {
+                try {
+                    activeVoiceRecInstance.stop();
+                } catch (e) {}
+                activeVoiceRecInstance = null;
+                if (btn) {
+                    btn.innerHTML = '🎤 Mów';
+                    btn.classList.remove('recording-pulse');
+                    btn.style.background = 'linear-gradient(135deg, #059669 0%, #047857 100%)';
+                }
+                if (autoSubmitCallback && inputField.value.trim().length > 0) {
+                    setTimeout(autoSubmitCallback, 250);
+                }
+                return;
+            }
+
+            const rec = new SpeechRec();
+            rec.lang = lang;
+            rec.interimResults = true;
+            rec.continuous = true;
+
+            let accumulated = inputField.value.trim();
+            if (accumulated.length > 0) accumulated += ' ';
+
+            rec.onstart = function () {
+                activeVoiceRecInstance = rec;
+                activeVoiceBtn = btn;
+                btn.innerHTML = '⏹️ STOP i Sprawdź';
+                btn.classList.add('recording-pulse');
+                btn.style.background = 'linear-gradient(135deg, #dc2626 0%, #991b1b 100%)';
+            };
+
+            rec.onresult = function (e) {
+                let currentFinal = '';
+                let currentInterim = '';
+
+                for (let i = e.resultIndex; i < e.results.length; i++) {
+                    if (e.results[i].isFinal) {
+                        currentFinal += e.results[i][0].transcript + ' ';
+                    } else {
+                        currentInterim += e.results[i][0].transcript;
+                    }
+                }
+
+                if (currentFinal) accumulated += currentFinal;
+                inputField.value = (accumulated + currentInterim).trim();
+            };
+
+            rec.onerror = rec.onend = function () {
+                activeVoiceRecInstance = null;
+                btn.innerHTML = '🎤 Mów';
+                btn.classList.remove('recording-pulse');
+                btn.style.background = 'linear-gradient(135deg, #059669 0%, #047857 100%)';
+            };
+
+            try {
+                rec.start();
+            } catch (err) {
+                rec.stop();
+            }
+        }
+
+        // Start domyślnego widoku
+        document.addEventListener('DOMContentLoaded', () => {
+            switchMode(1);
+        });
+    </script>
+</body>
+
+</html>

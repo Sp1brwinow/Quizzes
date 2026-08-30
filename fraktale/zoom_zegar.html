@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../style.css" />
+    <title>Nieskończony Zoom Wektorowy – Zegar → Miasto → Komputer → Pokój</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 15px;
+            min-height: 100vh;
+            background: #050b14;
+            color: #f1f5f9;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            text-align: center;
+            overflow-x: hidden;
+        }
+
+        h1 {
+            color: #38bdf8;
+            font-size: 1.95rem;
+            margin-bottom: 6px;
+            text-shadow: 0 0 16px rgba(56, 189, 248, 0.6);
+        }
+
+        .subtitle {
+            font-size: 1.05rem;
+            color: #94a3b8;
+            margin-bottom: 14px;
+            max-width: 860px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.5;
+        }
+
+        .world-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            margin: 2px 4px;
+            border-radius: 6px;
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid #475569;
+            font-size: 0.9rem;
+            color: #94a3b8;
+            transition: all 0.3s ease;
+        }
+
+        .world-badge.active {
+            background: rgba(56, 189, 248, 0.25);
+            border-color: #38bdf8;
+            color: #f0f9ff;
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.5);
+            transform: scale(1.06);
+            font-weight: 700;
+        }
+
+        .controls-top {
+            margin: 12px auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-start {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            color: #ffffff;
+            font-size: 1.15rem;
+            font-weight: 700;
+            padding: 10px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(2, 132, 199, 0.45);
+            transition: all 0.25s ease;
+        }
+
+        .btn-start:hover {
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+            box-shadow: 0 0 22px rgba(14, 165, 233, 0.8);
+            transform: scale(1.03);
+        }
+
+        .btn-secondary {
+            background: rgba(30, 41, 59, 0.85);
+            color: #e2e8f0;
+            font-size: 0.92rem;
+            padding: 9px 15px;
+            border: 1px solid #475569;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-secondary:hover {
+            color: #38bdf8;
+            border-color: #38bdf8;
+            background: rgba(51, 65, 85, 0.95);
+        }
+
+        .panel {
+            margin: 12px auto;
+            max-width: 860px;
+            background: rgba(15, 23, 42, 0.85);
+            padding: 10px 18px;
+            border-radius: 12px;
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            font-size: 0.92rem;
+        }
+
+        .panel select, .panel input[type="range"] {
+            background: #1e293b;
+            color: #f8fafc;
+            border: 1px solid #475569;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .canvas-container {
+            margin: 14px auto 18px auto;
+            max-width: 820px;
+            position: relative;
+        }
+
+        canvas {
+            display: block;
+            margin: 0 auto;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.9), 0 0 28px rgba(56, 189, 248, 0.35);
+            background-color: #020617;
+            cursor: grab;
+            max-width: 100%;
+            height: auto;
+        }
+
+        canvas:active {
+            cursor: grabbing;
+        }
+
+        .hud-stats {
+            display: flex;
+            justify-content: space-between;
+            max-width: 800px;
+            margin: 8px auto 0 auto;
+            font-size: 0.85rem;
+            color: #94a3b8;
+            font-family: monospace;
+        }
+
+        .hint {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-top: 8px;
+        }
+
+        .nav-links {
+            margin-top: 30px;
+            margin-bottom: 25px;
+        }
+
+        .nav-link {
+            color: #94a3b8;
+            text-decoration: none;
+            margin: 0 14px;
+            font-size: 1rem;
+            border-bottom: 1px dashed #64748b;
+            transition: color 0.2s ease;
+        }
+
+        .nav-link:hover {
+            color: #38bdf8;
+            border-bottom-color: #38bdf8;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Nieskończony Zoom Wektorowy (Infinite Zoom)</h1>
+    <p class="subtitle">
+        Proceduralna, bezszwowa pętla nieskończonego zagłębiania się w obiekty:
+        <br>
+        <span id="badge0" class="world-badge active">⌚ 1. Zegarek</span> →
+        <span id="badge1" class="world-badge">🏙️ 2. Miasto</span> →
+        <span id="badge2" class="world-badge">💻 3. Komputer</span> →
+        <span id="badge3" class="world-badge">🛋️ 4. Pokój</span> →
+        <span style="color: #38bdf8; font-weight: bold;">(Cykl powtarza się w nieskończoność)</span>
+    </p>
+
+    <div class="controls-top">
+        <button id="startBtn" class="btn-start" onclick="toggleAnimation()">▶ Start Zoomu</button>
+        <button id="dirBtn" class="btn-secondary" onclick="toggleDirection()">🔍 Kierunek: W głąb (Zoom In)</button>
+        <button id="audioToggleBtn" class="btn-secondary" onclick="toggleAudio()">🔊 Dźwięk: WŁ</button>
+        <button class="btn-secondary" onclick="resetZoom()">↺ Reset</button>
+    </div>
+
+    <div class="panel">
+        <div>
+            <label for="speedSlider">Prędkość zoomu:</label>
+            <input type="range" id="speedSlider" min="0.2" max="3.0" step="0.1" value="1.0" oninput="updateSpeed(this.value)">
+            <span id="speedVal" style="font-family: monospace; color: #7dd3fc; min-width: 35px; display: inline-block;">1.0x</span>
+        </div>
+
+        <div>
+            <label><input type="checkbox" id="autoRotate" onchange="toggleAutoRotate()"> 💫 Delikatna rotacja przestrzenna</label>
+        </div>
+    </div>
+
+    <div class="canvas-container">
+        <canvas id="zoomCanvas" width="800" height="600"></canvas>
+        <div class="hud-stats">
+            <span id="fpsDisplay">FPS: --</span>
+            <span id="worldDisplay">Świat: ⌚ Zegarek</span>
+            <span id="zoomLevelDisplay">Głębokość: 1.0x</span>
+        </div>
+        <p class="hint">Wskazówka: Użyj kółka myszy lub przycisków, aby przyspieszyć, zwolnić lub cofać zoom w dowolnym momencie.</p>
+    </div>
+
+    <div class="nav-links">
+        <a href="../rozrywka.html" class="nav-link">← Powrót do Rozrywki</a>
+        <a href="zbior_mandelbrota.html" class="nav-link">Zbiór Mandelbrota</a>
+        <a href="penrose.html" class="nav-link">Układanka Penrose’a</a>
+        <a href="mandelbulb.html" class="nav-link">Mandelbulb 3D</a>
+        <a href="burning_ship.html" class="nav-link">Burning Ship</a>
+        <a href="../index.html" class="nav-link">Strona główna</a>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('zoomCanvas');
+        const ctx = canvas.getContext('2d');
+        const startBtn = document.getElementById('startBtn');
+        const dirBtn = document.getElementById('dirBtn');
+        const audioToggleBtn = document.getElementById('audioToggleBtn');
+        const speedVal = document.getElementById('speedVal');
+        const fpsDisplay = document.getElementById('fpsDisplay');
+        const worldDisplay = document.getElementById('worldDisplay');
+        const zoomLevelDisplay = document.getElementById('zoomLevelDisplay');
+        const autoRotateCb = document.getElementById('autoRotate');
+
+        const badges = [
+            document.getElementById('badge0'),
+            document.getElementById('badge1'),
+            document.getElementById('badge2'),
+            document.getElementById('badge3')
+        ];
+
+        const SCALE_RATIO = 14.0; // Stosunek skali między sąsiednimi światami
+        const NUM_WORLDS = 4;
+
+        let isRunning = false;
+        let animId = null;
+        let direction = 1; // 1: Zoom In, -1: Zoom Out
+        let speed = 1.0;
+        let zoomProgress = 0.0; // Licznik poziomu zoomu
+        let rotationAngle = 0.0;
+        let enableAutoRotate = false;
+
+        let lastFrameTime = performance.now();
+        let frameCount = 0;
+        let lastFpsUpdate = performance.now();
+
+        function updateSpeed(val) {
+            speed = parseFloat(val);
+            speedVal.innerText = speed.toFixed(1) + 'x';
+        }
+
+        function toggleDirection() {
+            direction *= -1;
+            dirBtn.innerText = direction > 0 ? '🔍 Kierunek: W głąb (Zoom In)' : '🔎 Kierunek: Na zewnątrz (Zoom Out)';
+            dirBtn.style.color = direction > 0 ? '#38bdf8' : '#fbbf24';
+        }
+
+        function toggleAutoRotate() {
+            enableAutoRotate = autoRotateCb.checked;
+        }
+
+        function resetZoom() {
+            zoomProgress = 0.0;
+            rotationAngle = 0.0;
+            if (!isRunning) draw();
+        }
+
+        // ==========================================
+        // PROCEDURALNE GENEROWANIE 4 ŚWIATÓW
+        // Układ współrzędnych każdego świata: środek (0,0), promień ok. 400px
+        // W środku (0,0) znajduje się portal o promieniu ok. 400/SCALE_RATIO
+        // ==========================================
+
+        // 1. ŚWIAT 0: ZEGAREK (Vintage Clockwork)
+        function drawWorldWatch(ctx, time) {
+            // Tarcza zewnętrzna - złoto i heban
+            const gradOuter = ctx.createRadialGradient(0, 0, 100, 0, 0, 420);
+            gradOuter.addColorStop(0, '#1c1917');
+            gradOuter.addColorStop(0.7, '#292524');
+            gradOuter.addColorStop(1, '#b45309');
+
+            ctx.beginPath();
+            ctx.arc(0, 0, 410, 0, Math.PI * 2);
+            ctx.fillStyle = gradOuter;
+            ctx.fill();
+
+            // Złota ramka ze śrubkami
+            ctx.lineWidth = 14;
+            ctx.strokeStyle = '#d97706';
+            ctx.stroke();
+
+            for (let i = 0; i < 12; i++) {
+                const a = i * (Math.PI * 2 / 12);
+                ctx.beginPath();
+                ctx.arc(Math.cos(a) * 395, Math.sin(a) * 395, 5, 0, Math.PI * 2);
+                ctx.fillStyle = '#fef08a';
+                ctx.fill();
+            }
+
+            // Koła zębate w tle
+            ctx.save();
+            ctx.rotate(time * 0.2);
+            drawGear(ctx, 160, -140, 90, 14, '#78350f', time * 0.5);
+            drawGear(ctx, -170, 120, 110, 18, '#92400e', -time * 0.4);
+            ctx.restore();
+
+            // Indeksy godzinowe (cyfry rzymskie / kreski)
+            ctx.fillStyle = '#fef08a';
+            ctx.strokeStyle = '#fef08a';
+            for (let i = 0; i < 12; i++) {
+                const a = i * (Math.PI * 2 / 12);
+                const x1 = Math.cos(a) * 320;
+                const y1 = Math.sin(a) * 320;
+                const x2 = Math.cos(a) * 355;
+                const y2 = Math.sin(a) * 355;
+                ctx.lineWidth = (i % 3 === 0) ? 6 : 3;
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                ctx.stroke();
+            }
+
+            // Wskazówki zegara
+            const secAngle = time * 2;
+            const minAngle = time * 0.2;
+            const hourAngle = time * 0.03;
+
+            // Wskazówka godzinowa
+            ctx.save();
+            ctx.rotate(hourAngle);
+            ctx.fillStyle = '#f59e0b';
+            ctx.fillRect(-6, -180, 12, 180);
+            ctx.beginPath();
+            ctx.moveTo(0, -210);
+            ctx.lineTo(-14, -170);
+            ctx.lineTo(14, -170);
+            ctx.fill();
+            ctx.restore();
+
+            // Wskazówka minutowa
+            ctx.save();
+            ctx.rotate(minAngle);
+            ctx.fillStyle = '#fbbf24';
+            ctx.fillRect(-4, -260, 8, 260);
+            ctx.beginPath();
+            ctx.moveTo(0, -290);
+            ctx.lineTo(-10, -250);
+            ctx.lineTo(10, -250);
+            ctx.fill();
+            ctx.restore();
+
+            // Wskazówka sekundowa
+            ctx.save();
+            ctx.rotate(secAngle);
+            ctx.strokeStyle = '#ef4444';
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            ctx.moveTo(0, 50);
+            ctx.lineTo(0, -310);
+            ctx.stroke();
+            ctx.restore();
+
+            // Centralny pierścień portalu (otwór w tarczy)
+            ctx.beginPath();
+            ctx.arc(0, 0, 420 / SCALE_RATIO + 3, 0, Math.PI * 2);
+            ctx.lineWidth = 4;
+            ctx.strokeStyle = '#38bdf8';
+            ctx.stroke();
+        }
+
+        function drawGear(ctx, x, y, r, teeth, color, rot) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(rot);
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            for (let i = 0; i < teeth; i++) {
+                const a = (i / teeth) * Math.PI * 2;
+                const rOut = r;
+                const rIn = r - 16;
+                ctx.lineTo(Math.cos(a) * rOut, Math.sin(a) * rOut);
+                ctx.lineTo(Math.cos(a + 0.1) * rIn, Math.sin(a + 0.1) * rIn);
+            }
+            ctx.closePath();
+            ctx.fill();
+
+            // Wewnętrzny otwór
+            ctx.beginPath();
+            ctx.arc(0, 0, r * 0.45, 0, Math.PI * 2);
+            ctx.fillStyle = '#0f172a';
+            ctx.fill();
+            ctx.restore();
+        }
+
+        // 2. ŚWIAT 1: NEONOWE MIASTO (Cyberpunk Metropolis)
+        function drawWorldCity(ctx, time) {
+            // Nocne niebo z gradientem
+            const skyGrad = ctx.createLinearGradient(0, -420, 0, 420);
+            skyGrad.addColorStop(0, '#020617');
+            skyGrad.addColorStop(0.6, '#0f172a');
+            skyGrad.addColorStop(1, '#1e1b4b');
+
+            ctx.fillStyle = skyGrad;
+            ctx.fillRect(-450, -450, 900, 900);
+
+            // Księżyc
+            ctx.beginPath();
+            ctx.arc(280, -260, 45, 0, Math.PI * 2);
+            ctx.fillStyle = '#e2e8f0';
+            ctx.shadowBlur = 25;
+            ctx.shadowColor = '#38bdf8';
+            ctx.fill();
+            ctx.shadowBlur = 0;
+
+            // Sylwetki wieżowców w tle (daleki plan)
+            ctx.fillStyle = '#0c1322';
+            for (let i = -6; i <= 6; i++) {
+                const bx = i * 70;
+                const bh = 220 + Math.sin(i * 99) * 90;
+                ctx.fillRect(bx, 420 - bh, 60, bh);
+            }
+
+            // Wieżowce średniego planu z oknami
+            for (let i = -4; i <= 4; i++) {
+                if (i === 0) continue; // Pomiń środek na główny wieżowiec
+                const bx = i * 105 - 20;
+                const bh = 300 + Math.cos(i * 44) * 80;
+                ctx.fillStyle = '#111c33';
+                ctx.fillRect(bx, 420 - bh, 85, bh);
+
+                // Świecące okna
+                ctx.fillStyle = '#38bdf8';
+                for (let wy = 420 - bh + 20; wy < 400; wy += 22) {
+                    for (let wx = bx + 12; wx < bx + 70; wx += 18) {
+                        if (Math.sin(wx * wy + i) > 0.1) {
+                            ctx.fillRect(wx, wy, 8, 12);
+                        }
+                    }
+                }
+            }
+
+            // Główny wieżowiec centralny
+            const mainGrad = ctx.createLinearGradient(-150, 0, 150, 0);
+            mainGrad.addColorStop(0, '#0f2347');
+            mainGrad.addColorStop(0.5, '#1e3a6d');
+            mainGrad.addColorStop(1, '#0f2347');
+
+            ctx.fillStyle = mainGrad;
+            ctx.fillRect(-150, -220, 300, 640);
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(-150, -220, 300, 640);
+
+            // Neonowy napis
+            ctx.fillStyle = '#f43f5e';
+            ctx.font = 'bold 24px "Segoe UI", Arial';
+            ctx.textAlign = 'center';
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = '#f43f5e';
+            ctx.fillText('⚡ HACK CLUB TOWER ⚡', 0, -160);
+            ctx.shadowBlur = 0;
+
+            // Droga na dole ze smugami świateł aut
+            ctx.fillStyle = '#050811';
+            ctx.fillRect(-450, 370, 900, 80);
+            ctx.strokeStyle = '#ef4444';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(-450, 400); ctx.lineTo(450, 400); ctx.stroke();
+            ctx.strokeStyle = '#facc15';
+            ctx.beginPath();
+            ctx.moveTo(-450, 420); ctx.lineTo(450, 420); ctx.stroke();
+
+            // Centralne panoramiczne okno wieżowca (PORTAL)
+            ctx.fillStyle = '#0284c7';
+            ctx.fillRect(-420 / SCALE_RATIO, -420 / SCALE_RATIO, (420 / SCALE_RATIO) * 2, (420 / SCALE_RATIO) * 2);
+            ctx.strokeStyle = '#67e8f9';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(-420 / SCALE_RATIO, -420 / SCALE_RATIO, (420 / SCALE_RATIO) * 2, (420 / SCALE_RATIO) * 2);
+        }
+
+        // 3. ŚWIAT 2: KOMPUTER & STANOWISKO (Workstation & Monitor)
+        function drawWorldComputer(ctx, time) {
+            // Tło biura / ściany
+            const wallGrad = ctx.createLinearGradient(0, -420, 0, 420);
+            wallGrad.addColorStop(0, '#090d16');
+            wallGrad.addColorStop(1, '#1e293b');
+            ctx.fillStyle = wallGrad;
+            ctx.fillRect(-450, -450, 900, 900);
+
+            // Półka z książkami i roślinka z boku
+            ctx.fillStyle = '#334155';
+            ctx.fillRect(-380, -280, 160, 16);
+            ctx.fillStyle = '#22c55e';
+            ctx.beginPath();
+            ctx.arc(-300, -320, 25, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Blat biurka
+            const deskGrad = ctx.createLinearGradient(0, 160, 0, 450);
+            deskGrad.addColorStop(0, '#1c1917');
+            deskGrad.addColorStop(1, '#292524');
+            ctx.fillStyle = deskGrad;
+            ctx.fillRect(-450, 160, 900, 290);
+            ctx.strokeStyle = '#78350f';
+            ctx.lineWidth = 5;
+            ctx.strokeRect(-450, 160, 900, 290);
+
+            // Klawiatura mechaniczna RGB
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(-220, 220, 440, 130);
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(-220, 220, 440, 130);
+
+            // Klawisze z podświetleniem RGB
+            for (let ky = 230; ky <= 320; ky += 22) {
+                for (let kx = -205; kx <= 200; kx += 24) {
+                    const hue = (kx + ky + time * 60) % 360;
+                    ctx.fillStyle = `hsl(${hue}, 80%, 55%)`;
+                    ctx.fillRect(kx, ky, 18, 16);
+                }
+            }
+
+            // Kubek z gorącą kawą
+            ctx.fillStyle = '#e2e8f0';
+            ctx.fillRect(280, 220, 50, 65);
+            ctx.fillStyle = '#451a03';
+            ctx.beginPath();
+            ctx.ellipse(305, 220, 25, 12, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Monitor komputerowy (ramka & nóżka)
+            ctx.fillStyle = '#1e293b';
+            ctx.fillRect(-60, 130, 120, 40); // Nóżka
+            ctx.fillRect(-110, 165, 220, 15); // Podstawa
+
+            // Obudowa monitora
+            ctx.fillStyle = '#020617';
+            ctx.fillRect(-320, -240, 640, 380);
+            ctx.strokeStyle = '#475569';
+            ctx.lineWidth = 8;
+            ctx.strokeRect(-320, -240, 640, 380);
+
+            // Ekran monitora (IDE / kod / interfejs)
+            const screenGrad = ctx.createLinearGradient(-300, -220, 300, 120);
+            screenGrad.addColorStop(0, '#040d1a');
+            screenGrad.addColorStop(1, '#0b1d36');
+            ctx.fillStyle = screenGrad;
+            ctx.fillRect(-305, -225, 610, 350);
+
+            // Linie kodu w IDE
+            ctx.fillStyle = '#38bdf8';
+            ctx.font = '13px monospace';
+            ctx.textAlign = 'left';
+            ctx.fillText('function infiniteZoom(universe) {', -280, -180);
+            ctx.fillStyle = '#a855f7';
+            ctx.fillText('  const nextDimension = universe.zoom();', -260, -155);
+            ctx.fillStyle = '#22c55e';
+            ctx.fillText('  return renderReality(nextDimension);', -260, -130);
+            ctx.fillStyle = '#38bdf8';
+            ctx.fillText('}', -280, -105);
+
+            // Centralne okno programu na ekranie (PORTAL)
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(-420 / SCALE_RATIO, -420 / SCALE_RATIO, (420 / SCALE_RATIO) * 2, (420 / SCALE_RATIO) * 2);
+        }
+
+        // 4. ŚWIAT 3: PRZYTULNY POKÓJ (Cozy Study Room)
+        function drawWorldRoom(ctx, time) {
+            // Ściany pokoju (ciepły grafit i drewno)
+            const roomGrad = ctx.createLinearGradient(0, -420, 0, 420);
+            roomGrad.addColorStop(0, '#1c1917');
+            roomGrad.addColorStop(0.7, '#292524');
+            roomGrad.addColorStop(1, '#44403c');
+            ctx.fillStyle = roomGrad;
+            ctx.fillRect(-450, -450, 900, 900);
+
+            // Drewniana podłoga z deskami
+            ctx.fillStyle = '#29180d';
+            ctx.fillRect(-450, 200, 900, 250);
+            ctx.strokeStyle = '#1a0f08';
+            ctx.lineWidth = 3;
+            for (let x = -450; x <= 450; x += 90) {
+                ctx.beginPath();
+                ctx.moveTo(x, 200);
+                ctx.lineTo(x * 1.4, 450);
+                ctx.stroke();
+            }
+
+            // Regał na książki po lewej
+            ctx.fillStyle = '#451a03';
+            ctx.fillRect(-410, -280, 160, 440);
+            ctx.strokeStyle = '#270e02';
+            ctx.lineWidth = 6;
+            ctx.strokeRect(-410, -280, 160, 440);
+
+            // Kolorowe grzbiety książek
+            const bookColors = ['#dc2626', '#2563eb', '#16a34a', '#d97706', '#9333ea', '#0891b2'];
+            for (let shelfY = -230; shelfY <= 110; shelfY += 75) {
+                ctx.fillStyle = '#78350f';
+                ctx.fillRect(-405, shelfY, 150, 10);
+                for (let bx = -400; bx < -265; bx += 18) {
+                    ctx.fillStyle = bookColors[Math.floor(Math.abs(Math.sin(bx)) * bookColors.length)];
+                    ctx.fillRect(bx, shelfY - 55, 14, 55);
+                }
+            }
+
+            // Wisząca lampa z ciepłym stożkiem światła
+            ctx.fillStyle = '#fbbf24';
+            ctx.beginPath();
+            ctx.moveTo(-450, 450);
+            ctx.lineTo(0, -320);
+            ctx.lineTo(450, 450);
+            ctx.closePath();
+            const lightGrad = ctx.createRadialGradient(0, -280, 20, 0, 100, 450);
+            lightGrad.addColorStop(0, 'rgba(251, 191, 36, 0.35)');
+            lightGrad.addColorStop(1, 'rgba(251, 191, 36, 0.0)');
+            ctx.fillStyle = lightGrad;
+            ctx.fill();
+
+            // Klosz lampy
+            ctx.strokeStyle = '#1e293b';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(0, -450); ctx.lineTo(0, -280); ctx.stroke();
+            ctx.fillStyle = '#f59e0b';
+            ctx.beginPath();
+            ctx.arc(0, -280, 35, Math.PI, 0);
+            ctx.fill();
+
+            // Wielkie dębowe biurko w centrum
+            const tableGrad = ctx.createLinearGradient(0, 30, 0, 280);
+            tableGrad.addColorStop(0, '#542d13');
+            tableGrad.addColorStop(1, '#3b1c09');
+            ctx.fillStyle = tableGrad;
+            ctx.fillRect(-300, 40, 600, 220);
+            ctx.strokeStyle = '#2b1204';
+            ctx.lineWidth = 6;
+            ctx.strokeRect(-300, 40, 600, 220);
+
+            // Aksamitna poduszka ekspozycyjna pod zegarkiem (PORTAL)
+            ctx.fillStyle = '#831843';
+            ctx.beginPath();
+            ctx.ellipse(0, 0, 420 / SCALE_RATIO + 15, (420 / SCALE_RATIO) * 0.8 + 10, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = '#f472b6';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+        }
+
+        const worldDrawers = [
+            drawWorldWatch,
+            drawWorldCity,
+            drawWorldComputer,
+            drawWorldRoom
+        ];
+
+        const worldNames = [
+            '⌚ 1. Zegarek Vintage',
+            '🏙️ 2. Neonowe Miasto',
+            '💻 3. Stanowisko & Komputer',
+            '🛋️ 4. Przytulny Gabinet'
+        ];
+
+        function draw() {
+            ctx.save();
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+
+            // Wyliczenie ciągłego poziomu świata
+            const totalU = zoomProgress;
+            const floorU = Math.floor(totalU);
+            const frac = totalU - floorU;
+
+            const baseIdx = ((floorU % NUM_WORLDS) + NUM_WORLDS) % NUM_WORLDS;
+            const nextIdx = (baseIdx + 1) % NUM_WORLDS;
+            const next2Idx = (baseIdx + 2) % NUM_WORLDS;
+            const parentIdx = ((baseIdx - 1) % NUM_WORLDS + NUM_WORLDS) % NUM_WORLDS;
+
+            // Aktualizacja wskaźnika świata w UI
+            for (let i = 0; i < NUM_WORLDS; i++) {
+                if (i === baseIdx) {
+                    badges[i].classList.add('active');
+                } else {
+                    badges[i].classList.remove('active');
+                }
+            }
+            worldDisplay.innerText = `Świat: ${worldNames[baseIdx]}`;
+            zoomLevelDisplay.innerText = `Głębokość: ${(Math.pow(SCALE_RATIO, frac)).toFixed(1)}x (Cykl: ${Math.floor(totalU / NUM_WORLDS) + 1})`;
+
+            // Skale dla poszczególnych warstw
+            const scaleBase = Math.pow(SCALE_RATIO, frac);
+            const scaleNext = scaleBase / SCALE_RATIO;
+            const scaleNext2 = scaleNext / SCALE_RATIO;
+            const scaleParent = scaleBase * SCALE_RATIO;
+
+            const timeSec = performance.now() / 1000;
+
+            // 1. Warstwa rodzica (oddalająca się i znikająca na zewnątrz)
+            if (scaleParent < 150) {
+                ctx.save();
+                ctx.translate(cx, cy);
+                if (enableAutoRotate) ctx.rotate(rotationAngle);
+                ctx.scale(scaleParent, scaleParent);
+                ctx.globalAlpha = Math.max(0, 1 - frac * 1.6);
+                worldDrawers[parentIdx](ctx, timeSec);
+                ctx.restore();
+            }
+
+            // 2. Warstwa bazowa
+            ctx.save();
+            ctx.translate(cx, cy);
+            if (enableAutoRotate) ctx.rotate(rotationAngle);
+            ctx.scale(scaleBase, scaleBase);
+            ctx.globalAlpha = 1.0;
+            worldDrawers[baseIdx](ctx, timeSec);
+            ctx.restore();
+
+            // 3. Warstwa następna (wyłaniająca się w portalu)
+            ctx.save();
+            ctx.translate(cx, cy);
+            if (enableAutoRotate) ctx.rotate(rotationAngle);
+            ctx.scale(scaleNext, scaleNext);
+            ctx.globalAlpha = 1.0;
+            worldDrawers[nextIdx](ctx, timeSec);
+            ctx.restore();
+
+            // 4. Warstwa kolejna w głębi (dla ciągłości horyzontu)
+            if (scaleNext2 > 0.003) {
+                ctx.save();
+                ctx.translate(cx, cy);
+                if (enableAutoRotate) ctx.rotate(rotationAngle);
+                ctx.scale(scaleNext2, scaleNext2);
+                ctx.globalAlpha = 1.0;
+                worldDrawers[next2Idx](ctx, timeSec);
+                ctx.restore();
+            }
+
+            ctx.restore();
+        }
+
+        // ==========================================
+        // DŹWIĘK MULTI-ŚWIATA WEB AUDIO API
+        // Płynne przechodzenie dźwięku zegarka, miasta, komputera i pokoju
+        // ==========================================
+        class InfiniteZoomAudio {
+            constructor() {
+                this.audioCtx = null;
+                this.isPlaying = false;
+                this.isMuted = false;
+                this.masterGain = null;
+                this.gains = [];
+                this.oscillators = [];
+                this.tickTimer = null;
+            }
+
+            init() {
+                if (this.audioCtx) return;
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                this.audioCtx = new AudioContext();
+
+                this.masterGain = this.audioCtx.createGain();
+                this.masterGain.gain.setValueAtTime(0.18, this.audioCtx.currentTime);
+                this.masterGain.connect(this.audioCtx.destination);
+
+                // 4 kanały głośności dla 4 światów
+                for (let i = 0; i < 4; i++) {
+                    const g = this.audioCtx.createGain();
+                    g.gain.setValueAtTime(i === 0 ? 1.0 : 0.0, this.audioCtx.currentTime);
+                    g.connect(this.masterGain);
+                    this.gains.push(g);
+                }
+
+                // 1. Zegar (tykanie)
+                const playTick = () => {
+                    if (!this.isPlaying) return;
+                    const osc = this.audioCtx.createOscillator();
+                    const g = this.audioCtx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(1200, this.audioCtx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(300, this.audioCtx.currentTime + 0.03);
+
+                    g.gain.setValueAtTime(0.3, this.audioCtx.currentTime);
+                    g.gain.exponentialRampToValueAtTime(0.0001, this.audioCtx.currentTime + 0.04);
+
+                    osc.connect(g);
+                    g.connect(this.gains[0]);
+                    osc.start();
+                    osc.stop(this.audioCtx.currentTime + 0.05);
+
+                    this.tickTimer = setTimeout(playTick, 500);
+                };
+                playTick();
+
+                // 2. Miasto (Cyberpunk ambient drone)
+                const cityOsc = this.audioCtx.createOscillator();
+                cityOsc.type = 'sawtooth';
+                cityOsc.frequency.setValueAtTime(110, this.audioCtx.currentTime); // A2
+                const cityFilter = this.audioCtx.createBiquadFilter();
+                cityFilter.type = 'lowpass';
+                cityFilter.frequency.setValueAtTime(450, this.audioCtx.currentTime);
+                cityOsc.connect(cityFilter);
+                cityFilter.connect(this.gains[1]);
+                cityOsc.start();
+
+                // 3. Komputer (High-tech digital hum & bleeps)
+                const compOsc = this.audioCtx.createOscillator();
+                compOsc.type = 'sine';
+                compOsc.frequency.setValueAtTime(440, this.audioCtx.currentTime);
+                compOsc.connect(this.gains[2]);
+                compOsc.start();
+
+                // 4. Pokój (Ciepły akord Rhodes / pad)
+                const roomOsc = this.audioCtx.createOscillator();
+                roomOsc.type = 'triangle';
+                roomOsc.frequency.setValueAtTime(146.83, this.audioCtx.currentTime); // D3
+                const roomFilter = this.audioCtx.createBiquadFilter();
+                roomFilter.type = 'lowpass';
+                roomFilter.frequency.setValueAtTime(320, this.audioCtx.currentTime);
+                roomOsc.connect(roomFilter);
+                roomFilter.connect(this.gains[3]);
+                roomOsc.start();
+            }
+
+            start() {
+                if (this.isMuted) return;
+                this.init();
+                if (this.audioCtx.state === 'suspended') {
+                    this.audioCtx.resume();
+                }
+                this.isPlaying = true;
+                this.masterGain.gain.cancelScheduledValues(this.audioCtx.currentTime);
+                this.masterGain.gain.setValueAtTime(0.001, this.audioCtx.currentTime);
+                this.masterGain.gain.exponentialRampToValueAtTime(0.18, this.audioCtx.currentTime + 1.0);
+            }
+
+            updateCrossfade(totalU) {
+                if (!this.audioCtx || !this.isPlaying) return;
+                const normU = ((totalU % 4) + 4) % 4;
+                const now = this.audioCtx.currentTime;
+
+                for (let i = 0; i < 4; i++) {
+                    let dist = Math.abs(normU - i);
+                    if (dist > 2) dist = 4 - dist;
+                    const vol = Math.max(0.0001, Math.cos(dist * (Math.PI / 2)));
+                    this.gains[i].gain.setValueAtTime(vol * 0.4, now);
+                }
+            }
+
+            stop() {
+                if (!this.isPlaying || !this.audioCtx) return;
+                this.isPlaying = false;
+                if (this.masterGain) {
+                    this.masterGain.gain.cancelScheduledValues(this.audioCtx.currentTime);
+                    this.masterGain.gain.setValueAtTime(this.masterGain.gain.value, this.audioCtx.currentTime);
+                    this.masterGain.gain.exponentialRampToValueAtTime(0.0001, this.audioCtx.currentTime + 0.6);
+                }
+            }
+
+            toggleMute() {
+                this.isMuted = !this.isMuted;
+                if (this.isMuted) {
+                    this.stop();
+                } else if (isRunning) {
+                    this.start();
+                }
+                return !this.isMuted;
+            }
+        }
+
+        const zoomAudio = new InfiniteZoomAudio();
+
+        function toggleAudio() {
+            const isUnmuted = zoomAudio.toggleMute();
+            audioToggleBtn.innerText = isUnmuted ? '🔊 Dźwięk: WŁ' : '🔇 Dźwięk: WYŁ';
+            audioToggleBtn.style.color = isUnmuted ? '#38bdf8' : '#94a3b8';
+        }
+
+        function animationLoop(now) {
+            if (!isRunning) return;
+
+            const delta = (now - lastFrameTime) / 1000;
+            lastFrameTime = now;
+
+            if (delta < 0.2) {
+                zoomProgress += direction * speed * delta * 0.45;
+                if (enableAutoRotate) {
+                    rotationAngle += delta * 0.2 * direction;
+                }
+                zoomAudio.updateCrossfade(zoomProgress);
+            }
+
+            draw();
+
+            frameCount++;
+            if (now - lastFpsUpdate >= 500) {
+                const fps = Math.round((frameCount * 1000) / (now - lastFpsUpdate));
+                fpsDisplay.innerText = `FPS: ${fps}`;
+                frameCount = 0;
+                lastFpsUpdate = now;
+            }
+
+            animId = requestAnimationFrame(animationLoop);
+        }
+
+        function toggleAnimation() {
+            if (!isRunning) {
+                isRunning = true;
+                startBtn.innerHTML = '⏸ Pauza';
+                startBtn.style.background = 'linear-gradient(135deg, #e11d48 0%, #be123c 100%)';
+                lastFrameTime = performance.now();
+                lastFpsUpdate = performance.now();
+                frameCount = 0;
+                zoomAudio.start();
+                animId = requestAnimationFrame(animationLoop);
+            } else {
+                isRunning = false;
+                if (animId) cancelAnimationFrame(animId);
+                zoomAudio.stop();
+                startBtn.innerHTML = '▶ Wznów Zoom';
+                startBtn.style.background = 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)';
+            }
+        }
+
+        // Interaktywne sterowanie kółkiem myszy
+        canvas.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const deltaZoom = (e.deltaY < 0 ? 1 : -1) * 0.08 * speed;
+            zoomProgress += deltaZoom;
+            zoomAudio.updateCrossfade(zoomProgress);
+            if (!isRunning) draw();
+        }, { passive: false });
+
+        // Pierwsza klatka
+        draw();
+    </script>
+    <script src="nagrywanie_wideo.js"></script>
+</body>
+</html>

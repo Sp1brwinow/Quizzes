@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mandelbox i Mandelbulb 3D – Lot w Nieskończoność (Fractal Raymarching)</title>
+    <link rel="stylesheet" href="../style.css" />
+    <style>
+        body {
+            margin: 0;
+            padding: 10px;
+            background-color: #030712;
+            color: #f8fafc;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            text-align: center;
+        }
+
+        .main-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 10px 15px 40px 15px;
+        }
+
+        h1 {
+            color: #a855f7;
+            margin-bottom: 4px;
+            font-size: 1.85rem;
+            text-shadow: 0 0 20px rgba(168, 85, 247, 0.6);
+        }
+
+        .subtitle {
+            font-size: 0.95rem;
+            color: #94a3b8;
+            margin-bottom: 14px;
+            line-height: 1.5;
+        }
+
+        .info-card {
+            background: rgba(15, 23, 42, 0.92);
+            border: 1px solid #a855f7;
+            border-radius: 12px;
+            padding: 14px 20px;
+            margin: 10px auto 16px auto;
+            text-align: left;
+            font-size: 0.92rem;
+            line-height: 1.6;
+            color: #cbd5e1;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .controls-panel {
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid #475569;
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 14px;
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .btn-mode {
+            background: #1e293b;
+            color: #f8fafc;
+            border: 2px solid #475569;
+            padding: 8px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.88rem;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-mode:hover {
+            border-color: #a855f7;
+            background: #334155;
+            transform: translateY(-1px);
+        }
+
+        .btn-mode.active {
+            background: linear-gradient(135deg, #9333ea 0%, #6b21a8 100%);
+            border-color: #c084fc;
+            color: #ffffff;
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.5);
+        }
+
+        .sub-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            color: #cbd5e1;
+            background: #1e293b;
+            padding: 5px 10px;
+            border-radius: 6px;
+            border: 1px solid #334155;
+        }
+
+        .canvas-wrapper {
+            position: relative;
+            margin: 0 auto;
+            max-width: 960px;
+        }
+
+        canvas {
+            border-radius: 12px;
+            border: 2px solid #a855f7;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.9), 0 0 25px rgba(168, 85, 247, 0.3);
+            cursor: grab;
+            background: #000;
+            display: block;
+            margin: 0 auto;
+            width: 100%;
+            height: auto;
+        }
+
+        canvas:active {
+            cursor: grabbing;
+        }
+
+        .hud-overlay {
+            position: absolute;
+            top: 12px;
+            left: 16px;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(168, 85, 247, 0.4);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.82rem;
+            color: #c084fc;
+            text-align: left;
+            pointer-events: none;
+        }
+
+        .key-hint {
+            background: #0f172a;
+            border: 1px solid #475569;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #38bdf8;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="main-container">
+        <h1>🪐 Mandelbox i Mandelbulb 3D: Nieskończony Lot w Przestrzeni</h1>
+        <p class="subtitle">
+            Prawdziwy silnik <strong>Fractal Raymarching (GLSL GPU)</strong>. Lataj kamerą wewnątrz trójwymiarowych struktur fraktalnych, odkrywając niekończące się komnaty, filary i geometryczne świątynie.
+        </p>
+
+        <div class="info-card">
+            <strong style="color: #c084fc;">Jak działa Fractal Raymarching 3D?</strong><br>
+            Zamiast tradycyjnych siatek wielokątów (polygonów), fraktale 3D są renderowane za pomocą tzw. <strong>Funkcji Oceny Odległości (Distance Estimators - DE)</strong>. Promień kamery przemieszcza się krok po kroku przez przestrzeń matematyczną. Im bliżej ściany podlatujesz, tym drobniejsze korytarze i kolumny wyłaniają się z nieskończoności.
+        </div>
+
+        <!-- Panel sterowania -->
+        <div class="controls-panel">
+            <button type="button" class="btn-mode active" id="btn-mandelbox" onclick="selectFractal(0)">🏛️ Mandelbox (Świątynia)</button>
+            <button type="button" class="btn-mode" id="btn-mandelbulb" onclick="selectFractal(1)">🪐 Mandelbulb (Organiczny)</button>
+            <button type="button" class="btn-mode" id="btn-menger" onclick="selectFractal(2)">🏰 Kostka Mengera (Korytarze)</button>
+            <button type="button" class="btn-mode" id="btn-klein" onclick="selectFractal(3)">🌌 Jaskinie Kleina (Apollonian)</button>
+
+            <button type="button" class="btn-mode" id="btn-autopilot" onclick="toggleAutopilot()" style="background: #0284c7; border-color: #38bdf8;">🛸 Autopilot: WŁ</button>
+            
+            <div class="sub-group">
+                <label for="speedSlider">Prędkość:</label>
+                <input type="range" id="speedSlider" min="0.2" max="3" step="0.1" value="1.0" oninput="flightSpeed = parseFloat(this.value)">
+            </div>
+
+            <div class="sub-group">
+                <label for="paletteSelect">Paleta:</label>
+                <select id="paletteSelect" onchange="paletteIdx = parseInt(this.value)" style="background: #0f172a; color: white; border: 1px solid #475569; padding: 3px 6px; border-radius: 4px;">
+                    <option value="0">🌌 Cyber Fiolet & Złoto</option>
+                    <option value="1">🪐 Obcy Szmaragd</option>
+                    <option value="2">🔥 Płynna Magma</option>
+                    <option value="3">💠 Mroźny Lód</option>
+                </select>
+            </div>
+
+            <button type="button" id="btn-audio" class="btn-mode" onclick="toggleAudio()" style="background: #334155; border-color: #64748b;">🔊 Dźwięk Ambient</button>
+            <button type="button" class="btn-mode" onclick="resetCamera()" style="background: #1e293b;">↺ Reset kamery</button>
+        </div>
+
+        <!-- Główny Canvas WebGL z HUD -->
+        <div class="canvas-wrapper">
+            <canvas id="glCanvas" width="960" height="540"></canvas>
+            <div class="hud-overlay" id="hud">
+                <div>FPS: <span id="fps-val">60</span></div>
+                <div>Pozycja: <span id="pos-val">[0.0, 0.0, -3.2]</span></div>
+                <div>Tryb: <span id="mode-val" style="color: #38bdf8;">Autopilot 3D</span></div>
+            </div>
+        </div>
+
+        <p style="font-size: 0.88rem; color: #94a3b8; margin-top: 10px;">
+            🎮 <strong>Sterowanie ręczne:</strong> <span class="key-hint">W</span> <span class="key-hint">S</span> (przód/tył) | <span class="key-hint">A</span> <span class="key-hint">D</span> (lewo/prawo) | <span class="key-hint">Q</span> <span class="key-hint">E</span> (góra/dół) | Przeciągaj myszką, aby się rozglądać.
+        </p>
+
+        <p style="margin-top: 35px;">
+            <a href="../rozrywka.html" style="color: #38bdf8; text-decoration: none; margin: 0 10px; font-weight: bold;">⬅ Powrót do Rozrywki</a> | 
+            <a href="swiatlo_i_lochy.html" style="color: #38bdf8; text-decoration: none; margin: 0 10px;">✨ SSS i Lochy Roguelike</a> | 
+            <a href="krajobrazy.html" style="color: #38bdf8; text-decoration: none; margin: 0 10px;">🏔️ Krajobrazy i Góry</a> | 
+            <a href="../index.html" style="color: #38bdf8; text-decoration: none; margin: 0 10px;">Strona główna</a>
+        </p>
+    </div>
+
+    <!-- Vertex Shader -->
+    <script id="vs" type="x-shader/x-vertex">
+        attribute vec2 a_pos;
+        void main() {
+            gl_Position = vec4(a_pos, 0.0, 1.0);
+        }
+    </script>
+
+    <!-- Fragment Shader: Real-Time 3D Raymarching Distance Estimator -->
+    <script id="fs" type="x-shader/x-fragment">
+        precision highp float;
+        uniform vec2 u_resolution;
+        uniform float u_time;
+        uniform vec3 u_camPos;
+        uniform vec3 u_camRot;
+        uniform int u_fractalType; // 0: Mandelbox, 1: Mandelbulb, 2: Menger, 3: Kleinian
+        uniform int u_palette;
+
+        // Rotacja wektora 3D
+        mat3 getRotMatrix(vec3 rot) {
+            float cx = cos(rot.x), sx = sin(rot.x);
+            float cy = cos(rot.y), sy = sin(rot.y);
+            float cz = cos(rot.z), sz = sin(rot.z);
+            mat3 rx = mat3(1.0, 0.0, 0.0, 0.0, cx, -sx, 0.0, sx, cx);
+            mat3 ry = mat3(cy, 0.0, sy, 0.0, 1.0, 0.0, -sy, 0.0, cy);
+            mat3 rz = mat3(cz, -sz, 0.0, sz, cz, 0.0, 0.0, 0.0, 1.0);
+            return ry * rx * rz;
+        }
+
+        // 1. Distance Estimator: Mandelbox
+        float deMandelbox(vec3 p) {
+            vec3 offset = p;
+            float scale = -2.0;
+            float minRadius2 = 0.25;
+            float fixedRadius2 = 1.0;
+            float dr = 1.0;
+
+            for (int n = 0; n < 13; n++) {
+                // Box fold
+                p = clamp(p, -1.0, 1.0) * 2.0 - p;
+                
+                // Sphere fold
+                float r2 = dot(p, p);
+                if (r2 < minRadius2) {
+                    float temp = (fixedRadius2 / minRadius2);
+                    p *= temp;
+                    dr *= temp;
+                } else if (r2 < fixedRadius2) {
+                    float temp = (fixedRadius2 / r2);
+                    p *= temp;
+                    dr *= temp;
+                }
+
+                p = scale * p + offset;
+                dr = dr * abs(scale) + 1.0;
+            }
+            return (length(p) - 1.0) / abs(dr);
+        }
+
+        // 2. Distance Estimator: Mandelbulb (Power 8)
+        float deMandelbulb(vec3 p) {
+            vec3 z = p;
+            float dr = 1.0;
+            float r = 0.0;
+            float power = 8.0;
+
+            for (int i = 0; i < 10; i++) {
+                r = length(z);
+                if (r > 4.5) break;
+
+                float theta = acos(z.z / r);
+                float phi = atan(z.y, z.x);
+                dr = pow(r, power - 1.0) * power * dr + 1.0;
+
+                float zr = pow(r, power);
+                theta = theta * power;
+                phi = phi * power;
+
+                z = zr * vec3(sin(theta) * cos(phi), sin(phi) * sin(theta), cos(theta)) + p;
+            }
+            return 0.5 * log(r) * r / dr;
+        }
+
+        // 3. Distance Estimator: Menger Sponge
+        float deMenger(vec3 p) {
+            float d = max(abs(p.x), max(abs(p.y), abs(p.z))) - 1.0;
+            float s = 1.0;
+            for (int m = 0; m < 5; m++) {
+                vec3 a = mod(p * s, 2.0) - 1.0;
+                s *= 3.0;
+                vec3 r = abs(1.0 - 3.0 * abs(a));
+                float da = max(r.x, r.y);
+                float db = max(r.y, r.z);
+                float dc = max(r.z, r.x);
+                float c = (min(da, min(db, dc)) - 1.0) / s;
+                d = max(d, c);
+            }
+            return d;
+        }
+
+        // 4. Distance Estimator: Kleinian / Apollonian Alien Caverns
+        float deKleinian(vec3 p) {
+            vec3 z = p;
+            float scale = 1.0;
+            for (int i = 0; i < 8; i++) {
+                z = -1.0 + 2.0 * fract(0.5 * z + 0.5);
+                float r2 = dot(z, z);
+                float k = 1.35 / clamp(r2, 0.15, 1.2);
+                z *= k;
+                scale *= k;
+            }
+            return 0.25 * (length(z.xz) - 0.4) / scale;
+        }
+
+        // Główna funkcja wyboru fraktala
+        float map(vec3 p) {
+            if (u_fractalType == 0) return deMandelbox(p);
+            if (u_fractalType == 1) return deMandelbulb(p);
+            if (u_fractalType == 2) return deMenger(p);
+            return deKleinian(p);
+        }
+
+        // Obliczanie wektora normalnego powierzchni
+        vec3 getNormal(vec3 p, float d) {
+            vec2 e = vec2(0.0012, 0.0);
+            return normalize(vec3(
+                map(p + e.xyy) - map(p - e.xyy),
+                map(p + e.yxy) - map(p - e.yxy),
+                map(p + e.yyx) - map(p - e.yyx)
+            ));
+        }
+
+        // Paleta kolorów
+        vec3 getColor(float steps, float dist, vec3 norm) {
+            float t = steps * 0.02 + dist * 0.08;
+            vec3 col;
+            if (u_palette == 0) {
+                col = vec3(0.5 + 0.5 * cos(6.28318 * (t + vec3(0.1, 0.5, 0.8))));
+            } else if (u_palette == 1) {
+                col = vec3(0.2, 0.9, 0.6) * (0.6 + 0.4 * norm.y) + vec3(0.1, 0.3, 0.4) * steps * 0.03;
+            } else if (u_palette == 2) {
+                col = vec3(1.0, 0.4, 0.1) * (1.0 - steps * 0.015) + vec3(0.8, 0.1, 0.0) * norm.x;
+            } else {
+                col = vec3(0.3, 0.7, 1.0) * (0.8 + 0.2 * norm.z) + vec3(0.8, 0.9, 1.0) * (1.0 - dist * 0.1);
+            }
+            return col;
+        }
+
+        void main() {
+            vec2 uv = (gl_FragCoord.xy - 0.5 * u_resolution) / u_resolution.y;
+
+            mat3 rot = getRotMatrix(u_camRot);
+            vec3 ro = u_camPos;
+            vec3 rd = rot * normalize(vec3(uv, 1.25));
+
+            float totalDist = 0.0;
+            float maxDist = 28.0;
+            float stepsCount = 0.0;
+            float hitDist = 0.0;
+            bool hit = false;
+
+            for (int i = 0; i < 95; i++) {
+                vec3 p = ro + rd * totalDist;
+                float d = map(p);
+                stepsCount += 1.0;
+
+                if (d < 0.0015 * (1.0 + totalDist * 0.05)) {
+                    hit = true;
+                    hitDist = totalDist;
+                    break;
+                }
+                totalDist += max(d * 0.72, 0.001);
+                if (totalDist > maxDist) break;
+            }
+
+            vec3 color = vec3(0.02, 0.03, 0.08); // Kolor tła głębi
+
+            if (hit) {
+                vec3 hitPos = ro + rd * hitDist;
+                vec3 norm = getNormal(hitPos, hitDist);
+                vec3 lightDir = normalize(vec3(0.6, 0.8, -0.5));
+
+                float diff = max(0.18, dot(norm, lightDir));
+                float ao = clamp(1.0 - stepsCount / 80.0, 0.0, 1.0); // Ambient Occlusion
+
+                vec3 matCol = getColor(stepsCount, hitDist, norm);
+                color = matCol * diff * ao;
+
+                // Mgła głębi (Depth Fog)
+                float fog = exp(-hitDist * 0.1);
+                color = mix(vec3(0.02, 0.03, 0.08), color, fog);
+            }
+
+            // Glow po krokach promienia
+            color += vec3(0.5, 0.2, 0.8) * (stepsCount * 0.0045);
+
+            gl_FragColor = vec4(color, 1.0);
+        }
+    </script>
+
+    <script>
+        // =======================================================
+        // INICJALIZACJA WEBGL I STEROWANIA LOTEM 3D
+        // =======================================================
+        const canvas = document.getElementById('glCanvas');
+        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+
+        if (!gl) {
+            alert('Twoja przeglądarka nie obsługuje WebGL. Użyj nowszej wersji Chrome/Edge/Firefox.');
+        }
+
+        // Kompilacja Shaderów
+        function createShader(gl, type, source) {
+            const shader = gl.createShader(type);
+            gl.shaderSource(shader, source);
+            gl.compileShader(shader);
+            if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+                console.error(gl.getShaderInfoLog(shader));
+                gl.deleteShader(shader);
+                return null;
+            }
+            return shader;
+        }
+
+        const vsSource = document.getElementById('vs').text;
+        const fsSource = document.getElementById('fs').text;
+        const vs = createShader(gl, gl.VERTEX_SHADER, vsSource);
+        const fs = createShader(gl, gl.FRAGMENT_SHADER, fsSource);
+
+        const program = gl.createProgram();
+        gl.attachShader(program, vs);
+        gl.attachShader(program, fs);
+        gl.linkProgram(program);
+        gl.useProgram(program);
+
+        // Quad ekranowy
+        const posBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, posBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+            -1, -1,  1, -1, -1,  1,
+            -1,  1,  1, -1,  1,  1
+        ]), gl.STATIC_DRAW);
+
+        const aPos = gl.getAttribLocation(program, 'a_pos');
+        gl.enableVertexAttribArray(aPos);
+        gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+
+        // Lokalizacje Uniformów
+        const uRes = gl.getUniformLocation(program, 'u_resolution');
+        const uTime = gl.getUniformLocation(program, 'u_time');
+        const uCamPos = gl.getUniformLocation(program, 'u_camPos');
+        const uCamRot = gl.getUniformLocation(program, 'u_camRot');
+        const uFractalType = gl.getUniformLocation(program, 'u_fractalType');
+        const uPalette = gl.getUniformLocation(program, 'u_palette');
+
+        // =======================================================
+        // STAN KAMERY I LOTU (6-DOF)
+        // =======================================================
+        let fractalType = 0; // 0: Mandelbox, 1: Mandelbulb, 2: Menger, 3: Kleinian
+        let paletteIdx = 0;
+        let autopilot = true;
+        let flightSpeed = 1.0;
+
+        let camPos = [0.0, 0.0, -3.2];
+        let camRot = [0.0, 0.0, 0.0];
+
+        const defaultPositions = [
+            { pos: [0.0, 0.0, -3.2], rot: [0.0, 0.0, 0.0] }, // Mandelbox
+            { pos: [0.0, 0.0, -2.6], rot: [0.3, 0.5, 0.0] }, // Mandelbulb
+            { pos: [0.0, 0.0, -2.8], rot: [0.2, 0.2, 0.0] }, // Menger
+            { pos: [0.0, 0.1, -1.6], rot: [0.1, 0.0, 0.0] }  // Kleinian Caverns
+        ];
+
+        let keys = {};
+        window.addEventListener('keydown', e => keys[e.key.toLowerCase()] = true);
+        window.addEventListener('keyup', e => keys[e.key.toLowerCase()] = false);
+
+        let isDragging = false;
+        let lastMouseX = 0, lastMouseY = 0;
+
+        canvas.addEventListener('mousedown', e => {
+            isDragging = true;
+            lastMouseX = e.clientX;
+            lastMouseY = e.clientY;
+            if (autopilot) toggleAutopilot();
+        });
+
+        window.addEventListener('mouseup', () => isDragging = false);
+
+        canvas.addEventListener('mousemove', e => {
+            if (!isDragging) return;
+            const dx = e.clientX - lastMouseX;
+            const dy = e.clientY - lastMouseY;
+            camRot[1] += dx * 0.005;
+            camRot[0] += dy * 0.005;
+            lastMouseX = e.clientX;
+            lastMouseY = e.clientY;
+        });
+
+        function selectFractal(idx) {
+            fractalType = idx;
+            ['mandelbox', 'mandelbulb', 'menger', 'klein'].forEach((id, i) => {
+                const btn = document.getElementById('btn-' + id);
+                if (btn) btn.classList.toggle('active', i === idx);
+            });
+            resetCamera();
+        }
+
+        function resetCamera() {
+            const def = defaultPositions[fractalType];
+            camPos = [...def.pos];
+            camRot = [...def.rot];
+        }
+
+        function toggleAutopilot() {
+            autopilot = !autopilot;
+            const btn = document.getElementById('btn-autopilot');
+            btn.innerText = autopilot ? '🛸 Autopilot: WŁ' : '🎮 Manual: WŁ';
+            btn.style.background = autopilot ? '#0284c7' : '#1e293b';
+            document.getElementById('mode-val').innerText = autopilot ? 'Autopilot 3D' : 'Sterowanie manualne';
+            document.getElementById('mode-val').style.color = autopilot ? '#38bdf8' : '#f59e0b';
+        }
+
+        // =======================================================
+        // GŁÓWNA PĘTLA RENDERUJĄCA
+        // =======================================================
+        let startTime = performance.now();
+        let lastTime = startTime;
+        let frameCount = 0;
+        let lastFpsUpdate = startTime;
+
+        function render() {
+            const now = performance.now();
+            const dt = (now - lastTime) / 1000.0;
+            const t = (now - startTime) / 1000.0;
+            lastTime = now;
+
+            // Licznik FPS
+            frameCount++;
+            if (now - lastFpsUpdate > 500) {
+                const fps = Math.round((frameCount * 1000) / (now - lastFpsUpdate));
+                document.getElementById('fps-val').innerText = fps;
+                frameCount = 0;
+                lastFpsUpdate = now;
+            }
+
+            // Sterowanie Autopilotem lub Klawiaturą
+            if (autopilot) {
+                if (fractalType === 0) { // Mandelbox lot w głąb korytarzy
+                    camPos[2] = -3.2 + Math.sin(t * 0.3 * flightSpeed) * 1.8;
+                    camPos[0] = Math.sin(t * 0.2 * flightSpeed) * 0.8;
+                    camPos[1] = Math.cos(t * 0.15 * flightSpeed) * 0.6;
+                    camRot[1] = Math.sin(t * 0.2 * flightSpeed) * 0.35;
+                    camRot[0] = Math.cos(t * 0.25 * flightSpeed) * 0.2;
+                } else if (fractalType === 1) { // Mandelbulb orbita
+                    const r = 2.4 + Math.sin(t * 0.3 * flightSpeed) * 0.6;
+                    camPos[0] = Math.sin(t * 0.35 * flightSpeed) * r;
+                    camPos[2] = Math.cos(t * 0.35 * flightSpeed) * r;
+                    camPos[1] = Math.sin(t * 0.2 * flightSpeed) * 0.8;
+                    camRot[1] = -t * 0.35 * flightSpeed + Math.PI;
+                    camRot[0] = -camPos[1] * 0.3;
+                } else if (fractalType === 2) { // Menger
+                    camPos[2] = -2.8 + Math.sin(t * 0.4 * flightSpeed) * 1.5;
+                    camPos[0] = Math.sin(t * 0.3 * flightSpeed) * 0.5;
+                    camRot[1] = Math.sin(t * 0.25 * flightSpeed) * 0.3;
+                } else { // Kleinian / Apollonian Caverns
+                    camPos[2] = t * 0.35 * flightSpeed;
+                    camPos[0] = Math.sin(t * 0.25 * flightSpeed) * 0.4;
+                    camPos[1] = 0.05 + Math.cos(t * 0.2 * flightSpeed) * 0.2;
+                    camRot[1] = Math.sin(t * 0.25 * flightSpeed) * 0.3;
+                    camRot[0] = Math.cos(t * 0.2 * flightSpeed) * 0.15;
+                }
+            } else {
+                // Ręczne sterowanie WASD + QE
+                const moveSpeed = 1.8 * flightSpeed * dt;
+                const cy = Math.cos(camRot[1]), sy = Math.sin(camRot[1]);
+
+                if (keys['w']) { camPos[0] += sy * moveSpeed; camPos[2] += cy * moveSpeed; }
+                if (keys['s']) { camPos[0] -= sy * moveSpeed; camPos[2] -= cy * moveSpeed; }
+                if (keys['a']) { camPos[0] -= cy * moveSpeed; camPos[2] += sy * moveSpeed; }
+                if (keys['d']) { camPos[0] += cy * moveSpeed; camPos[2] -= sy * moveSpeed; }
+                if (keys['q']) { camPos[1] -= moveSpeed; }
+                if (keys['e']) { camPos[1] += moveSpeed; }
+            }
+
+            document.getElementById('pos-val').innerText = `[${camPos[0].toFixed(2)}, ${camPos[1].toFixed(2)}, ${camPos[2].toFixed(2)}]`;
+
+            // Przekazanie zmiennych do GLSL
+            gl.viewport(0, 0, canvas.width, canvas.height);
+            gl.uniform2f(uRes, canvas.width, canvas.height);
+            gl.uniform1f(uTime, t);
+            gl.uniform3f(uCamPos, camPos[0], camPos[1], camPos[2]);
+            gl.uniform3f(uCamRot, camRot[0], camRot[1], camRot[2]);
+            gl.uniform1i(uFractalType, fractalType);
+            gl.uniform1i(uPalette, paletteIdx);
+
+            gl.drawArrays(gl.TRIANGLES, 0, 6);
+
+            requestAnimationFrame(render);
+        }
+
+        // =======================================================
+        // GENERATOR NASTROJOWEJ MELODII I AMBIENTU (WEB AUDIO API)
+        // =======================================================
+        class CosmicAtmosphericMusic {
+            constructor() {
+                this.audioCtx = null;
+                this.isPlaying = false;
+                this.masterGain = null;
+                this.filter = null;
+                this.droneOscs = [];
+                this.arpTimer = null;
+            }
+
+            init() {
+                if (this.audioCtx) return;
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                this.audioCtx = new AudioContext();
+
+                this.masterGain = this.audioCtx.createGain();
+                this.masterGain.gain.setValueAtTime(0.22, this.audioCtx.currentTime);
+
+                this.filter = this.audioCtx.createBiquadFilter();
+                this.filter.type = 'lowpass';
+                this.filter.frequency.setValueAtTime(800, this.audioCtx.currentTime);
+
+                // Przestrzenny delay / echo
+                const delay = this.audioCtx.createDelay();
+                delay.delayTime.setValueAtTime(0.42, this.audioCtx.currentTime);
+                const delayGain = this.audioCtx.createGain();
+                delayGain.gain.setValueAtTime(0.38, this.audioCtx.currentTime);
+
+                delay.connect(delayGain);
+                delayGain.connect(delay);
+                delayGain.connect(this.masterGain);
+
+                this.filter.connect(this.masterGain);
+                this.filter.connect(delay);
+                this.masterGain.connect(this.audioCtx.destination);
+            }
+
+            start() {
+                this.init();
+                if (this.audioCtx.state === 'suspended') {
+                    this.audioCtx.resume();
+                }
+                if (this.isPlaying) return;
+                this.isPlaying = true;
+
+                this.masterGain.gain.cancelScheduledValues(this.audioCtx.currentTime);
+                this.masterGain.gain.setValueAtTime(0.001, this.audioCtx.currentTime);
+                this.masterGain.gain.exponentialRampToValueAtTime(0.22, this.audioCtx.currentTime + 1.0);
+
+                // 1. Ciepłe akordy tła (F# minor / Cosmic pad)
+                const chordFrequencies = [92.50, 138.59, 185.00, 277.18]; // F#2, C#3, F#3, C#4
+                this.droneOscs = chordFrequencies.map((freq, idx) => {
+                    const osc = this.audioCtx.createOscillator();
+                    const gain = this.audioCtx.createGain();
+
+                    osc.type = idx % 2 === 0 ? 'sine' : 'triangle';
+                    osc.frequency.setValueAtTime(freq, this.audioCtx.currentTime);
+
+                    const lfo = this.audioCtx.createOscillator();
+                    const lfoGain = this.audioCtx.createGain();
+                    lfo.frequency.setValueAtTime(0.08 + idx * 0.03, this.audioCtx.currentTime);
+                    lfoGain.gain.setValueAtTime(1.5, this.audioCtx.currentTime);
+                    lfo.connect(lfoGain);
+                    lfoGain.connect(osc.frequency);
+                    lfo.start();
+
+                    gain.gain.setValueAtTime(0.06, this.audioCtx.currentTime);
+                    osc.connect(gain);
+                    gain.connect(this.filter);
+                    osc.start();
+                    return { osc, gain, lfo };
+                });
+
+                // 2. Nastrojowa, eteryczna melodia dzwonków / arpeggio
+                const melodyScale = [277.18, 329.63, 369.99, 440.00, 554.37, 659.25, 739.99]; // F# minor pentatonic/dorian
+                const playMelodyNote = () => {
+                    if (!this.isPlaying) return;
+
+                    const freq = melodyScale[Math.floor(Math.random() * melodyScale.length)];
+                    const osc = this.audioCtx.createOscillator();
+                    const gain = this.audioCtx.createGain();
+
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, this.audioCtx.currentTime);
+
+                    const now = this.audioCtx.currentTime;
+                    gain.gain.setValueAtTime(0.0001, now);
+                    gain.gain.exponentialRampToValueAtTime(0.09, now + 0.04);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, now + 2.2);
+
+                    osc.connect(gain);
+                    gain.connect(this.filter);
+
+                    osc.start(now);
+                    osc.stop(now + 2.3);
+
+                    const nextDelay = 380 + Math.random() * 500;
+                    this.arpTimer = setTimeout(playMelodyNote, nextDelay);
+                };
+
+                playMelodyNote();
+            }
+
+            stop() {
+                if (!this.isPlaying || !this.audioCtx) return;
+                this.isPlaying = false;
+                if (this.arpTimer) clearTimeout(this.arpTimer);
+
+                if (this.masterGain) {
+                    this.masterGain.gain.cancelScheduledValues(this.audioCtx.currentTime);
+                    this.masterGain.gain.setValueAtTime(this.masterGain.gain.value, this.audioCtx.currentTime);
+                    this.masterGain.gain.exponentialRampToValueAtTime(0.0001, this.audioCtx.currentTime + 0.5);
+                }
+
+                setTimeout(() => {
+                    if (!this.isPlaying && this.droneOscs.length) {
+                        this.droneOscs.forEach(({ osc, lfo }) => {
+                            try { osc.stop(); lfo.stop(); } catch (e) {}
+                        });
+                        this.droneOscs = [];
+                    }
+                }, 550);
+            }
+
+            toggle() {
+                if (this.isPlaying) {
+                    this.stop();
+                    return false;
+                } else {
+                    this.start();
+                    return true;
+                }
+            }
+        }
+
+        const bgMusic = new CosmicAtmosphericMusic();
+
+        function toggleAudio() {
+            const isPlaying = bgMusic.toggle();
+            const btn = document.getElementById('btn-audio');
+            btn.innerText = isPlaying ? '🔇 Wycisz Melodię' : '🔊 Nastrojowa Melodia';
+            btn.style.background = isPlaying ? '#9333ea' : '#334155';
+        }
+
+        // Start pętli
+        render();
+    </script>
+    <script src="nagrywanie_wideo.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../style.css" />
+    <title>Nieskończony Zoom – Kosmos i Gwiazdy → Ziemia → Chmura → Stadion → Zawodnik → Piłka</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 15px;
+            min-height: 100vh;
+            background: #020617;
+            color: #f1f5f9;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            text-align: center;
+            overflow-x: hidden;
+        }
+
+        h1 {
+            color: #a855f7;
+            font-size: 1.95rem;
+            margin-bottom: 6px;
+            text-shadow: 0 0 18px rgba(168, 85, 247, 0.6);
+        }
+
+        .subtitle {
+            font-size: 1.02rem;
+            color: #cbd5e1;
+            margin-bottom: 12px;
+            max-width: 920px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.5;
+        }
+
+        .badge-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin: 8px auto 14px auto;
+            max-width: 900px;
+        }
+
+        .world-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            background: rgba(30, 41, 59, 0.85);
+            border: 1px solid #475569;
+            font-size: 0.88rem;
+            color: #94a3b8;
+            transition: all 0.3s ease;
+        }
+
+        .world-badge.active {
+            background: rgba(168, 85, 247, 0.25);
+            border-color: #a855f7;
+            color: #e9d5ff;
+            box-shadow: 0 0 14px rgba(168, 85, 247, 0.5);
+            transform: scale(1.06);
+            font-weight: 700;
+        }
+
+        .controls-top {
+            margin: 10px auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-start {
+            background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+            color: #ffffff;
+            font-size: 1.15rem;
+            font-weight: 700;
+            padding: 10px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(124, 58, 237, 0.45);
+            transition: all 0.25s ease;
+        }
+
+        .btn-start:hover {
+            background: linear-gradient(135deg, #9333ea 0%, #7c3aed 100%);
+            box-shadow: 0 0 22px rgba(168, 85, 247, 0.8);
+            transform: scale(1.03);
+        }
+
+        .btn-secondary {
+            background: rgba(30, 41, 59, 0.85);
+            color: #e2e8f0;
+            font-size: 0.92rem;
+            padding: 9px 15px;
+            border: 1px solid #475569;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-secondary:hover {
+            color: #d8b4fe;
+            border-color: #a855f7;
+            background: rgba(51, 65, 85, 0.95);
+        }
+
+        .panel {
+            margin: 12px auto;
+            max-width: 920px;
+            background: rgba(15, 23, 42, 0.85);
+            padding: 10px 18px;
+            border-radius: 12px;
+            border: 1px solid rgba(168, 85, 247, 0.25);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            font-size: 0.92rem;
+        }
+
+        .panel select, .panel input[type="range"] {
+            background: #1e293b;
+            color: #f8fafc;
+            border: 1px solid #475569;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .panel select:focus {
+            border-color: #a855f7;
+        }
+
+        .canvas-container {
+            margin: 14px auto 18px auto;
+            max-width: 800px;
+            position: relative;
+        }
+
+        canvas {
+            display: block;
+            margin: 0 auto;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.95), 0 0 30px rgba(168, 85, 247, 0.35);
+            background-color: #000000;
+            cursor: grab;
+            max-width: 100%;
+            height: auto;
+        }
+
+        canvas:active {
+            cursor: grabbing;
+        }
+
+        .hud-stats {
+            display: flex;
+            justify-content: space-between;
+            max-width: 800px;
+            margin: 8px auto 0 auto;
+            font-size: 0.85rem;
+            color: #d8b4fe;
+            font-family: monospace;
+        }
+
+        .hint {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-top: 8px;
+        }
+
+        .nav-links {
+            margin-top: 30px;
+            margin-bottom: 25px;
+        }
+
+        .nav-link {
+            color: #94a3b8;
+            text-decoration: none;
+            margin: 0 14px;
+            font-size: 1rem;
+            border-bottom: 1px dashed #64748b;
+            transition: color 0.2s ease;
+        }
+
+        .nav-link:hover {
+            color: #a855f7;
+            border-bottom-color: #a855f7;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Nieskończony Zoom – Kosmos i Gwiazdy</h1>
+    <p class="subtitle">
+        Płynny, kinowy lot przez 6 poziomów rzeczywistości (nowy kadr stanowi <strong>5% wymiarów poprzedniego</strong>):
+    </p>
+
+    <div class="badge-container">
+        <span id="badge0" class="world-badge active">🌌 1. Kosmos i Gwiazdy</span>
+        <span>→</span>
+        <span id="badge1" class="world-badge">🌍 2. Ziemia</span>
+        <span>→</span>
+        <span id="badge2" class="world-badge">☁️ 3. Chmura</span>
+        <span>→</span>
+        <span id="badge3" class="world-badge">🏟️ 4. Stadion</span>
+        <span>→</span>
+        <span id="badge4" class="world-badge">🏃 5. Zawodnik</span>
+        <span>→</span>
+        <span id="badge5" class="world-badge">⚽ 6. Piłka</span>
+        <span>→</span>
+        <span style="color: #a855f7; font-weight: bold;">(🌌 pętla powrotna)</span>
+    </div>
+
+    <div class="controls-top">
+        <button id="startBtn" class="btn-start" onclick="toggleAnimation()">▶ Start Zoomu</button>
+        <button id="dirBtn" class="btn-secondary" onclick="toggleDirection()">🔍 Kierunek: W głąb (Zoom In)</button>
+        <button id="audioToggleBtn" class="btn-secondary" onclick="toggleAudio()">🔊 Dźwięk: WŁ</button>
+        <button class="btn-secondary" onclick="resetZoom()">↺ Reset</button>
+    </div>
+
+    <div class="panel">
+        <div>
+            <label for="ratioSelect"><strong>Rozmiar początkowy wstawianego kadru:</strong></label>
+            <select id="ratioSelect" onchange="changeRatio()">
+                <option value="20.0" selected>⚡ 5% wymiarów (Skala 20x)</option>
+                <option value="10.0">10% wymiarów (Skala 10x)</option>
+                <option value="5.0">20% wymiarów (Skala 5x)</option>
+                <option value="3.0">33.3% wymiarów (Skala 3x)</option>
+            </select>
+        </div>
+
+        <div>
+            <label for="engineSelect">Silnik:</label>
+            <select id="engineSelect" onchange="changeEngine()">
+                <option value="photo">📸 Zdjęcia AI (Kosmos & Gwiazdy)</option>
+                <option value="procedural">✨ Fotorealizm PBR</option>
+            </select>
+        </div>
+
+        <div>
+            <label for="speedSlider">Prędkość:</label>
+            <input type="range" id="speedSlider" min="0.2" max="3.0" step="0.1" value="1.0" oninput="updateSpeed(this.value)">
+            <span id="speedVal" style="font-family: monospace; color: #d8b4fe; min-width: 35px; display: inline-block;">1.0x</span>
+        </div>
+
+        <div>
+            <label><input type="checkbox" id="centerBgMatch" checked onchange="draw()"> 🎯 Tło jako środek poprzedniego</label>
+        </div>
+
+        <div>
+            <label><input type="checkbox" id="autoRotate" onchange="toggleAutoRotate()"> 💫 Kinowa rotacja</label>
+        </div>
+
+        <div>
+            <label><input type="checkbox" id="cinemaVignette" checked onchange="draw()"> 🎬 Flara & Winieta</label>
+        </div>
+    </div>
+
+    <div class="canvas-container">
+        <canvas id="zoomCanvas" width="800" height="600"></canvas>
+        <div class="hud-stats">
+            <span id="fpsDisplay">FPS: --</span>
+            <span id="worldDisplay">Kadr: 🌌 Kosmos i Gwiazdy</span>
+            <span id="zoomLevelDisplay">Kadr bazowy: 1.00x → 20.00x | Wstawiany: 0.05x (5%) → 1.00x (100%)</span>
+        </div>
+        <p class="hint">Wskazówka: Kółkiem myszy możesz w dowolnej chwili płynnie przybliżać lub oddalać kadr.</p>
+    </div>
+
+    <div class="nav-links">
+        <a href="../rozrywka.html" class="nav-link">← Powrót do Rozrywki</a>
+        <a href="zoom_zegar.html" class="nav-link">Zoom: Zegar & Miasto</a>
+        <a href="zbior_mandelbrota.html" class="nav-link">Zbiór Mandelbrota</a>
+        <a href="penrose.html" class="nav-link">Układanka Penrose’a</a>
+        <a href="mandelbulb.html" class="nav-link">Mandelbulb 3D</a>
+        <a href="burning_ship.html" class="nav-link">Burning Ship</a>
+        <a href="../index.html" class="nav-link">Strona główna</a>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('zoomCanvas');
+        const ctx = canvas.getContext('2d');
+        const startBtn = document.getElementById('startBtn');
+        const dirBtn = document.getElementById('dirBtn');
+        const audioToggleBtn = document.getElementById('audioToggleBtn');
+        const speedVal = document.getElementById('speedVal');
+        const fpsDisplay = document.getElementById('fpsDisplay');
+        const worldDisplay = document.getElementById('worldDisplay');
+        const zoomLevelDisplay = document.getElementById('zoomLevelDisplay');
+        const ratioSelect = document.getElementById('ratioSelect');
+        const engineSelect = document.getElementById('engineSelect');
+        const centerBgMatchCb = document.getElementById('centerBgMatch');
+        const autoRotateCb = document.getElementById('autoRotate');
+        const cinemaVignetteCb = document.getElementById('cinemaVignette');
+
+        const badges = [
+            document.getElementById('badge0'),
+            document.getElementById('badge1'),
+            document.getElementById('badge2'),
+            document.getElementById('badge3'),
+            document.getElementById('badge4'),
+            document.getElementById('badge5')
+        ];
+
+        const NUM_WORLDS = 6;
+        let SCALE_RATIO = 20.0;
+        let currentEngine = 'photo';
+
+        const imageSources = [
+            'img/cosmos.jpg',
+            'img/earth.jpg',
+            'img/cloud.jpg',
+            'img/stadium.jpg',
+            'img/player.jpg',
+            'img/ball.jpg'
+        ];
+
+        const worldNames = [
+            '🌌 1. Kosmos i Gwiazdy',
+            '🌍 2. Ziemia z orbity',
+            '☁️ 3. Prześwit w Chmurach',
+            '🏟️ 4. Stadion Piłkarski',
+            '🏃 5. Zawodnik na murawie',
+            '⚽ 6. Piłka nożna makro'
+        ];
+
+        const worldPortals = [
+            { x: 0.0,   y: 0.0 },   // 0. Kosmos: centrum
+            { x: 0.0,   y: 0.0 },   // 1. Ziemia: centrum
+            { x: 0.0,   y: 0.0 },   // 2. Chmury: centralny prześwit na pole
+            { x: 0.0,   y: 0.04 },  // 3. Stadion: środek boiska
+            { x: -0.01, y: 0.21 },  // 4. Zawodnik: czarno-biała piłka przed butami
+            { x: 0.0,   y: -0.05 }  // 5. Piłka: łatka centralna
+        ];
+
+        const transitionTones = [
+            { r: 15,  g: 23,  b: 42 },  // 0->1: Głęboka czerń kosmosu z gwiazdami -> Ziemia
+            { r: 56,  g: 189, b: 248 }, // 1->2: Ziemia -> Chmura
+            { r: 21,  g: 128, b: 61 },  // 2->3: Chmura -> Stadion
+            { r: 22,  g: 163, b: 74 },  // 3->4: Stadion -> Zawodnik
+            { r: 21,  g: 128, b: 61 },  // 4->5: Zawodnik -> Piłka
+            { r: 15,  g: 23,  b: 42 }   // 5->0: Piłka -> Głęboka czerń kosmosu z gwiazdami
+        ];
+
+        const images = [];
+        let imagesLoaded = 0;
+
+        imageSources.forEach((src) => {
+            const img = new Image();
+            img.src = src;
+            img.onload = () => {
+                imagesLoaded++;
+                if (imagesLoaded === NUM_WORLDS) {
+                    draw();
+                }
+            };
+            images.push(img);
+        });
+
+        // ==========================================
+        // PROCEDURALNY PBR KOSMOS I GWIAZDY (Minimalistyczny: czarne tło i nieduża liczba gwiazd)
+        // ==========================================
+        function drawPbrCosmos(ctx, time) {
+            // Czysta, głęboka czerń
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(-450, -450, 900, 900);
+
+            // Niewielka liczba precyzyjnych, punktowych gwiazd (stałe pozycje z subtelnym migotaniem)
+            const starCoords = [
+                { x: -280, y: -220, r: 1.2, phase: 0.2 },
+                { x: 190,  y: -310, r: 1.6, phase: 1.4 },
+                { x: -140, y: -110, r: 1.0, phase: 2.1 },
+                { x: 310,  y: -80,  r: 1.8, phase: 0.7 },
+                { x: -320, y: 150,  r: 1.1, phase: 3.2 },
+                { x: 220,  y: 260,  r: 1.5, phase: 1.9 },
+                { x: -80,  y: 290,  r: 1.3, phase: 2.8 },
+                { x: 150,  y: -140, r: 1.1, phase: 0.5 },
+                { x: -210, y: 70,   r: 0.9, phase: 3.7 },
+                { x: 70,   y: 180,  r: 1.0, phase: 1.1 },
+                { x: -50,  y: -280, r: 1.4, phase: 2.4 },
+                { x: 340,  y: 190,  r: 1.2, phase: 0.8 },
+                { x: -360, y: -50,  r: 1.3, phase: 1.7 },
+                { x: 110,  y: -240, r: 0.9, phase: 2.9 },
+                { x: -170, y: 220,  r: 1.2, phase: 3.5 },
+                { x: 270,  y: -220, r: 1.4, phase: 1.3 },
+                { x: 30,   y: -70,  r: 0.8, phase: 0.4 },
+                { x: -90,  y: 90,   r: 0.8, phase: 2.2 }
+            ];
+
+            starCoords.forEach(s => {
+                const alpha = 0.6 + 0.4 * Math.sin(time * 2.5 + s.phase);
+                ctx.beginPath();
+                ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+                ctx.fill();
+            });
+        }
+
+        function drawPbrEarth(ctx, time) {
+            ctx.fillStyle = '#01040a';
+            ctx.fillRect(-450, -450, 900, 900);
+
+            const atmoGrad = ctx.createRadialGradient(0, 0, 270, 0, 0, 340);
+            atmoGrad.addColorStop(0, 'rgba(56, 189, 248, 0.95)');
+            atmoGrad.addColorStop(0.5, 'rgba(14, 165, 233, 0.4)');
+            atmoGrad.addColorStop(1, 'rgba(2, 6, 23, 0)');
+            ctx.beginPath();
+            ctx.arc(0, 0, 340, 0, Math.PI * 2);
+            ctx.fillStyle = atmoGrad;
+            ctx.fill();
+
+            const earthGrad = ctx.createRadialGradient(-100, -100, 40, 40, 40, 310);
+            earthGrad.addColorStop(0, '#0284c7');
+            earthGrad.addColorStop(0.5, '#0369a1');
+            earthGrad.addColorStop(0.85, '#0c4a6e');
+            earthGrad.addColorStop(1, '#020617');
+
+            ctx.beginPath();
+            ctx.arc(0, 0, 290, 0, Math.PI * 2);
+            ctx.fillStyle = earthGrad;
+            ctx.fill();
+
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(0, 0, 290, 0, Math.PI * 2);
+            ctx.clip();
+
+            ctx.fillStyle = '#15803d';
+            ctx.beginPath();
+            ctx.ellipse(-70, -30, 110, 160, 0.25, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = '#166534';
+            ctx.beginPath();
+            ctx.ellipse(130, 80, 85, 110, -0.35, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+            ctx.beginPath();
+            ctx.ellipse(-35, -125, 140, 35, 0.35, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.ellipse(80, 50, 160, 45, -0.2, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        function drawPbrCloud(ctx, time) {
+            // 1. Tło w środku prześwitu: zielone pola i krajobraz
+            const groundGrad = ctx.createRadialGradient(0, 0, 40, 0, 0, 240);
+            groundGrad.addColorStop(0, '#22c55e');
+            groundGrad.addColorStop(0.5, '#16a34a');
+            groundGrad.addColorStop(1, '#15803d');
+            ctx.fillStyle = groundGrad;
+            ctx.fillRect(-450, -450, 900, 900);
+
+            // Siatka pól uprawnych w prześwicie
+            ctx.strokeStyle = 'rgba(20, 83, 45, 0.4)';
+            ctx.lineWidth = 2;
+            for (let x = -200; x <= 200; x += 50) {
+                ctx.beginPath();
+                ctx.moveTo(x, -200); ctx.lineTo(x, 200);
+                ctx.stroke();
+            }
+            for (let y = -200; y <= 200; y += 45) {
+                ctx.beginPath();
+                ctx.moveTo(-200, y); ctx.lineTo(200, y);
+                ctx.stroke();
+            }
+
+            // 2. Chmury wokół obwodu z centralnym prześwitem
+            const outerPuffs = 16;
+            for (let i = 0; i < outerPuffs; i++) {
+                const ang = i * (Math.PI * 2 / outerPuffs) + time * 0.02;
+                const dist = 280 + Math.sin(i * 1.7) * 40;
+                const px = Math.cos(ang) * dist;
+                const py = Math.sin(ang) * dist;
+                const r = 160 + (i % 3) * 25;
+
+                const puffGrad = ctx.createRadialGradient(px * 0.8, py * 0.8, r * 0.2, px, py, r);
+                puffGrad.addColorStop(0, '#ffffff');
+                puffGrad.addColorStop(0.7, '#e2e8f0');
+                puffGrad.addColorStop(1, '#cbd5e1');
+
+                ctx.beginPath();
+                ctx.arc(px, py, r, 0, Math.PI * 2);
+                ctx.fillStyle = puffGrad;
+                ctx.fill();
+            }
+        }
+
+        function drawPbrStadium(ctx, time) {
+            ctx.fillStyle = '#060d19';
+            ctx.fillRect(-450, -450, 900, 900);
+
+            ctx.beginPath();
+            ctx.ellipse(0, 0, 390, 310, 0, 0, Math.PI * 2);
+            ctx.fillStyle = '#1e293b';
+            ctx.fill();
+
+            const pitchGrad = ctx.createLinearGradient(-220, 0, 220, 0);
+            pitchGrad.addColorStop(0, '#15803d');
+            pitchGrad.addColorStop(0.5, '#16a34a');
+            pitchGrad.addColorStop(1, '#15803d');
+            ctx.fillStyle = pitchGrad;
+            ctx.fillRect(-220, -150, 440, 300);
+
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 3.5;
+            ctx.strokeRect(-220, -150, 440, 300);
+            ctx.beginPath();
+            ctx.moveTo(0, -150); ctx.lineTo(0, 150); ctx.stroke();
+            ctx.beginPath();
+            ctx.arc(0, 0, 65, 0, Math.PI * 2); ctx.stroke();
+        }
+
+        function drawPbrPlayer(ctx, time) {
+            const turfGrad = ctx.createRadialGradient(0, 0, 50, 0, 0, 420);
+            turfGrad.addColorStop(0, '#16a34a');
+            turfGrad.addColorStop(0.7, '#15803d');
+            turfGrad.addColorStop(1, '#052e16');
+            ctx.fillStyle = turfGrad;
+            ctx.fillRect(-450, -450, 900, 900);
+
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.55)';
+            ctx.beginPath();
+            ctx.ellipse(-10, 170, 120, 25, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.save();
+            ctx.translate(0, -50);
+            ctx.fillStyle = '#fed7aa';
+            ctx.fillRect(-45, 20, 26, 80);
+            ctx.fillRect(20, 20, 26, 75);
+            ctx.fillStyle = '#e2e8f0';
+            ctx.fillRect(-45, 100, 26, 60);
+            ctx.fillRect(20, 95, 26, 55);
+            ctx.fillStyle = '#0284c7';
+            ctx.fillRect(-60, 150, 48, 22);
+            ctx.fillRect(15, 140, 52, 24);
+            ctx.restore();
+        }
+
+        function drawPbrBall(ctx, time) {
+            ctx.fillStyle = '#14532d';
+            ctx.fillRect(-450, -450, 900, 900);
+
+            const ballGrad = ctx.createRadialGradient(-70, -70, 30, 0, 0, 310);
+            ballGrad.addColorStop(0, '#ffffff');
+            ballGrad.addColorStop(0.75, '#cbd5e1');
+            ballGrad.addColorStop(1, '#475569');
+
+            ctx.beginPath();
+            ctx.arc(0, 0, 290, 0, Math.PI * 2);
+            ctx.fillStyle = ballGrad;
+            ctx.fill();
+
+            ctx.save();
+            ctx.fillStyle = '#0f172a';
+            ctx.beginPath();
+            for (let i = 0; i < 5; i++) {
+                const a = i * (Math.PI * 2 / 5) - Math.PI / 2;
+                const px = Math.cos(a) * 90;
+                const py = Math.sin(a) * 90;
+                if (i === 0) ctx.moveTo(px, py);
+                else ctx.lineTo(px, py);
+            }
+            ctx.closePath();
+            ctx.fill();
+            ctx.restore();
+        }
+
+        const proceduralDrawers = [
+            drawPbrCosmos,
+            drawPbrEarth,
+            drawPbrCloud,
+            drawPbrStadium,
+            drawPbrPlayer,
+            drawPbrBall
+        ];
+
+        // ==========================================
+        // GŁÓWNA PĘTLA ANIMACJI & RENDERINGU
+        // ==========================================
+        let isRunning = false;
+        let animId = null;
+        let direction = 1;
+        let speed = 1.0;
+        let zoomProgress = 0.0;
+        let rotationAngle = 0.0;
+        let enableAutoRotate = false;
+
+        // Rozmiar początkowy każdego wstawianego kadru: 5% wymiarów poprzedniego (Skala 20x)
+        const defaultInsertionRatios = [20.0, 20.0, 20.0, 20.0, 20.0, 20.0];
+        let userScaleMultiplier = 1.0;
+
+        let lastFrameTime = performance.now();
+        let frameCount = 0;
+        let lastFpsUpdate = performance.now();
+
+        function changeRatio() {
+            userScaleMultiplier = parseFloat(ratioSelect.value) / 20.0;
+            draw();
+        }
+
+        function changeEngine() {
+            currentEngine = engineSelect.value;
+            draw();
+        }
+
+        function updateSpeed(val) {
+            speed = parseFloat(val);
+            speedVal.innerText = speed.toFixed(1) + 'x';
+        }
+
+        function toggleDirection() {
+            direction *= -1;
+            dirBtn.innerText = direction > 0 ? '🔍 Kierunek: W głąb (Zoom In)' : '🔎 Kierunek: Na zewnątrz (Zoom Out)';
+            dirBtn.style.color = direction > 0 ? '#38bdf8' : '#fbbf24';
+        }
+
+        function toggleAutoRotate() {
+            enableAutoRotate = autoRotateCb.checked;
+        }
+
+        function resetZoom() {
+            zoomProgress = 0.0;
+            rotationAngle = 0.0;
+            if (!isRunning) draw();
+        }
+
+        function getRatioForWorld(idx) {
+            return defaultInsertionRatios[idx] * userScaleMultiplier;
+        }
+
+        // Rysowanie warstwy ze środkiem poprzedniego kadru jako tłem
+        function drawNestedLayer(ctx, imgIdx, scale, alpha, parentImgIdx, localRatio) {
+            if (!images[imgIdx] || !images[imgIdx].complete || images[imgIdx].naturalWidth === 0) return;
+
+            const img = images[imgIdx];
+            const size = 900;
+            const ratio = localRatio || 20.0;
+
+            ctx.save();
+            ctx.globalAlpha = Math.max(0, Math.min(1, alpha));
+            ctx.scale(scale, scale);
+
+            // 1. Tło ze środka poprzedniego kadru
+            if (centerBgMatchCb.checked && parentImgIdx !== undefined && images[parentImgIdx] && images[parentImgIdx].complete) {
+                const parentImg = images[parentImgIdx];
+                const pParent = worldPortals[parentImgIdx];
+                ctx.save();
+                ctx.scale(ratio, ratio);
+                ctx.translate(-pParent.x * size, -pParent.y * size);
+                ctx.drawImage(parentImg, -size / 2, -size / 2, size, size);
+                ctx.restore();
+            }
+
+            // 2. Kadr właściwy (przycięty ściśle do obrysu - nic nie wystaje na zewnątrz)
+            const p = worldPortals[imgIdx];
+            ctx.save();
+            ctx.translate(-p.x * size, -p.y * size);
+
+            ctx.beginPath();
+            ctx.rect(-size / 2, -size / 2, size, size);
+            ctx.clip();
+
+            ctx.drawImage(img, -size / 2, -size / 2, size, size);
+
+            // 3. Miękkie wewnętrzne wtapianie krawędzi (ściśle w granicach kadru)
+            const tone = transitionTones[imgIdx];
+            const blend = ctx.createRadialGradient(0, 0, size * 0.32, 0, 0, size * 0.50);
+            blend.addColorStop(0, 'rgba(0, 0, 0, 0)');
+            blend.addColorStop(0.7, `rgba(${tone.r}, ${tone.g}, ${tone.b}, 0.20)`);
+            blend.addColorStop(1, 'rgba(2, 6, 23, 0.90)');
+
+            ctx.fillStyle = blend;
+            ctx.fillRect(-size / 2, -size / 2, size, size);
+
+            ctx.restore();
+
+            ctx.restore();
+        }
+
+        function draw() {
+            ctx.save();
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#020617';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+
+            const totalU = zoomProgress;
+            const floorU = Math.floor(totalU);
+            const frac = totalU - floorU;
+
+            const baseIdx = ((floorU % NUM_WORLDS) + NUM_WORLDS) % NUM_WORLDS;
+            const nextIdx = (baseIdx + 1) % NUM_WORLDS;
+            const next2Idx = (baseIdx + 2) % NUM_WORLDS;
+            const next3Idx = (baseIdx + 3) % NUM_WORLDS;
+            const parentIdx = ((baseIdx - 1) % NUM_WORLDS + NUM_WORLDS) % NUM_WORLDS;
+
+            for (let i = 0; i < NUM_WORLDS; i++) {
+                if (i === baseIdx) {
+                    badges[i].classList.add('active');
+                } else {
+                    badges[i].classList.remove('active');
+                }
+            }
+
+            const localRatio = getRatioForWorld(baseIdx);
+            const parentRatio = getRatioForWorld(parentIdx);
+            const nextRatio = getRatioForWorld(nextIdx);
+            const next2Ratio = getRatioForWorld(next2Idx);
+
+            worldDisplay.innerText = `Kadr: ${worldNames[baseIdx]}`;
+            const currentScale = Math.pow(localRatio, frac);
+            const currentPct = ((currentScale / localRatio) * 100).toFixed(1);
+            const initPct = (100 / localRatio).toFixed(1);
+            zoomLevelDisplay.innerText = `Kadr bazowy: ${currentScale.toFixed(1)}x | Wstawiany: ${currentPct}% wymiarów (${(currentScale / localRatio).toFixed(3)}x, start: ${initPct}%)`;
+
+            const scaleBase = currentScale;
+            const scaleNext = scaleBase / localRatio;
+            const scaleNext2 = scaleNext / nextRatio;
+            const scaleNext3 = scaleNext2 / next2Ratio;
+            const scaleParent = scaleBase * parentRatio;
+
+            const timeSec = performance.now() / 1000;
+
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+
+            ctx.translate(cx, cy);
+            if (enableAutoRotate) ctx.rotate(rotationAngle);
+
+            if (currentEngine === 'photo') {
+                if (scaleParent < 250) {
+                    drawNestedLayer(ctx, parentIdx, scaleParent, Math.max(0, 1 - frac * 1.5), ((parentIdx - 1) % NUM_WORLDS + NUM_WORLDS) % NUM_WORLDS, parentRatio);
+                }
+                drawNestedLayer(ctx, baseIdx, scaleBase, 1.0, parentIdx, localRatio);
+                drawNestedLayer(ctx, nextIdx, scaleNext, 1.0, baseIdx, nextRatio);
+                if (scaleNext2 > 0.0005) {
+                    drawNestedLayer(ctx, next2Idx, scaleNext2, 1.0, nextIdx, next2Ratio);
+                }
+                if (scaleNext3 > 0.00005) {
+                    drawNestedLayer(ctx, next3Idx, scaleNext3, 1.0, next2Idx, getRatioForWorld(next3Idx));
+                }
+            } else {
+                if (scaleParent < 250) {
+                    ctx.save();
+                    ctx.scale(scaleParent, scaleParent);
+                    ctx.globalAlpha = Math.max(0, 1 - frac * 1.5);
+                    proceduralDrawers[parentIdx](ctx, timeSec);
+                    ctx.restore();
+                }
+                ctx.save();
+                ctx.scale(scaleBase, scaleBase);
+                ctx.globalAlpha = 1.0;
+                proceduralDrawers[baseIdx](ctx, timeSec);
+                ctx.restore();
+
+                ctx.save();
+                ctx.scale(scaleNext, scaleNext);
+                ctx.globalAlpha = 1.0;
+                proceduralDrawers[nextIdx](ctx, timeSec);
+                ctx.restore();
+
+                if (scaleNext2 > 0.0005) {
+                    ctx.save();
+                    ctx.scale(scaleNext2, scaleNext2);
+                    ctx.globalAlpha = 1.0;
+                    proceduralDrawers[next2Idx](ctx, timeSec);
+                    ctx.restore();
+                }
+            }
+
+            if (cinemaVignetteCb.checked) {
+                const vig = ctx.createRadialGradient(0, 0, canvas.height * 0.45, 0, 0, canvas.width * 0.7);
+                vig.addColorStop(0, 'rgba(0, 0, 0, 0)');
+                vig.addColorStop(1, 'rgba(0, 0, 0, 0.65)');
+                ctx.fillStyle = vig;
+                ctx.fillRect(-cx, -cy, canvas.width, canvas.height);
+            }
+
+            ctx.restore();
+        }
+
+        // ==========================================
+        // DŹWIĘK 6 ŚWIATÓW WEB AUDIO API
+        // ==========================================
+        class SolarZoomAudio {
+            constructor() {
+                this.audioCtx = null;
+                this.isPlaying = false;
+                this.isMuted = false;
+                this.masterGain = null;
+                this.gains = [];
+                this.heartbeatTimer = null;
+            }
+
+            init() {
+                if (this.audioCtx) return;
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                this.audioCtx = new AudioContext();
+
+                this.masterGain = this.audioCtx.createGain();
+                this.masterGain.gain.setValueAtTime(0.18, this.audioCtx.currentTime);
+                this.masterGain.connect(this.audioCtx.destination);
+
+                for (let i = 0; i < NUM_WORLDS; i++) {
+                    const g = this.audioCtx.createGain();
+                    g.gain.setValueAtTime(i === 0 ? 1.0 : 0.0, this.audioCtx.currentTime);
+                    g.connect(this.masterGain);
+                    this.gains.push(g);
+                }
+
+                // 1. Kosmos i Gwiazdy (Głęboki ambient kosmiczny & eon drone)
+                const cosmosOsc = this.audioCtx.createOscillator();
+                cosmosOsc.type = 'sine';
+                cosmosOsc.frequency.setValueAtTime(65.41, this.audioCtx.currentTime); // C2
+                const cosmosFilter = this.audioCtx.createBiquadFilter();
+                cosmosFilter.type = 'lowpass';
+                cosmosFilter.frequency.setValueAtTime(240, this.audioCtx.currentTime);
+                cosmosOsc.connect(cosmosFilter);
+                cosmosFilter.connect(this.gains[0]);
+                cosmosOsc.start();
+
+                // 2. Ziemia
+                const earthOsc = this.audioCtx.createOscillator();
+                earthOsc.type = 'sine';
+                earthOsc.frequency.setValueAtTime(220.0, this.audioCtx.currentTime);
+                earthOsc.connect(this.gains[1]);
+                earthOsc.start();
+
+                // 3. Chmura
+                const cloudOsc = this.audioCtx.createOscillator();
+                cloudOsc.type = 'triangle';
+                cloudOsc.frequency.setValueAtTime(440.0, this.audioCtx.currentTime);
+                cloudOsc.connect(this.gains[2]);
+                cloudOsc.start();
+
+                // 4. Stadion
+                const stadiumOsc = this.audioCtx.createOscillator();
+                stadiumOsc.type = 'square';
+                stadiumOsc.frequency.setValueAtTime(164.81, this.audioCtx.currentTime);
+                const stadiumFilter = this.audioCtx.createBiquadFilter();
+                stadiumFilter.type = 'lowpass';
+                stadiumFilter.frequency.setValueAtTime(350, this.audioCtx.currentTime);
+                stadiumOsc.connect(stadiumFilter);
+                stadiumFilter.connect(this.gains[3]);
+                stadiumOsc.start();
+
+                // 5. Zawodnik
+                const playHeartbeat = () => {
+                    if (!this.isPlaying) return;
+                    const osc = this.audioCtx.createOscillator();
+                    const g = this.audioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(80, this.audioCtx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(40, this.audioCtx.currentTime + 0.08);
+
+                    g.gain.setValueAtTime(0.5, this.audioCtx.currentTime);
+                    g.gain.exponentialRampToValueAtTime(0.0001, this.audioCtx.currentTime + 0.09);
+
+                    osc.connect(g);
+                    g.connect(this.gains[4]);
+                    osc.start();
+                    osc.stop(this.audioCtx.currentTime + 0.1);
+
+                    this.heartbeatTimer = setTimeout(playHeartbeat, 600);
+                };
+                playHeartbeat();
+
+                // 6. Piłka
+                const ballOsc = this.audioCtx.createOscillator();
+                ballOsc.type = 'triangle';
+                ballOsc.frequency.setValueAtTime(329.63, this.audioCtx.currentTime);
+                ballOsc.connect(this.gains[5]);
+                ballOsc.start();
+            }
+
+            start() {
+                if (this.isMuted) return;
+                this.init();
+                if (this.audioCtx.state === 'suspended') {
+                    this.audioCtx.resume();
+                }
+                this.isPlaying = true;
+                this.masterGain.gain.cancelScheduledValues(this.audioCtx.currentTime);
+                this.masterGain.gain.setValueAtTime(0.001, this.audioCtx.currentTime);
+                this.masterGain.gain.exponentialRampToValueAtTime(0.18, this.audioCtx.currentTime + 1.0);
+            }
+
+            updateCrossfade(totalU) {
+                if (!this.audioCtx || !this.isPlaying) return;
+                const normU = ((totalU % NUM_WORLDS) + NUM_WORLDS) % NUM_WORLDS;
+                const now = this.audioCtx.currentTime;
+
+                for (let i = 0; i < NUM_WORLDS; i++) {
+                    let dist = Math.abs(normU - i);
+                    if (dist > NUM_WORLDS / 2) dist = NUM_WORLDS - dist;
+                    const vol = Math.max(0.0001, Math.cos(dist * (Math.PI / 3)));
+                    this.gains[i].gain.setValueAtTime(vol * 0.4, now);
+                }
+            }
+
+            stop() {
+                if (!this.isPlaying || !this.audioCtx) return;
+                this.isPlaying = false;
+                if (this.masterGain) {
+                    this.masterGain.gain.cancelScheduledValues(this.audioCtx.currentTime);
+                    this.masterGain.gain.setValueAtTime(this.masterGain.gain.value, this.audioCtx.currentTime);
+                    this.masterGain.gain.exponentialRampToValueAtTime(0.0001, this.audioCtx.currentTime + 0.6);
+                }
+            }
+
+            toggleMute() {
+                this.isMuted = !this.isMuted;
+                if (this.isMuted) {
+                    this.stop();
+                } else if (isRunning) {
+                    this.start();
+                }
+                return !this.isMuted;
+            }
+        }
+
+        const solarAudio = new SolarZoomAudio();
+
+        function toggleAudio() {
+            const isUnmuted = solarAudio.toggleMute();
+            audioToggleBtn.innerText = isUnmuted ? '🔊 Dźwięk: WŁ' : '🔇 Dźwięk: WYŁ';
+            audioToggleBtn.style.color = isUnmuted ? '#d8b4fe' : '#94a3b8';
+        }
+
+        function animationLoop(now) {
+            if (!isRunning) return;
+
+            const delta = (now - lastFrameTime) / 1000;
+            lastFrameTime = now;
+
+            if (delta < 0.2) {
+                zoomProgress += direction * speed * delta * 0.35;
+                if (enableAutoRotate) {
+                    rotationAngle += delta * 0.15 * direction;
+                }
+                solarAudio.updateCrossfade(zoomProgress);
+            }
+
+            draw();
+
+            frameCount++;
+            if (now - lastFpsUpdate >= 500) {
+                const fps = Math.round((frameCount * 1000) / (now - lastFpsUpdate));
+                fpsDisplay.innerText = `FPS: ${fps}`;
+                frameCount = 0;
+                lastFpsUpdate = now;
+            }
+
+            animId = requestAnimationFrame(animationLoop);
+        }
+
+        function toggleAnimation() {
+            if (!isRunning) {
+                isRunning = true;
+                startBtn.innerHTML = '⏸ Pauza';
+                startBtn.style.background = 'linear-gradient(135deg, #e11d48 0%, #be123c 100%)';
+                lastFrameTime = performance.now();
+                lastFpsUpdate = performance.now();
+                frameCount = 0;
+                solarAudio.start();
+                animId = requestAnimationFrame(animationLoop);
+            } else {
+                isRunning = false;
+                if (animId) cancelAnimationFrame(animId);
+                solarAudio.stop();
+                startBtn.innerHTML = '▶ Wznów Zoom';
+                startBtn.style.background = 'linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%)';
+            }
+        }
+
+        // Kółko myszy
+        canvas.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const deltaZoom = (e.deltaY < 0 ? 1 : -1) * 0.06 * speed;
+            zoomProgress += deltaZoom;
+            solarAudio.updateCrossfade(zoomProgress);
+            if (!isRunning) draw();
+        }, { passive: false });
+
+        // Pierwsza klatka
+        draw();
+    </script>
+    <script src="nagrywanie_wideo.js"></script>
+</body>
+</html>
