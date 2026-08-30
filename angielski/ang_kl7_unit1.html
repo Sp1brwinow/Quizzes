@@ -288,13 +288,14 @@
         }
 
         .correction-tip {
-            background: rgba(220, 38, 38, 0.25);
-            border: 1px solid #ef4444;
-            color: #fca5a5;
-            padding: 6px 10px;
+            background: rgba(245, 158, 11, 0.15);
+            border: 1px solid #f59e0b;
+            color: #fef08a;
+            padding: 8px 12px;
             border-radius: 6px;
-            font-size: 0.88rem;
+            font-size: 0.92rem;
             margin-top: 6px;
+            line-height: 1.4;
         }
 
         .recording-pulse {
@@ -828,20 +829,28 @@
         // =========================================================
         // OBSŁUGA TRYBU 4: KONWERSACJA Z AI I KOREKTA BŁĘDÓW
         // =========================================================
-        const botPrompt = `You are a friendly British/American English Teacher practicing Unit 1 English conversation with a 7th-grade student.
+        const botPrompt = `You are a friendly British/American English Teacher practicing Unit 1 English conversation with a 7th-grade Polish student.
 TOPICS: Jobs and professions (architect, chef, IT worker, programmer, shop assistant, etc.), work routines (work outdoors, earn money, meet clients, send emails), and future grammar:
-- Present continuous for fixed plans (e.g. "I'm meeting my friend at 5").
-- Be going to for intentions (e.g. "I'm going to apply for a job").
-- Future simple (will) for opinions/facts (e.g. "I think I will be a doctor").
+- Present continuous for fixed plans/arrangements (e.g. "I'm meeting my friend at 5").
+- Be going to for future intentions/plans (e.g. "I'm going to apply for a job").
+- Future simple (will) for opinions/predictions/facts (e.g. "I think I will be a doctor").
 
-RULES:
-1. Converse naturally in simple English (A2-B1 level).
-2. If the user makes grammatical or vocabulary mistakes in their message, provide a gentle, clear correction in Polish/English showing the correct version.
-3. Always keep your main conversational reply in English and ask a follow-up question related to jobs, career dreams, or future plans.
-4. Output in JSON format:
+STUDENT ANSWER EVALUATION & CORRECTION RULE (CRITICAL):
+1. Carefully analyze the student's message for any grammatical, vocabulary, spelling, or word order mistakes.
+2. IF THE STUDENT'S ANSWER HAS A MISTAKE (grammar or vocabulary):
+   - You MUST begin your spoken reply with the exact phrase:
+     "I corrected your answer: [full, correctly phrased student's sentence in English]."
+   - Immediately after stating the correction, continue your conversational reply naturally (e.g. encouraging the student, commenting on their answer, and asking a follow-up question related to jobs, career dreams, or future plans).
+   Example:
+   Student: "I going to be doctor because I like help people."
+   AI: "I corrected your answer: I am going to be a doctor because I like helping people. That is a fantastic career choice! Being a doctor is very rewarding. Which hospital would you like to work in?"
+3. IF THE STUDENT'S ANSWER IS FULLY CORRECT (no mistakes):
+   - Do NOT say "I corrected your answer".
+   - Simply respond naturally and ask your next question about jobs or plans.
+4. Keep the language natural, friendly, and suitable for 7th grade (A2-B1 level).
+5. Always output a valid JSON object in this format:
 {
-  "correction": "Optional grammatical correction note if student made a mistake (otherwise null)",
-  "reply": "Your spoken conversational English reply to the student"
+  "response": "Your full response to the student (including 'I corrected your answer: ...' at the very beginning if there was a mistake, followed by your conversational reply)"
 }`;
 
         let aiBot = new WizardOrpheus(botPrompt);
@@ -849,34 +858,51 @@ RULES:
         aiBot.createUserAction({
             name: 'sendChat',
             parameters: ['StudentMessage'],
-            howBotShouldHandle: "Respond to the student, provide grammar corrections if needed, and continue the interview about jobs/future."
+            howBotShouldHandle: "Check the student's answer for grammar and vocabulary mistakes. If incorrect, start with 'I corrected your answer: [corrected sentence].' and then continue the conversation about jobs/future plans."
         });
 
-        aiBot.botAction('respond', 'Teacher responds', { reply: 'reply' }, data => {
+        aiBot.botAction('respond', 'Teacher responds', { response: 'response' }, data => {
             const chatLog = document.getElementById('conversation-log');
             const raw = data.response || '';
             
             let replyText = raw;
-            let correctionText = null;
 
             try {
                 const parsed = JSON.parse(raw);
-                if (parsed.reply) replyText = parsed.reply;
-                if (parsed.correction) correctionText = parsed.correction;
+                if (parsed.response) replyText = parsed.response;
+                else if (parsed.reply) replyText = parsed.reply;
             } catch (e) {
-                // jeśli nie JSON, użyj tekstu
+                // Not JSON or already plain text
             }
 
-            let htmlContent = `<strong>AI Teacher:</strong> ${replyText}`;
-            if (correctionText) {
-                htmlContent += `<div class="correction-tip">✏️ <strong>Korekta gramatyczna:</strong> ${correctionText}</div>`;
+            // Sprawdzamy czy w wypowiedzi znajduje się korekta "I corrected your answer: ..."
+            let htmlContent = '';
+            const correctionPrefix = 'I corrected your answer:';
+            const lowerReply = replyText.toLowerCase();
+
+            if (lowerReply.startsWith(correctionPrefix.toLowerCase())) {
+                // Wyodrębnienie zdania z korektą do pierwszej kropki/wykrzyknika/znaku zapytania
+                const firstSentenceEnd = replyText.search(/[.!?](\s+|$)/);
+                let correctionSentence = replyText;
+                let conversationPart = '';
+
+                if (firstSentenceEnd !== -1) {
+                    correctionSentence = replyText.substring(0, firstSentenceEnd + 1).trim();
+                    conversationPart = replyText.substring(firstSentenceEnd + 1).trim();
+                }
+
+                htmlContent = `<strong>AI Teacher:</strong>
+                    <div class="correction-tip" style="margin: 6px 0 10px 0;">✏️ <strong>${correctionSentence}</strong></div>
+                    <div>${conversationPart || ''}</div>`;
+            } else {
+                htmlContent = `<strong>AI Teacher:</strong> ${replyText}`;
             }
 
             chatLog.innerHTML += `<div class="chat-bubble chat-ai">${htmlContent}</div>`;
             chatLog.scrollTop = chatLog.scrollHeight;
             document.getElementById('m4-status').innerText = '';
 
-            // Wywołanie automatycznego lub ręcznego czytania z czytanie_angielski.js
+            // Lektor czyta pełną wypowiedź AI (wraz z "I corrected your answer...")
             onAIResponseReceived(replyText);
         });
 
