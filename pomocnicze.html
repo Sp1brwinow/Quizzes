@@ -391,7 +391,7 @@
         <div class="api-card">
             <h3>🔑 Konfiguracja Sztucznej Inteligencji (Google Gemini API)</h3>
 
-            <div class="api-desc">
+            <div class="api-desc" id="api-desc-box">
                 <strong style="color: #ffffff; font-size: 1.02rem;">Po co jest ten klucz?</strong><br>
                 Klucz API jest potrzebny do obsługi interaktywnych quizów i gier konwersacyjnych ze sztuczną inteligencją (np. zadanie <em>„Pożycz długopis”</em> czy <em>Unit 1 Klasa 7</em>). Pozwala na bezpłatne łączenie z modelem <strong>Google Gemini Flash</strong>.<br><br>
                 <strong>Co umożliwia ten klucz w quizach:</strong>
@@ -613,17 +613,20 @@
             const saved = localStorage.getItem('gemini_api_key');
             const statusEl = document.getElementById('gemini-key-status');
             const inputEl = document.getElementById('gemini-key-input');
+            const descEl = document.getElementById('api-desc-box');
 
             if (saved && saved.trim().length > 10) {
                 statusEl.innerText = '✅ Klucz aktywny (' + saved.substring(0, 6) + '...' + saved.substring(saved.length - 4) + ')';
                 statusEl.style.background = 'rgba(22, 101, 52, 0.9)';
                 statusEl.style.color = '#4ade80';
                 inputEl.value = saved;
+                if (descEl) descEl.style.display = 'none';
             } else {
                 statusEl.innerText = '❌ Brak zapisanego klucza';
                 statusEl.style.background = 'rgba(153, 27, 27, 0.9)';
                 statusEl.style.color = '#fca5a5';
                 inputEl.value = '';
+                if (descEl) descEl.style.display = 'block';
             }
         }
 
