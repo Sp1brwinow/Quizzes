@@ -417,6 +417,24 @@
                 <button type="button" class="api-btn api-btn-del" onclick="removeGeminiKey()">🗑️ Usuń</button>
             </div>
 
+            <!-- Wybór modelu Gemini AI (osobne limity wiadomości) -->
+            <div style="margin: 14px 0 16px 0; padding: 14px 16px; background: rgba(30, 41, 59, 0.75); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 10px;">
+                <label for="gemini-model-select" style="display: block; font-size: 0.92rem; font-weight: 600; color: #38bdf8; margin-bottom: 6px;">
+                    🤖 Wybierz model AI (Każdy model posiada swój osobny limit wiadomości):
+                </label>
+                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                    <select id="gemini-model-select" onchange="saveSelectedModel()" style="flex: 1; min-width: 250px; background: #0b1120; color: #ffffff; border: 1px solid #475569; padding: 9px 12px; border-radius: 8px; font-size: 0.95rem; cursor: pointer;">
+                        <option value="gemini-2.5-flash" selected>⚡ Gemini 2.5 Flash (Domyślny – Najnowszy, błyskawiczny)</option>
+                        <option value="gemini-2.0-flash">🚀 Gemini 2.0 Flash (Nowa generacja 2.0 – Osobny limit)</option>
+                        <option value="gemini-1.5-flash">🛡️ Gemini 1.5 Flash (Sprawdzony 1.5 Flash – Osobny limit)</option>
+                    </select>
+                    <span id="model-saved-indicator" style="font-size: 0.85rem; color: #4ade80; display: none;">✅ Zapisano</span>
+                </div>
+                <p style="font-size: 0.82rem; color: #94a3b8; margin: 7px 0 0 0; line-height: 1.4;">
+                    💡 <em>Wskazówka: Jeśli wykorzystasz darmowy limit zapytań na jednym modelu (np. 15 zapytań/min), po prostu przełącz model na inny, aby móc dalej rozmawiać bez przerw.</em>
+                </p>
+            </div>
+
             <div class="api-tutorial">
                 💡 <strong>Jak bezpłatnie uzyskać swój klucz:</strong>
                 <ol style="margin: 6px 0 0 20px;">
@@ -608,12 +626,32 @@
     </div>
 
     <script>
-        // Logika zarządzania kluczem Gemini API
+        // Logika zarządzania kluczem Gemini API i wybranym modelem
+        function saveSelectedModel() {
+            const selectEl = document.getElementById('gemini-model-select');
+            if (!selectEl) return;
+            const model = selectEl.value;
+            localStorage.setItem('gemini_selected_model', model);
+            
+            const ind = document.getElementById('model-saved-indicator');
+            if (ind) {
+                ind.style.display = 'inline';
+                setTimeout(() => { ind.style.display = 'none'; }, 2000);
+            }
+        }
+
         function updateKeyStatusDisplay() {
             const saved = localStorage.getItem('gemini_api_key');
             const statusEl = document.getElementById('gemini-key-status');
             const inputEl = document.getElementById('gemini-key-input');
             const descEl = document.getElementById('api-desc-box');
+            const selectEl = document.getElementById('gemini-model-select');
+
+            // Przywrócenie wybranego modelu z pamięci
+            if (selectEl) {
+                const savedModel = localStorage.getItem('gemini_selected_model') || 'gemini-2.5-flash';
+                selectEl.value = savedModel;
+            }
 
             if (saved && saved.trim().length > 10) {
                 statusEl.innerText = '✅ Klucz aktywny (' + saved.substring(0, 6) + '...' + saved.substring(saved.length - 4) + ')';

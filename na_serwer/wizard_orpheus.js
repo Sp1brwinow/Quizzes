@@ -33,9 +33,17 @@ class WizardOrpheus {
     return null;
   }
 
-  // Dynamiczne pobranie listy aktywnych modeli z Google AI Studio dla Twojego klucza
+  // Dynamiczne pobranie listy aktywnych modeli lub użycie wybranego przez użytkownika
   async getBestModel(key) {
     if (this.discoveredModel) return this.discoveredModel;
+
+    // 1. Sprawdzenie czy użytkownik wybrał konkretny model w pomocnicze.html
+    const userSelected = localStorage.getItem('gemini_selected_model');
+    if (userSelected && userSelected !== 'auto') {
+      this.discoveredModel = userSelected;
+      console.log(`Używam modelu wybranego w ustawieniach: ${this.discoveredModel}`);
+      return this.discoveredModel;
+    }
 
     try {
       const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${key}`);
@@ -49,15 +57,13 @@ class WizardOrpheus {
 
         // Szukamy najlepszego modelu w kolejności preferencji
         const preferred = [
-          'gemini-3.6-flash',
-          'gemini-3.0-flash',
           'gemini-2.5-flash',
-          'gemini-1.5-flash-latest',
+          'gemini-2.0-flash',
           'gemini-1.5-flash',
+          'gemini-1.5-flash-latest',
           'gemini-1.5-flash-001',
           'gemini-1.5-flash-002',
           'gemini-2.0-flash-exp',
-          'gemini-2.0-flash',
           'gemini-2.5-pro',
           'gemini-1.5-pro-latest',
           'gemini-1.5-pro',
@@ -67,21 +73,20 @@ class WizardOrpheus {
         for (let pref of preferred) {
           if (available.includes(pref)) {
             this.discoveredModel = pref;
-            console.log(`Wybrano automatycznie najlepszy model: ${this.discoveredModel}`);
+            console.log(`Wybrano automatycznie model: ${this.discoveredModel}`);
             return this.discoveredModel;
           }
         }
 
-        // Jeśli żaden z listy, bierzemy pierwszy model z 'flash' lub pierwszy dostępny
         const flashModel = available.find(m => m.includes('flash'));
-        this.discoveredModel = flashModel || available[0] || 'gemini-3.6-flash';
+        this.discoveredModel = flashModel || available[0] || 'gemini-2.5-flash';
         return this.discoveredModel;
       }
     } catch (e) {
       console.warn('Nie udało się pobrać listy modeli, używam domyślnego:', e);
     }
 
-    this.discoveredModel = 'gemini-3.6-flash';
+    this.discoveredModel = 'gemini-2.5-flash';
     return this.discoveredModel;
   }
 
