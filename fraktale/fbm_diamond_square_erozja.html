@@ -4,13 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Proceduralne Tereny Fraktalne (fBm, Diamond-Square) i Erozja Hydrauliczna 3D</title>
+    <title>Fotorealistyczne Tereny Fraktalne (fBm, Diamond-Square) i Erozja Hydrauliczna 3D</title>
     <link rel="stylesheet" href="../style.css" />
     <style>
         :root {
             --bg-dark: #07152b;
-            --card-bg: rgba(14, 30, 56, 0.85);
-            --card-border: rgba(56, 189, 248, 0.28);
+            --card-bg: rgba(14, 30, 56, 0.88);
+            --card-border: rgba(56, 189, 248, 0.32);
             --primary: #38bdf8;
             --primary-hover: #0284c7;
             --accent-gold: #fbbf24;
@@ -27,7 +27,7 @@
         }
 
         body {
-            background: linear-gradient(180deg, #07152b 0%, #0d2852 45%, #184e77 100%);
+            background: linear-gradient(180deg, #051024 0%, #082142 45%, #0d3461 100%);
             color: #f8fafc;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             min-height: 100vh;
@@ -38,7 +38,7 @@
         }
 
         .main-container {
-            max-width: 1280px;
+            max-width: 1320px;
             width: 100%;
             display: flex;
             flex-direction: column;
@@ -83,19 +83,19 @@
 
         /* Nagłówek i opis edukacyjny */
         .header-card {
-            background: linear-gradient(135deg, rgba(15, 23, 42, 0.92) 0%, rgba(30, 41, 59, 0.85) 100%);
-            border: 1px solid rgba(56, 189, 248, 0.35);
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.94) 0%, rgba(30, 41, 59, 0.88) 100%);
+            border: 1px solid rgba(56, 189, 248, 0.4);
             border-radius: 18px;
-            padding: 22px 26px;
+            padding: 24px 28px;
             box-shadow: 0 10px 35px rgba(0, 0, 0, 0.6);
             backdrop-filter: blur(12px);
             line-height: 1.6;
         }
 
         .header-card h1 {
-            font-size: 1.8rem;
+            font-size: 1.85rem;
             font-weight: 800;
-            background: linear-gradient(135deg, #ffffff 0%, #38bdf8 55%, #fbbf24 100%);
+            background: linear-gradient(135deg, #ffffff 0%, #38bdf8 50%, #fbbf24 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 10px;
@@ -111,10 +111,10 @@
             color: #38bdf8;
         }
 
-        /* Układ główny: Canvas + Panel sterowania */
+        /* Układ główny */
         .app-layout {
             display: grid;
-            grid-template-columns: 1fr 380px;
+            grid-template-columns: 1fr 400px;
             gap: 20px;
             align-items: start;
         }
@@ -144,10 +144,10 @@
             height: auto;
             aspect-ratio: 4 / 3;
             max-height: 600px;
-            background: #030712;
+            background: #020617;
             border-radius: 12px;
-            border: 2px solid rgba(56, 189, 248, 0.4);
-            box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.8);
+            border: 2px solid rgba(56, 189, 248, 0.45);
+            box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.95), 0 8px 30px rgba(0, 0, 0, 0.7);
             cursor: grab;
             display: block;
         }
@@ -191,10 +191,10 @@
         }
 
         .view-btn.active {
-            background: #0284c7;
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
             border-color: #38bdf8;
             color: #ffffff;
-            box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
         }
 
         .stats-bar {
@@ -210,7 +210,7 @@
             color: #38bdf8;
         }
 
-        /* Panel kontrolny z suwakami */
+        /* Panel kontrolny */
         .controls-card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
@@ -219,8 +219,8 @@
             box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
             display: flex;
             flex-direction: column;
-            gap: 18px;
-            max-height: 850px;
+            gap: 16px;
+            max-height: 860px;
             overflow-y: auto;
         }
 
@@ -234,7 +234,7 @@
 
         .panel-section {
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            padding-bottom: 14px;
+            padding-bottom: 12px;
         }
 
         .panel-section:last-child {
@@ -243,20 +243,20 @@
         }
 
         .section-title {
-            font-size: 1.05rem;
+            font-size: 1rem;
             font-weight: 700;
             color: #38bdf8;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
 
         .algo-tabs {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 8px;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
 
         .algo-tab {
@@ -284,20 +284,20 @@
             box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
         }
 
-        .terrain-type-select {
+        .select-field {
             width: 100%;
             background: #0f172a;
             border: 1px solid #475569;
             color: #f8fafc;
             padding: 8px 12px;
             border-radius: 8px;
-            font-size: 0.9rem;
+            font-size: 0.88rem;
             outline: none;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             cursor: pointer;
         }
 
-        .terrain-type-select:focus {
+        .select-field:focus {
             border-color: #38bdf8;
         }
 
@@ -377,7 +377,7 @@
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 8px;
-            margin-top: 8px;
+            margin-top: 6px;
         }
 
         .btn-secondary {
@@ -462,7 +462,7 @@
                 Klasycznym i niezwykle wydajnym sposobem na proceduralną generację <strong>ułamkowego ruchu Browna (fBm)</strong> w 2D/3D jest algorytm <strong>Diamond-Square</strong> (oparty na rekurencyjnym podziale płaszczyzny) lub fBm oparte na <strong>wielooktawowym szumie gradientowym</strong>.
             </p>
             <p>
-                Poniższy interaktywny symulator implementuje oba te podejścia w czystym JavaScript/Canvas. Możesz manipulować parametrami ułamkowego wymiaru fraktalnego (<strong>Hurst exponent / Roughness</strong>, <strong>Oktawy</strong>, <strong>Lacunarity</strong>) i obserwować, jak z prostej matematyki wyłaniają się łańcuchy górskie, kratery i płaskowyże w rzucie 3D. Wbudowana symulacja <strong>erozji hydraulicznej</strong> modeluje spływające krople wody, żłobiąc kaniony i odkładając osady w dolinach!
+                Poniższy interaktywny symulator implementuje oba te podejścia w fotorealistycznym rzucie 3D. Wykorzystuje <strong>cieniowanie oparte na nachyleniu zbocza (Slope-based PBR)</strong>, <strong>okluzję otoczenia (AO)</strong>, <strong>mgłę atmosferyczną</strong>, lśniącą taflę wody oraz model fizyczny <strong>erozji hydraulicznej</strong>, żłobiący naturalne kaniony i doliny rzeczne.
             </p>
         </header>
 
@@ -474,10 +474,10 @@
 
                 <div class="canvas-toolbar">
                     <div class="view-btn-group">
-                        <button type="button" class="view-btn active" onclick="setViewMode('3d-color')">🌄 Pełne 3D (Kolor)</button>
-                        <button type="button" class="view-btn" onclick="setViewMode('3d-wire')">📐 Siatka 3D (Wireframe)</button>
-                        <button type="button" class="view-btn" onclick="setViewMode('2d-height')">🗺️ Mapa Wysokości 2D</button>
-                        <button type="button" class="view-btn" onclick="setViewMode('2d-water')">💧 Ścieżki Wody i Erozji</button>
+                        <button type="button" class="view-btn active" onclick="setViewMode('3d-color')">🌄 Fotorealistyczne 3D</button>
+                        <button type="button" class="view-btn" onclick="setViewMode('3d-wire')">📐 Siatka 3D</button>
+                        <button type="button" class="view-btn" onclick="setViewMode('2d-height')">🗺️ Heightmap 2D</button>
+                        <button type="button" class="view-btn" onclick="setViewMode('2d-water')">💧 Koryta Rzeczne</button>
                     </div>
 
                     <div class="stats-bar">
@@ -488,22 +488,42 @@
                 </div>
 
                 <div style="font-size: 0.82rem; color: #94a3b8; text-align: center;">
-                    🖱️ <strong>Sterowanie 3D:</strong> Przeciągaj lewym przyciskiem myszy, aby obracać widok 360° | Użyj kółka myszy, aby przybliżać/oddalać (Zoom).
+                    🖱️ <strong>Sterowanie 3D:</strong> Przeciągaj lewym przyciskiem myszy (obrót 360°) | Kółko myszy = Zoom | Pora dnia i oświetlenie w panelu bocznym.
                 </div>
             </div>
 
             <!-- Panel Sterowania Parametrami -->
             <div class="controls-card">
-                <!-- 1. Wybór Algorytmu -->
+                <!-- 1. Środowisko i Biomy -->
                 <div class="panel-section">
-                    <div class="section-title">🔮 1. Algorytm Generacji fBm</div>
+                    <div class="section-title">🌲 1. Biom i Pora Dnia</div>
+                    <label for="biomeSelect" style="font-size: 0.84rem; color: #cbd5e1;">Biom krajobrazu:</label>
+                    <select id="biomeSelect" class="select-field" onchange="updateBiome(this.value)">
+                        <option value="alpine">🏔️ Alpejskie Szczyty & Lodowce (Zieleń, Granit, Śnieg)</option>
+                        <option value="canyon">🏜️ Kanion Kolorado & Czerwone Skały (Red Rock)</option>
+                        <option value="fjord">🌲 Skandynawskie Fiordy & Ciemne Lasy Iglaste</option>
+                        <option value="volcano">🌋 Wyspa Wulkaniczna (Czarny Bazalt & Popiół)</option>
+                    </select>
+
+                    <div class="ctrl-row">
+                        <div class="ctrl-label-bar">
+                            <span>Pora Dnia / Kąt Słońca:</span>
+                            <span id="val-time" class="ctrl-val">Popołudnie</span>
+                        </div>
+                        <input type="range" id="param-time" min="0" max="100" value="40" oninput="updateSunTime(this.value)">
+                    </div>
+                </div>
+
+                <!-- 2. Wybór Algorytmu -->
+                <div class="panel-section">
+                    <div class="section-title">🔮 2. Algorytm Generacji fBm</div>
                     <div class="algo-tabs">
                         <button type="button" class="algo-tab active" id="tab-fbm" onclick="setAlgorithm('fbm')">Szum Gradientowy fBm</button>
                         <button type="button" class="algo-tab" id="tab-ds" onclick="setAlgorithm('ds')">Diamond-Square</button>
                     </div>
 
-                    <label for="terrainType" style="font-size: 0.85rem; color: #cbd5e1; display: block; margin-bottom: 4px;">Ukształtowanie i morfologia:</label>
-                    <select id="terrainType" class="terrain-type-select" onchange="onParamChange()">
+                    <label for="terrainType" style="font-size: 0.84rem; color: #cbd5e1;">Morfologia rzeźby terenu:</label>
+                    <select id="terrainType" class="select-field" onchange="onParamChange()">
                         <option value="standard">Standardowe Góry i Doliny (fBm)</option>
                         <option value="ridged">Ostre Grzbiety i Turnie (Ridged Multifractal)</option>
                         <option value="terraces">Płaskowyże i Tarasy Skalne (Terracing)</option>
@@ -511,13 +531,13 @@
                     </select>
 
                     <button type="button" class="btn-action-main" onclick="regenerateTerrain()">
-                        🎲 Wygeneruj Nowy Teren (Seed)
+                        🎲 Wygeneruj Nowy Świat (Seed)
                     </button>
                 </div>
 
-                <!-- 2. Parametry Fraktalne -->
+                <!-- 3. Parametry Fraktalne -->
                 <div class="panel-section">
-                    <div class="section-title">📐 2. Parametry Wymiaru Fraktalnego</div>
+                    <div class="section-title">📐 3. Parametry Wymiaru Fraktalnego</div>
 
                     <div class="ctrl-row">
                         <div class="ctrl-label-bar">
@@ -553,31 +573,23 @@
 
                     <div class="ctrl-row">
                         <div class="ctrl-label-bar">
-                            <span>Poziom Wody (Morza/Jezioro):</span>
+                            <span>Poziom Wody (Morze/Jezioro):</span>
                             <span id="val-water" class="ctrl-val">0.25</span>
                         </div>
                         <input type="range" id="param-water" min="0.00" max="0.60" step="0.05" value="0.25" oninput="updateWaterLevel(this.value)">
                     </div>
                 </div>
 
-                <!-- 3. Symulator Erozji Hydraulicznej -->
+                <!-- 4. Erozja Hydrauliczna -->
                 <div class="panel-section">
-                    <div class="section-title">💧 3. Erozja Hydrauliczna (Krople)</div>
+                    <div class="section-title">💧 4. Erozja Hydrauliczna (Krople)</div>
 
                     <div class="ctrl-row">
                         <div class="ctrl-label-bar">
-                            <span>Siła erozji (Erodibility):</span>
-                            <span id="val-erosion-strength" class="ctrl-val">0.05</span>
+                            <span>Siła erozji skały (Erodibility):</span>
+                            <span id="val-erosion-strength" class="ctrl-val">0.06</span>
                         </div>
-                        <input type="range" id="param-erosion-strength" min="0.01" max="0.15" step="0.01" value="0.05" oninput="updateErosionStrength(this.value)">
-                    </div>
-
-                    <div class="ctrl-row">
-                        <div class="ctrl-label-bar">
-                            <span>Pojemność osadu (Sediment Capacity):</span>
-                            <span id="val-sediment" class="ctrl-val">4.0</span>
-                        </div>
-                        <input type="range" id="param-sediment" min="1.0" max="10.0" step="0.5" value="4.0" oninput="updateSedimentCapacity(this.value)">
+                        <input type="range" id="param-erosion-strength" min="0.01" max="0.15" step="0.01" value="0.06" oninput="updateErosionStrength(this.value)">
                     </div>
 
                     <button type="button" class="btn-action-main btn-erosion" onclick="runErosionBatch(25000)">
@@ -594,22 +606,22 @@
                     </div>
                 </div>
 
-                <!-- 4. Eksport i Widok -->
+                <!-- 5. Eksport -->
                 <div class="panel-section">
-                    <div class="section-title">💾 4. Narzędzia i Eksport</div>
+                    <div class="section-title">💾 5. Eksport</div>
                     <div class="btn-grid-2">
                         <button type="button" class="btn-secondary" onclick="exportHeightmapPNG()">
                             🗺️ Zapisz Heightmap PNG
                         </button>
                         <button type="button" class="btn-secondary" onclick="export3DScreenshot()">
-                            📸 Zrzut Widoku 3D
+                            📸 Zrzut Renderu 3D
                         </button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Sekcja z objaśnieniem matematycznym i algorytmicznym -->
+        <!-- Sekcja z objaśnieniem matematycznym i fizycznym -->
         <div class="math-explainer">
             <div class="math-block">
                 <h3>💎 Algorytm Diamond-Square</h3>
@@ -626,17 +638,13 @@
             </div>
 
             <div class="math-block">
-                <h3>🌊 Ułamkowy Ruch Browna (fBm)</h3>
+                <h3>🏔️ Teksturowanie Slope-Based & PBR</h3>
                 <p>
-                    Superpozycja wielu fal szumu o rosnącej częstotliwości (oktawach) i malejącej amplitudzie (Persistence).
+                    Kąt nachylenia powierzchni ($\text{slope} = 1 - N_y$) decyduje o rodzaju pokrycia: płaskie tereny to roślinność i osad, strome ściany ($> 40^\circ$) to naga lita skała, z której śnieg odpada pod wpływem grawitacji.
                 </p>
                 <div class="math-formula">
-                    \text{fBm}(\mathbf{x}) = \sum_{i=0}^{N-1} \text{gain}^i \cdot \text{Noise}(\mathbf{x} \cdot \text{lacunarity}^i)<br>
-                    \text{Wymiar fraktalny: } D = 3 - H
+                    \mathbf{N} = \frac{\nabla h \times \dots}{|\dots|}, \quad \text{Kolor} = f(\text{Wysokość}, \text{Nachylenie}, \text{Erozja})
                 </div>
-                <p>
-                    Wielość oktaw pozwala uzyskać nieskończony poziom detali – od potężnych masywów górskich po drobne żleby i kamienie.
-                </p>
             </div>
 
             <div class="math-block">
@@ -650,7 +658,7 @@
                     \text{Depozycja: } s > C \implies \Delta s = (s - C) \cdot K_d
                 </div>
                 <p>
-                    Woda pobiera skałę ze stromych zboczy i odkłada osad w dolinach, naturalnie modelując koryta rzek, kaniony i stożki napływowe.
+                    Woda żłobi kaniony na stromych zboczach i odkłada piasek w dolinach, formując delty rzeczne u ujścia do jeziora.
                 </p>
             </div>
         </div>
@@ -660,13 +668,14 @@
         // =========================================================
         // SILNIK MATEMATYCZNY FBM I SZUMU GRADIENTOWEGO
         // =========================================================
-        const GRID_SIZE = 129; // 2^7 + 1 dla idealnego Diamond-Square i szybkiego 60 FPS
+        const GRID_SIZE = 129; // 2^7 + 1
         let heightMap = new Float32Array(GRID_SIZE * GRID_SIZE);
         let originalHeightMap = new Float32Array(GRID_SIZE * GRID_SIZE);
         let waterFlowMap = new Float32Array(GRID_SIZE * GRID_SIZE);
 
         let currentAlgorithm = 'fbm';
         let currentTerrainType = 'standard';
+        let currentBiome = 'alpine';
         let viewMode = '3d-color';
 
         let paramHurst = 0.70;
@@ -674,9 +683,8 @@
         let paramLacunarity = 2.0;
         let paramHeightScale = 1.2;
         let paramWaterLevel = 0.25;
-
-        let paramErosionStrength = 0.05;
-        let paramSedimentCapacity = 4.0;
+        let paramErosionStrength = 0.06;
+        let sunAngleTime = 40.0; // 0..100
 
         let isErosionRunning = false;
         let totalDropletsCount = 0;
@@ -696,7 +704,7 @@
             for (let i = 0; i < 512; i++) perm[i] = p[i & 255];
         }
 
-        function fade(t) { return t * t * t * (t * (t * 6 - 15) + 10); }
+        function fade(t) { return t * t * t * (t * (t * 6.0 - 15.0) + 10.0); }
         function lerp(t, a, b) { return a + t * (b - a); }
         function grad(hash, x, y) {
             const h = hash & 3;
@@ -719,8 +727,8 @@
             const bb = perm[perm[X + 1] + Y + 1];
 
             return lerp(v,
-                lerp(u, grad(aa, xf, yf), grad(ba, xf - 1, yf)),
-                lerp(u, grad(ab, xf, yf - 1), grad(bb, xf - 1, yf - 1))
+                lerp(u, grad(aa, xf, yf), grad(ba, xf - 1.0, yf)),
+                lerp(u, grad(ab, xf, yf - 1.0), grad(bb, xf - 1.0, yf - 1.0))
             );
         }
 
@@ -748,7 +756,7 @@
             let val = total / maxVal;
 
             if (currentTerrainType === 'terraces') {
-                val = (val + 1) * 0.5;
+                val = (val + 1.0) * 0.5;
                 const steps = 6.0;
                 val = Math.floor(val * steps) / steps + Math.pow((val * steps) % 1.0, 3.0) / steps;
                 return (val * 2.0) - 1.0;
@@ -769,7 +777,6 @@
             const set = (x, y, v) => { map[y * size + x] = v; };
             const get = (x, y) => map[((y + size - 1) % (size - 1)) * size + ((x + size - 1) % (size - 1))];
 
-            // Narożniki
             set(0, 0, (Math.random() - 0.5));
             set(size - 1, 0, (Math.random() - 0.5));
             set(0, size - 1, (Math.random() - 0.5));
@@ -782,7 +789,6 @@
             while (step > 1) {
                 const half = Math.floor(step / 2);
 
-                // Krok Square
                 for (let y = 0; y < size - 1; y += step) {
                     for (let x = 0; x < size - 1; x += step) {
                         const a = get(x, y);
@@ -794,7 +800,6 @@
                     }
                 }
 
-                // Krok Diamond
                 for (let y = 0; y < size; y += half) {
                     for (let x = (y + half) % step; x < size; x += step) {
                         const a = get(x, y - half);
@@ -810,7 +815,6 @@
                 roughness *= decay;
             }
 
-            // Normalizacja
             let minH = Infinity, maxH = -Infinity;
             for (let i = 0; i < map.length; i++) {
                 if (map[i] < minH) minH = map[i];
@@ -855,17 +859,17 @@
         }
 
         // =========================================================
-        // SYMULATOR EROZJI HYDRAULICZNEJ (CZĄSTECZKI KROPEL)
+        // SYMULATOR EROZJI HYDRAULICZNEJ
         // =========================================================
         function simulateDroplets(numDroplets) {
             const mapSize = GRID_SIZE;
             const inertia = 0.05;
             const minSlope = 0.01;
-            const capacityFactor = paramSedimentCapacity;
+            const capacityFactor = 4.0;
             const depositionRate = 0.3;
             const erosionRate = paramErosionStrength;
             const evaporationRate = 0.02;
-            const maxLifetime = 40;
+            const maxLifetime = 35;
 
             for (let i = 0; i < numDroplets; i++) {
                 let posX = Math.random() * (mapSize - 2) + 1;
@@ -888,19 +892,16 @@
                     const idx01 = idx00 + mapSize;
                     const idx11 = idx01 + 1;
 
-                    // Interpolacja wysokości
                     const h00 = heightMap[idx00];
                     const h10 = heightMap[idx10];
                     const h01 = heightMap[idx01];
                     const h11 = heightMap[idx11];
 
-                    // Gradient nachylenia
-                    const gx = (h10 - h00) * (1 - cellOffsetY) + (h11 - h01) * cellOffsetY;
-                    const gy = (h01 - h00) * (1 - cellOffsetX) + (h11 - h10) * cellOffsetX;
+                    const gx = (h10 - h00) * (1.0 - cellOffsetY) + (h11 - h01) * cellOffsetY;
+                    const gy = (h01 - h00) * (1.0 - cellOffsetX) + (h11 - h10) * cellOffsetX;
 
-                    // Obliczenie kierunku i prędkości
-                    dirX = (dirX * inertia - gx * (1 - inertia));
-                    dirY = (dirY * inertia - gy * (1 - inertia));
+                    dirX = (dirX * inertia - gx * (1.0 - inertia));
+                    dirY = (dirY * inertia - gy * (1.0 - inertia));
                     const len = Math.hypot(dirX, dirY);
                     if (len === 0) break;
                     dirX /= len;
@@ -916,37 +917,34 @@
                     const nextIdx00 = nextNodeY * mapSize + nextNodeX;
                     const nextHeight = heightMap[nextIdx00];
 
-                    const currentHeight = (h00 * (1 - cellOffsetX) + h10 * cellOffsetX) * (1 - cellOffsetY) +
-                                         (h01 * (1 - cellOffsetX) + h11 * cellOffsetX) * cellOffsetY;
+                    const currentHeight = (h00 * (1.0 - cellOffsetX) + h10 * cellOffsetX) * (1.0 - cellOffsetY) +
+                                         (h01 * (1.0 - cellOffsetX) + h11 * cellOffsetX) * cellOffsetY;
                     const deltaH = nextHeight - currentHeight;
 
-                    // Pojemność transportu osadu
                     const sedimentCapacity = Math.max(-deltaH, minSlope) * speed * water * capacityFactor;
 
                     if (sediment > sedimentCapacity || deltaH > 0) {
-                        // Depozycja (odkładanie osadu)
                         const amountToDeposit = (deltaH > 0) ? Math.min(deltaH, sediment) : (sediment - sedimentCapacity) * depositionRate;
                         sediment -= amountToDeposit;
 
-                        heightMap[idx00] += amountToDeposit * (1 - cellOffsetX) * (1 - cellOffsetY);
-                        heightMap[idx10] += amountToDeposit * cellOffsetX * (1 - cellOffsetY);
-                        heightMap[idx01] += amountToDeposit * (1 - cellOffsetX) * cellOffsetY;
+                        heightMap[idx00] += amountToDeposit * (1.0 - cellOffsetX) * (1.0 - cellOffsetY);
+                        heightMap[idx10] += amountToDeposit * cellOffsetX * (1.0 - cellOffsetY);
+                        heightMap[idx01] += amountToDeposit * (1.0 - cellOffsetX) * cellOffsetY;
                         heightMap[idx11] += amountToDeposit * cellOffsetX * cellOffsetY;
                     } else {
-                        // Erozja (żłobienie skały)
                         const amountToErode = Math.min((sedimentCapacity - sediment) * erosionRate, -deltaH);
                         sediment += amountToErode;
 
-                        heightMap[idx00] -= amountToErode * (1 - cellOffsetX) * (1 - cellOffsetY);
-                        heightMap[idx10] -= amountToErode * cellOffsetX * (1 - cellOffsetY);
-                        heightMap[idx01] -= amountToErode * (1 - cellOffsetX) * cellOffsetY;
+                        heightMap[idx00] -= amountToErode * (1.0 - cellOffsetX) * (1.0 - cellOffsetY);
+                        heightMap[idx10] -= amountToErode * cellOffsetX * (1.0 - cellOffsetY);
+                        heightMap[idx01] -= amountToErode * (1.0 - cellOffsetX) * cellOffsetY;
                         heightMap[idx11] -= amountToErode * cellOffsetX * cellOffsetY;
 
                         waterFlowMap[idx00] += amountToErode * 4.0;
                     }
 
-                    speed = Math.sqrt(Math.max(0, speed * speed + deltaH * 4.0));
-                    water *= (1 - evaporationRate);
+                    speed = Math.sqrt(Math.max(0.0, speed * speed + deltaH * 4.0));
+                    water *= (1.0 - evaporationRate);
                     posX = nextPosX;
                     posY = nextPosY;
                 }
@@ -976,7 +974,7 @@
 
         function loopErosion() {
             if (!isErosionRunning) return;
-            simulateDroplets(1500);
+            simulateDroplets(1800);
             requestRender();
             requestAnimationFrame(loopErosion);
         }
@@ -990,13 +988,13 @@
         }
 
         // =========================================================
-        // INTERAKTYWNY RENDERER 3D & 2D W CANVAS
+        // FOTOREALISTYCZNY RENDERER 3D (SLOPE-BASED PBR & FOG)
         // =========================================================
         const canvas = document.getElementById('renderCanvas');
         const ctx = canvas.getContext('2d');
 
-        let rotX = 0.55; // Kąt pionowy (pitch)
-        let rotY = -0.78; // Kąt poziomy (yaw)
+        let rotX = 0.58;
+        let rotY = -0.75;
         let zoom = 1.0;
         let isDragging = false;
         let lastMouseX = 0, lastMouseY = 0;
@@ -1018,7 +1016,7 @@
 
             rotY += dx * 0.008;
             rotX += dy * 0.008;
-            rotX = Math.max(0.1, Math.min(1.45, rotX)); // Ograniczenie kąta patrzenia
+            rotX = Math.max(0.12, Math.min(1.42, rotX));
             requestRender();
         });
 
@@ -1029,48 +1027,118 @@
             requestRender();
         }, { passive: false });
 
-        function getTerrainColor(h, waterLevel, erosionVal, lightIntensity) {
+        // Palety biomów i cieniowanie PBR
+        function getRealisticTerrainColor(h, waterLevel, slope, erosionVal, lightIntensity, ambientOcc, fogFactor) {
             let r, g, b;
 
             if (h < waterLevel) {
-                // Woda / Jezioro
-                const depth = Math.min(1.0, (waterLevel - h) * 4.0);
-                r = Math.floor(10 + depth * 5);
-                g = Math.floor(70 + (1 - depth) * 80);
-                b = Math.floor(160 + (1 - depth) * 90);
-                return `rgb(${r}, ${g}, ${b})`;
-            }
+                // Woda jeziora / morza
+                const depth = Math.min(1.0, (waterLevel - h) * 4.5);
+                if (currentBiome === 'alpine' || currentBiome === 'fjord') {
+                    r = Math.floor(10.0 + (1.0 - depth) * 20.0);
+                    g = Math.floor(65.0 + (1.0 - depth) * 75.0);
+                    b = Math.floor(140.0 + (1.0 - depth) * 90.0);
+                } else if (currentBiome === 'canyon') {
+                    r = Math.floor(25.0 + (1.0 - depth) * 35.0);
+                    g = Math.floor(95.0 + (1.0 - depth) * 55.0);
+                    b = Math.floor(115.0 + (1.0 - depth) * 60.0);
+                } else {
+                    // Wulkaniczny
+                    r = Math.floor(10.0 + depth * 5.0);
+                    g = Math.floor(40.0 + (1.0 - depth) * 45.0);
+                    b = Math.floor(85.0 + (1.0 - depth) * 80.0);
+                }
 
-            const relH = (h - waterLevel) / (1.8 - waterLevel);
-
-            if (relH < 0.05) {
-                // Plaża / piasek
-                r = 210; g = 190; b = 130;
-            } else if (relH < 0.35) {
-                // Niziny / zieleń łąk
-                r = 45; g = 140; b = 45;
-            } else if (relH < 0.65) {
-                // Lasy / ciemna zieleń i skały
-                r = 75; g = 100; b = 55;
-            } else if (relH < 0.85) {
-                // Szare turnie skalne
-                r = 120; g = 120; b = 125;
+                // Słoneczny rozbłysk na tafli wody (specular)
+                const waterSpec = Math.pow(Math.max(0.0, lightIntensity - 0.7) * 3.3, 4.0) * 120.0;
+                r = Math.min(255, r + waterSpec);
+                g = Math.min(255, g + waterSpec);
+                b = Math.min(255, b + waterSpec);
             } else {
-                // Ośnieżone szczyty
-                r = 240; g = 245; b = 255;
+                const relH = (h - waterLevel) / (1.8 - waterLevel);
+
+                if (currentBiome === 'alpine') {
+                    if (relH < 0.04) {
+                        // Plaża / brzeg jeziora
+                        r = 195; g = 180; b = 135;
+                    } else if (slope > 0.45) {
+                        // Strome granity (ściany skalne)
+                        r = 95; g = 98; b = 105;
+                    } else if (relH < 0.35) {
+                        // Soczysta łąka nizinna
+                        r = 48; g = 135; b = 45;
+                    } else if (relH < 0.65) {
+                        // Ciemny las iglasty
+                        r = 35; g = 85; b = 40;
+                    } else if (relH < 0.82) {
+                        // Piargi i skały alpejskie
+                        r = 125; g = 125; b = 130;
+                    } else {
+                        // Śnieg na łagodnych grzbietach
+                        if (slope < 0.5) {
+                            r = 240; g = 245; b = 255;
+                        } else {
+                            r = 105; g = 108; b = 115; // Odsłonięta czarna turnia
+                        }
+                    }
+                } else if (currentBiome === 'canyon') {
+                    // Czerwony piaskowiec Kolorado
+                    if (relH < 0.04) {
+                        r = 180; g = 140; b = 95;
+                    } else if (slope > 0.35) {
+                        // Pionowe warstwy piaskowca
+                        r = 185; g = 75; b = 48;
+                    } else if (relH < 0.45) {
+                        r = 195; g = 110; b = 65;
+                    } else if (relH < 0.75) {
+                        r = 165; g = 70; b = 45;
+                    } else {
+                        r = 210; g = 145; b = 95;
+                    }
+                } else if (currentBiome === 'fjord') {
+                    if (relH < 0.04) {
+                        r = 140; g = 135; b = 120;
+                    } else if (slope > 0.4) {
+                        r = 75; g = 80; b = 85;
+                    } else if (relH < 0.55) {
+                        r = 25; g = 70; b = 35; // Gęsta sosna skandynawska
+                    } else if (relH < 0.78) {
+                        r = 90; g = 95; b = 100;
+                    } else {
+                        r = 235; g = 240; b = 250;
+                    }
+                } else {
+                    // Wulkaniczny bazalt
+                    if (relH < 0.04) {
+                        r = 55; g = 50; b = 48;
+                    } else if (slope > 0.4) {
+                        r = 40; g = 40; b = 42;
+                    } else if (relH < 0.45) {
+                        r = 65; g = 60; b = 52;
+                    } else {
+                        r = 85; g = 75; b = 70;
+                    }
+                }
+
+                // Mokre ślady cieków wodnych i erozji
+                if (erosionVal > 0.01) {
+                    r = Math.floor(r * 0.45);
+                    g = Math.floor(g * 0.55 + 25);
+                    b = Math.floor(b * 0.65 + 60);
+                }
+
+                // Oświetlenie Lamberta + Okluzja otoczenia (Ambient Occlusion)
+                const totalLight = Math.max(0.15, lightIntensity * ambientOcc);
+                r = Math.floor(Math.min(255, r * totalLight));
+                g = Math.floor(Math.min(255, g * totalLight));
+                b = Math.floor(Math.min(255, b * totalLight));
             }
 
-            // Wzbogacenie o ślady wody / erozji
-            if (erosionVal > 0.01) {
-                r = Math.floor(r * 0.6);
-                g = Math.floor(g * 0.7 + 40);
-                b = Math.floor(b * 0.7 + 80);
-            }
-
-            // Oświetlenie Lamberta
-            r = Math.floor(Math.min(255, r * lightIntensity));
-            g = Math.floor(Math.min(255, g * lightIntensity));
-            b = Math.floor(Math.min(255, b * lightIntensity));
+            // Perspektywa powietrzna / Mgła atmosferyczna (Aerial Haze)
+            const fogR = 120, fogG = 160, fogB = 210;
+            r = Math.floor(r * (1.0 - fogFactor) + fogR * fogFactor);
+            g = Math.floor(g * (1.0 - fogFactor) + fogG * fogFactor);
+            b = Math.floor(b * (1.0 - fogFactor) + fogB * fogFactor);
 
             return `rgb(${r}, ${g}, ${b})`;
         }
@@ -1094,19 +1162,46 @@
                 return;
             }
 
-            // Render 3D (Rzut perspektywiczno-izometryczny)
+            // Tło nieba i atmosfery (Sky Gradient)
+            const skyGrad = ctx.createLinearGradient(0, 0, 0, h);
+            if (sunAngleTime < 25) {
+                // Noc / Świt
+                skyGrad.addColorStop(0, '#040b17');
+                skyGrad.addColorStop(0.7, '#0b1d38');
+                skyGrad.addColorStop(1, '#1b2f4f');
+            } else if (sunAngleTime < 60) {
+                // Popołudnie / Słoneczny dzień
+                skyGrad.addColorStop(0, '#082142');
+                skyGrad.addColorStop(0.6, '#154173');
+                skyGrad.addColorStop(1, '#2f659d');
+            } else {
+                // Złoty zachód słońca
+                skyGrad.addColorStop(0, '#1c1033');
+                skyGrad.addColorStop(0.5, '#5c1e3d');
+                skyGrad.addColorStop(0.85, '#b84a2d');
+                skyGrad.addColorStop(1, '#f59e0b');
+            }
+            ctx.fillStyle = skyGrad;
+            ctx.fillRect(0, 0, w, h);
+
+            // Render 3D Rzut Perspektywiczny
             const cx = w * 0.5;
-            const cy = h * 0.55;
-            const scale = (w * 0.42) * zoom;
+            const cy = h * 0.58;
+            const scale = (w * 0.44) * zoom;
             const N = GRID_SIZE;
 
             const cosY = Math.cos(rotY), sinY = Math.sin(rotY);
             const cosX = Math.cos(rotX), sinX = Math.sin(rotX);
 
-            // Wektor słońca
-            const sunX = 0.577, sunY = 0.577, sunZ = 0.577;
+            // Dynamiczny wektor słońca na podstawie pory dnia
+            const sunAngle = (sunAngleTime / 100.0) * Math.PI;
+            const sunX = Math.cos(sunAngle) * 0.8;
+            const sunY = Math.sin(sunAngle) * 0.9 + 0.2;
+            const sunZ = 0.55;
+            const sunLen = Math.hypot(sunX, sunY, sunZ);
+            const normSunX = sunX / sunLen, normSunY = sunY / sunLen, normSunZ = sunZ / sunLen;
 
-            // Sortowanie wierszy od tyłu do przodu dla poprawnego bufora głębi (Painter's algorithm)
+            // Painter's algorithm - sortowanie siatki
             const startY = (sinY > 0) ? 0 : N - 2;
             const endY = (sinY > 0) ? N - 1 : -1;
             const stepY = (sinY > 0) ? 1 : -1;
@@ -1127,21 +1222,29 @@
                     const h2 = heightMap[idx2];
                     const h3 = heightMap[idx3];
 
-                    // Obliczenie współrzędnych 3D z centrowaniem
-                    const p0 = project3D((x / N) - 0.5, h0 * 0.35, (y / N) - 0.5, cosX, sinX, cosY, sinY, scale, cx, cy);
-                    const p1 = project3D(((x + 1) / N) - 0.5, h1 * 0.35, (y / N) - 0.5, cosX, sinX, cosY, sinY, scale, cx, cy);
-                    const p2 = project3D(((x + 1) / N) - 0.5, h2 * 0.35, ((y + 1) / N) - 0.5, cosX, sinX, cosY, sinY, scale, cx, cy);
-                    const p3 = project3D((x / N) - 0.5, h3 * 0.35, ((y + 1) / N) - 0.5, cosX, sinX, cosY, sinY, scale, cx, cy);
+                    const p0 = project3D((x / N) - 0.5, h0 * 0.38, (y / N) - 0.5, cosX, sinX, cosY, sinY, scale, cx, cy);
+                    const p1 = project3D(((x + 1) / N) - 0.5, h1 * 0.38, (y / N) - 0.5, cosX, sinX, cosY, sinY, scale, cx, cy);
+                    const p2 = project3D(((x + 1) / N) - 0.5, h2 * 0.38, ((y + 1) / N) - 0.5, cosX, sinX, cosY, sinY, scale, cx, cy);
+                    const p3 = project3D((x / N) - 0.5, h3 * 0.38, ((y + 1) / N) - 0.5, cosX, sinX, cosY, sinY, scale, cx, cy);
 
-                    // Normalna powierzchni (wektor światła)
+                    // Normalna powierzchni i nachylenie zbocza (Slope)
                     const normX = (h0 - h1) + (h3 - h2);
-                    const normY = 2.0 / N;
+                    const normY = 2.4 / N;
                     const normZ = (h0 - h3) + (h1 - h2);
                     const nLen = Math.hypot(normX, normY, normZ) || 1;
-                    const dot = Math.max(0, (normX * sunX + normY * sunY + normZ * sunZ) / nLen);
-                    const light = 0.35 + dot * 0.75;
+                    const ny = normY / nLen;
+                    const slope = 1.0 - ny;
 
+                    // Oświetlenie Lamberta
+                    const dot = Math.max(0.0, (normX * normSunX + normY * normSunY + normZ * normSunZ) / nLen);
+                    const light = 0.28 + dot * 0.85;
+
+                    // Okluzja otoczenia (AO) - zagłębienia terenu
                     const avgH = (h0 + h1 + h2 + h3) * 0.25;
+                    const ao = Math.min(1.0, 0.65 + avgH * 0.35);
+
+                    // Mgła odległościowa
+                    const distFactor = Math.max(0.0, Math.min(0.55, (p0.zDepth - 1.6) * 0.35));
                     const erosionVal = waterFlowMap[idx0];
 
                     ctx.beginPath();
@@ -1152,10 +1255,10 @@
                     ctx.closePath();
 
                     if (viewMode === '3d-color') {
-                        ctx.fillStyle = getTerrainColor(avgH, paramWaterLevel, erosionVal, light);
+                        ctx.fillStyle = getRealisticTerrainColor(avgH, paramWaterLevel, slope, erosionVal, light, ao, distFactor);
                         ctx.fill();
                     } else if (viewMode === '3d-wire') {
-                        ctx.strokeStyle = `rgba(56, 189, 248, ${0.4 + avgH * 0.4})`;
+                        ctx.strokeStyle = `rgba(56, 189, 248, ${0.35 + avgH * 0.45})`;
                         ctx.lineWidth = 1;
                         ctx.stroke();
                     }
@@ -1164,21 +1267,20 @@
         }
 
         function project3D(x, y, z, cosX, sinX, cosY, sinY, scale, cx, cy) {
-            // Rotacja Y
             const x1 = x * cosY - z * sinY;
             const z1 = x * sinY + z * cosY;
 
-            // Rotacja X (pochylenie)
             const y2 = y * cosX - z1 * sinX;
             const z2 = y * sinX + z1 * cosX;
 
-            const projDist = 2.2;
+            const projDist = 2.3;
             const pz = (z2 + projDist);
             const factor = scale / pz;
 
             return {
                 x: cx + x1 * factor,
-                y: cy - y2 * factor
+                y: cy - y2 * factor,
+                zDepth: pz
             };
         }
 
@@ -1204,7 +1306,7 @@
                         data[pIdx + 3] = 255;
                     } else if (viewMode === '2d-water') {
                         const flow = Math.min(255, Math.floor(waterFlowMap[idx] * 40));
-                        const baseH = Math.floor(((heightVal + 1.0) * 0.5) * 120);
+                        const baseH = Math.floor(((heightVal + 1.0) * 0.5) * 110);
                         data[pIdx] = baseH;
                         data[pIdx + 1] = Math.min(255, baseH + flow);
                         data[pIdx + 2] = Math.min(255, baseH + flow * 2);
@@ -1216,7 +1318,7 @@
         }
 
         // =========================================================
-        // OBSŁUGA INTERFEJSU I PRZEŁĄCZNIKÓW
+        // OBSŁUGA INTERFEJSU
         // =========================================================
         function setAlgorithm(algo) {
             currentAlgorithm = algo;
@@ -1230,6 +1332,22 @@
             const btns = document.querySelectorAll('.view-btn');
             btns.forEach(b => b.classList.remove('active'));
             event.target.classList.add('active');
+            requestRender();
+        }
+
+        function updateBiome(b) {
+            currentBiome = b;
+            requestRender();
+        }
+
+        function updateSunTime(val) {
+            sunAngleTime = parseFloat(val);
+            let lbl = 'Południe';
+            if (sunAngleTime < 25) lbl = 'Świt / Rano';
+            else if (sunAngleTime < 50) lbl = 'Popołudnie';
+            else if (sunAngleTime < 75) lbl = 'Złota Godzina';
+            else lbl = 'Zachód Słońca';
+            document.getElementById('val-time').innerText = lbl;
             requestRender();
         }
 
@@ -1267,11 +1385,6 @@
         function updateErosionStrength(val) {
             paramErosionStrength = parseFloat(val);
             document.getElementById('val-erosion-strength').innerText = paramErosionStrength.toFixed(2);
-        }
-
-        function updateSedimentCapacity(val) {
-            paramSedimentCapacity = parseFloat(val);
-            document.getElementById('val-sediment').innerText = paramSedimentCapacity.toFixed(1);
         }
 
         function onParamChange() {
