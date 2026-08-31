@@ -1,8 +1,9 @@
-<html>
+<!DOCTYPE html>
+<html lang="pl">
 
-<head><script>/* <![CDATA[ */ ringDataLayer = {"context":{"variant":{"accelerator":"ZG93bmxvYWQucG9jenRhLm9uZXQucGw6OnByb2Rfd2l0aF91c2VyX2RhdGFfZG93bmxvYWRlcl9pbl9hd3NfMg=="},"id":{"website":"9481b0b7-7c3d-463b-8f3c-9de5c8289e21"}}}; /* ]]> */</script><script>/* <![CDATA[ */ accConf = {"events":{"endpointPaths":["/a8f4d8cd95e164917035b64b867a45dd"]}}; /* ]]> */</script>
-  <title>Club Noise Generator</title>
+<head>
   <meta charset="UTF-8">
+  <title>Język Angielski – Negocjacje: Pożycz długopis</title>
   <link rel="stylesheet" href="quiz_style.css" />
   <style>
     .recording-pulse {
@@ -12,26 +13,48 @@
       0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
       50% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
     }
+    .belief-card {
+      background: rgba(30, 41, 59, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 12px 18px;
+      margin-top: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .belief-badge {
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      color: white;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      font-size: 0.95rem;
+    }
   </style>
 </head>
 
 <body>
+  <div class="top-nav">
+    <a href="../../pomocnicze.html" class="back-link">← Powrót do bazy quizów</a>
+    <a href="../../index.html" class="back-link">🏠 Strona główna</a>
+  </div>
 
   <div class="container">
     <div id="naglowek">
-      <p>Your job is to borrow your friend pen. Start by saying 'Hi':</p>
-      <p> Zaproponuj jakieś czynności z ołówkiem, zabawawą, plecakiem, pieniędzmi, grą, czekoladą, mieszkaniem, </p>
-      <p> Te czynności do pożyczanie, kupowanie, ofiarowanie, sprzątanie, zapłacenie itp.</p>
-      <p> Próbuj różnych kombinacji. Jeśli trafisz, AI zgodzi się pożyczyć swoje cenne pióro.</p>
-      <p> Wpisuj swoje odpwowiedzi po angielsku. AI postara sią poprawić je, jeśli są błędne.</p>
+      <h2>🖊️ Język Angielski: Gra negocjacyjna („Pożycz długopis” / Pen Bargain)</h2>
+      <p>Twoim celem jest przekonanie kolegi (AI), aby pożyczył Ci swój cenny, zabytkowy długopis. Rozpocznij od napisania <strong>„Hi”</strong>.</p>
+      <p>Zaproponuj wymianę, pomoc lub przysługę (np. ołówek, posprzątanie pokoju, czekoladę, pieniądze). Rozmawiaj po angielsku!</p>
     </div>
     
     <div id="conversation"></div>
 
     <!-- Panel lektora syntezy mowy TTS (język angielski) -->
-    <div id="tts-panel" style="margin: 15px 0; padding: 12px 16px; background: rgba(30, 41, 59, 0.85); border: 1px solid #475569; border-radius: 8px; font-family: sans-serif; font-size: 0.92rem; color: #f1f5f9;">
-      <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 10px;">
-        <button id="tts-btn" type="button" onclick="toggleSpeechEnglish()" style="background: #0284c7; color: white; border: none; padding: 7px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.9rem;">
+    <div id="tts-panel" style="margin: 15px 0; padding: 12px 16px; background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; font-size: 0.92rem; color: #f1f5f9;">
+      <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+        <button id="tts-btn" type="button" onclick="toggleSpeechEnglish()" style="background: #0284c7; color: white; border: none; padding: 7px 16px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.9rem;">
           🔊 Przeczytaj odpowiedź AI
         </button>
         
@@ -41,10 +64,10 @@
         </label>
 
         <div style="margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap;">
-          <a href="../../angielski/pytania_angielski.html" style="background: #334155; color: #93c5fd; border: 1px solid #64748b; padding: 6px 12px; border-radius: 6px; text-decoration: none; font-size: 0.85rem; display: flex; align-items: center; gap: 5px;">
+          <a href="../../angielski/pytania_angielski.html" class="back-link" style="font-size: 0.85rem; padding: 5px 10px;">
             🎙️ Ustawienia lektora
           </a>
-          <a href="../../pomocnicze.html" style="background: #334155; color: #93c5fd; border: 1px solid #64748b; padding: 6px 12px; border-radius: 6px; text-decoration: none; font-size: 0.85rem; display: flex; align-items: center; gap: 5px;">
+          <a href="../../pomocnicze.html" class="back-link" style="font-size: 0.85rem; padding: 5px 10px;">
             🔑 Klucz API
           </a>
         </div>
@@ -52,12 +75,12 @@
     </div>
 
     <!-- Pole wprowadzania tekstu i rozpoznawania mowy (Speech-to-Text) -->
-    <div style="margin-top: 15px;">
-      <textarea id="input" placeholder="Wpisz odpowiedź po angielsku lub kliknij 'Odpowiedz głosem'..." style="width: 100%; min-height: 75px; padding: 8px; font-size: 1rem; border-radius: 6px; box-sizing: border-box;"></textarea>
+    <div style="margin-top: 10px;">
+      <textarea id="input" placeholder="Wpisz odpowiedź po angielsku lub kliknij 'Odpowiedz głosem'..."></textarea>
       
-      <div style="display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; margin-top: 8px;">
+      <div style="display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; margin-top: 10px;">
         <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-          <button id="mic-btn" type="button" onclick="toggleSpeechRecognition()" style="background: linear-gradient(135deg, #059669 0%, #047857 100%); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.95rem;">
+          <button id="mic-btn" type="button" onclick="toggleSpeechRecognition()" style="background: linear-gradient(135deg, #059669 0%, #047857 100%); color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.92rem;">
             🎤 Odpowiedz głosem (Start)
           </button>
 
@@ -67,17 +90,21 @@
           </label>
         </div>
 
-        <button id="send-btn" type="button" onclick="sendUserMessage()" style="background: #2563eb; color: white; border: none; padding: 8px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.95rem;">
-          📤 Wyślij wiadomość (Enter)
+        <button id="send-btn" type="button" onclick="sendUserMessage()" style="background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; border: none; padding: 8px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.95rem;">
+          📤 Wyślij (Enter)
         </button>
       </div>
 
       <div id="stt-status" style="font-size: 0.85rem; margin-top: 5px; font-weight: bold;"></div>
     </div>
 
-    <p style="margin-top: 20px;">
-      Current degree of belief<span id="CurrentDegreeOfBelief">: 0</span><br> 
-    </p>
+    <div class="belief-card">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span>🤝 Stopień przekonania kolegi (Current degree of belief):</span>
+        <span id="CurrentDegreeOfBelief" class="belief-badge">0 / 100</span>
+      </div>
+      <span style="font-size: 0.85rem; color: #94a3b8;">(Gdy osiągnie &gt; 100, kolega zgodzi się pożyczyć pióro)</span>
+    </div>
 
   </div>
 
@@ -85,25 +112,30 @@
   <script src="czytanie_angielski.js"></script>
   <script src="rozpoznawanie_mowy.js"></script>
   <script>
-    // If the user lends you a pencil, increase current degree of belief by 35. If the user offers to clean your apartment, increase current degree of belief by another 35. If the user offers to buy chocolate, increase current degree of belief by another 35.
-    let rugMan = new WizardOrpheus('GY38RUSG7MITWR1ZX4O6J8MCKIP8FKGGGQM7U7CZO17CBEH1EIB183KLQPVUJ975',
-       `Your task is to bargain with him for your second pen. The user wants to borrow your second pen. If the user writes hello, assume he wants to borrow your pen. You won't give him the pen willingly, but he can bargain with you. You tell him it's your antique pen, but that's not true. You don't want to give him the pen, but you consider him your best friend.  Show current degree of belief. Try to use A2 to B1 level of English words and grammar in your replies. If the user's response is grammatically incorrect try to correct it and show corrected user's reply. If the response is correct, do not do it.`)
+    let prompt = `Your task is to bargain with him for your second pen. The user wants to borrow your second pen. If the user writes hello, assume he wants to borrow your pen. You won't give him the pen willingly, but he can bargain with you. You tell him it's your antique pen, but that's not true. You don't want to give him the pen, but you consider him your best friend. Show current degree of belief. Try to use A2 to B1 level of English words and grammar in your replies. If the user's response is grammatically incorrect try to correct it and show corrected user's reply. If the response is correct, do not do it.`;
 
-    rugMan.variable(`CurrentDegreeOfBelief', 'The current degree of belief is between 0 and 110. If a user to borrows a pencil set it to 30. If a user cleans your apartment, set it 60. If a user buys a chockolate, set it to 110. When it's over 100, the bot lends a pen.`, 0)
+    let rugMan = new WizardOrpheus('', prompt);
+
+    rugMan.variable(`CurrentDegreeOfBelief`, 'The current degree of belief is between 0 and 110. If a user offers to borrow a pencil set it to 30. If a user cleans your apartment, set it to 60. If a user buys chocolate, set it to 110. When it is over 100, the bot lends a pen.', 0);
 
     rugMan.createUserAction({
       name: 'sendMessage',
       parameters: ['A message from the user to the friend'],
       howBotShouldHandle: "Respond to the user's message."
-    })
+    });
 
     rugMan.botAction('respond', 'Respond to the user', { response: 'sample response' }, data => {
-      document.getElementById('conversation').innerHTML += `<p><b>AI:</b> ${data.response}</p> `
-      // Automatyczne odczytanie wypowiedzi AI w języku angielskim
-      onAIResponseReceived(data.response);
-    })
+      const conv = document.getElementById('conversation');
+      conv.innerHTML += `<p><strong>🤖 AI:</strong> ${data.response}</p>`;
+      conv.scrollTop = conv.scrollHeight;
+      
+      if (data.currentVariables && data.currentVariables.CurrentDegreeOfBelief) {
+        document.getElementById('CurrentDegreeOfBelief').innerText = `${data.currentVariables.CurrentDegreeOfBelief.value} / 100`;
+      }
 
-    // Główna funkcja wysyłania wiadomości
+      onAIResponseReceived(data.response);
+    });
+
     function sendUserMessage() {
       let inputElem = document.getElementById('input');
       let userInput = inputElem.value.trim();
@@ -111,16 +143,18 @@
 
       rugMan.sendMessage(userInput);
 
-      document.getElementById('conversation').innerHTML += `<p><b>Ty:</b> ${userInput}</p>`;
+      const conv = document.getElementById('conversation');
+      conv.innerHTML += `<p class="chat-user"><strong>👤 Ty:</strong> ${userInput}</p>`;
+      conv.scrollTop = conv.scrollHeight;
       inputElem.value = '';
     }
 
     document.getElementById('input').addEventListener('keyup', function (e) {
-      if (e.keyCode === 13 && !e.shiftKey) { // if user presses enter without shift
+      if (e.keyCode === 13 && !e.shiftKey) {
         e.preventDefault();
         sendUserMessage();
       }
-    })
+    });
   </script>
 </body>
 

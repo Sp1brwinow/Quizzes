@@ -1,65 +1,71 @@
-<html>
+<!DOCTYPE html>
+<html lang="pl">
 
-<head><script>/* <![CDATA[ */ ringDataLayer = {"context":{"variant":{"accelerator":"ZG93bmxvYWQucG9jenRhLm9uZXQucGw6OnByb2Rfd2l0aF91c2VyX2RhdGFfZG93bmxvYWRlcl9pbl9hd3NfMg=="},"id":{"website":"9481b0b7-7c3d-463b-8f3c-9de5c8289e21"}}}; /* ]]> */</script><script>/* <![CDATA[ */ accConf = {"events":{"endpointPaths":["/a8f4d8cd95e164917035b64b867a45dd"]}}; /* ]]> */</script>
-  <title>Club Noise Generator</title>
+<head>
   <meta charset="UTF-8">
+  <title>Język Hiszpański A1 – Zasady gramatyczne z „ser”</title>
   <link rel="stylesheet" href="quiz_style.css" />
 </head>
 
 <body>
+  <div class="top-nav">
+    <a href="../../pomocnicze.html" class="back-link">← Powrót do bazy quizów</a>
+    <a href="../../index.html" class="back-link">🏠 Strona główna</a>
+  </div>
 
   <div class="container">
     <div id="naglowek">
-      <p> Zasady z czasowniokiem "być". </p>
-      <p> </p>
-      <p> Napis "jakie są zasady" i dopytuj.</p>
+      <h2>🇪🇸 Język Hiszpański A1: Zasady i pytania (Gramatyka)</h2>
+      <p>Zapytaj AI o reguły tworzenia zdań z czasownikiem <em>ser</em>, tworzenie pytań oraz stosowanie rodzajników w języku hiszpańskim.</p>
+      <p>Napisz np.: <strong>„jakie są zasady”</strong>, <strong>„wytłumacz odmianę”</strong> lub zadaj własne pytanie gramatyczne.</p>
     </div>
     
     <div id="conversation"></div>
-    <textarea id="input"></textarea><br>
-    <i>(naciśnij enter)</i>    
-      
-
+    
+    <textarea id="input" placeholder="Wpisz swoje pytanie gramatyczne i naciśnij Enter..."></textarea>
+    
+    <div class="input-controls">
+      <i>(Naciśnij Enter lub kliknij przycisk, aby wysłać)</i>
+      <button type="button" onclick="sendUserMessage()">📤 Wyślij pytanie</button>
+    </div>
   </div>
-
-  
 
   <script src="../wizard_orpheus.js"></script>
   <script>
- 
-    let rugMan = new WizardOrpheus('',
-       `  The tasks are related to learning Spanish. First, explain the rules for creating sentences like "I am, you are, she, she, it is, we are, you are they are" in combination with a simple adjective or noun in Spanish. Also show how to ask questions to such sentences. Also show what the rules are for using articles in Spanish. Explain the rules in Polish, but show examples in Spanish. `)
-
-
+    let prompt = `The tasks are related to learning Spanish. First, explain clearly in Polish the rules for creating sentences like "yo soy, tú eres, él/ella es, nosotros somos, vosotros sois, ellos son" in combination with simple adjectives or nouns in Spanish. Show how to form questions and how articles work (el, la, los, las / un, una). Explain the rules in Polish, and provide practical examples in Spanish. Respond patiently to all user's follow-up questions.`;
+    
+    let rugMan = new WizardOrpheus('', prompt);
 
     rugMan.createUserAction({
       name: 'sendMessage',
       parameters: ['A message from the user to the friend'],
       howBotShouldHandle: "Respond to the user's message."
-    })
+    });
 
     rugMan.botAction('respond', 'Respond to the user', { response: 'sample response' }, data => {
-      document.getElementById('conversation').innerHTML += `<p>${data.response}</p> `
-       
-      }
+      const conv = document.getElementById('conversation');
+      conv.innerHTML += `<p><strong>🤖 AI:</strong> ${data.response}</p>`;
+      conv.scrollTop = conv.scrollHeight;
+    });
 
-      
-    )
+    function sendUserMessage() {
+      const input = document.getElementById('input');
+      const text = input.value.trim();
+      if (!text) return;
 
-    
-      
-    
+      rugMan.sendMessage(text);
+      const conv = document.getElementById('conversation');
+      conv.innerHTML += `<p class="chat-user"><strong>👤 Ty:</strong> ${text}</p>`;
+      conv.scrollTop = conv.scrollHeight;
+      input.value = '';
+    }
 
     document.getElementById('input').addEventListener('keyup', function (e) {
-      if (e.keyCode === 13) { // if the user presses enter
-        let userInput = document.getElementById('input').value
-
-        rugMan.sendMessage(userInput)
-
-        document.getElementById('conversation').innerHTML += `<p>${userInput}</p>`
-        document.getElementById('input').value = ''
+      if (e.keyCode === 13 && !e.shiftKey) {
+        e.preventDefault();
+        sendUserMessage();
       }
-    })
+    });
   </script>
 </body>
 

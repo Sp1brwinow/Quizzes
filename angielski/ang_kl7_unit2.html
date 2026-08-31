@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Klasa 7 - Unit 2 (Clothes, Appearance, Past Simple & Past Continuous)</title>
+    <link rel="stylesheet" href="../style.css" />
+    <style>
+        .unit-container {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 10px 15px 40px 15px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .options-box {
+            background: rgba(15, 23, 42, 0.95);
+            border: 2px solid #0284c7;
+            border-radius: 12px;
+            padding: 18px 22px;
+            margin: 15px auto 25px auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            text-align: left;
+        }
+
+        .options-box h3 {
+            color: #38bdf8;
+            margin-top: 0;
+            margin-bottom: 12px;
+            font-size: 1.15rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 10px;
+        }
+
+        .opt-btn {
+            background: #1e293b;
+            border: 2px solid #475569;
+            color: #f8fafc;
+            padding: 12px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.92rem;
+            font-weight: bold;
+            text-align: left;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .opt-btn:hover {
+            border-color: #38bdf8;
+            background: #334155;
+            transform: translateY(-2px);
+        }
+
+        .opt-btn.active {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            border-color: #38bdf8;
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4);
+        }
+
+        .workspace-card {
+            background: rgba(15, 23, 42, 0.92);
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 24px;
+            margin-top: 15px;
+            text-align: left;
+            color: #f8fafc;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #334155;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            color: #38bdf8;
+            margin: 0;
+            font-weight: bold;
+        }
+
+        .score-badge {
+            background: #1e293b;
+            border: 1px solid #0284c7;
+            color: #38bdf8;
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .prompt-box {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid #475569;
+            border-left: 4px solid #0284c7;
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin-bottom: 18px;
+        }
+
+        .prompt-label {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #94a3b8;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+
+        .prompt-text {
+            font-size: 1.35rem;
+            font-weight: bold;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .grammar-tag {
+            font-size: 0.82rem;
+            background: rgba(16, 185, 129, 0.2);
+            color: #34d399;
+            border: 1px solid #059669;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: normal;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .custom-input {
+            flex: 1;
+            min-width: 250px;
+            padding: 11px 15px;
+            background: #0f172a;
+            border: 1px solid #475569;
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 1.02rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .custom-input:focus {
+            border-color: #38bdf8;
+            box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+        }
+
+        .btn-action {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.92rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .btn-check {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            color: white;
+        }
+
+        .btn-check:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.4);
+        }
+
+        .btn-next {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-next:hover {
+            background: #059669;
+        }
+
+        .btn-mic {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            color: white;
+            border: none;
+            padding: 10px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-listen {
+            background: #334155;
+            color: #38bdf8;
+            border: 1px solid #64748b;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        .btn-listen:hover {
+            background: #475569;
+        }
+
+        .feedback-box {
+            margin-top: 15px;
+            padding: 14px 18px;
+            border-radius: 8px;
+            line-height: 1.5;
+            font-size: 0.98rem;
+            display: none;
+        }
+
+        .feedback-correct {
+            background: rgba(6, 78, 59, 0.85);
+            border: 1px solid #10b981;
+            color: #a7f3d0;
+        }
+
+        .feedback-incorrect {
+            background: rgba(127, 29, 29, 0.85);
+            border: 1px solid #ef4444;
+            color: #fecaca;
+        }
+
+        /* Panel czatu AI */
+        #conversation-log {
+            max-height: 380px;
+            overflow-y: auto;
+            background: #0b1120;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .chat-bubble {
+            padding: 10px 14px;
+            border-radius: 8px;
+            max-width: 85%;
+            line-height: 1.5;
+            font-size: 0.95rem;
+        }
+
+        .chat-ai {
+            background: #1e293b;
+            border-left: 4px solid #0284c7;
+            align-self: flex-start;
+            color: #f1f5f9;
+        }
+
+        .chat-user {
+            background: #0369a1;
+            align-self: flex-end;
+            color: #ffffff;
+        }
+
+        .correction-tip {
+            background: rgba(245, 158, 11, 0.15);
+            border: 1px solid #f59e0b;
+            color: #fef08a;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.92rem;
+            margin-top: 6px;
+            line-height: 1.4;
+        }
+
+        .recording-pulse {
+            animation: pulse-red 1.2s infinite ease-in-out;
+        }
+
+        @keyframes pulse-red {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            50% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="unit-container">
+        <h2>Język angielski – Klasa 7</h2>
+        <p style="color: #94a3b8; margin-top: -5px;">Unit 2: Clothes, Describing Appearance & Past Simple vs. Past Continuous</p>
+
+        <!-- ============================================================ -->
+        <!-- BOX Z 4 OPCJAMI                                              -->
+        <!-- ============================================================ -->
+        <div class="options-box">
+            <h3>🎯 Wybierz tryb nauki / ćwiczeń:</h3>
+            <div class="options-grid">
+                <button type="button" class="opt-btn active" id="tab-1" onclick="switchMode(1)">
+                    🇵🇱 1. Słówka (ANG ➔ POL)
+                </button>
+                <button type="button" class="opt-btn" id="tab-2" onclick="switchMode(2)">
+                    🇬🇧 2. Słówka (POL ➔ ANG)
+                </button>
+                <button type="button" class="opt-btn" id="tab-3" onclick="switchMode(3)">
+                    📝 3. Tłumaczenie zdań (15)
+                </button>
+                <button type="button" class="opt-btn" id="tab-4" onclick="switchMode(4)">
+                    💬 4. Konwersacja z AI
+                </button>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- TRYB 1: SŁÓWKA (ANG -> POL)                                  -->
+        <!-- ============================================================ -->
+        <div id="mode-1-container" class="workspace-card">
+            <div class="card-header">
+                <h3 class="card-title">1. Tłumaczenie słówek: z angielskiego na polski</h3>
+                <span class="score-badge" id="m1-score">Poprawne: 0 / 0</span>
+            </div>
+
+            <div class="prompt-box">
+                <div class="prompt-label">Słowo / wyrażenie po angielsku:</div>
+                <div class="prompt-text">
+                    <span id="m1-en-word">jacket</span>
+                    <button type="button" class="btn-listen" onclick="speakCurrentWord(1)">🔊 Wymowa</button>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <input type="text" id="m1-input" class="custom-input" placeholder="Wpisz znaczenie po polsku..." onkeydown="if(event.key==='Enter') checkWordTranslation(1)">
+                <button type="button" id="mic-m1-btn" class="btn-mic" onclick="toggleVoiceInput('m1-input', 'pl-PL', 'mic-m1-btn', () => checkWordTranslation(1))">🎤 Mów</button>
+                <button type="button" class="btn-action btn-check" onclick="checkWordTranslation(1)">✓ Sprawdź</button>
+                <button type="button" class="btn-action btn-next" onclick="nextWord(1)">Następne ➔</button>
+            </div>
+
+            <div id="m1-feedback" class="feedback-box"></div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- TRYB 2: SŁÓWKA (POL -> ANG)                                  -->
+        <!-- ============================================================ -->
+        <div id="mode-2-container" class="workspace-card" style="display: none;">
+            <div class="card-header">
+                <h3 class="card-title">2. Tłumaczenie słówek: z polskiego na angielski</h3>
+                <span class="score-badge" id="m2-score">Poprawne: 0 / 0</span>
+            </div>
+
+            <div class="prompt-box">
+                <div class="prompt-label">Słowo / wyrażenie po polsku:</div>
+                <div class="prompt-text">
+                    <span id="m2-pl-word">kurtka</span>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <input type="text" id="m2-input" class="custom-input" placeholder="Wpisz tłumaczenie po angielsku..." onkeydown="if(event.key==='Enter') checkWordTranslation(2)">
+                <button type="button" id="mic-m2-btn" class="btn-mic" onclick="toggleVoiceInput('m2-input', 'en-US', 'mic-m2-btn', () => checkWordTranslation(2))">🎤 Mów</button>
+                <button type="button" class="btn-action btn-check" onclick="checkWordTranslation(2)">✓ Sprawdź</button>
+                <button type="button" class="btn-action btn-next" onclick="nextWord(2)">Następne ➔</button>
+            </div>
+
+            <div id="m2-feedback" class="feedback-box"></div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- TRYB 3: TŁUMACZENIE 15 ZDAŃ Z GRAMATYKĄ                     -->
+        <!-- ============================================================ -->
+        <div id="mode-3-container" class="workspace-card" style="display: none;">
+            <div class="card-header">
+                <h3 class="card-title">3. Tłumaczenie 15 zdań (Past Simple & Past Continuous)</h3>
+                <span class="score-badge" id="m3-progress">Zdanie: 1 / 15</span>
+            </div>
+
+            <div class="prompt-box">
+                <div class="prompt-label">Przetłumacz poniższe zdanie na język angielski:</div>
+                <div class="prompt-text" style="font-size: 1.15rem; margin-bottom: 8px;">
+                    <span id="m3-sentence-pl">1. Wczoraj kupiłem nowe buty sportowe w centrum handlowym.</span>
+                </div>
+                <div id="m3-grammar-hint" class="grammar-tag">💡 Wskazówka: Czasownik nieregularny: buy ➔ bought (Past simple)</div>
+            </div>
+
+            <div class="input-group">
+                <input type="text" id="m3-input" class="custom-input" placeholder="Wpisz zdanie po angielsku..." onkeydown="if(event.key==='Enter') checkSentenceTranslation()">
+                <button type="button" id="mic-m3-btn" class="btn-mic" onclick="toggleVoiceInput('m3-input', 'en-US', 'mic-m3-btn', () => checkSentenceTranslation())">🎤 Mów</button>
+                <button type="button" class="btn-action btn-check" onclick="checkSentenceTranslation()">✓ Sprawdź zdanie</button>
+                <button type="button" class="btn-action btn-next" onclick="nextSentence()">Następne zdanie ➔</button>
+            </div>
+
+            <div id="m3-feedback" class="feedback-box"></div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- TRYB 4: KONWERSACJA Z AI                                     -->
+        <!-- ============================================================ -->
+        <div id="mode-4-container" class="workspace-card" style="display: none;">
+            <div class="card-header">
+                <h3 class="card-title">4. Konwersacja z AI o ubraniach, wyglądzie i przeszłości</h3>
+            </div>
+
+            <!-- Panel sterowania lektorem i głosem -->
+            <div style="margin: 0 0 15px 0; padding: 10px 14px; background: rgba(30, 41, 59, 0.85); border: 1px solid #475569; border-radius: 8px; font-size: 0.9rem;">
+                <div style="display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+                    <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                        <button id="tts-btn" type="button" onclick="toggleSpeechEnglish()" style="background: #0284c7; color: white; border: none; padding: 7px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.9rem;">
+                            🔊 Przeczytaj odpowiedź AI
+                        </button>
+                        <label style="cursor: pointer; display: flex; align-items: center; gap: 6px; color: #f1f5f9;">
+                            <input type="checkbox" id="tts-auto-read" checked> ⚡ Czytaj automatycznie odpowiedź AI
+                        </label>
+                    </div>
+                    <div style="display: flex; gap: 8px; margin-left: auto;">
+                        <a href="pytania_angielski.html" style="background: #334155; color: #93c5fd; border: 1px solid #64748b; padding: 6px 12px; border-radius: 6px; text-decoration: none; font-size: 0.85rem; display: flex; align-items: center; gap: 4px;">
+                            🎙️ Ustawienia lektora
+                        </a>
+                        <a href="../pomocnicze.html" style="background: #334155; color: #93c5fd; border: 1px solid #64748b; padding: 6px 12px; border-radius: 6px; text-decoration: none; font-size: 0.85rem; display: flex; align-items: center; gap: 4px;">
+                            🔑 Klucz API
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Okno dialogu -->
+            <div id="conversation-log">
+                <div class="chat-bubble chat-ai">
+                    <strong>AI Teacher:</strong> Hello! Welcome to our Unit 2 conversation practice. Let's talk about clothes, fashion, hairstyles and what you were doing yesterday! What are you wearing today?
+                </div>
+            </div>
+
+            <!-- Pole wprowadzania odpowiedzi -->
+            <div style="margin-top: 15px;">
+                <textarea id="m4-input" class="custom-input" style="width: 100%; min-height: 75px; padding: 10px; font-size: 1rem; border-radius: 6px; box-sizing: border-box;" placeholder="Wpisz odpowiedź po angielsku lub kliknij 'Odpowiedz głosem'..." onkeydown="if(event.key==='Enter' && !event.shiftKey){ event.preventDefault(); sendChatMessage(); }"></textarea>
+                
+                <div style="display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; margin-top: 8px;">
+                    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                        <button id="mic-btn" type="button" onclick="toggleSpeechRecognitionChat()" style="background: linear-gradient(135deg, #059669 0%, #047857 100%); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.95rem;">
+                            🎤 Odpowiedz głosem (Mów)
+                        </button>
+
+                        <label style="cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 0.88rem; color: #cbd5e1;">
+                            <input type="checkbox" id="stt-auto-send" checked> 
+                            ⚡ Wyślij automatycznie po zakończeniu mowy
+                        </label>
+                    </div>
+
+                    <button id="send-btn" type="button" onclick="sendChatMessage()" style="background: #2563eb; color: white; border: none; padding: 8px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.95rem;">
+                        📤 Wyślij wiadomość (Enter)
+                    </button>
+                </div>
+
+                <div id="m4-status" style="font-size: 0.85rem; color: #38bdf8; margin-top: 6px; font-weight: bold;"></div>
+            </div>
+        </div>
+
+        <p style="margin-top: 40px; text-align: center;">
+            <a href="pytania_angielski.html" style="color: #38bdf8; text-decoration: none; margin: 0 10px;">⬅ Powrót do menu angielskiego</a> | 
+            <a href="../pomocnicze.html" style="color: #38bdf8; text-decoration: none; margin: 0 10px;">Quizy szkolne</a> | 
+            <a href="../index.html" style="color: #38bdf8; text-decoration: none; margin: 0 10px;">Strona główna</a>
+        </p>
+    </div>
+
+    <!-- Skrypty lektora, rozpoznawania mowy i AI -->
+    <script src="../na_serwer/pyt/czytanie_angielski.js"></script>
+    <script src="../na_serwer/wizard_orpheus.js"></script>
+
+    <script>
+        // =========================================================
+        // BAZA SŁOWNICTWA Z UNIT 2 (Z PODRĘCZNIKA)
+        // =========================================================
+        const wordlist = [
+            // Ubrania (Clothes)
+            { en: "belt", pl: ["pasek"] },
+            { en: "blouse", pl: ["bluzka"] },
+            { en: "boots", pl: ["kozaki", "buty zimowe"] },
+            { en: "button", pl: ["guzik"] },
+            { en: "cap", pl: ["czapka", "czapka z daszkiem"] },
+            { en: "coat", pl: ["płaszcz"] },
+            { en: "dress", pl: ["sukienka"] },
+            { en: "gloves", pl: ["rękawiczki", "rękawiczki z pięcioma palcami"] },
+            { en: "jacket", pl: ["kurtka", "żakiet"] },
+            { en: "jeans", pl: ["dżinsy", "jeansy"] },
+            { en: "jumper", pl: ["sweter"] },
+            { en: "leggings", pl: ["legginsy", "getry"] },
+            { en: "mittens", pl: ["rękawiczki z jednym palcem", "rękawice z jednym palcem"] },
+            { en: "sandals", pl: ["sandały"] },
+            { en: "shoes", pl: ["buty", "półbuty"] },
+            { en: "skirt", pl: ["spódnica", "spódniczka"] },
+            { en: "sleeve", pl: ["rękaw"] },
+            { en: "socks", pl: ["skarpety", "skarpetki"] },
+            { en: "sweatshirt", pl: ["bluza"] },
+            { en: "top", pl: ["top", "koszulka"] },
+            { en: "tracksuit", pl: ["dres"] },
+            { en: "trainers", pl: ["buty sportowe", "trampki", "adidasy"] },
+            { en: "trousers", pl: ["spodnie"] },
+            { en: "T-shirt", pl: ["T-shirt", "koszulka", "koszulka z krótkim rękawem"] },
+            { en: "zip", pl: ["zamek błyskawiczny", "zamek", "suwak"] },
+
+            // Czasowniki
+            { en: "fit", pl: ["pasować", "być dobrego rozmiaru", "pasować rozmiarem"] },
+            { en: "match", pl: ["pasować", "pasować do siebie", "dobrze wyglądać razem"] },
+
+            // Opisywanie ubrań
+            { en: "baggy", pl: ["workowaty", "obszerny", "luźny"] },
+            { en: "checked", pl: ["w kratę", "w kratkę"] },
+            { en: "fancy", pl: ["elegancki", "wyszukany"] },
+            { en: "flowery", pl: ["kwiecisty", "w kwiaty"] },
+            { en: "leather", pl: ["skórzany"] },
+            { en: "logo", pl: ["logo"] },
+            { en: "loose", pl: ["luźny"] },
+            { en: "plain", pl: ["gładki", "bez wzoru", "prosty"] },
+            { en: "spotted", pl: ["w kropki", "w grochy"] },
+            { en: "striped", pl: ["w paski", "w pasy"] },
+            { en: "tight", pl: ["obcisły", "ciasny"] },
+            { en: "casual", pl: ["codzienny", "swobodny"] },
+            { en: "formal", pl: ["formalny", "elegancki", "oficjalny"] },
+            { en: "sporty", pl: ["sportowy"] },
+            { en: "trendy", pl: ["modny", "na czasie"] },
+
+            // Fryzury (Hairstyles)
+            { en: "bald", pl: ["łysy"] },
+            { en: "blonde", pl: ["blond", "jasne"] },
+            { en: "curly", pl: ["kręcony", "kręcone"] },
+            { en: "dark", pl: ["ciemny", "ciemne"] },
+            { en: "dyed", pl: ["farbowany", "farbowane"] },
+            { en: "fringe", pl: ["grzywka"] },
+            { en: "long", pl: ["długi", "długie"] },
+            { en: "ponytail", pl: ["kucyk", "koński ogon"] },
+            { en: "short", pl: ["krótki", "krótkie", "niski"] },
+            { en: "spiky", pl: ["sterczący", "sterczące", "zjeżone"] },
+            { en: "straight", pl: ["prosty", "proste"] },
+            { en: "wavy", pl: ["falowany", "falowane", "kręcony"] },
+
+            // Wygląd ogólny (Appearance)
+            { en: "beard", pl: ["broda"] },
+            { en: "freckles", pl: ["piegi"] },
+            { en: "moustache", pl: ["wąsy", "wąs"] },
+            { en: "slim", pl: ["szczupły"] },
+            { en: "tall", pl: ["wysoki"] },
+            { en: "thin", pl: ["chudy", "cienki"] },
+            { en: "wrinkles", pl: ["zmarszczki"] },
+
+            // Makijaż (Make-up)
+            { en: "eyeshadow", pl: ["cień do powiek", "cień do oczu"] },
+            { en: "eyeliner", pl: ["eyeliner", "kredka do powiek"] },
+            { en: "lipstick", pl: ["pomadka do ust", "szminka"] },
+            { en: "nail polish", pl: ["lakier do paznokci"] },
+            { en: "powder", pl: ["puder"] },
+            { en: "corrector", pl: ["korektor"] },
+            { en: "eyelashes", pl: ["rzęsy"] },
+            { en: "fake eyelashes", pl: ["sztuczne rzęsy"] },
+            { en: "foundation", pl: ["podkład"] },
+            { en: "lip balm", pl: ["pomadka ochronna do ust", "balsam do ust"] },
+            { en: "lip crayon", pl: ["kredka do ust"] },
+            { en: "mascara", pl: ["tusz do rzęs", "maskara"] }
+        ];
+
+        // =========================================================
+        // BAZA 15 ZDAŃ Z GRAMATYKĄ I SŁOWNICTWEM (OPCJA 3)
+        // =========================================================
+        const sentencesList = [
+            {
+                pl: "Wczoraj kupiłem nowe buty sportowe w centrum handlowym.",
+                enAnswers: [
+                    "Yesterday I bought new trainers at the shopping centre.",
+                    "I bought new trainers at the shopping centre yesterday.",
+                    "I bought new trainers in the mall yesterday.",
+                    "Yesterday I bought new trainers in the shopping mall.",
+                    "I bought new trainers at the shopping center yesterday."
+                ],
+                rule: "Past simple (czasownik nieregularny: buy ➔ bought).",
+                hint: "💡 Wskazówka: Czasownik nieregularny: buy ➔ bought (Past simple)"
+            },
+            {
+                pl: "Ona miała na sobie elegancką sukienkę w paski.",
+                enAnswers: [
+                    "She was wearing a fancy striped dress.",
+                    "She wore a fancy striped dress.",
+                    "She had a fancy striped dress on."
+                ],
+                rule: "Past continuous (was wearing) lub Past simple (wore) + przymiotniki: fancy striped dress.",
+                hint: "💡 Wskazówka: wear ➔ was wearing / wore + striped dress"
+            },
+            {
+                pl: "Kiedy jechałem na rowerze do szkoły, zobaczyłem Jacka.",
+                enAnswers: [
+                    "When I was cycling to school, I saw Jake.",
+                    "While I was cycling to school, I saw Jake.",
+                    "I saw Jake while I was cycling to school.",
+                    "I saw Jake when I was cycling to school."
+                ],
+                rule: "Past continuous (tło: was cycling) + Past simple (krótkie zdarzenie: saw).",
+                hint: "💡 Wskazówka: While/When + Past continuous (was cycling), Past simple (saw)"
+            },
+            {
+                pl: "Oglądałem telewizję, gdy Kath do mnie zadzwoniła.",
+                enAnswers: [
+                    "I was watching TV when Kath phoned me.",
+                    "I was watching TV when Kath called me.",
+                    "I was watching television when Kath phoned me.",
+                    "When Kath phoned me, I was watching TV."
+                ],
+                rule: "Past continuous (was watching) + when + Past simple (phoned/called).",
+                hint: "💡 Wskazówka: Tło: Past continuous (was watching), krótkie zdarzenie: Past simple (phoned)"
+            },
+            {
+                pl: "Czy byłeś wczoraj w Londynie ze swoimi przyjaciółmi?",
+                enAnswers: [
+                    "Were you in London yesterday with your friends?",
+                    "Were you in London with your friends yesterday?"
+                ],
+                rule: "Past simple czasownika 'be': Were you in London...?",
+                hint: "💡 Wskazówka: Pytanie z czasownikiem 'be' w przeszłości ➔ Were you...?"
+            },
+            {
+                pl: "On nie poszedł wczoraj do szkoły, ponieważ był chory.",
+                enAnswers: [
+                    "He didn't go to school yesterday because he was sick.",
+                    "He did not go to school yesterday because he was sick.",
+                    "He didn't go to school yesterday because he was ill."
+                ],
+                rule: "Past simple (przeczenie z didn't go + was sick/ill).",
+                hint: "💡 Wskazówka: Przeczenie w Past simple ➔ didn't + bezokolicznik (didn't go)"
+            },
+            {
+                pl: "Ta luźna bluza nie pasuje do tych obcisłych dżinsów.",
+                enAnswers: [
+                    "This loose sweatshirt doesn't match these tight jeans.",
+                    "This baggy sweatshirt does not match these tight jeans.",
+                    "This loose sweatshirt doesn't fit these tight jeans.",
+                    "This baggy sweatshirt doesn't match these tight jeans."
+                ],
+                rule: "Słownictwo (loose/baggy, sweatshirt, tight, jeans, match).",
+                hint: "💡 Wskazówka: Słownictwo: loose/baggy sweatshirt, tight jeans, match"
+            },
+            {
+                pl: "Co robiłeś wczoraj o godzinie piątej po południu?",
+                enAnswers: [
+                    "What were you doing yesterday at 5 pm?",
+                    "What were you doing at 5 pm yesterday?",
+                    "What were you doing at 5 o'clock yesterday afternoon?",
+                    "What were you doing yesterday at 5:00 pm?"
+                ],
+                rule: "Past continuous (pytanie o czynność w określonym punkcie czasu: What were you doing...?).",
+                hint: "💡 Wskazówka: Pytanie w Past continuous ➔ What were you doing at 5 pm?"
+            },
+            {
+                pl: "Mój brat ma krótkie, kręcone włosy i piegi.",
+                enAnswers: [
+                    "My brother has short, curly hair and freckles.",
+                    "My brother has got short, curly hair and freckles.",
+                    "My brother has short curly hair and freckles."
+                ],
+                rule: "Słownictwo opisu wyglądu: short, curly hair and freckles.",
+                hint: "💡 Wskazówka: short, curly hair and freckles"
+            },
+            {
+                pl: "Czy ona kupiła wczoraj pomadkę do ust i tusz do rzęs?",
+                enAnswers: [
+                    "Did she buy a lipstick and mascara yesterday?",
+                    "Did she buy lipstick and mascara yesterday?",
+                    "Did she buy a lipstick and a mascara yesterday?"
+                ],
+                rule: "Past simple (pytanie: Did she buy...?).",
+                hint: "💡 Wskazówka: Pytanie w Past simple ➔ Did she buy + lipstick, mascara"
+            },
+            {
+                pl: "Nie podobała mi się ta skórzana kurtka, więc jej nie kupiłem.",
+                enAnswers: [
+                    "I didn't like that leather jacket, so I didn't buy it.",
+                    "I didn't like this leather jacket, so I didn't buy it.",
+                    "I did not like that leather jacket so I did not buy it."
+                ],
+                rule: "Past simple (didn't like, didn't buy + leather jacket).",
+                hint: "💡 Wskazówka: Przeczenia w Past simple ➔ didn't like, didn't buy"
+            },
+            {
+                pl: "Podczas gdy my przymierzaliśmy ubrania, oni czekali na zewnątrz.",
+                enAnswers: [
+                    "While we were trying on clothes, they were waiting outside.",
+                    "While we were trying on clothes, they waited outside.",
+                    "When we were trying on clothes, they were waiting outside."
+                ],
+                rule: "Past continuous dla równoległych czynności w przeszłości: were trying on, were waiting.",
+                hint: "💡 Wskazówka: While we were trying on..., they were waiting outside"
+            },
+            {
+                pl: "Mój dziadek jest łysy, ale ma siwą brodę i wąsy.",
+                enAnswers: [
+                    "My grandfather is bald, but he has a grey beard and a moustache.",
+                    "My grandad is bald, but he has a grey beard and moustache.",
+                    "My grandfather is bald, but he has a gray beard and a moustache.",
+                    "My grandfather is bald but has a beard and moustache."
+                ],
+                rule: "Słownictwo wyglądu: bald, beard, moustache.",
+                hint: "💡 Wskazówka: is bald, has a beard and a moustache"
+            },
+            {
+                pl: "Ona nie miała na sobie czapki ani rękawiczek z jednym palcem.",
+                enAnswers: [
+                    "She wasn't wearing a cap or mittens.",
+                    "She was not wearing a cap or mittens.",
+                    "She didn't wear a cap or mittens."
+                ],
+                rule: "Past continuous (wasn't wearing) + słownictwo: cap, mittens.",
+                hint: "💡 Wskazówka: wasn't wearing a cap or mittens"
+            },
+            {
+                pl: "Żartujesz! Ta kwiecista sukienka wygląda niesamowicie!",
+                enAnswers: [
+                    "You are joking! This flowery dress looks amazing!",
+                    "You're joking! This flowery dress looks amazing!",
+                    "You are joking! That flowery dress looks fantastic!",
+                    "You're joking! This flowery dress looks great!"
+                ],
+                rule: "Zwroty funkcyjne i reakcje: You are joking! + flowery dress + looks amazing/fantastic.",
+                hint: "💡 Wskazówka: You are joking! + flowery dress looks amazing!"
+            }
+        ];
+
+        // =========================================================
+        // ZMIENNE STANU
+        // =========================================================
+        let currentMode = 1;
+        let m1Index = 0, m1Correct = 0, m1Total = 0;
+        let m2Index = 0, m2Correct = 0, m2Total = 0;
+        let m3Index = 0, m3Correct = 0;
+        let speechRecognitionChat = null;
+        let genericSpeechRecognition = null;
+
+        // =========================================================
+        // INICJALIZACJA I PRZEŁĄCZANIE TRYBÓW
+        // =========================================================
+        function switchMode(modeNum) {
+            currentMode = modeNum;
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById('tab-' + i).classList.remove('active');
+                document.getElementById(`mode-${i}-container`).style.display = 'none';
+            }
+            document.getElementById('tab-' + modeNum).classList.add('active');
+            document.getElementById(`mode-${modeNum}-container`).style.display = 'block';
+
+            if (modeNum === 1) loadWordM1();
+            if (modeNum === 2) loadWordM2();
+            if (modeNum === 3) loadSentenceM3();
+        }
+
+        // =========================================================
+        // OBSŁUGA TRYBU 1 (ANG -> POL)
+        // =========================================================
+        function loadWordM1() {
+            const item = wordlist[m1Index];
+            document.getElementById('m1-en-word').innerText = item.en;
+            document.getElementById('m1-input').value = '';
+            document.getElementById('m1-feedback').style.display = 'none';
+            document.getElementById('m1-input').focus();
+        }
+
+        function checkWordTranslation(mode) {
+            const inputEl = document.getElementById(`m${mode}-input`);
+            const feedbackEl = document.getElementById(`m${mode}-feedback`);
+            const userVal = inputEl.value.trim().toLowerCase();
+
+            if (!userVal) return;
+
+            if (mode === 1) {
+                const item = wordlist[m1Index];
+                m1Total++;
+                const isMatch = item.pl.some(p => userVal.includes(p.toLowerCase()) || p.toLowerCase().includes(userVal));
+
+                feedbackEl.style.display = 'block';
+                if (isMatch) {
+                    m1Correct++;
+                    feedbackEl.className = 'feedback-box feedback-correct';
+                    feedbackEl.innerHTML = `✅ <strong>Świetnie!</strong> Poprawne znaczenie: <em>${item.pl.join(', ')}</em>`;
+                } else {
+                    feedbackEl.className = 'feedback-box feedback-incorrect';
+                    feedbackEl.innerHTML = `❌ <strong>Niezbyt dokładnie.</strong> Słowo <strong>${item.en}</strong> oznacza: <strong>${item.pl.join(', ')}</strong>.`;
+                }
+                document.getElementById('m1-score').innerText = `Poprawne: ${m1Correct} / ${m1Total}`;
+            } else if (mode === 2) {
+                const item = wordlist[m2Index];
+                m2Total++;
+                const expectedEn = item.en.toLowerCase();
+                const isMatch = (userVal === expectedEn) || expectedEn.includes(userVal);
+
+                feedbackEl.style.display = 'block';
+                if (isMatch) {
+                    m2Correct++;
+                    feedbackEl.className = 'feedback-box feedback-correct';
+                    feedbackEl.innerHTML = `✅ <strong>Doskonale!</strong> Angielskie słowo to: <strong>${item.en}</strong>`;
+                } else {
+                    feedbackEl.className = 'feedback-box feedback-incorrect';
+                    feedbackEl.innerHTML = `❌ <strong>Poprawna wersja:</strong> <strong>${item.en}</strong> (Twoja odpowiedź: <em>${inputEl.value}</em>)`;
+                }
+                speakTextEnglish(item.en);
+                document.getElementById('m2-score').innerText = `Poprawne: ${m2Correct} / ${m2Total}`;
+            }
+        }
+
+        function nextWord(mode) {
+            if (mode === 1) {
+                m1Index = (m1Index + 1) % wordlist.length;
+                loadWordM1();
+            } else if (mode === 2) {
+                m2Index = (m2Index + 1) % wordlist.length;
+                loadWordM2();
+            }
+        }
+
+        function speakCurrentWord(mode) {
+            if (mode === 1) {
+                speakTextEnglish(wordlist[m1Index].en);
+            }
+        }
+
+        // =========================================================
+        // OBSŁUGA TRYBU 2 (POL -> ANG)
+        // =========================================================
+        function loadWordM2() {
+            const item = wordlist[m2Index];
+            document.getElementById('m2-pl-word').innerText = item.pl[0];
+            document.getElementById('m2-input').value = '';
+            document.getElementById('m2-feedback').style.display = 'none';
+            document.getElementById('m2-input').focus();
+        }
+
+        // =========================================================
+        // OBSŁUGA TRYBU 3: 15 ZDAŃ Z GRAMATYKĄ
+        // =========================================================
+        function loadSentenceM3() {
+            const item = sentencesList[m3Index];
+            document.getElementById('m3-progress').innerText = `Zdanie: ${m3Index + 1} / ${sentencesList.length}`;
+            document.getElementById('m3-sentence-pl').innerText = `${m3Index + 1}. ${item.pl}`;
+            document.getElementById('m3-grammar-hint').innerText = item.hint;
+            document.getElementById('m3-input').value = '';
+            document.getElementById('m3-feedback').style.display = 'none';
+            document.getElementById('m3-input').focus();
+        }
+
+        function normalizeSentence(s) {
+            return s.toLowerCase().replace(/[.,!?'"`]/g, '').replace(/\s+/g, ' ').trim();
+        }
+
+        function checkSentenceTranslation() {
+            const inputEl = document.getElementById('m3-input');
+            const feedbackEl = document.getElementById('m3-feedback');
+            const userVal = inputEl.value.trim();
+
+            if (!userVal) return;
+
+            const item = sentencesList[m3Index];
+            const normalizedUser = normalizeSentence(userVal);
+            const isMatch = item.enAnswers.some(ans => normalizeSentence(ans) === normalizedUser);
+
+            feedbackEl.style.display = 'block';
+            if (isMatch) {
+                m3Correct++;
+                feedbackEl.className = 'feedback-box feedback-correct';
+                feedbackEl.innerHTML = `✅ <strong>Doskonale!</strong> Zdanie przetłumaczone poprawnie.<br><em>Zasada: ${item.rule}</em>`;
+            } else {
+                feedbackEl.className = 'feedback-box feedback-incorrect';
+                feedbackEl.innerHTML = `❌ <strong>Warto poprawić:</strong><br><strong>Wzorcowa odpowiedź:</strong> ${item.enAnswers[0]}<br><em>Wyjaśnienie: ${item.rule}</em>`;
+            }
+            speakTextEnglish(item.enAnswers[0]);
+        }
+
+        function nextSentence() {
+            m3Index = (m3Index + 1) % sentencesList.length;
+            loadSentenceM3();
+        }
+
+        // =========================================================
+        // OBSŁUGA TRYBU 4: KONWERSACJA Z AI I KOREKTA BŁĘDÓW
+        // =========================================================
+        const botPrompt = `You are a friendly, encouraging English teacher chatting with a Polish 7th grade student about fashion, clothes, hairstyles, appearance, make-up, and past events (shopping, what they did yesterday, what they were doing when something happened).
+        
+        CRITICAL RULES FOR CHECKING AND CONVERSING:
+        1. Always check the student's reply for any grammar, vocabulary, or spelling errors.
+        2. If the user's sentence contains any mistake, start your response with: "I corrected your answer: [write the student's sentence in 100% correct English]." Then continue on a new line with your normal conversation response.
+        3. If the user's response is already 100% grammatically correct, DO NOT include "I corrected your answer:".
+        4. Conduct the entire conversation in natural English (A2/B1 level), using Unit 2 vocabulary (clothes, appearance, hair) and Past Simple/Past Continuous.
+        5. Use functional expressions like: "Good for you!", "No way!", "That's terrible!", "What a pity!", "What a wonderful dress!", "You look great!", "You are joking!".
+        6. Ask engaging questions that encourage the student to describe what they wore or did.`;
+
+        const sessionID = 'unit2_' + Math.random().toString(36).substring(2);
+        const bot = new WizardOrpheus('', botPrompt, { session: sessionID });
+
+        bot.createUserAction({
+            name: 'sendMessage',
+            parameters: ['Student message to AI'],
+            howBotShouldHandle: "Check for grammar errors and reply to the student in English."
+        });
+
+        bot.botAction('respond', 'Respond to the user', { response: 'sample response' }, data => {
+            const log = document.getElementById('conversation-log');
+            let formattedResponse = data.response;
+
+            if (formattedResponse.includes('I corrected your answer:')) {
+                formattedResponse = formattedResponse.replace(
+                    /(I corrected your answer:[^\n\r<]+)/gi,
+                    '<div class="correction-tip">✏️ <strong>$1</strong></div>'
+                );
+            }
+
+            log.innerHTML += `
+                <div class="chat-bubble chat-ai">
+                    <strong>AI Teacher:</strong> ${formattedResponse}
+                </div>
+            `;
+            log.scrollTop = log.scrollHeight;
+
+            let plainTextToSpeak = data.response.replace(/<[^>]*>?/gm, '');
+            onAIResponseReceived(plainTextToSpeak);
+        });
+
+        function sendChatMessage() {
+            const inputEl = document.getElementById('m4-input');
+            const text = inputEl.value.trim();
+            if (!text) return;
+
+            const log = document.getElementById('conversation-log');
+            log.innerHTML += `
+                <div class="chat-bubble chat-user">
+                    <strong>Ty:</strong> ${text}
+                </div>
+            `;
+            log.scrollTop = log.scrollHeight;
+
+            bot.sendMessage(text);
+            inputEl.value = '';
+        }
+
+        // =========================================================
+        // ROZPOZNAWANIE MOWY DLA FORMULARZY I CZATU (STT)
+        // =========================================================
+        function toggleVoiceInput(targetInputId, lang, btnId, onCompleteCallback) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                alert('Twoja przeglądarka nie obsługuje rozpoznawania mowy (Web Speech API). Użyj Chrome lub Edge.');
+                return;
+            }
+
+            const btn = document.getElementById(btnId);
+
+            if (genericSpeechRecognition) {
+                genericSpeechRecognition.stop();
+                genericSpeechRecognition = null;
+                btn.classList.remove('recording-pulse');
+                return;
+            }
+
+            genericSpeechRecognition = new SpeechRecognition();
+            genericSpeechRecognition.lang = lang;
+            genericSpeechRecognition.interimResults = false;
+            genericSpeechRecognition.maxAlternatives = 1;
+
+            btn.classList.add('recording-pulse');
+
+            genericSpeechRecognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                document.getElementById(targetInputId).value = transcript;
+                if (onCompleteCallback) onCompleteCallback();
+            };
+
+            genericSpeechRecognition.onend = () => {
+                btn.classList.remove('recording-pulse');
+                genericSpeechRecognition = null;
+            };
+
+            genericSpeechRecognition.onerror = () => {
+                btn.classList.remove('recording-pulse');
+                genericSpeechRecognition = null;
+            };
+
+            genericSpeechRecognition.start();
+        }
+
+        function toggleSpeechRecognitionChat() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                alert('Rozpoznawanie mowy nie jest wspierane w tej przeglądarce.');
+                return;
+            }
+
+            const micBtn = document.getElementById('mic-btn');
+            const statusEl = document.getElementById('m4-status');
+
+            if (speechRecognitionChat) {
+                speechRecognitionChat.stop();
+                speechRecognitionChat = null;
+                micBtn.classList.remove('recording-pulse');
+                statusEl.innerText = '';
+                return;
+            }
+
+            speechRecognitionChat = new SpeechRecognition();
+            speechRecognitionChat.lang = 'en-US';
+            speechRecognitionChat.interimResults = false;
+
+            micBtn.classList.add('recording-pulse');
+            statusEl.innerText = '🎤 Słucham... Mów po angielsku.';
+
+            speechRecognitionChat.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                document.getElementById('m4-input').value = transcript;
+                statusEl.innerText = '';
+
+                if (document.getElementById('stt-auto-send').checked) {
+                    sendChatMessage();
+                }
+            };
+
+            speechRecognitionChat.onend = () => {
+                micBtn.classList.remove('recording-pulse');
+                statusEl.innerText = '';
+                speechRecognitionChat = null;
+            };
+
+            speechRecognitionChat.onerror = (event) => {
+                micBtn.classList.remove('recording-pulse');
+                statusEl.innerText = '⚠️ Błąd mikrofonu: ' + event.error;
+                speechRecognitionChat = null;
+            };
+
+            speechRecognitionChat.start();
+        }
+
+        // Inicjalizacja pierwszego słówka przy starcie
+        window.addEventListener('DOMContentLoaded', () => {
+            loadWordM1();
+        });
+    </script>
+</body>
+
+</html>
