@@ -707,17 +707,32 @@
             document.getElementById('m1-input').focus();
         }
 
+        function normalizeWord(str) {
+            if (!str) return '';
+            return str
+                .toLowerCase()
+                .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?"']/g, '')
+                .replace(/\b(a|an|the)\b/gi, '')
+                .replace(/\s+/g, ' ')
+                .trim();
+        }
+
         function checkWordTranslation(mode) {
             const inputEl = document.getElementById(`m${mode}-input`);
             const feedbackEl = document.getElementById(`m${mode}-feedback`);
-            const userVal = inputEl.value.trim().toLowerCase();
+            const rawVal = inputEl.value.trim();
 
-            if (!userVal) return;
+            if (!rawVal) return;
+
+            const userVal = normalizeWord(rawVal);
 
             if (mode === 1) {
                 const item = wordlist[m1Index];
                 m1Total++;
-                const isMatch = item.pl.some(p => userVal.includes(p.toLowerCase()) || p.toLowerCase().includes(userVal));
+                const isMatch = item.pl.some(p => {
+                    const cleanP = normalizeWord(p);
+                    return userVal === cleanP || userVal.includes(cleanP) || cleanP.includes(userVal);
+                });
 
                 feedbackEl.style.display = 'block';
                 if (isMatch) {
@@ -732,8 +747,10 @@
             } else if (mode === 2) {
                 const item = wordlist[m2Index];
                 m2Total++;
-                const expectedEn = item.en.toLowerCase();
-                const isMatch = (userVal === expectedEn) || expectedEn.includes(userVal);
+                const cleanExpected = normalizeWord(item.en);
+                const rawCleaned = rawVal.toLowerCase().replace(/[.,!?'"`]/g, '').trim();
+                const expectedCleaned = item.en.toLowerCase().replace(/[.,!?'"`]/g, '').trim();
+                const isMatch = (userVal === cleanExpected) || (rawCleaned === expectedCleaned);
 
                 feedbackEl.style.display = 'block';
                 if (isMatch) {
@@ -742,7 +759,7 @@
                     feedbackEl.innerHTML = `✅ <strong>Doskonale!</strong> Angielskie słowo to: <strong>${item.en}</strong>`;
                 } else {
                     feedbackEl.className = 'feedback-box feedback-incorrect';
-                    feedbackEl.innerHTML = `❌ <strong>Poprawna wersja:</strong> <strong>${item.en}</strong> (Twoja odpowiedź: <em>${inputEl.value}</em>)`;
+                    feedbackEl.innerHTML = `❌ <strong>Poprawna wersja:</strong> <strong>${item.en}</strong> (Twoja odpowiedź: <em>${rawVal}</em>)`;
                 }
                 speakTextEnglish(item.en); // Odsłuchanie słowa lektorem
                 document.getElementById('m2-score').innerText = `Poprawne: ${m2Correct} / ${m2Total}`;

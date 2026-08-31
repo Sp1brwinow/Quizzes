@@ -781,17 +781,32 @@
             document.getElementById('m1-input').focus();
         }
 
+        function normalizeWord(str) {
+            if (!str) return '';
+            return str
+                .toLowerCase()
+                .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?"']/g, '')
+                .replace(/\b(a|an|the)\b/gi, '')
+                .replace(/\s+/g, ' ')
+                .trim();
+        }
+
         function checkWordTranslation(mode) {
             const inputEl = document.getElementById(`m${mode}-input`);
             const feedbackEl = document.getElementById(`m${mode}-feedback`);
-            const userVal = inputEl.value.trim().toLowerCase();
+            const rawVal = inputEl.value.trim();
 
-            if (!userVal) return;
+            if (!rawVal) return;
+
+            const userVal = normalizeWord(rawVal);
 
             if (mode === 1) {
                 const item = wordlist[m1Index];
                 m1Total++;
-                const isMatch = item.pl.some(p => userVal.includes(p.toLowerCase()) || p.toLowerCase().includes(userVal));
+                const isMatch = item.pl.some(p => {
+                    const cleanP = normalizeWord(p);
+                    return userVal === cleanP || userVal.includes(cleanP) || cleanP.includes(userVal);
+                });
 
                 feedbackEl.style.display = 'block';
                 if (isMatch) {
@@ -806,8 +821,10 @@
             } else if (mode === 2) {
                 const item = wordlist[m2Index];
                 m2Total++;
-                const expectedEn = item.en.toLowerCase();
-                const isMatch = (userVal === expectedEn) || expectedEn.includes(userVal);
+                const cleanExpected = normalizeWord(item.en);
+                const rawCleaned = rawVal.toLowerCase().replace(/[.,!?'"`]/g, '').trim();
+                const expectedCleaned = item.en.toLowerCase().replace(/[.,!?'"`]/g, '').trim();
+                const isMatch = (userVal === cleanExpected) || (rawCleaned === expectedCleaned);
 
                 feedbackEl.style.display = 'block';
                 if (isMatch) {
@@ -816,7 +833,7 @@
                     feedbackEl.innerHTML = `✅ <strong>Doskonale!</strong> Angielskie słowo to: <strong>${item.en}</strong>`;
                 } else {
                     feedbackEl.className = 'feedback-box feedback-incorrect';
-                    feedbackEl.innerHTML = `❌ <strong>Poprawna wersja:</strong> <strong>${item.en}</strong> (Twoja odpowiedź: <em>${inputEl.value}</em>)`;
+                    feedbackEl.innerHTML = `❌ <strong>Poprawna wersja:</strong> <strong>${item.en}</strong> (Twoja odpowiedź: <em>${rawVal}</em>)`;
                 }
                 speakTextEnglish(item.en);
                 document.getElementById('m2-score').innerText = `Poprawne: ${m2Correct} / ${m2Total}`;
@@ -957,98 +974,177 @@
         }
 
         // =========================================================
-        // ROZPOZNAWANIE MOWY DLA FORMULARZY I CZATU (STT)
+        // ROZPOZNAWANIE MOWY (SPEECH-TO-TEXT) DLA CZATU
         // =========================================================
-        function toggleVoiceInput(targetInputId, lang, btnId, onCompleteCallback) {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechRecognition) {
-                alert('Twoja przeglądarka nie obsługuje rozpoznawania mowy (Web Speech API). Użyj Chrome lub Edge.');
-                return;
-            }
-
-            const btn = document.getElementById(btnId);
-
-            if (genericSpeechRecognition) {
-                genericSpeechRecognition.stop();
-                genericSpeechRecognition = null;
-                btn.classList.remove('recording-pulse');
-                return;
-            }
-
-            genericSpeechRecognition = new SpeechRecognition();
-            genericSpeechRecognition.lang = lang;
-            genericSpeechRecognition.interimResults = false;
-            genericSpeechRecognition.maxAlternatives = 1;
-
-            btn.classList.add('recording-pulse');
-
-            genericSpeechRecognition.onresult = (event) => {
-                const transcript = event.results[0][0].transcript;
-                document.getElementById(targetInputId).value = transcript;
-                if (onCompleteCallback) onCompleteCallback();
-            };
-
-            genericSpeechRecognition.onend = () => {
-                btn.classList.remove('recording-pulse');
-                genericSpeechRecognition = null;
-            };
-
-            genericSpeechRecognition.onerror = () => {
-                btn.classList.remove('recording-pulse');
-                genericSpeechRecognition = null;
-            };
-
-            genericSpeechRecognition.start();
-        }
+        let isRecordingChat = false;
+        let accumulatedChatTranscript = '';
+        let shouldSendChatOnStop = false;
 
         function toggleSpeechRecognitionChat() {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechRecognition) {
-                alert('Rozpoznawanie mowy nie jest wspierane w tej przeglądarce.');
+            const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRec) {
+                alert('Twoja przeglądarka nie obsługuje rozpoznawania mowy. Skorzystaj z Google Chrome lub Edge.');
                 return;
             }
 
             const micBtn = document.getElementById('mic-btn');
+            const inputField = document.getElementById('m4-input');
+            const autoSendCb = document.getElementById('stt-auto-send');
             const statusEl = document.getElementById('m4-status');
 
-            if (speechRecognitionChat) {
-                speechRecognitionChat.stop();
-                speechRecognitionChat = null;
-                micBtn.classList.remove('recording-pulse');
-                statusEl.innerText = '';
+            if (!speechRecognitionChat) {
+                speechRecognitionChat = new SpeechRec();
+                speechRecognitionChat.lang = 'en-US';
+                speechRecognitionChat.interimResults = true;
+                speechRecognitionChat.continuous = true;
+
+                speechRecognitionChat.onstart = function () {
+                    isRecordingChat = true;
+                    accumulatedChatTranscript = inputField ? inputField.value.trim() : '';
+                    if (accumulatedChatTranscript.length > 0) accumulatedChatTranscript += ' ';
+
+                    micBtn.innerHTML = '⏹️ STOP i Wyślij';
+                    micBtn.classList.add('recording-pulse');
+                    micBtn.style.background = 'linear-gradient(135deg, #dc2626 0%, #991b1b 100%)';
+                    if (statusEl) statusEl.innerText = '🎤 Słucham ciągle... Naciśnij STOP, aby zakończyć i wysłać.';
+                };
+
+                speechRecognitionChat.onresult = function (event) {
+                    let currentFinal = '';
+                    let currentInterim = '';
+
+                    for (let i = event.resultIndex; i < event.results.length; ++i) {
+                        if (event.results[i].isFinal) {
+                            currentFinal += event.results[i][0].transcript + ' ';
+                        } else {
+                            currentInterim += event.results[i][0].transcript;
+                        }
+                    }
+
+                    if (currentFinal) {
+                        accumulatedChatTranscript += currentFinal;
+                    }
+
+                    inputField.value = (accumulatedChatTranscript + currentInterim).trim();
+                };
+
+                speechRecognitionChat.onerror = speechRecognitionChat.onend = function () {
+                    const wasRecording = isRecordingChat;
+                    isRecordingChat = false;
+                    micBtn.innerHTML = '🎤 Odpowiedz głosem (Mów)';
+                    micBtn.classList.remove('recording-pulse');
+                    micBtn.style.background = 'linear-gradient(135deg, #059669 0%, #047857 100%)';
+                    if (statusEl) statusEl.innerText = '';
+
+                    if (shouldSendChatOnStop || (autoSendCb && autoSendCb.checked && wasRecording)) {
+                        shouldSendChatOnStop = false;
+                        const val = inputField.value.trim();
+                        if (val.length > 0) {
+                            setTimeout(() => {
+                                sendChatMessage();
+                            }, 250);
+                        }
+                    }
+                };
+            }
+
+            if (isRecordingChat) {
+                shouldSendChatOnStop = true;
+                try {
+                    speechRecognitionChat.stop();
+                } catch (e) {}
+            } else {
+                shouldSendChatOnStop = false;
+                try {
+                    speechRecognitionChat.start();
+                } catch (e) {
+                    try {
+                        speechRecognitionChat.stop();
+                        setTimeout(() => speechRecognitionChat.start(), 150);
+                    } catch (err) {}
+                }
+            }
+        }
+
+        // =========================================================
+        // ROZPOZNAWANIE MOWY DLA TRYBÓW 1, 2, 3 (STOP I SPRAWDŹ)
+        // =========================================================
+        let activeVoiceRecInstance = null;
+        let activeVoiceBtn = null;
+
+        function toggleVoiceInput(targetInputId, lang, btnId, autoSubmitCallback) {
+            const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRec) {
+                alert('Rozpoznawanie mowy nie jest wspierane w tej przeglądarce.');
                 return;
             }
 
-            speechRecognitionChat = new SpeechRecognition();
-            speechRecognitionChat.lang = 'en-US';
-            speechRecognitionChat.interimResults = false;
+            const btn = document.getElementById(btnId);
+            const inputField = document.getElementById(targetInputId);
 
-            micBtn.classList.add('recording-pulse');
-            statusEl.innerText = '🎤 Słucham... Mów po angielsku.';
-
-            speechRecognitionChat.onresult = (event) => {
-                const transcript = event.results[0][0].transcript;
-                document.getElementById('m4-input').value = transcript;
-                statusEl.innerText = '';
-
-                if (document.getElementById('stt-auto-send').checked) {
-                    sendChatMessage();
+            if (activeVoiceRecInstance) {
+                try {
+                    activeVoiceRecInstance.stop();
+                } catch (e) {}
+                activeVoiceRecInstance = null;
+                if (btn) {
+                    btn.innerHTML = '🎤 Mów';
+                    btn.classList.remove('recording-pulse');
+                    btn.style.background = 'linear-gradient(135deg, #059669 0%, #047857 100%)';
                 }
+                if (autoSubmitCallback && inputField.value.trim().length > 0) {
+                    setTimeout(autoSubmitCallback, 250);
+                }
+                return;
+            }
+
+            const rec = new SpeechRec();
+            rec.lang = lang;
+            rec.interimResults = true;
+            rec.continuous = true;
+
+            let accumulated = inputField.value.trim();
+            if (accumulated.length > 0) accumulated += ' ';
+
+            rec.onstart = function () {
+                activeVoiceRecInstance = rec;
+                activeVoiceBtn = btn;
+                btn.innerHTML = '⏹️ STOP i Sprawdź';
+                btn.classList.add('recording-pulse');
+                btn.style.background = 'linear-gradient(135deg, #dc2626 0%, #991b1b 100%)';
             };
 
-            speechRecognitionChat.onend = () => {
-                micBtn.classList.remove('recording-pulse');
-                statusEl.innerText = '';
-                speechRecognitionChat = null;
+            rec.onresult = function (e) {
+                let currentFinal = '';
+                let currentInterim = '';
+
+                for (let i = e.resultIndex; i < e.results.length; i++) {
+                    if (e.results[i].isFinal) {
+                        currentFinal += e.results[i][0].transcript + ' ';
+                    } else {
+                        currentInterim += e.results[i][0].transcript;
+                    }
+                }
+
+                if (currentFinal) accumulated += currentFinal;
+                inputField.value = (accumulated + currentInterim).trim();
             };
 
-            speechRecognitionChat.onerror = (event) => {
-                micBtn.classList.remove('recording-pulse');
-                statusEl.innerText = '⚠️ Błąd mikrofonu: ' + event.error;
-                speechRecognitionChat = null;
+            rec.onerror = rec.onend = function () {
+                activeVoiceRecInstance = null;
+                btn.innerHTML = '🎤 Mów';
+                btn.classList.remove('recording-pulse');
+                btn.style.background = 'linear-gradient(135deg, #059669 0%, #047857 100%)';
             };
 
-            speechRecognitionChat.start();
+            try {
+                rec.start();
+            } catch (e) {
+                try {
+                    rec.stop();
+                    setTimeout(() => rec.start(), 150);
+                } catch (err) {}
+            }
         }
 
         // Inicjalizacja pierwszego słówka przy starcie
