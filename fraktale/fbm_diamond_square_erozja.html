@@ -1,0 +1,1326 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proceduralne Tereny Fraktalne (fBm, Diamond-Square) i Erozja Hydrauliczna 3D</title>
+    <link rel="stylesheet" href="../style.css" />
+    <style>
+        :root {
+            --bg-dark: #07152b;
+            --card-bg: rgba(14, 30, 56, 0.85);
+            --card-border: rgba(56, 189, 248, 0.28);
+            --primary: #38bdf8;
+            --primary-hover: #0284c7;
+            --accent-gold: #fbbf24;
+            --accent-green: #34d399;
+            --accent-orange: #fb923c;
+            --accent-cyan: #22d3ee;
+            --danger: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: linear-gradient(180deg, #07152b 0%, #0d2852 45%, #184e77 100%);
+            color: #f8fafc;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            padding: 24px 16px 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .main-container {
+            max-width: 1280px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Górna belka nawigacji */
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            background: rgba(14, 30, 56, 0.85);
+            border: 1px solid rgba(125, 211, 252, 0.4);
+            color: #7dd3fc;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(8px);
+        }
+
+        .nav-btn:hover {
+            color: #ffffff;
+            border-color: #38bdf8;
+            background: #0284c7;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.4);
+        }
+
+        /* Nagłówek i opis edukacyjny */
+        .header-card {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.92) 0%, rgba(30, 41, 59, 0.85) 100%);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            border-radius: 18px;
+            padding: 22px 26px;
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(12px);
+            line-height: 1.6;
+        }
+
+        .header-card h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 0%, #38bdf8 55%, #fbbf24 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .header-card p {
+            color: #cbd5e1;
+            font-size: 0.96rem;
+            margin-bottom: 8px;
+        }
+
+        .header-card strong {
+            color: #38bdf8;
+        }
+
+        /* Układ główny: Canvas + Panel sterowania */
+        .app-layout {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 20px;
+            align-items: start;
+        }
+
+        @media (max-width: 1024px) {
+            .app-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Sekcja wizualizacji 3D */
+        .viewport-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 16px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+        }
+
+        #renderCanvas {
+            width: 100%;
+            height: auto;
+            aspect-ratio: 4 / 3;
+            max-height: 600px;
+            background: #030712;
+            border-radius: 12px;
+            border: 2px solid rgba(56, 189, 248, 0.4);
+            box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.8);
+            cursor: grab;
+            display: block;
+        }
+
+        #renderCanvas:active {
+            cursor: grabbing;
+        }
+
+        .canvas-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 0 4px;
+        }
+
+        .view-btn-group {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .view-btn {
+            background: #1e293b;
+            border: 1px solid #475569;
+            color: #cbd5e1;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .view-btn:hover {
+            border-color: #38bdf8;
+            color: #fff;
+            background: #334155;
+        }
+
+        .view-btn.active {
+            background: #0284c7;
+            border-color: #38bdf8;
+            color: #ffffff;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+        }
+
+        .stats-bar {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            display: flex;
+            gap: 14px;
+            align-items: center;
+            font-family: monospace;
+        }
+
+        .stats-bar span b {
+            color: #38bdf8;
+        }
+
+        /* Panel kontrolny z suwakami */
+        .controls-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 20px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            max-height: 850px;
+            overflow-y: auto;
+        }
+
+        .controls-card::-webkit-scrollbar {
+            width: 6px;
+        }
+        .controls-card::-webkit-scrollbar-thumb {
+            background: rgba(56, 189, 248, 0.4);
+            border-radius: 3px;
+        }
+
+        .panel-section {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 14px;
+        }
+
+        .panel-section:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .section-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #38bdf8;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .algo-tabs {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .algo-tab {
+            background: #1e293b;
+            border: 1px solid #475569;
+            color: #f1f5f9;
+            padding: 8px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .algo-tab:hover {
+            border-color: #38bdf8;
+            background: #334155;
+        }
+
+        .algo-tab.active {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            border-color: #38bdf8;
+            color: #fff;
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
+        }
+
+        .terrain-type-select {
+            width: 100%;
+            background: #0f172a;
+            border: 1px solid #475569;
+            color: #f8fafc;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            outline: none;
+            margin-bottom: 12px;
+            cursor: pointer;
+        }
+
+        .terrain-type-select:focus {
+            border-color: #38bdf8;
+        }
+
+        .ctrl-row {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-bottom: 10px;
+        }
+
+        .ctrl-label-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            color: #cbd5e1;
+        }
+
+        .ctrl-val {
+            font-family: monospace;
+            font-weight: bold;
+            color: #38bdf8;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #334155;
+            outline: none;
+            cursor: pointer;
+            accent-color: #38bdf8;
+        }
+
+        .btn-action-main {
+            width: 100%;
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            border: 1px solid #38bdf8;
+            color: #fff;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 0.92rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4);
+        }
+
+        .btn-action-main:hover {
+            background: #0284c7;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(56, 189, 248, 0.5);
+        }
+
+        .btn-erosion {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            border-color: #10b981;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.35);
+        }
+
+        .btn-erosion:hover {
+            background: #059669;
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
+        }
+
+        .btn-erosion.running {
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            border-color: #ef4444;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .btn-secondary {
+            background: #1e293b;
+            border: 1px solid #475569;
+            color: #f1f5f9;
+            padding: 8px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .btn-secondary:hover {
+            border-color: #38bdf8;
+            background: #334155;
+        }
+
+        /* Karta z objaśnieniem matematycznym */
+        .math-explainer {
+            background: rgba(15, 23, 42, 0.92);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 18px;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .math-block {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .math-block h3 {
+            color: #38bdf8;
+            font-size: 1.05rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .math-block p {
+            font-size: 0.9rem;
+            color: #cbd5e1;
+            line-height: 1.5;
+            margin-bottom: 6px;
+        }
+
+        .math-formula {
+            background: #0b1120;
+            border-left: 3px solid #fbbf24;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+            color: #fde68a;
+            font-size: 0.88rem;
+            margin: 6px 0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="main-container">
+        <!-- Nawigacja powrotna -->
+        <div class="top-nav">
+            <a href="../fraktale.html" class="nav-btn">← Powrót do Fraktali</a>
+            <a href="../index.html" class="nav-btn">🏠 Strona Główna HACK CLUB</a>
+        </div>
+
+        <!-- Nagłówek i definicja podana w instrukcji -->
+        <header class="header-card">
+            <h1>🏔️ Ułamkowy Ruch Browna (fBm), Diamond-Square i Erozja Hydrauliczna</h1>
+            <p>
+                Klasycznym i niezwykle wydajnym sposobem na proceduralną generację <strong>ułamkowego ruchu Browna (fBm)</strong> w 2D/3D jest algorytm <strong>Diamond-Square</strong> (oparty na rekurencyjnym podziale płaszczyzny) lub fBm oparte na <strong>wielooktawowym szumie gradientowym</strong>.
+            </p>
+            <p>
+                Poniższy interaktywny symulator implementuje oba te podejścia w czystym JavaScript/Canvas. Możesz manipulować parametrami ułamkowego wymiaru fraktalnego (<strong>Hurst exponent / Roughness</strong>, <strong>Oktawy</strong>, <strong>Lacunarity</strong>) i obserwować, jak z prostej matematyki wyłaniają się łańcuchy górskie, kratery i płaskowyże w rzucie 3D. Wbudowana symulacja <strong>erozji hydraulicznej</strong> modeluje spływające krople wody, żłobiąc kaniony i odkładając osady w dolinach!
+            </p>
+        </header>
+
+        <!-- Główna strefa aplikacji -->
+        <div class="app-layout">
+            <!-- Ekran 3D / 2D Canvas -->
+            <div class="viewport-card">
+                <canvas id="renderCanvas" width="800" height="600"></canvas>
+
+                <div class="canvas-toolbar">
+                    <div class="view-btn-group">
+                        <button type="button" class="view-btn active" onclick="setViewMode('3d-color')">🌄 Pełne 3D (Kolor)</button>
+                        <button type="button" class="view-btn" onclick="setViewMode('3d-wire')">📐 Siatka 3D (Wireframe)</button>
+                        <button type="button" class="view-btn" onclick="setViewMode('2d-height')">🗺️ Mapa Wysokości 2D</button>
+                        <button type="button" class="view-btn" onclick="setViewMode('2d-water')">💧 Ścieżki Wody i Erozji</button>
+                    </div>
+
+                    <div class="stats-bar">
+                        <span>Wymiar $D$: <b id="stat-dim">2.30</b></span>
+                        <span>Siatka: <b id="stat-grid">129×129</b></span>
+                        <span>Krople: <b id="stat-droplets">0</b></span>
+                    </div>
+                </div>
+
+                <div style="font-size: 0.82rem; color: #94a3b8; text-align: center;">
+                    🖱️ <strong>Sterowanie 3D:</strong> Przeciągaj lewym przyciskiem myszy, aby obracać widok 360° | Użyj kółka myszy, aby przybliżać/oddalać (Zoom).
+                </div>
+            </div>
+
+            <!-- Panel Sterowania Parametrami -->
+            <div class="controls-card">
+                <!-- 1. Wybór Algorytmu -->
+                <div class="panel-section">
+                    <div class="section-title">🔮 1. Algorytm Generacji fBm</div>
+                    <div class="algo-tabs">
+                        <button type="button" class="algo-tab active" id="tab-fbm" onclick="setAlgorithm('fbm')">Szum Gradientowy fBm</button>
+                        <button type="button" class="algo-tab" id="tab-ds" onclick="setAlgorithm('ds')">Diamond-Square</button>
+                    </div>
+
+                    <label for="terrainType" style="font-size: 0.85rem; color: #cbd5e1; display: block; margin-bottom: 4px;">Ukształtowanie i morfologia:</label>
+                    <select id="terrainType" class="terrain-type-select" onchange="onParamChange()">
+                        <option value="standard">Standardowe Góry i Doliny (fBm)</option>
+                        <option value="ridged">Ostre Grzbiety i Turnie (Ridged Multifractal)</option>
+                        <option value="terraces">Płaskowyże i Tarasy Skalne (Terracing)</option>
+                        <option value="crater">Kratery i Kotły Wulkaniczne</option>
+                    </select>
+
+                    <button type="button" class="btn-action-main" onclick="regenerateTerrain()">
+                        🎲 Wygeneruj Nowy Teren (Seed)
+                    </button>
+                </div>
+
+                <!-- 2. Parametry Fraktalne -->
+                <div class="panel-section">
+                    <div class="section-title">📐 2. Parametry Wymiaru Fraktalnego</div>
+
+                    <div class="ctrl-row">
+                        <div class="ctrl-label-bar">
+                            <span>Wykładnik Hursta ($H$ / Roughness):</span>
+                            <span id="val-hurst" class="ctrl-val">0.70</span>
+                        </div>
+                        <input type="range" id="param-hurst" min="0.10" max="0.95" step="0.05" value="0.70" oninput="updateHurst(this.value)">
+                    </div>
+
+                    <div class="ctrl-row">
+                        <div class="ctrl-label-bar">
+                            <span>Liczba Oktaw (Octaves):</span>
+                            <span id="val-octaves" class="ctrl-val">6</span>
+                        </div>
+                        <input type="range" id="param-octaves" min="1" max="9" step="1" value="6" oninput="updateOctaves(this.value)">
+                    </div>
+
+                    <div class="ctrl-row">
+                        <div class="ctrl-label-bar">
+                            <span>Lacunarity (Mnożnik częstotliwości):</span>
+                            <span id="val-lacunarity" class="ctrl-val">2.00</span>
+                        </div>
+                        <input type="range" id="param-lacunarity" min="1.50" max="3.50" step="0.10" value="2.00" oninput="updateLacunarity(this.value)">
+                    </div>
+
+                    <div class="ctrl-row">
+                        <div class="ctrl-label-bar">
+                            <span>Wypiętrzenie (Skala wysokości):</span>
+                            <span id="val-height" class="ctrl-val">1.20</span>
+                        </div>
+                        <input type="range" id="param-height" min="0.30" max="2.50" step="0.10" value="1.20" oninput="updateHeightScale(this.value)">
+                    </div>
+
+                    <div class="ctrl-row">
+                        <div class="ctrl-label-bar">
+                            <span>Poziom Wody (Morza/Jezioro):</span>
+                            <span id="val-water" class="ctrl-val">0.25</span>
+                        </div>
+                        <input type="range" id="param-water" min="0.00" max="0.60" step="0.05" value="0.25" oninput="updateWaterLevel(this.value)">
+                    </div>
+                </div>
+
+                <!-- 3. Symulator Erozji Hydraulicznej -->
+                <div class="panel-section">
+                    <div class="section-title">💧 3. Erozja Hydrauliczna (Krople)</div>
+
+                    <div class="ctrl-row">
+                        <div class="ctrl-label-bar">
+                            <span>Siła erozji (Erodibility):</span>
+                            <span id="val-erosion-strength" class="ctrl-val">0.05</span>
+                        </div>
+                        <input type="range" id="param-erosion-strength" min="0.01" max="0.15" step="0.01" value="0.05" oninput="updateErosionStrength(this.value)">
+                    </div>
+
+                    <div class="ctrl-row">
+                        <div class="ctrl-label-bar">
+                            <span>Pojemność osadu (Sediment Capacity):</span>
+                            <span id="val-sediment" class="ctrl-val">4.0</span>
+                        </div>
+                        <input type="range" id="param-sediment" min="1.0" max="10.0" step="0.5" value="4.0" oninput="updateSedimentCapacity(this.value)">
+                    </div>
+
+                    <button type="button" class="btn-action-main btn-erosion" onclick="runErosionBatch(25000)">
+                        🌧️ Zrzucenie Ulewy (25 000 kropel)
+                    </button>
+
+                    <div class="btn-grid-2">
+                        <button type="button" id="btn-stream-erosion" class="btn-secondary" onclick="toggleContinuousErosion()">
+                            ▶️ Ciągła Erozja
+                        </button>
+                        <button type="button" class="btn-secondary" onclick="resetErosionOnly()">
+                            🔄 Reset Erozji
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 4. Eksport i Widok -->
+                <div class="panel-section">
+                    <div class="section-title">💾 4. Narzędzia i Eksport</div>
+                    <div class="btn-grid-2">
+                        <button type="button" class="btn-secondary" onclick="exportHeightmapPNG()">
+                            🗺️ Zapisz Heightmap PNG
+                        </button>
+                        <button type="button" class="btn-secondary" onclick="export3DScreenshot()">
+                            📸 Zrzut Widoku 3D
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sekcja z objaśnieniem matematycznym i algorytmicznym -->
+        <div class="math-explainer">
+            <div class="math-block">
+                <h3>💎 Algorytm Diamond-Square</h3>
+                <p>
+                    Rekurencyjny podział płaszczyzny o siatce $(2^N + 1) \times (2^N + 1)$. W każdym kroku obliczany jest punkt centralny kwadratu (krok <em>Square</em>), a następnie punkty centralne rombów (krok <em>Diamond</em>).
+                </p>
+                <div class="math-formula">
+                    H(center) = \text{avg}(rogi) + \text{Random} \cdot R_k<br>
+                    R_{k+1} = R_k \cdot 2^{-H}
+                </div>
+                <p>
+                    Gdzie $H \in (0, 1)$ to wykładnik Hursta. Mniejsza wartość $H$ daje szorstki, poszarpany teren o wysokim wymiarze fraktalnym.
+                </p>
+            </div>
+
+            <div class="math-block">
+                <h3>🌊 Ułamkowy Ruch Browna (fBm)</h3>
+                <p>
+                    Superpozycja wielu fal szumu o rosnącej częstotliwości (oktawach) i malejącej amplitudzie (Persistence).
+                </p>
+                <div class="math-formula">
+                    \text{fBm}(\mathbf{x}) = \sum_{i=0}^{N-1} \text{gain}^i \cdot \text{Noise}(\mathbf{x} \cdot \text{lacunarity}^i)<br>
+                    \text{Wymiar fraktalny: } D = 3 - H
+                </div>
+                <p>
+                    Wielość oktaw pozwala uzyskać nieskończony poziom detali – od potężnych masywów górskich po drobne żleby i kamienie.
+                </p>
+            </div>
+
+            <div class="math-block">
+                <h3>💧 Fizyka Erozji Hydraulicznej</h3>
+                <p>
+                    Symulacja cząsteczkowa kropli deszczu spływających w dół wektora gradientu wysokości $\nabla h = (\frac{\partial h}{\partial x}, \frac{\partial h}{\partial y})$.
+                </p>
+                <div class="math-formula">
+                    C = \max(-\Delta h, \text{min}) \cdot |\mathbf{v}| \cdot \text{water} \cdot K_c<br>
+                    \text{Erozja: } s < C \implies \Delta s = (C - s) \cdot K_e<br>
+                    \text{Depozycja: } s > C \implies \Delta s = (s - C) \cdot K_d
+                </div>
+                <p>
+                    Woda pobiera skałę ze stromych zboczy i odkłada osad w dolinach, naturalnie modelując koryta rzek, kaniony i stożki napływowe.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // =========================================================
+        // SILNIK MATEMATYCZNY FBM I SZUMU GRADIENTOWEGO
+        // =========================================================
+        const GRID_SIZE = 129; // 2^7 + 1 dla idealnego Diamond-Square i szybkiego 60 FPS
+        let heightMap = new Float32Array(GRID_SIZE * GRID_SIZE);
+        let originalHeightMap = new Float32Array(GRID_SIZE * GRID_SIZE);
+        let waterFlowMap = new Float32Array(GRID_SIZE * GRID_SIZE);
+
+        let currentAlgorithm = 'fbm';
+        let currentTerrainType = 'standard';
+        let viewMode = '3d-color';
+
+        let paramHurst = 0.70;
+        let paramOctaves = 6;
+        let paramLacunarity = 2.0;
+        let paramHeightScale = 1.2;
+        let paramWaterLevel = 0.25;
+
+        let paramErosionStrength = 0.05;
+        let paramSedimentCapacity = 4.0;
+
+        let isErosionRunning = false;
+        let totalDropletsCount = 0;
+        let currentSeed = Math.random() * 10000;
+
+        // Szum gradientowy Simplex/Perlin
+        const perm = new Uint8Array(512);
+        function initNoiseSeed(seed) {
+            const p = new Uint8Array(256);
+            for (let i = 0; i < 256; i++) p[i] = i;
+            let s = seed;
+            for (let i = 255; i > 0; i--) {
+                s = (s * 9301 + 49297) % 233280;
+                let j = Math.floor((s / 233280) * (i + 1));
+                let tmp = p[i]; p[i] = p[j]; p[j] = tmp;
+            }
+            for (let i = 0; i < 512; i++) perm[i] = p[i & 255];
+        }
+
+        function fade(t) { return t * t * t * (t * (t * 6 - 15) + 10); }
+        function lerp(t, a, b) { return a + t * (b - a); }
+        function grad(hash, x, y) {
+            const h = hash & 3;
+            const u = h < 2 ? x : y;
+            const v = h < 2 ? y : x;
+            return ((h & 1) === 0 ? u : -u) + ((h & 2) === 0 ? v : -v);
+        }
+
+        function perlin2D(x, y) {
+            const X = Math.floor(x) & 255;
+            const Y = Math.floor(y) & 255;
+            const xf = x - Math.floor(x);
+            const yf = y - Math.floor(y);
+            const u = fade(xf);
+            const v = fade(yf);
+
+            const aa = perm[perm[X] + Y];
+            const ab = perm[perm[X] + Y + 1];
+            const ba = perm[perm[X + 1] + Y];
+            const bb = perm[perm[X + 1] + Y + 1];
+
+            return lerp(v,
+                lerp(u, grad(aa, xf, yf), grad(ba, xf - 1, yf)),
+                lerp(u, grad(ab, xf, yf - 1), grad(bb, xf - 1, yf - 1))
+            );
+        }
+
+        function sampleFBM(nx, ny, octaves, hurst, lacunarity) {
+            let total = 0;
+            let frequency = 1.0;
+            let amplitude = 1.0;
+            let maxVal = 0;
+            const gain = Math.pow(2.0, -hurst);
+
+            for (let o = 0; o < octaves; o++) {
+                let n = perlin2D(nx * frequency, ny * frequency);
+
+                if (currentTerrainType === 'ridged') {
+                    n = 1.0 - Math.abs(n);
+                    n = n * n;
+                }
+
+                total += n * amplitude;
+                maxVal += amplitude;
+                frequency *= lacunarity;
+                amplitude *= gain;
+            }
+
+            let val = total / maxVal;
+
+            if (currentTerrainType === 'terraces') {
+                val = (val + 1) * 0.5;
+                const steps = 6.0;
+                val = Math.floor(val * steps) / steps + Math.pow((val * steps) % 1.0, 3.0) / steps;
+                return (val * 2.0) - 1.0;
+            } else if (currentTerrainType === 'crater') {
+                const distFromCenter = Math.hypot(nx - 2.5, ny - 2.5) * 0.5;
+                const craterProfile = Math.sin(Math.min(Math.PI, distFromCenter * Math.PI));
+                return val * 0.6 + (distFromCenter < 1.0 ? (craterProfile - 0.4) : 0);
+            }
+
+            return val;
+        }
+
+        // =========================================================
+        // ALGORYTM DIAMOND-SQUARE
+        // =========================================================
+        function generateDiamondSquare(size, hurst) {
+            const map = new Float32Array(size * size);
+            const set = (x, y, v) => { map[y * size + x] = v; };
+            const get = (x, y) => map[((y + size - 1) % (size - 1)) * size + ((x + size - 1) % (size - 1))];
+
+            // Narożniki
+            set(0, 0, (Math.random() - 0.5));
+            set(size - 1, 0, (Math.random() - 0.5));
+            set(0, size - 1, (Math.random() - 0.5));
+            set(size - 1, size - 1, (Math.random() - 0.5));
+
+            let step = size - 1;
+            let roughness = 1.0;
+            const decay = Math.pow(2.0, -hurst);
+
+            while (step > 1) {
+                const half = Math.floor(step / 2);
+
+                // Krok Square
+                for (let y = 0; y < size - 1; y += step) {
+                    for (let x = 0; x < size - 1; x += step) {
+                        const a = get(x, y);
+                        const b = get(x + step, y);
+                        const c = get(x, y + step);
+                        const d = get(x + step, y + step);
+                        const avg = (a + b + c + d) * 0.25;
+                        set(x + half, y + half, avg + (Math.random() - 0.5) * roughness);
+                    }
+                }
+
+                // Krok Diamond
+                for (let y = 0; y < size; y += half) {
+                    for (let x = (y + half) % step; x < size; x += step) {
+                        const a = get(x, y - half);
+                        const b = get(x + half, y);
+                        const c = get(x, y + half);
+                        const d = get(x - half, y);
+                        const avg = (a + b + c + d) * 0.25;
+                        set(x, y, avg + (Math.random() - 0.5) * roughness);
+                    }
+                }
+
+                step = half;
+                roughness *= decay;
+            }
+
+            // Normalizacja
+            let minH = Infinity, maxH = -Infinity;
+            for (let i = 0; i < map.length; i++) {
+                if (map[i] < minH) minH = map[i];
+                if (map[i] > maxH) maxH = map[i];
+            }
+            const range = maxH - minH || 1;
+            for (let i = 0; i < map.length; i++) {
+                map[i] = ((map[i] - minH) / range) * 2.0 - 1.0;
+            }
+
+            return map;
+        }
+
+        // =========================================================
+        // GENEROWANIE I REGENERACJA TERENU
+        // =========================================================
+        function regenerateTerrain() {
+            currentSeed = Math.random() * 10000;
+            initNoiseSeed(currentSeed);
+            totalDropletsCount = 0;
+            waterFlowMap.fill(0);
+
+            if (currentAlgorithm === 'fbm') {
+                const scale = 4.0 / GRID_SIZE;
+                for (let y = 0; y < GRID_SIZE; y++) {
+                    for (let x = 0; x < GRID_SIZE; x++) {
+                        const h = sampleFBM(x * scale, y * scale, paramOctaves, paramHurst, paramLacunarity);
+                        heightMap[y * GRID_SIZE + x] = h * paramHeightScale;
+                        originalHeightMap[y * GRID_SIZE + x] = heightMap[y * GRID_SIZE + x];
+                    }
+                }
+            } else {
+                const ds = generateDiamondSquare(GRID_SIZE, paramHurst);
+                for (let i = 0; i < ds.length; i++) {
+                    heightMap[i] = ds[i] * paramHeightScale;
+                    originalHeightMap[i] = heightMap[i];
+                }
+            }
+
+            updateStats();
+            requestRender();
+        }
+
+        // =========================================================
+        // SYMULATOR EROZJI HYDRAULICZNEJ (CZĄSTECZKI KROPEL)
+        // =========================================================
+        function simulateDroplets(numDroplets) {
+            const mapSize = GRID_SIZE;
+            const inertia = 0.05;
+            const minSlope = 0.01;
+            const capacityFactor = paramSedimentCapacity;
+            const depositionRate = 0.3;
+            const erosionRate = paramErosionStrength;
+            const evaporationRate = 0.02;
+            const maxLifetime = 40;
+
+            for (let i = 0; i < numDroplets; i++) {
+                let posX = Math.random() * (mapSize - 2) + 1;
+                let posY = Math.random() * (mapSize - 2) + 1;
+                let dirX = 0, dirY = 0;
+                let speed = 1.0;
+                let water = 1.0;
+                let sediment = 0.0;
+
+                for (let step = 0; step < maxLifetime; step++) {
+                    const nodeX = Math.floor(posX);
+                    const nodeY = Math.floor(posY);
+                    const cellOffsetX = posX - nodeX;
+                    const cellOffsetY = posY - nodeY;
+
+                    if (nodeX < 0 || nodeX >= mapSize - 1 || nodeY < 0 || nodeY >= mapSize - 1) break;
+
+                    const idx00 = nodeY * mapSize + nodeX;
+                    const idx10 = idx00 + 1;
+                    const idx01 = idx00 + mapSize;
+                    const idx11 = idx01 + 1;
+
+                    // Interpolacja wysokości
+                    const h00 = heightMap[idx00];
+                    const h10 = heightMap[idx10];
+                    const h01 = heightMap[idx01];
+                    const h11 = heightMap[idx11];
+
+                    // Gradient nachylenia
+                    const gx = (h10 - h00) * (1 - cellOffsetY) + (h11 - h01) * cellOffsetY;
+                    const gy = (h01 - h00) * (1 - cellOffsetX) + (h11 - h10) * cellOffsetX;
+
+                    // Obliczenie kierunku i prędkości
+                    dirX = (dirX * inertia - gx * (1 - inertia));
+                    dirY = (dirY * inertia - gy * (1 - inertia));
+                    const len = Math.hypot(dirX, dirY);
+                    if (len === 0) break;
+                    dirX /= len;
+                    dirY /= len;
+
+                    const nextPosX = posX + dirX;
+                    const nextPosY = posY + dirY;
+
+                    if (nextPosX < 0 || nextPosX >= mapSize - 1 || nextPosY < 0 || nextPosY >= mapSize - 1) break;
+
+                    const nextNodeX = Math.floor(nextPosX);
+                    const nextNodeY = Math.floor(nextPosY);
+                    const nextIdx00 = nextNodeY * mapSize + nextNodeX;
+                    const nextHeight = heightMap[nextIdx00];
+
+                    const currentHeight = (h00 * (1 - cellOffsetX) + h10 * cellOffsetX) * (1 - cellOffsetY) +
+                                         (h01 * (1 - cellOffsetX) + h11 * cellOffsetX) * cellOffsetY;
+                    const deltaH = nextHeight - currentHeight;
+
+                    // Pojemność transportu osadu
+                    const sedimentCapacity = Math.max(-deltaH, minSlope) * speed * water * capacityFactor;
+
+                    if (sediment > sedimentCapacity || deltaH > 0) {
+                        // Depozycja (odkładanie osadu)
+                        const amountToDeposit = (deltaH > 0) ? Math.min(deltaH, sediment) : (sediment - sedimentCapacity) * depositionRate;
+                        sediment -= amountToDeposit;
+
+                        heightMap[idx00] += amountToDeposit * (1 - cellOffsetX) * (1 - cellOffsetY);
+                        heightMap[idx10] += amountToDeposit * cellOffsetX * (1 - cellOffsetY);
+                        heightMap[idx01] += amountToDeposit * (1 - cellOffsetX) * cellOffsetY;
+                        heightMap[idx11] += amountToDeposit * cellOffsetX * cellOffsetY;
+                    } else {
+                        // Erozja (żłobienie skały)
+                        const amountToErode = Math.min((sedimentCapacity - sediment) * erosionRate, -deltaH);
+                        sediment += amountToErode;
+
+                        heightMap[idx00] -= amountToErode * (1 - cellOffsetX) * (1 - cellOffsetY);
+                        heightMap[idx10] -= amountToErode * cellOffsetX * (1 - cellOffsetY);
+                        heightMap[idx01] -= amountToErode * (1 - cellOffsetX) * cellOffsetY;
+                        heightMap[idx11] -= amountToErode * cellOffsetX * cellOffsetY;
+
+                        waterFlowMap[idx00] += amountToErode * 4.0;
+                    }
+
+                    speed = Math.sqrt(Math.max(0, speed * speed + deltaH * 4.0));
+                    water *= (1 - evaporationRate);
+                    posX = nextPosX;
+                    posY = nextPosY;
+                }
+            }
+
+            totalDropletsCount += numDroplets;
+            updateStats();
+        }
+
+        function runErosionBatch(count) {
+            simulateDroplets(count);
+            requestRender();
+        }
+
+        function toggleContinuousErosion() {
+            isErosionRunning = !isErosionRunning;
+            const btn = document.getElementById('btn-stream-erosion');
+            if (isErosionRunning) {
+                btn.classList.add('running');
+                btn.innerHTML = '⏸️ Zatrzymaj Erozję';
+                loopErosion();
+            } else {
+                btn.classList.remove('running');
+                btn.innerHTML = '▶️ Ciągła Erozja';
+            }
+        }
+
+        function loopErosion() {
+            if (!isErosionRunning) return;
+            simulateDroplets(1500);
+            requestRender();
+            requestAnimationFrame(loopErosion);
+        }
+
+        function resetErosionOnly() {
+            heightMap.set(originalHeightMap);
+            waterFlowMap.fill(0);
+            totalDropletsCount = 0;
+            updateStats();
+            requestRender();
+        }
+
+        // =========================================================
+        // INTERAKTYWNY RENDERER 3D & 2D W CANVAS
+        // =========================================================
+        const canvas = document.getElementById('renderCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let rotX = 0.55; // Kąt pionowy (pitch)
+        let rotY = -0.78; // Kąt poziomy (yaw)
+        let zoom = 1.0;
+        let isDragging = false;
+        let lastMouseX = 0, lastMouseY = 0;
+
+        canvas.addEventListener('mousedown', e => {
+            isDragging = true;
+            lastMouseX = e.clientX;
+            lastMouseY = e.clientY;
+        });
+
+        window.addEventListener('mouseup', () => { isDragging = false; });
+
+        canvas.addEventListener('mousemove', e => {
+            if (!isDragging) return;
+            const dx = e.clientX - lastMouseX;
+            const dy = e.clientY - lastMouseY;
+            lastMouseX = e.clientX;
+            lastMouseY = e.clientY;
+
+            rotY += dx * 0.008;
+            rotX += dy * 0.008;
+            rotX = Math.max(0.1, Math.min(1.45, rotX)); // Ograniczenie kąta patrzenia
+            requestRender();
+        });
+
+        canvas.addEventListener('wheel', e => {
+            e.preventDefault();
+            zoom += e.deltaY * -0.0015;
+            zoom = Math.max(0.4, Math.min(2.5, zoom));
+            requestRender();
+        }, { passive: false });
+
+        function getTerrainColor(h, waterLevel, erosionVal, lightIntensity) {
+            let r, g, b;
+
+            if (h < waterLevel) {
+                // Woda / Jezioro
+                const depth = Math.min(1.0, (waterLevel - h) * 4.0);
+                r = Math.floor(10 + depth * 5);
+                g = Math.floor(70 + (1 - depth) * 80);
+                b = Math.floor(160 + (1 - depth) * 90);
+                return `rgb(${r}, ${g}, ${b})`;
+            }
+
+            const relH = (h - waterLevel) / (1.8 - waterLevel);
+
+            if (relH < 0.05) {
+                // Plaża / piasek
+                r = 210; g = 190; b = 130;
+            } else if (relH < 0.35) {
+                // Niziny / zieleń łąk
+                r = 45; g = 140; b = 45;
+            } else if (relH < 0.65) {
+                // Lasy / ciemna zieleń i skały
+                r = 75; g = 100; b = 55;
+            } else if (relH < 0.85) {
+                // Szare turnie skalne
+                r = 120; g = 120; b = 125;
+            } else {
+                // Ośnieżone szczyty
+                r = 240; g = 245; b = 255;
+            }
+
+            // Wzbogacenie o ślady wody / erozji
+            if (erosionVal > 0.01) {
+                r = Math.floor(r * 0.6);
+                g = Math.floor(g * 0.7 + 40);
+                b = Math.floor(b * 0.7 + 80);
+            }
+
+            // Oświetlenie Lamberta
+            r = Math.floor(Math.min(255, r * lightIntensity));
+            g = Math.floor(Math.min(255, g * lightIntensity));
+            b = Math.floor(Math.min(255, b * lightIntensity));
+
+            return `rgb(${r}, ${g}, ${b})`;
+        }
+
+        let renderRequested = false;
+        function requestRender() {
+            if (!renderRequested) {
+                renderRequested = true;
+                requestAnimationFrame(render);
+            }
+        }
+
+        function render() {
+            renderRequested = false;
+            const w = canvas.width;
+            const h = canvas.height;
+            ctx.clearRect(0, 0, w, h);
+
+            if (viewMode === '2d-height' || viewMode === '2d-water') {
+                render2DMap(w, h);
+                return;
+            }
+
+            // Render 3D (Rzut perspektywiczno-izometryczny)
+            const cx = w * 0.5;
+            const cy = h * 0.55;
+            const scale = (w * 0.42) * zoom;
+            const N = GRID_SIZE;
+
+            const cosY = Math.cos(rotY), sinY = Math.sin(rotY);
+            const cosX = Math.cos(rotX), sinX = Math.sin(rotX);
+
+            // Wektor słońca
+            const sunX = 0.577, sunY = 0.577, sunZ = 0.577;
+
+            // Sortowanie wierszy od tyłu do przodu dla poprawnego bufora głębi (Painter's algorithm)
+            const startY = (sinY > 0) ? 0 : N - 2;
+            const endY = (sinY > 0) ? N - 1 : -1;
+            const stepY = (sinY > 0) ? 1 : -1;
+
+            const startX = (cosY > 0) ? 0 : N - 2;
+            const endX = (cosY > 0) ? N - 1 : -1;
+            const stepX = (cosY > 0) ? 1 : -1;
+
+            for (let y = startY; y !== endY; y += stepY) {
+                for (let x = startX; x !== endX; x += stepX) {
+                    const idx0 = y * N + x;
+                    const idx1 = idx0 + 1;
+                    const idx2 = (y + 1) * N + 1 + x;
+                    const idx3 = (y + 1) * N + x;
+
+                    const h0 = heightMap[idx0];
+                    const h1 = heightMap[idx1];
+                    const h2 = heightMap[idx2];
+                    const h3 = heightMap[idx3];
+
+                    // Obliczenie współrzędnych 3D z centrowaniem
+                    const p0 = project3D((x / N) - 0.5, h0 * 0.35, (y / N) - 0.5, cosX, sinX, cosY, sinY, scale, cx, cy);
+                    const p1 = project3D(((x + 1) / N) - 0.5, h1 * 0.35, (y / N) - 0.5, cosX, sinX, cosY, sinY, scale, cx, cy);
+                    const p2 = project3D(((x + 1) / N) - 0.5, h2 * 0.35, ((y + 1) / N) - 0.5, cosX, sinX, cosY, sinY, scale, cx, cy);
+                    const p3 = project3D((x / N) - 0.5, h3 * 0.35, ((y + 1) / N) - 0.5, cosX, sinX, cosY, sinY, scale, cx, cy);
+
+                    // Normalna powierzchni (wektor światła)
+                    const normX = (h0 - h1) + (h3 - h2);
+                    const normY = 2.0 / N;
+                    const normZ = (h0 - h3) + (h1 - h2);
+                    const nLen = Math.hypot(normX, normY, normZ) || 1;
+                    const dot = Math.max(0, (normX * sunX + normY * sunY + normZ * sunZ) / nLen);
+                    const light = 0.35 + dot * 0.75;
+
+                    const avgH = (h0 + h1 + h2 + h3) * 0.25;
+                    const erosionVal = waterFlowMap[idx0];
+
+                    ctx.beginPath();
+                    ctx.moveTo(p0.x, p0.y);
+                    ctx.lineTo(p1.x, p1.y);
+                    ctx.lineTo(p2.x, p2.y);
+                    ctx.lineTo(p3.x, p3.y);
+                    ctx.closePath();
+
+                    if (viewMode === '3d-color') {
+                        ctx.fillStyle = getTerrainColor(avgH, paramWaterLevel, erosionVal, light);
+                        ctx.fill();
+                    } else if (viewMode === '3d-wire') {
+                        ctx.strokeStyle = `rgba(56, 189, 248, ${0.4 + avgH * 0.4})`;
+                        ctx.lineWidth = 1;
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        function project3D(x, y, z, cosX, sinX, cosY, sinY, scale, cx, cy) {
+            // Rotacja Y
+            const x1 = x * cosY - z * sinY;
+            const z1 = x * sinY + z * cosY;
+
+            // Rotacja X (pochylenie)
+            const y2 = y * cosX - z1 * sinX;
+            const z2 = y * sinX + z1 * cosX;
+
+            const projDist = 2.2;
+            const pz = (z2 + projDist);
+            const factor = scale / pz;
+
+            return {
+                x: cx + x1 * factor,
+                y: cy - y2 * factor
+            };
+        }
+
+        function render2DMap(w, h) {
+            const imgData = ctx.createImageData(w, h);
+            const data = imgData.data;
+            const N = GRID_SIZE;
+
+            for (let py = 0; py < h; py++) {
+                const gy = Math.floor((py / h) * N);
+                for (let px = 0; px < w; px++) {
+                    const gx = Math.floor((px / w) * N);
+                    const idx = gy * N + gx;
+                    const heightVal = heightMap[idx];
+                    const pIdx = (py * w + px) * 4;
+
+                    if (viewMode === '2d-height') {
+                        const norm = Math.floor(((heightVal + 1.0) * 0.5) * 255);
+                        const c = Math.max(0, Math.min(255, norm));
+                        data[pIdx] = c;
+                        data[pIdx + 1] = c;
+                        data[pIdx + 2] = c;
+                        data[pIdx + 3] = 255;
+                    } else if (viewMode === '2d-water') {
+                        const flow = Math.min(255, Math.floor(waterFlowMap[idx] * 40));
+                        const baseH = Math.floor(((heightVal + 1.0) * 0.5) * 120);
+                        data[pIdx] = baseH;
+                        data[pIdx + 1] = Math.min(255, baseH + flow);
+                        data[pIdx + 2] = Math.min(255, baseH + flow * 2);
+                        data[pIdx + 3] = 255;
+                    }
+                }
+            }
+            ctx.putImageData(imgData, 0, 0);
+        }
+
+        // =========================================================
+        // OBSŁUGA INTERFEJSU I PRZEŁĄCZNIKÓW
+        // =========================================================
+        function setAlgorithm(algo) {
+            currentAlgorithm = algo;
+            document.getElementById('tab-fbm').classList.toggle('active', algo === 'fbm');
+            document.getElementById('tab-ds').classList.toggle('active', algo === 'ds');
+            regenerateTerrain();
+        }
+
+        function setViewMode(mode) {
+            viewMode = mode;
+            const btns = document.querySelectorAll('.view-btn');
+            btns.forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            requestRender();
+        }
+
+        function updateHurst(val) {
+            paramHurst = parseFloat(val);
+            document.getElementById('val-hurst').innerText = paramHurst.toFixed(2);
+            updateStats();
+            regenerateTerrain();
+        }
+
+        function updateOctaves(val) {
+            paramOctaves = parseInt(val, 10);
+            document.getElementById('val-octaves').innerText = paramOctaves;
+            regenerateTerrain();
+        }
+
+        function updateLacunarity(val) {
+            paramLacunarity = parseFloat(val);
+            document.getElementById('val-lacunarity').innerText = paramLacunarity.toFixed(2);
+            regenerateTerrain();
+        }
+
+        function updateHeightScale(val) {
+            paramHeightScale = parseFloat(val);
+            document.getElementById('val-height').innerText = paramHeightScale.toFixed(2);
+            regenerateTerrain();
+        }
+
+        function updateWaterLevel(val) {
+            paramWaterLevel = parseFloat(val);
+            document.getElementById('val-water').innerText = paramWaterLevel.toFixed(2);
+            requestRender();
+        }
+
+        function updateErosionStrength(val) {
+            paramErosionStrength = parseFloat(val);
+            document.getElementById('val-erosion-strength').innerText = paramErosionStrength.toFixed(2);
+        }
+
+        function updateSedimentCapacity(val) {
+            paramSedimentCapacity = parseFloat(val);
+            document.getElementById('val-sediment').innerText = paramSedimentCapacity.toFixed(1);
+        }
+
+        function onParamChange() {
+            currentTerrainType = document.getElementById('terrainType').value;
+            regenerateTerrain();
+        }
+
+        function updateStats() {
+            const fractalDim = 3.0 - paramHurst;
+            document.getElementById('stat-dim').innerText = fractalDim.toFixed(2);
+            document.getElementById('stat-grid').innerText = `${GRID_SIZE}×${GRID_SIZE}`;
+            document.getElementById('stat-droplets').innerText = totalDropletsCount.toLocaleString();
+        }
+
+        function exportHeightmapPNG() {
+            const offCanvas = document.createElement('canvas');
+            offCanvas.width = GRID_SIZE;
+            offCanvas.height = GRID_SIZE;
+            const offCtx = offCanvas.getContext('2d');
+            const imgData = offCtx.createImageData(GRID_SIZE, GRID_SIZE);
+
+            for (let i = 0; i < heightMap.length; i++) {
+                const norm = Math.floor(((heightMap[i] + 1.0) * 0.5) * 255);
+                const c = Math.max(0, Math.min(255, norm));
+                imgData.data[i * 4] = c;
+                imgData.data[i * 4 + 1] = c;
+                imgData.data[i * 4 + 2] = c;
+                imgData.data[i * 4 + 3] = 255;
+            }
+            offCtx.putImageData(imgData, 0, 0);
+
+            const link = document.createElement('a');
+            link.download = `heightmap_fbm_${currentAlgorithm}_${Date.now()}.png`;
+            link.href = offCanvas.toDataURL('image/png');
+            link.click();
+        }
+
+        function export3DScreenshot() {
+            const link = document.createElement('a');
+            link.download = `terrain_3d_${currentAlgorithm}_${Date.now()}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        // Start aplikacji
+        window.addEventListener('DOMContentLoaded', () => {
+            regenerateTerrain();
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fotorealistyczna Woda i Krople (WebGL Raymarching SDF, Fresnel, Kaustyka i FBM)</title>
+    <link rel="stylesheet" href="../style.css" />
+    <style>
+        :root {
+            --bg-dark: #07152b;
+            --card-bg: rgba(14, 30, 56, 0.88);
+            --card-border: rgba(34, 211, 238, 0.35);
+            --primary: #22d3ee;
+            --primary-hover: #06b6d4;
+            --accent-gold: #fbbf24;
+            --accent-purple: #c084fc;
+            --accent-blue: #38bdf8;
+            --accent-emerald: #10b981;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: linear-gradient(180deg, #051024 0%, #082142 45%, #0d3461 100%);
+            color: #f8fafc;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            padding: 24px 16px 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .main-container {
+            max-width: 1280px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Belka nawigacji */
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            background: rgba(14, 30, 56, 0.85);
+            border: 1px solid rgba(34, 211, 238, 0.4);
+            color: #67e8f9;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(8px);
+        }
+
+        .nav-btn:hover {
+            color: #ffffff;
+            border-color: #22d3ee;
+            background: #0891b2;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(34, 211, 238, 0.4);
+        }
+
+        /* Nagłówek */
+        .header-card {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.94) 0%, rgba(14, 30, 56, 0.9) 100%);
+            border: 1px solid rgba(34, 211, 238, 0.4);
+            border-radius: 18px;
+            padding: 24px 28px;
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(12px);
+            line-height: 1.6;
+        }
+
+        .header-card h1 {
+            font-size: 1.85rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 0%, #38bdf8 45%, #22d3ee 80%, #a7f3d0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .header-card p {
+            color: #cbd5e1;
+            font-size: 0.96rem;
+            margin-bottom: 8px;
+        }
+
+        .header-card strong {
+            color: #22d3ee;
+        }
+
+        /* Layout */
+        .app-layout {
+            display: grid;
+            grid-template-columns: 1fr 390px;
+            gap: 20px;
+            align-items: start;
+        }
+
+        @media (max-width: 1024px) {
+            .app-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Strefa Canvasu WebGL */
+        .viewport-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 16px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+        }
+
+        #glCanvas {
+            width: 100%;
+            height: auto;
+            aspect-ratio: 4 / 3;
+            max-height: 600px;
+            background: #020617;
+            border-radius: 12px;
+            border: 2px solid rgba(34, 211, 238, 0.5);
+            box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.95), 0 8px 30px rgba(0, 0, 0, 0.7);
+            cursor: crosshair;
+            display: block;
+        }
+
+        .canvas-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 0 4px;
+        }
+
+        .mode-btn-group {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .mode-btn {
+            background: #1e293b;
+            border: 1px solid #475569;
+            color: #cbd5e1;
+            padding: 7px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .mode-btn:hover {
+            border-color: #22d3ee;
+            color: #fff;
+            background: #334155;
+        }
+
+        .mode-btn.active {
+            background: linear-gradient(135deg, #0891b2 0%, #0284c7 100%);
+            border-color: #22d3ee;
+            color: #ffffff;
+            box-shadow: 0 0 14px rgba(34, 211, 238, 0.5);
+        }
+
+        /* Panel kontrolny */
+        .controls-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 20px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            max-height: 840px;
+            overflow-y: auto;
+        }
+
+        .controls-card::-webkit-scrollbar {
+            width: 6px;
+        }
+        .controls-card::-webkit-scrollbar-thumb {
+            background: rgba(34, 211, 238, 0.4);
+            border-radius: 3px;
+        }
+
+        .panel-section {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 12px;
+        }
+
+        .panel-section:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .section-title {
+            font-size: 0.98rem;
+            font-weight: 700;
+            color: #22d3ee;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .select-field {
+            width: 100%;
+            background: #0f172a;
+            border: 1px solid #475569;
+            color: #f8fafc;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.88rem;
+            outline: none;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        .select-field:focus {
+            border-color: #22d3ee;
+        }
+
+        .ctrl-row {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-bottom: 10px;
+        }
+
+        .ctrl-label-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            color: #cbd5e1;
+        }
+
+        .ctrl-val {
+            font-family: monospace;
+            font-weight: bold;
+            color: #22d3ee;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #334155;
+            outline: none;
+            cursor: pointer;
+            accent-color: #22d3ee;
+        }
+
+        .btn-action-main {
+            width: 100%;
+            background: linear-gradient(135deg, #0891b2 0%, #0284c7 100%);
+            border: 1px solid #22d3ee;
+            color: #fff;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 0.92rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(8, 145, 178, 0.4);
+        }
+
+        .btn-action-main:hover {
+            background: #06b6d4;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(34, 211, 238, 0.5);
+        }
+
+        .btn-grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 6px;
+        }
+
+        .btn-secondary {
+            background: #1e293b;
+            border: 1px solid #475569;
+            color: #f1f5f9;
+            padding: 8px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .btn-secondary:hover {
+            border-color: #22d3ee;
+            background: #334155;
+        }
+
+        /* 4 Kolumny z wyjaśnieniem optyki i fizyki */
+        .methods-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 18px;
+        }
+
+        .method-card {
+            background: rgba(15, 23, 42, 0.92);
+            border: 1px solid rgba(34, 211, 238, 0.3);
+            border-radius: 14px;
+            padding: 18px;
+            line-height: 1.55;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        .method-card h3 {
+            color: #22d3ee;
+            font-size: 1.05rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .method-card p {
+            color: #cbd5e1;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+
+        .formula-tag {
+            background: #0b1120;
+            border-left: 3px solid #38bdf8;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+            color: #7dd3fc;
+            font-size: 0.84rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="main-container">
+        <!-- Nawigacja -->
+        <div class="top-nav">
+            <a href="../fraktale.html" class="nav-btn">← Powrót do Fraktali</a>
+            <a href="../index.html" class="nav-btn">🏠 Strona Główna HACK CLUB</a>
+        </div>
+
+        <!-- Nagłówek główny -->
+        <header class="header-card">
+            <h1>💧 Fotorealistyczna Woda, Refrakcja i Krople 3D</h1>
+            <p>
+                Prawdziwy realizm cieczy w grafice komputerowej opiera się na <strong>fizyce załamania światła (Snell & Fresnel)</strong>, <strong>dyspersji chromatycznej</strong> (tęczowy rozbłysk wewnątrz kropli), <strong>soczewkowaniu tła</strong> oraz <strong>napięciu powierzchniowym</strong> opisanym matematyczną funkcją smooth minimum ($smin$) w shaderach Raymarching WebGL.
+            </p>
+        </header>
+
+        <!-- Strefa aplikacji -->
+        <div class="app-layout">
+            <!-- Ekran renderera GPU WebGL -->
+            <div class="viewport-card">
+                <canvas id="glCanvas" width="800" height="600"></canvas>
+
+                <div class="canvas-toolbar">
+                    <div class="mode-btn-group">
+                        <button type="button" class="mode-btn active" onclick="setMode(0)">🔍 1. Krople Rosy & Szkło</button>
+                        <button type="button" class="mode-btn" onclick="setMode(1)">👑 2. Korona Splashu (Rayleigh Jet)</button>
+                        <button type="button" class="mode-btn" onclick="setMode(2)">🫧 3. Drgająca Kropla 3D</button>
+                        <button type="button" class="mode-btn" onclick="setMode(3)">🌧️ 4. Deszcz na Szybie</button>
+                    </div>
+
+                    <div style="font-size: 0.85rem; color: #94a3b8; font-family: monospace;">
+                        FPS: <b id="stat-fps" style="color: #22d3ee;">60</b> | Rozdzielczość: <b id="stat-res" style="color: #22d3ee;">800×600</b>
+                    </div>
+                </div>
+
+                <div style="font-size: 0.82rem; color: #94a3b8; text-align: center;">
+                    🖱️ <strong>Interakcja myszą:</strong> Kliknij i przeciągaj, aby łączyć krople, obracać kamerę w 360° lub wywoływać uderzenia cieczy!
+                </div>
+            </div>
+
+            <!-- Panel Sterowania Fizyką i Optyką -->
+            <div class="controls-card">
+                <!-- Tło i Środowisko HDR -->
+                <div class="panel-section">
+                    <div class="section-title">🌆 1. Środowisko i Tło Soczewkowania</div>
+                    <select id="bgSelect" class="select-field" onchange="updateBackground(this.value)">
+                        <option value="0">🌃 Nocne Miasto & Neonowy Bokeh (Mocna Refrakcja)</option>
+                        <option value="1">🌿 Krople Rosy na Liściu (Natura & Zieleń)</option>
+                        <option value="2">📐 Siatka Laboratoryjna (Pomiary Załamania)</option>
+                        <option value="3">🌅 Złoty Zachód Słońca nad Oceanem</option>
+                    </select>
+                </div>
+
+                <!-- Optyka PBR i Załamanie -->
+                <div class="panel-section">
+                    <div class="section-title">💎 2. Fizyka Optyczna (PBR)</div>
+
+                    <div class="ctrl-row">
+                        <div class="ctrl-label-bar">
+                            <span>Współczynnik Załamania (IOR Wody):</span>
+                            <span id="val-ior" class="ctrl-val">1.333</span>
+                        </div>
+                        <input type="range" id="param-ior" min="1.05" max="1.60" step="0.01" value="1.333" oninput="updateIOR(this.value)">
+                    </div>
+
+                    <div class="ctrl-row">
+                        <div class="ctrl-label-bar">
+                            <span>Dyspersja Chromatyczna (Tęcza):</span>
+                            <span id="val-dispersion" class="ctrl-val">0.025</span>
+                        </div>
+                        <input type="range" id="param-dispersion" min="0.00" max="0.08" step="0.005" value="0.025" oninput="updateDispersion(this.value)">
+                    </div>
+
+                    <div class="ctrl-row">
+                        <div class="ctrl-label-bar">
+                            <span>Odblask Fresnela i Połysk:</span>
+                            <span id="val-fresnel" class="ctrl-val">1.40</span>
+                        </div>
+                        <input type="range" id="param-fresnel" min="0.5" max="3.0" step="0.1" value="1.4" oninput="updateFresnel(this.value)">
+                    </div>
+                </div>
+
+                <!-- Napięcie powierzchniowe i łączenie -->
+                <div class="panel-section">
+                    <div class="section-title">🧪 3. Napięcie Powierzchniowe & smin</div>
+
+                    <div class="ctrl-row">
+                        <div class="ctrl-label-bar">
+                            <span>Siła Łączenia Kropel (smin $k$):</span>
+                            <span id="val-smink" class="ctrl-val">0.25</span>
+                        </div>
+                        <input type="range" id="param-smink" min="0.05" max="0.60" step="0.02" value="0.25" oninput="updateSminK(this.value)">
+                    </div>
+
+                    <div class="ctrl-row">
+                        <div class="ctrl-label-bar">
+                            <span>Amplituda Drgań Cieczy:</span>
+                            <span id="val-wobble" class="ctrl-val">0.18</span>
+                        </div>
+                        <input type="range" id="param-wobble" min="0.00" max="0.50" step="0.02" value="0.18" oninput="updateWobble(this.value)">
+                    </div>
+                </div>
+
+                <!-- Akcje symulacji -->
+                <div class="panel-section">
+                    <div class="section-title">⚡ 4. Akcje i Interakcja</div>
+                    <button type="button" class="btn-action-main" onclick="triggerSplash()">
+                        💧 Zrzucenie Kropli & Wstrząs
+                    </button>
+
+                    <div class="btn-grid-2">
+                        <button type="button" class="btn-secondary" onclick="randomizeDroplets()">
+                            🎲 Nowy Układ Kropel
+                        </button>
+                        <button type="button" class="btn-secondary" onclick="resetDefaults()">
+                            🔄 Reset Parametrów
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Karty Edukacyjne z Równaniami Optyki -->
+        <div class="methods-grid">
+            <div class="method-card">
+                <h3>💎 Załamanie Snella & Aberracja Chromatyczna</h3>
+                <p>
+                    Promień światła przechodząc przez kroplę załamuje się według prawa Snella. Ponieważ współczynnik załamania wody zależy od długości fali ($\lambda$), kanały RGB rozdzielają się tworząc delikatną tęczową aureolę:
+                </p>
+                <div class="formula-tag">
+                    n_1 \sin\theta_1 = n_2(\lambda) \sin\theta_2 \quad (n_R < n_G < n_B)
+                </div>
+            </div>
+
+            <div class="method-card">
+                <h3>🪞 Równanie Fresnela (Schlick)</h3>
+                <p>
+                    Woda oglądana pod kątem prostym jest niemal całkowicie przezroczysta ($F_0 \approx 2\%$), lecz pod ostrym kątem staje się idealnym zwierciadłem odbijającym otoczenie i niebo:
+                </p>
+                <div class="formula-tag">
+                    F(\theta) = F_0 + (1 - F_0)(1 - \cos\theta)^5
+                </div>
+            </div>
+
+            <div class="method-card">
+                <h3>🧪 Mostek Cieczowy (Smooth Minimum $smin$)</h3>
+                <p>
+                    Napięcie powierzchniowe minimalizuje energię swobodną, tworząc charakterystyczny menisk i zaokrąglony mostek w chwili łączenia lub odrywania się dwóch kropel wody:
+                </p>
+                <div class="formula-tag">
+                    smin(a, b, k) = h \cdot a + (1-h)b - kh(1-h)
+                </div>
+            </div>
+
+            <div class="method-card">
+                <h3>👑 Korona Worthingtona & Rayleigh Jet</h3>
+                <p>
+                    Podczas uderzenia kropli o taflę ciśnienie hydrostatyczne wyrzuca symetryczną koronę kropelkową (fingering), po czym zapadająca się jama wystrzeliwuje w górę centralny słup cieczy.
+                </p>
+                <div class="formula-tag">
+                    \text{We} = \frac{\rho v^2 d}{\sigma} \gg 1 \implies \text{Splash Crown}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- WebGL Raymarching Shader Engine -->
+    <script>
+        const canvas = document.getElementById('glCanvas');
+        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+
+        if (!gl) {
+            console.error('WebGL nie jest dostępny');
+        }
+
+        // =========================================================
+        // SHADERY GLSL: 100% KOMPATYBILNE Z GLSL ES 1.00
+        // =========================================================
+        const vsSource = `
+            attribute vec2 position;
+            varying vec2 vUV;
+            void main() {
+                vUV = position * 0.5 + 0.5;
+                gl_Position = vec4(position, 0.0, 1.0);
+            }
+        `;
+
+        const fsSource = `
+            precision mediump float;
+            varying vec2 vUV;
+
+            uniform vec2 u_resolution;
+            uniform float u_time;
+            uniform vec2 u_mouse;
+            uniform int u_mode;
+            uniform int u_bg_type;
+            uniform float u_ior;
+            uniform float u_dispersion;
+            uniform float u_fresnel_str;
+            uniform float u_smin_k;
+            uniform float u_wobble;
+            uniform float u_splash_trigger;
+
+            float smin(float a, float b, float k) {
+                float h = clamp(0.5 + 0.5 * (b - a) / k, 0.0, 1.0);
+                return mix(b, a, h) - k * h * (1.0 - h);
+            }
+
+            // Proceduralne tła HDR
+            vec3 getBackground(vec2 uv) {
+                vec3 col = vec3(0.04, 0.08, 0.16);
+
+                if (u_bg_type == 0) {
+                    // Nocne miasto i neonowe krążki bokeh
+                    col = vec3(0.02, 0.05, 0.12);
+                    for (int i = 0; i < 6; i++) {
+                        float fi = float(i);
+                        vec2 pos = vec2(sin(fi * 1.7 + u_time * 0.25) * 0.4 + 0.5, cos(fi * 2.3 + u_time * 0.2) * 0.35 + 0.5);
+                        float dist = length(uv - pos);
+                        float circle = smoothstep(0.18, 0.01, dist);
+                        vec3 bColor = vec3(0.2, 0.8, 1.0);
+                        if (i == 1 || i == 4) bColor = vec3(1.0, 0.2, 0.6);
+                        if (i == 2 || i == 5) bColor = vec3(1.0, 0.8, 0.2);
+                        col += bColor * circle * 0.85;
+                    }
+                } else if (u_bg_type == 1) {
+                    // Liść monstery z żyłkowaniem
+                    vec3 baseGreen = mix(vec3(0.04, 0.28, 0.10), vec3(0.10, 0.55, 0.20), uv.y + sin(uv.x * 15.0) * 0.06);
+                    float veins = abs(sin(uv.x * 30.0 + uv.y * 12.0));
+                    col = baseGreen + vec3(0.08, 0.16, 0.04) * smoothstep(0.85, 1.0, veins);
+                } else if (u_bg_type == 2) {
+                    // Siatka laboratoryjna
+                    vec2 g = fract(uv * 10.0);
+                    float line = smoothstep(0.0, 0.06, g.x) * smoothstep(0.0, 0.06, g.y);
+                    col = mix(vec3(0.2, 0.7, 0.95), vec3(0.05, 0.10, 0.20), line);
+                } else {
+                    // Złoty zachód słońca nad oceanem
+                    vec3 sky = mix(vec3(0.95, 0.45, 0.15), vec3(0.12, 0.18, 0.45), uv.y);
+                    float sun = smoothstep(0.14, 0.02, length(uv - vec2(0.5, 0.45)));
+                    col = sky + vec3(1.0, 0.9, 0.6) * sun * 1.6;
+                }
+
+                return col;
+            }
+
+            // Obliczenie pola odległości (SDF) kropel w 3D
+            float sceneSDF(vec3 p) {
+                float t = u_time;
+                float k = u_smin_k;
+
+                if (u_mode == 0) {
+                    // Tryb 1: Krople rosy i deszczu na powierzchni płaskiej
+                    vec3 mPos = vec3((u_mouse.x - 0.5) * 1.8, (u_mouse.y - 0.5) * 1.4, 0.15);
+                    float dMain = length(p - mPos) - 0.36;
+
+                    // Kilka mniejszych kropel satelickich na szkle
+                    vec3 p1 = vec3(0.42 + sin(t * 0.7) * 0.05, 0.28, 0.12);
+                    float d1 = length(p - p1) - 0.20;
+
+                    vec3 p2 = vec3(-0.48, -0.28 + cos(t * 0.6) * 0.05, 0.10);
+                    float d2 = length(p - p2) - 0.17;
+
+                    vec3 p3 = vec3(0.12, -0.42, 0.09);
+                    float d3 = length(p - p3) - 0.14;
+
+                    float drops = smin(dMain, d1, k);
+                    drops = smin(drops, d2, k);
+                    drops = smin(drops, d3, k);
+
+                    return max(drops, -p.z);
+                }
+                else if (u_mode == 1) {
+                    // Tryb 2: Korona uderzenia kropli (Worthington Splash Crown & Jet)
+                    float splashCycle = fract(t * 0.6 + u_splash_trigger);
+                    float crownRad = splashCycle * 0.85 + 0.18;
+                    float crownH = sin(splashCycle * 3.1415) * 0.50;
+
+                    float dWater = p.y + 0.22 + sin(length(p.xz) * 10.0 - t * 5.0) * 0.025 * exp(-length(p.xz) * 1.2);
+                    float dCrown = length(vec2(length(p.xz) - crownRad, p.y - crownH * 0.5)) - 0.055;
+                    float spikes = sin(atan(p.z, p.x) * 10.0) * 0.06 * (1.0 - splashCycle);
+                    dCrown += spikes;
+
+                    float jetH = sin(clamp(splashCycle * 2.0 - 0.4, 0.0, 3.1415)) * 0.75;
+                    float dJet = length(vec2(length(p.xz), p.y - jetH * 0.5)) - 0.075;
+                    float dTopDrop = length(p - vec3(0.0, jetH + 0.16, 0.0)) - 0.065;
+
+                    float res = smin(dWater, dCrown, 0.12);
+                    res = smin(res, dJet, 0.10);
+                    res = smin(res, dTopDrop, 0.08);
+                    return res;
+                }
+                else if (u_mode == 2) {
+                    // Tryb 3: Drgająca kropla 3D w nieważkości
+                    float r = 0.62;
+                    float wobble = sin(t * 3.2) * u_wobble;
+                    float pLen = length(p);
+                    float distort = (p.x * p.x - p.y * p.y) / (pLen * pLen + 0.001) * wobble;
+                    float mainDrop = pLen - (r + distort);
+
+                    vec3 orb1 = vec3(sin(t * 1.8) * 0.95, cos(t * 1.8) * 0.3, cos(t * 1.8) * 0.95);
+                    float dOrb1 = length(p - orb1) - 0.11;
+
+                    vec3 orb2 = vec3(sin(-t * 1.5 + 2.0) * 0.85, sin(t * 1.6) * 0.75, cos(-t * 1.5 + 2.0) * 0.85);
+                    float dOrb2 = length(p - orb2) - 0.09;
+
+                    return smin(smin(mainDrop, dOrb1, k), dOrb2, k);
+                }
+                else {
+                    // Tryb 4: Deszcz na szybie ze spływającymi kroplami
+                    float streamY = fract(p.y * 1.5 + t * 0.6) * 1.2 - 0.6;
+                    float streamX = sin(floor(p.y * 1.5 + t * 0.6) * 3.5) * 0.45;
+                    float dStream = length(vec3(p.x - streamX, streamY, p.z - 0.08)) - 0.13;
+
+                    float dStatic1 = length(vec3(p.x - 0.35, p.y + 0.25, p.z - 0.06)) - 0.11;
+                    float dStatic2 = length(vec3(p.x + 0.45, p.y - 0.35, p.z - 0.07)) - 0.13;
+
+                    float drops = smin(dStream, dStatic1, 0.14);
+                    drops = smin(drops, dStatic2, 0.14);
+                    return max(drops, -p.z);
+                }
+            }
+
+            vec3 calcNormal(vec3 p) {
+                const float eps = 0.003;
+                float d = sceneSDF(p);
+                return normalize(vec3(
+                    sceneSDF(p + vec3(eps, 0.0, 0.0)) - d,
+                    sceneSDF(p + vec3(0.0, eps, 0.0)) - d,
+                    sceneSDF(p + vec3(0.0, 0.0, eps)) - d
+                ));
+            }
+
+            void main() {
+                vec2 uv = (gl_FragCoord.xy - 0.5 * u_resolution.xy) / u_resolution.y;
+
+                vec3 ro = vec3(0.0, 0.0, 2.2);
+                vec3 rd = normalize(vec3(uv, -1.4));
+
+                if (u_mode == 1 || u_mode == 2) {
+                    float pitch = 0.35;
+                    float yaw = (u_mouse.x - 0.5) * 2.5;
+                    
+                    float cy = cos(yaw), sy = sin(yaw);
+                    float cx = cos(pitch), sx = sin(pitch);
+
+                    mat3 rotY = mat3(cy, 0.0, sy, 0.0, 1.0, 0.0, -sy, 0.0, cy);
+                    mat3 rotX = mat3(1.0, 0.0, 0.0, 0.0, cx, -sx, 0.0, sx, cx);
+
+                    ro = rotY * rotX * vec3(0.0, 0.45, 2.3);
+                    rd = rotY * rotX * rd;
+                }
+
+                // Raymarching
+                float tDist = 0.0;
+                float hit = 0.0;
+                vec3 p = ro;
+
+                for (int i = 0; i < 75; i++) {
+                    p = ro + rd * tDist;
+                    float d = sceneSDF(p);
+                    if (d < 0.002) {
+                        hit = 1.0;
+                        break;
+                    }
+                    tDist += d * 0.8;
+                    if (tDist > 5.5) break;
+                }
+
+                vec3 finalColor = vec3(0.0);
+
+                if (hit > 0.5) {
+                    vec3 N = calcNormal(p);
+                    vec3 V = -rd;
+
+                    // 1. Optyka Fresnela (Schlick)
+                    float F0 = 0.025; // Woda
+                    float NdotV = max(0.0, dot(N, V));
+                    float fresnel = F0 + (1.0 - F0) * pow(1.0 - NdotV, 4.5) * u_fresnel_str;
+
+                    // 2. Refrakcja i dyspersja chromatyczna (Snell)
+                    float etaR = 1.0 / (u_ior - u_dispersion);
+                    float etaG = 1.0 / u_ior;
+                    float etaB = 1.0 / (u_ior + u_dispersion);
+
+                    vec3 refrR = refract(rd, N, etaR);
+                    vec3 refrG = refract(rd, N, etaG);
+                    vec3 refrB = refract(rd, N, etaB);
+
+                    vec2 bgUVR = vUV + refrR.xy * 0.45;
+                    vec2 bgUVG = vUV + refrG.xy * 0.45;
+                    vec2 bgUVB = vUV + refrB.xy * 0.45;
+
+                    vec3 refrColor = vec3(
+                        getBackground(bgUVR).r,
+                        getBackground(bgUVG).g,
+                        getBackground(bgUVB).b
+                    );
+
+                    // 3. Odbicia środowiskowe (Reflection)
+                    vec3 reflDir = reflect(rd, N);
+                    vec3 reflColor = getBackground(vUV + reflDir.xy * 0.45) * 1.25 + vec3(0.05, 0.12, 0.22);
+
+                    // 4. Ostre błyski studyjne (Specular Highlights)
+                    vec3 lightDir1 = normalize(vec3(0.6, 0.8, 1.2));
+                    vec3 lightDir2 = normalize(vec3(-0.8, 0.4, 0.7));
+                    vec3 H1 = normalize(lightDir1 + V);
+                    vec3 H2 = normalize(lightDir2 + V);
+
+                    float spec1 = pow(max(0.0, dot(N, H1)), 70.0) * 2.0;
+                    float spec2 = pow(max(0.0, dot(N, H2)), 45.0) * 1.0;
+
+                    // 5. Kaustyka i wewnętrzne rozświetlenie
+                    float internalLight = pow(1.0 - NdotV, 2.0) * 0.35;
+
+                    vec3 waterColor = mix(refrColor, reflColor, fresnel) + vec3(spec1 + spec2) + vec3(0.02, 0.08, 0.15) * internalLight;
+                    finalColor = waterColor;
+                } else {
+                    // Tło bez kropli z lekką kaustyką cieniową pod kroplami
+                    vec3 bg = getBackground(vUV);
+                    finalColor = bg;
+                }
+
+                // Subtelna winieta
+                float vignette = 1.0 - length(vUV - 0.5) * 0.35;
+                finalColor *= vignette;
+
+                gl_FragColor = vec4(finalColor, 1.0);
+            }
+        `;
+
+        function createShader(gl, type, source) {
+            const shader = gl.createShader(type);
+            gl.shaderSource(shader, source);
+            gl.compileShader(shader);
+            if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+                console.error('Shader compilation error:', gl.getShaderInfoLog(shader));
+                gl.deleteShader(shader);
+                return null;
+            }
+            return shader;
+        }
+
+        const vs = createShader(gl, gl.VERTEX_SHADER, vsSource);
+        const fs = createShader(gl, gl.FRAGMENT_SHADER, fsSource);
+
+        if (!vs || !fs) {
+            console.error('Błąd kompilacji shaderów WebGL');
+        }
+
+        const program = gl.createProgram();
+        gl.attachShader(program, vs);
+        gl.attachShader(program, fs);
+        gl.linkProgram(program);
+
+        if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+            console.error('Błąd linkowania programu WebGL:', gl.getProgramInfoLog(program));
+        }
+
+        gl.useProgram(program);
+
+        // Quad geometrii na cały ekran
+        const posBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, posBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, -1,1, 1,-1, 1,1]), gl.STATIC_DRAW);
+
+        const posLoc = gl.getAttribLocation(program, 'position');
+        gl.enableVertexAttribArray(posLoc);
+        gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 0, 0);
+
+        // Pobranie lokalizacji uniformów
+        const uResLoc = gl.getUniformLocation(program, 'u_resolution');
+        const uTimeLoc = gl.getUniformLocation(program, 'u_time');
+        const uMouseLoc = gl.getUniformLocation(program, 'u_mouse');
+        const uModeLoc = gl.getUniformLocation(program, 'u_mode');
+        const uBgTypeLoc = gl.getUniformLocation(program, 'u_bg_type');
+        const uIorLoc = gl.getUniformLocation(program, 'u_ior');
+        const uDispLoc = gl.getUniformLocation(program, 'u_dispersion');
+        const uFresnelLoc = gl.getUniformLocation(program, 'u_fresnel_str');
+        const uSminKLoc = gl.getUniformLocation(program, 'u_smin_k');
+        const uWobbleLoc = gl.getUniformLocation(program, 'u_wobble');
+        const uSplashLoc = gl.getUniformLocation(program, 'u_splash_trigger');
+
+        // Parametry stanu
+        let currentMode = 0;
+        let currentBg = 0;
+        let paramIOR = 1.333;
+        let paramDispersion = 0.025;
+        let paramFresnel = 1.4;
+        let paramSminK = 0.25;
+        let paramWobble = 0.18;
+        let splashTrigger = 0.0;
+        let mouseX = 0.5, mouseY = 0.5;
+
+        canvas.addEventListener('mousemove', e => {
+            const rect = canvas.getBoundingClientRect();
+            mouseX = (e.clientX - rect.left) / rect.width;
+            mouseY = 1.0 - (e.clientY - rect.top) / rect.height;
+        });
+
+        canvas.addEventListener('mousedown', () => { triggerSplash(); });
+
+        function setMode(m) {
+            currentMode = m;
+            document.querySelectorAll('.mode-btn').forEach((b, idx) => b.classList.toggle('active', idx === m));
+        }
+
+        function updateBackground(val) { currentBg = parseInt(val, 10); }
+        function updateIOR(val) {
+            paramIOR = parseFloat(val);
+            document.getElementById('val-ior').innerText = paramIOR.toFixed(3);
+        }
+        function updateDispersion(val) {
+            paramDispersion = parseFloat(val);
+            document.getElementById('val-dispersion').innerText = paramDispersion.toFixed(3);
+        }
+        function updateFresnel(val) {
+            paramFresnel = parseFloat(val);
+            document.getElementById('val-fresnel').innerText = paramFresnel.toFixed(2);
+        }
+        function updateSminK(val) {
+            paramSminK = parseFloat(val);
+            document.getElementById('val-smink').innerText = paramSminK.toFixed(2);
+        }
+        function updateWobble(val) {
+            paramWobble = parseFloat(val);
+            document.getElementById('val-wobble').innerText = paramWobble.toFixed(2);
+        }
+        function triggerSplash() { splashTrigger = Math.random() * 10.0; }
+        function randomizeDroplets() {
+            mouseX = 0.2 + Math.random() * 0.6;
+            mouseY = 0.2 + Math.random() * 0.6;
+            triggerSplash();
+        }
+        function resetDefaults() {
+            updateIOR(1.333); updateDispersion(0.025); updateFresnel(1.4); updateSminK(0.25); updateWobble(0.18);
+            document.getElementById('param-ior').value = 1.333;
+            document.getElementById('param-dispersion').value = 0.025;
+            document.getElementById('param-fresnel').value = 1.4;
+            document.getElementById('param-smink').value = 0.25;
+            document.getElementById('param-wobble').value = 0.18;
+        }
+
+        let startTime = performance.now();
+        let lastTime = startTime;
+        let frames = 0;
+
+        function renderGL() {
+            const now = performance.now();
+            const elapsed = (now - startTime) * 0.001;
+            frames++;
+            if (now - lastTime >= 1000) {
+                document.getElementById('stat-fps').innerText = frames;
+                frames = 0;
+                lastTime = now;
+            }
+
+            gl.viewport(0, 0, canvas.width, canvas.height);
+            gl.uniform2f(uResLoc, canvas.width, canvas.height);
+            gl.uniform1f(uTimeLoc, elapsed);
+            gl.uniform2f(uMouseLoc, mouseX, mouseY);
+            gl.uniform1i(uModeLoc, currentMode);
+            gl.uniform1i(uBgTypeLoc, currentBg);
+            gl.uniform1f(uIorLoc, paramIOR);
+            gl.uniform1f(uDispLoc, paramDispersion);
+            gl.uniform1f(uFresnelLoc, paramFresnel);
+            gl.uniform1f(uSminKLoc, paramSminK);
+            gl.uniform1f(uWobbleLoc, paramWobble);
+            gl.uniform1f(uSplashLoc, splashTrigger);
+
+            gl.drawArrays(gl.TRIANGLES, 0, 6);
+            requestAnimationFrame(renderGL);
+        }
+
+        requestAnimationFrame(renderGL);
+    </script>
+</body>
+
+</html>
