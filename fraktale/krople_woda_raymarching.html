@@ -544,7 +544,7 @@
     <!-- WebGL Raymarching Shader Engine -->
     <script>
         const canvas = document.getElementById('glCanvas');
-        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+        const gl = canvas.getContext('webgl', { preserveDrawingBuffer: true }) || canvas.getContext('experimental-webgl', { preserveDrawingBuffer: true });
 
         if (!gl) {
             console.error('WebGL nie jest dostępny');
@@ -950,6 +950,7 @@
 
         requestAnimationFrame(renderGL);
     </script>
+    <script src="nagrywanie_wideo.js"></script>
 </body>
 
 </html>

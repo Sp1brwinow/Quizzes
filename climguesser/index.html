@@ -1,0 +1,1265 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Climate Guesser – Zgadnij miejsce na Ziemi (Gra 5 Rund)</title>
+    <link rel="stylesheet" href="../style.css" />
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <!-- Chart.js dla wykresu klimatogramu -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            --bg-dark: #07152b;
+            --card-bg: rgba(14, 30, 56, 0.92);
+            --card-border: rgba(56, 189, 248, 0.35);
+            --primary: #38bdf8;
+            --primary-hover: #0284c7;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-cyan: #22d3ee;
+            --accent-purple: #c084fc;
+            --accent-rose: #f43f5e;
+            --user-guess: #f59e0b;
+            --target-color: #10b981;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: linear-gradient(180deg, #051024 0%, #082142 45%, #0d3461 100%);
+            color: #f8fafc;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            padding: 16px 16px 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .main-container {
+            max-width: 1360px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Górna nawigacja */
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            background: rgba(14, 30, 56, 0.85);
+            border: 1px solid rgba(125, 211, 252, 0.4);
+            color: #7dd3fc;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(8px);
+        }
+
+        .nav-btn:hover {
+            color: #ffffff;
+            border-color: #38bdf8;
+            background: #0284c7;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.4);
+        }
+
+        /* Główny baner z pytaniem zadania */
+        .question-banner {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.92) 100%);
+            border: 2px solid #38bdf8;
+            border-radius: 16px;
+            padding: 16px 24px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(56, 189, 248, 0.25);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+
+        .banner-title-box {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .banner-icon {
+            font-size: 2.2rem;
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid #38bdf8;
+            width: 52px;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+        }
+
+        .banner-text h1 {
+            font-size: 1.45rem;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 2px;
+            letter-spacing: 0.5px;
+        }
+
+        .banner-text p {
+            color: #38bdf8;
+            font-size: 0.92rem;
+            font-weight: 600;
+        }
+
+        .round-stats-badge {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(251, 191, 36, 0.4);
+            padding: 8px 18px;
+            border-radius: 12px;
+            font-family: monospace;
+            font-size: 0.95rem;
+        }
+
+        .round-stats-badge span b {
+            color: #fbbf24;
+            font-size: 1.1rem;
+        }
+
+        .round-stats-badge span b.negative {
+            color: #f87171;
+        }
+
+        /* Układ dwukolumnowy: Lewo = Mapa + Wyniki, Prawo = Klimatogram + Analiza */
+        .game-layout {
+            display: grid;
+            grid-template-columns: 1.15fr 0.85fr;
+            gap: 18px;
+            align-items: start;
+        }
+
+        @media (max-width: 1024px) {
+            .game-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Karta Mapy */
+        .map-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 14px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .map-container {
+            width: 100%;
+            height: 520px;
+            border-radius: 14px;
+            overflow: hidden;
+            background: #020617;
+            border: 2px solid rgba(56, 189, 248, 0.35);
+            box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.9);
+            z-index: 10;
+        }
+
+        .map-footer-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            color: #94a3b8;
+            padding: 0 4px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .coords-chip {
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-family: monospace;
+            color: #38bdf8;
+            font-weight: bold;
+        }
+
+        /* Prawa kolumna: Karta Klimatogramu i Analizy */
+        .sidebar-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 18px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Strefa Wykresu Meteogramu */
+        .chart-box {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 14px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            position: relative;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: #38bdf8;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 6px;
+        }
+
+        .chart-canvas-wrapper {
+            position: relative;
+            height: 220px;
+            width: 100%;
+        }
+
+        /* Wskaźniki klimatyczne pod wykresem */
+        .climate-indicators-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            font-size: 0.8rem;
+        }
+
+        .indicator-item {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 6px 8px;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .indicator-item span {
+            display: block;
+            color: #94a3b8;
+            font-size: 0.72rem;
+        }
+
+        .indicator-item b {
+            color: #fbbf24;
+            font-size: 0.9rem;
+        }
+
+        /* Karta Analizy Klimatu Klikniętego Punktu */
+        .analysis-box {
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(52, 211, 153, 0.3);
+            border-radius: 14px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .analysis-header {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: #34d399;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .analysis-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.86rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 6px;
+        }
+
+        .analysis-row:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .analysis-val {
+            font-family: monospace;
+            font-weight: bold;
+            color: #38bdf8;
+        }
+
+        /* Wynik Rundy */
+        .result-summary-box {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%);
+            border: 2px solid #fbbf24;
+            border-radius: 14px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            display: none;
+            animation: popIn 0.3s ease;
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0.95); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .result-title {
+            font-weight: 800;
+            font-size: 1.05rem;
+            color: #fbbf24;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .result-score-line {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.92rem;
+        }
+
+        .score-pill-negative {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid #ef4444;
+            color: #f87171;
+            font-weight: 800;
+            padding: 4px 12px;
+            border-radius: 999px;
+            font-family: monospace;
+            font-size: 1.05rem;
+        }
+
+        /* Przyciski Akcji */
+        .action-bar {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 4px;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            border: 2px solid #10b981;
+            color: #ffffff;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 1.05rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
+            letter-spacing: 0.5px;
+        }
+
+        .btn-submit:hover:not(:disabled) {
+            background: #10b981;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(16, 185, 129, 0.6);
+        }
+
+        .btn-submit:disabled {
+            background: #334155;
+            border-color: #475569;
+            color: #94a3b8;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        .btn-next-round {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            border: 1px solid #38bdf8;
+            color: #ffffff;
+            padding: 11px 18px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            display: none;
+        }
+
+        .btn-next-round:hover {
+            background: #0284c7;
+            box-shadow: 0 4px 18px rgba(56, 189, 248, 0.5);
+        }
+
+        /* Modal Końcowy Podsumowania Gry po 5 Rundach */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 99999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .summary-card {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            border: 2px solid #fbbf24;
+            border-radius: 20px;
+            max-width: 650px;
+            width: 100%;
+            padding: 28px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9), 0 0 35px rgba(251, 191, 36, 0.3);
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            animation: popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .summary-header {
+            text-align: center;
+        }
+
+        .summary-header h2 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #fbbf24;
+            margin-bottom: 4px;
+        }
+
+        .summary-header p {
+            color: #cbd5e1;
+            font-size: 0.95rem;
+        }
+
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+            margin-top: 6px;
+        }
+
+        .summary-table th {
+            background: rgba(15, 23, 42, 0.9);
+            color: #38bdf8;
+            padding: 8px 10px;
+            border-bottom: 1px solid rgba(56, 189, 248, 0.3);
+            text-align: left;
+        }
+
+        .summary-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            color: #e2e8f0;
+        }
+
+        .summary-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .summary-total-banner {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid #fbbf24;
+            border-radius: 12px;
+            padding: 14px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .summary-total-banner span {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #cbd5e1;
+        }
+
+        .summary-total-banner b {
+            font-size: 1.4rem;
+            color: #f87171;
+            font-family: monospace;
+        }
+
+        .summary-rank-badge {
+            text-align: center;
+            background: rgba(56, 189, 248, 0.12);
+            border: 1px solid #38bdf8;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 1.02rem;
+            font-weight: 700;
+            color: #38bdf8;
+        }
+
+        .custom-guess-icon, .custom-target-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.8));
+        }
+
+        /* Toast */
+        #toast-box {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid #38bdf8;
+            color: #38bdf8;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(56, 189, 248, 0.4);
+            z-index: 99999;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none;
+        }
+
+        #toast-box.show {
+            transform: translateX(-50%) translateY(0);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="main-container">
+        <!-- Nawigacja -->
+        <div class="top-nav">
+            <a href="../index.html" class="nav-btn">🏠 Strona Główna HACK CLUB</a>
+            <a href="../rozrywka.html" class="nav-btn">🪐 Strefa Rozrywki</a>
+        </div>
+
+        <!-- Baner z Pytaniem -->
+        <header class="question-banner">
+            <div class="banner-title-box">
+                <div class="banner-icon">🎯</div>
+                <div class="banner-text">
+                    <h1 id="question-text">Zaznacz miejsce na mapie!</h1>
+                    <p id="question-subtext">Przeanalizuj poniższy klimatogram (temperatury i sumy opadów) i wskaż, skąd pochodzi ten klimat.</p>
+                </div>
+            </div>
+
+            <div class="round-stats-badge">
+                <span>Runda: <b id="stat-round">1 / 5</b></span>
+                <span>Łączny błąd: <b id="stat-total-score" class="negative">0 tys. km</b></span>
+            </div>
+        </header>
+
+        <!-- Główny Układ Gry -->
+        <div class="game-layout">
+            <!-- Lewa Strona: Mapa z Zoomem -->
+            <div class="map-card">
+                <div class="map-container" id="map"></div>
+
+                <div class="map-footer-bar">
+                    <span id="map-hint">🖱️ <strong>Kliknij w dowolne miejsce na mapie</strong>, aby postawić swój strzał (pomarańczowa pinezka).</span>
+                    <span class="coords-chip" id="hover-coords">Kursor: --° N, --° E</span>
+                </div>
+            </div>
+
+            <!-- Prawa Strona: Klimatogram Zadania + Analiza Klimatu Strzału -->
+            <div class="sidebar-card">
+                <!-- 1. Klimatogram Tajemniczego Miejsca -->
+                <div class="chart-box">
+                    <div class="chart-header">
+                        <span>📊 Klimatogram Tajemniczego Miejsca</span>
+                        <span id="chart-loading-status" style="font-size: 0.8rem; color: #10b981;">● Gotowy</span>
+                    </div>
+
+                    <div class="chart-canvas-wrapper">
+                        <canvas id="meteogramChart"></canvas>
+                    </div>
+
+                    <div class="climate-indicators-grid">
+                        <div class="indicator-item">
+                            <span>Śr. roczna temp.</span>
+                            <b id="ind-temp">--°C</b>
+                        </div>
+                        <div class="indicator-item">
+                            <span>Roczna suma opadów</span>
+                            <b id="ind-precip">-- mm</b>
+                        </div>
+                        <div class="indicator-item">
+                            <span>Amplituda roczna</span>
+                            <b id="ind-amp">--°C</b>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Analiza Klimatu Wybranego Punktu -->
+                <div class="analysis-box" id="analysis-section">
+                    <div class="analysis-header">
+                        <span>📍 Analiza Twojego Strzału</span>
+                    </div>
+
+                    <div class="analysis-row">
+                        <span>Współrzędne strzału:</span>
+                        <span class="analysis-val" id="guess-coords">Brak zaznaczenia</span>
+                    </div>
+                    <div class="analysis-row">
+                        <span>Strefa klimatyczna:</span>
+                        <span class="analysis-val" id="guess-climate" style="color:#34d399;">Kliknij na mapie</span>
+                    </div>
+                    <div class="analysis-row">
+                        <span>Półkule:</span>
+                        <span class="analysis-val" id="guess-hemisphere">-- / --</span>
+                    </div>
+                </div>
+
+                <!-- 3. Wynik Rundy po Zatwierdzeniu -->
+                <div class="result-summary-box" id="result-box">
+                    <div class="result-title">
+                        <span>🏆 Wynik Rundy <span id="res-round-num">1</span>:</span>
+                    </div>
+                    <div class="result-score-line">
+                        <span>Błąd sferyczny:</span>
+                        <b id="res-distance" style="color:#38bdf8; font-family:monospace; font-size:1.02rem;">-- km</b>
+                    </div>
+                    <div class="result-score-line">
+                        <span>Naliczony błąd w tys. km:</span>
+                        <span class="score-pill-negative" id="res-points-negative">-0 tys. km</span>
+                    </div>
+                    <div style="font-size: 0.88rem; color: #cbd5e1; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 6px;">
+                        <span>Rzeczywiste miejsce:</span> <b id="res-target-name" style="color:#10b981;">--</b>
+                    </div>
+                </div>
+
+                <!-- 4. Przyciski Akcji -->
+                <div class="action-bar">
+                    <button type="button" class="btn-submit" id="btn-submit-guess" onclick="submitGuess()" disabled>
+                        🎯 Zatwierdź
+                    </button>
+                    <button type="button" class="btn-next-round" id="btn-next" onclick="handleNextStep()">
+                        🔄 Następna runda (2 / 5)
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Końcowy po 5 Rundach -->
+    <div class="modal-overlay" id="final-summary-modal">
+        <div class="summary-card">
+            <div class="summary-header">
+                <h2>🎉 Podsumowanie Gry (5 Rund)</h2>
+                <p>Oto zestawienie Twoich strzałów i odległości sferycznych od tajemniczych miejsc:</p>
+            </div>
+
+            <table class="summary-table">
+                <thead>
+                    <tr>
+                        <th>Runda</th>
+                        <th>Tajemnicze Miejsce</th>
+                        <th>Błąd w km</th>
+                        <th>Punkty (w tys. km)</th>
+                    </tr>
+                </thead>
+                <tbody id="summary-table-body">
+                    <!-- Wiersze generowane w JS -->
+                </tbody>
+            </table>
+
+            <div class="summary-total-banner">
+                <span>Łączny wynik (suma ujemna):</span>
+                <b id="final-total-score">-0 tys. km</b>
+            </div>
+
+            <div class="summary-rank-badge" id="final-rank-title">
+                🏆 Mistrz Geoklimatologii!
+            </div>
+
+            <button type="button" class="btn-submit" onclick="restartEntireGame()" style="margin-top: 4px;">
+                🎮 Zagraj Ponownie (Nowe 5 Rund)
+            </button>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast-box">Wiadomość</div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+        // =========================================================================
+        // BAZA DANYCH STACJI METEOROLOGICZNYCH I LOKALIZACJI LĄDOWYCH
+        // =========================================================================
+        const LAND_WEATHER_STATIONS = [
+            // Równikowy i Podrównikowy
+            { name: "Manaus (Amazonia, Brazylia)", lat: -3.1190, lng: -60.0217, zone: "Równikowy wilgotny", temps: [26.8, 26.6, 26.7, 26.9, 27.2, 27.4, 27.7, 28.1, 28.3, 28.2, 27.9, 27.3], precips: [280, 310, 340, 320, 250, 120, 75, 55, 70, 130, 190, 240] },
+            { name: "Singapur (Azja Południowo-Wschodnia)", lat: 1.3521, lng: 103.8198, zone: "Równikowy wybitnie wilgotny", temps: [27.0, 27.5, 28.0, 28.3, 28.5, 28.4, 28.2, 28.1, 28.0, 27.9, 27.4, 27.0], precips: [240, 165, 180, 185, 175, 135, 155, 150, 160, 170, 260, 310] },
+            { name: "Kinszasa (Demokratyczna Republika Konga)", lat: -4.4419, lng: 15.2663, zone: "Podrównikowy wilgotny", temps: [25.5, 26.0, 26.2, 26.1, 25.4, 23.2, 22.5, 23.8, 25.0, 25.8, 25.6, 25.3], precips: [140, 135, 175, 220, 100, 10, 5, 10, 45, 140, 240, 180] },
+            { name: "Nairobi (Kenia, Afryka Wschodnia)", lat: -1.2921, lng: 36.8219, zone: "Podrównikowy wyżynny", temps: [19.0, 19.8, 20.0, 19.5, 18.2, 16.8, 16.0, 16.5, 18.0, 19.2, 18.8, 18.5], precips: [60, 55, 95, 215, 150, 35, 18, 22, 28, 55, 150, 105] },
+
+            // Zwrotnikowy Pustynny i Suchy
+            { name: "Kair (Egipt, Afryka Północna)", lat: 30.0444, lng: 31.2357, zone: "Zwrotnikowy wybitnie suchy", temps: [14.0, 15.2, 18.0, 22.1, 26.2, 29.0, 30.2, 30.0, 27.8, 24.5, 19.8, 15.5], precips: [5, 4, 3, 1, 1, 0, 0, 0, 0, 1, 3, 6] },
+            { name: "Rijad (Arabia Saudyjska)", lat: 24.7136, lng: 46.6753, zone: "Zwrotnikowy kontynentalny suchy", temps: [15.0, 17.5, 22.0, 27.5, 33.5, 36.5, 37.8, 37.5, 34.0, 28.5, 21.5, 16.5], precips: [12, 10, 22, 26, 4, 0, 0, 0, 0, 1, 8, 12] },
+            { name: "Alice Springs (Australia Centralna)", lat: -23.6980, lng: 133.8807, zone: "Zwrotnikowy suchy (Outback)", temps: [28.5, 27.5, 25.0, 20.0, 15.0, 12.0, 11.8, 14.5, 19.0, 23.5, 26.0, 28.0], precips: [40, 42, 32, 16, 18, 13, 15, 8, 9, 21, 28, 38] },
+            { name: "Las Vegas (Nevada, USA)", lat: 36.1699, lng: -115.1398, zone: "Zwrotnikowy pustynny", temps: [9.0, 11.5, 15.2, 19.5, 25.0, 30.5, 34.0, 33.0, 28.0, 20.5, 13.5, 8.5], precips: [14, 18, 11, 4, 3, 2, 8, 9, 6, 7, 9, 13] },
+
+            // Podzwrotnikowy
+            { name: "Rzym (Włochy, Europa Południowa)", lat: 41.9028, lng: 12.4964, zone: "Podzwrotnikowy śródziemnomorski", temps: [8.0, 8.8, 11.2, 14.0, 18.2, 22.5, 25.2, 25.4, 21.8, 17.4, 12.5, 9.0], precips: [65, 60, 55, 60, 45, 30, 15, 25, 65, 105, 115, 90] },
+            { name: "Kapsztad (Republika Południowej Afryki)", lat: -33.9249, lng: 18.4241, zone: "Podzwrotnikowy morski", temps: [21.5, 21.8, 20.2, 17.5, 15.0, 13.0, 12.5, 13.2, 14.5, 16.8, 18.8, 20.5], precips: [15, 15, 20, 45, 70, 95, 85, 75, 45, 30, 15, 15] },
+            { name: "Tokio (Japonia, Azja Wschodnia)", lat: 35.6762, lng: 139.6503, zone: "Podzwrotnikowy wilgotny monsunowy", temps: [5.5, 6.2, 9.5, 14.5, 19.0, 22.5, 26.2, 27.5, 24.0, 18.5, 13.0, 8.0], precips: [50, 55, 115, 130, 140, 170, 155, 165, 210, 200, 95, 50] },
+            { name: "Sydney (Australia Wschodnia)", lat: -33.8688, lng: 151.2093, zone: "Podzwrotnikowy wilgotny", temps: [23.5, 23.4, 22.0, 19.2, 16.0, 13.8, 13.0, 14.2, 16.5, 18.8, 20.5, 22.2], precips: [100, 120, 130, 125, 100, 120, 70, 75, 65, 75, 85, 80] },
+
+            // Umiarkowany Ciepły
+            { name: "Warszawa (Polska, Europa Środkowa)", lat: 52.2297, lng: 21.0122, zone: "Umiarkowany ciepły przejściowy", temps: [-1.5, -0.2, 3.8, 9.5, 14.8, 18.2, 20.3, 19.7, 14.5, 9.0, 4.0, 0.0], precips: [32, 29, 34, 38, 55, 70, 85, 62, 48, 39, 37, 36] },
+            { name: "Londyn (Wielka Brytania, Europa Zachodnia)", lat: 51.5074, lng: -0.1278, zone: "Umiarkowany ciepły morski", temps: [5.5, 5.8, 8.0, 10.5, 13.8, 16.8, 19.0, 18.8, 16.0, 12.2, 8.5, 6.0], precips: [52, 40, 42, 44, 48, 46, 45, 52, 50, 62, 58, 55] },
+            { name: "Chicago (Stany Zjednoczone, Ameryka Pn.)", lat: 41.8781, lng: -87.6298, zone: "Umiarkowany ciepły kontynentalny", temps: [-4.5, -2.5, 3.5, 10.0, 16.0, 21.8, 24.5, 23.5, 19.2, 12.5, 5.0, -1.8], precips: [50, 48, 65, 95, 115, 105, 100, 110, 85, 80, 75, 60] },
+
+            // Umiarkowany Chłodny (Tajga)
+            { name: "Jakuck (Syberia Wschodnia, Rosja)", lat: 62.0355, lng: 129.6755, zone: "Umiarkowany chłodny skrajnie kontynentalny", temps: [-38.5, -34.0, -20.5, -5.0, 7.5, 16.5, 19.5, 15.0, 6.0, -8.0, -27.0, -37.0], precips: [9, 8, 7, 10, 20, 38, 45, 38, 30, 18, 14, 10] },
+            { name: "Yellowknife (Północna Kanada)", lat: 62.4540, lng: -114.3718, zone: "Umiarkowany chłodny subarktyczny", temps: [-26.0, -23.0, -16.0, -4.5, 6.5, 14.0, 17.0, 14.5, 7.5, -1.5, -14.5, -22.5], precips: [14, 12, 12, 10, 18, 28, 42, 40, 36, 32, 22, 16] },
+
+            // Okołobiegunowy
+            { name: "Longyearbyen (Svalbard / Arktyka)", lat: 78.2232, lng: 15.6267, zone: "Okołobiegunowy polarny (Tundra)", temps: [-13.5, -14.0, -13.5, -10.5, -3.0, 2.5, 6.5, 5.5, 1.0, -5.0, -9.0, -11.5], precips: [18, 16, 16, 12, 10, 12, 18, 24, 22, 18, 20, 22] },
+            { name: "Baza McMurdo (Antarktyda)", lat: -77.8419, lng: 166.6863, zone: "Okołobiegunowy skrajnie polarny", temps: [-3.0, -8.5, -16.0, -20.5, -22.0, -23.5, -25.5, -25.8, -23.0, -18.5, -10.0, -4.0], precips: [15, 20, 22, 18, 16, 14, 15, 14, 12, 14, 12, 15] }
+        ];
+
+        // =========================================================================
+        // STAN GRY (5 RUND)
+        // =========================================================================
+        const TOTAL_ROUNDS = 5;
+        let currentRound = 1;
+        let totalNegativeKm = 0; // w tysiącach km
+        let roundsHistory = []; // { round, targetName, distKm, negativeThousands }
+        let secretLocation = null;
+        let userGuessLatLng = null;
+        let isRoundFinished = false;
+
+        let map = null;
+        let guessMarker = null;
+        let targetMarker = null;
+        let connectionLine = null;
+        let chartInstance = null;
+
+        // =========================================================================
+        // INICJALIZACJA MAPY LEAFLET
+        // =========================================================================
+        function initLeafletMap() {
+            const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors',
+                maxZoom: 18
+            });
+
+            const satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                attribution: '&copy; Esri & Earthstar Geographics',
+                maxZoom: 18
+            });
+
+            map = L.map('map', {
+                center: [20, 0],
+                zoom: 2,
+                layers: [osm],
+                minZoom: 1.5,
+                worldCopyJump: true
+            });
+
+            L.control.layers({
+                "🗺️ Mapa Standardowa": osm,
+                "🛰️ Zdjęcia Satelitarne": satellite
+            }).addTo(map);
+
+            // Kliknięcie użytkownika na mapie
+            map.on('click', function(e) {
+                if (isRoundFinished) return;
+
+                const lat = parseFloat(e.latlng.lat.toFixed(4));
+                const lng = parseFloat(e.latlng.lng.toFixed(4));
+                userGuessLatLng = { lat, lng };
+
+                // Postawienie lub przesunięcie markera strzału
+                if (!guessMarker) {
+                    const guessIcon = L.divIcon({
+                        className: 'custom-guess-icon',
+                        html: '📍',
+                        iconSize: [30, 30],
+                        iconAnchor: [15, 30]
+                    });
+                    guessMarker = L.marker([lat, lng], { icon: guessIcon }).addTo(map);
+                } else {
+                    guessMarker.setLatLng([lat, lng]);
+                }
+
+                guessMarker.bindPopup(`<b>📍 Twój strzał:</b><br>${formatCoord(lat, 'lat')}, ${formatCoord(lng, 'lng')}`).openPopup();
+
+                // Analiza klimatu punktu
+                updateGuessAnalysis(lat, lng);
+
+                // Odblokowanie przycisku Zatwierdź
+                document.getElementById('btn-submit-guess').disabled = false;
+            });
+
+            map.on('mousemove', function(e) {
+                document.getElementById('hover-coords').innerText = `Kursor: ${formatCoord(e.latlng.lat, 'lat')} ${formatCoord(e.latlng.lng, 'lng')}`;
+            });
+
+            startRound(1);
+        }
+
+        // =========================================================================
+        // ROZPOCZĘCIE RUNDY
+        // =========================================================================
+        function startRound(roundNum) {
+            currentRound = roundNum;
+            isRoundFinished = false;
+            userGuessLatLng = null;
+
+            // Reset markerów na mapie
+            if (guessMarker) { map.removeLayer(guessMarker); guessMarker = null; }
+            if (targetMarker) { map.removeLayer(targetMarker); targetMarker = null; }
+            if (connectionLine) { map.removeLayer(connectionLine); connectionLine = null; }
+
+            // Aktualizacja nagłówka
+            document.getElementById('stat-round').innerText = `${currentRound} / ${TOTAL_ROUNDS}`;
+            document.getElementById('question-text').innerText = `Runda ${currentRound} / ${TOTAL_ROUNDS}: Zaznacz miejsce na mapie!`;
+            document.getElementById('question-subtext').innerText = "Przeanalizuj poniższy klimatogram (temperatury i sumy opadów) i wskaż, skąd pochodzi ten klimat.";
+            
+            document.getElementById('guess-coords').innerText = "Brak zaznaczenia";
+            document.getElementById('guess-climate').innerText = "Kliknij na mapie";
+            document.getElementById('guess-hemisphere').innerText = "-- / --";
+            document.getElementById('btn-submit-guess').style.display = 'flex';
+            document.getElementById('btn-submit-guess').disabled = true;
+            document.getElementById('btn-next').style.display = 'none';
+            document.getElementById('result-box').style.display = 'none';
+            document.getElementById('map-hint').innerHTML = '🖱️ <strong>Kliknij w dowolne miejsce na mapie</strong>, aby postawić swój strzał (pomarańczowa pinezka).';
+
+            // Losowanie stacji, która jeszcze nie była w tej grze
+            const availableStations = LAND_WEATHER_STATIONS.filter(st => !roundsHistory.some(h => h.targetName === st.name));
+            const pool = availableStations.length > 0 ? availableStations : LAND_WEATHER_STATIONS;
+            const randomIndex = Math.floor(Math.random() * pool.length);
+            secretLocation = pool[randomIndex];
+
+            // Pobranie danych z Open-Meteo i narysowanie wykresu
+            fetchAndRenderMeteogram(secretLocation);
+
+            map.setView([20, 0], 2);
+        }
+
+        // =========================================================================
+        // POBIERANIE DANYCH KLIMATYCZNYCH Z OPEN-METEO API & RENDER METEOGRAMU
+        // =========================================================================
+        async function fetchAndRenderMeteogram(loc) {
+            const statusEl = document.getElementById('chart-loading-status');
+            statusEl.innerText = "⏳ Pobieranie z Open-Meteo...";
+            statusEl.style.color = "#fbbf24";
+
+            let monthlyTemps = loc.temps;
+            let monthlyPrecips = loc.precips;
+
+            try {
+                const url = `https://archive-api.open-meteo.com/v1/archive?latitude=${loc.lat}&longitude=${loc.lng}&start_date=2023-01-01&end_date=2023-12-31&daily=temperature_2m_mean,precipitation_sum&timezone=auto`;
+                
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 3500);
+
+                const response = await fetch(url, { signal: controller.signal });
+                clearTimeout(timeoutId);
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data && data.daily && data.daily.time) {
+                        const aggregated = aggregateDailyToMonthly(data.daily.time, data.daily.temperature_2m_mean, data.daily.precipitation_sum);
+                        monthlyTemps = aggregated.temps;
+                        monthlyPrecips = aggregated.precips;
+                        statusEl.innerText = "● Open-Meteo (Na żywo)";
+                        statusEl.style.color = "#34d399";
+                    }
+                } else {
+                    statusEl.innerText = "● Stacja ERA5 WMO";
+                    statusEl.style.color = "#38bdf8";
+                }
+            } catch (err) {
+                statusEl.innerText = "● Stacja Klimatyczna";
+                statusEl.style.color = "#38bdf8";
+            }
+
+            renderChart(monthlyTemps, monthlyPrecips);
+            updateIndicators(monthlyTemps, monthlyPrecips);
+        }
+
+        function aggregateDailyToMonthly(dates, temps, precips) {
+            const monthTempsSum = new Array(12).fill(0);
+            const monthTempsCount = new Array(12).fill(0);
+            const monthPrecipsSum = new Array(12).fill(0);
+
+            for (let i = 0; i < dates.length; i++) {
+                const month = parseInt(dates[i].substring(5, 7), 10) - 1;
+                const t = temps[i];
+                const p = precips[i];
+
+                if (t !== null && !isNaN(t)) {
+                    monthTempsSum[month] += t;
+                    monthTempsCount[month]++;
+                }
+                if (p !== null && !isNaN(p)) {
+                    monthPrecipsSum[month] += p;
+                }
+            }
+
+            const finalTemps = [];
+            const finalPrecips = [];
+
+            for (let m = 0; m < 12; m++) {
+                const avgT = monthTempsCount[m] > 0 ? (monthTempsSum[m] / monthTempsCount[m]) : 0;
+                finalTemps.push(parseFloat(avgT.toFixed(1)));
+                finalPrecips.push(Math.round(monthPrecipsSum[m]));
+            }
+
+            return { temps: finalTemps, precips: finalPrecips };
+        }
+
+        function renderChart(temps, precips) {
+            const ctx = document.getElementById('meteogramChart').getContext('2d');
+            const months = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
+
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+
+            chartInstance = new Chart(ctx, {
+                data: {
+                    labels: months,
+                    datasets: [
+                        {
+                            type: 'line',
+                            label: 'Temperatura (°C)',
+                            data: temps,
+                            borderColor: '#fb923c',
+                            backgroundColor: 'rgba(251, 146, 60, 0.2)',
+                            borderWidth: 3,
+                            pointBackgroundColor: '#ea580c',
+                            pointBorderColor: '#fff',
+                            pointRadius: 4,
+                            pointHoverRadius: 6,
+                            yAxisID: 'yTemp',
+                            tension: 0.35,
+                            order: 1
+                        },
+                        {
+                            type: 'bar',
+                            label: 'Opady (mm)',
+                            data: precips,
+                            backgroundColor: 'rgba(56, 189, 248, 0.65)',
+                            borderColor: '#0284c7',
+                            borderWidth: 1,
+                            borderRadius: 4,
+                            yAxisID: 'yPrecip',
+                            order: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#cbd5e1',
+                                font: { size: 11, family: 'Segoe UI' },
+                                boxWidth: 12
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                            titleColor: '#38bdf8',
+                            bodyColor: '#f8fafc',
+                            borderColor: '#38bdf8',
+                            borderWidth: 1
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: 'rgba(255, 255, 255, 0.06)' },
+                            ticks: { color: '#94a3b8', font: { weight: 'bold' } }
+                        },
+                        yPrecip: {
+                            type: 'linear',
+                            position: 'left',
+                            beginAtZero: true,
+                            grid: { color: 'rgba(56, 189, 248, 0.1)' },
+                            ticks: {
+                                color: '#38bdf8',
+                                callback: val => `${val} mm`
+                            },
+                            title: {
+                                display: true,
+                                text: 'Opady (mm)',
+                                color: '#38bdf8',
+                                font: { size: 10 }
+                            }
+                        },
+                        yTemp: {
+                            type: 'linear',
+                            position: 'right',
+                            grid: { drawOnChartArea: false },
+                            ticks: {
+                                color: '#fb923c',
+                                callback: val => `${val}°C`
+                            },
+                            title: {
+                                display: true,
+                                text: 'Temp. (°C)',
+                                color: '#fb923c',
+                                font: { size: 10 }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateIndicators(temps, precips) {
+            const sumPrecip = precips.reduce((a, b) => a + b, 0);
+            const meanTemp = (temps.reduce((a, b) => a + b, 0) / temps.length).toFixed(1);
+            const maxTemp = Math.max(...temps);
+            const minTemp = Math.min(...temps);
+            const amp = (maxTemp - minTemp).toFixed(1);
+
+            document.getElementById('ind-temp').innerText = `${meanTemp > 0 ? '+' : ''}${meanTemp}°C`;
+            document.getElementById('ind-precip').innerText = `${sumPrecip} mm`;
+            document.getElementById('ind-amp').innerText = `${amp}°C`;
+        }
+
+        // =========================================================================
+        // ANALIZA KLIMATU DLA STRZAŁU
+        // =========================================================================
+        function updateGuessAnalysis(lat, lng) {
+            document.getElementById('guess-coords').innerText = `${formatCoord(lat, 'lat')}, ${formatCoord(lng, 'lng')}`;
+
+            const ns = lat >= 0 ? 'Północna' : 'Południowa';
+            const ew = lng >= 0 ? 'Wschodnia' : 'Zachodnia';
+            document.getElementById('guess-hemisphere').innerText = `${ns} / ${ew}`;
+
+            const absLat = Math.abs(lat);
+            let climateZone = "";
+            if (absLat <= 12) climateZone = "🌴 Równikowa (Deszczowa)";
+            else if (absLat <= 24) climateZone = "🏜️ Zwrotnikowa (Sucha/Sawanna)";
+            else if (absLat <= 38) climateZone = "🍇 Podzwrotnikowa (Śródziemnomorska)";
+            else if (absLat <= 58) climateZone = "🌲 Umiarkowana Ciepła / Mieszana";
+            else if (absLat <= 68) climateZone = "❄️ Umiarkowana Chłodna (Tajga)";
+            else climateZone = "🧊 Okołobiegunowa (Tundra/Lądolód)";
+
+            document.getElementById('guess-climate').innerText = climateZone;
+        }
+
+        // =========================================================================
+        // ZATWIERDZENIE ODPOWIEDZI
+        // =========================================================================
+        function submitGuess() {
+            if (!userGuessLatLng || isRoundFinished) return;
+            isRoundFinished = true;
+
+            const tLat = secretLocation.lat;
+            const tLng = secretLocation.lng;
+            const gLat = userGuessLatLng.lat;
+            const gLng = userGuessLatLng.lng;
+
+            // 1. Zaznaczenie celu na mapie (gwiazda ⭐)
+            const targetIcon = L.divIcon({
+                className: 'custom-target-icon',
+                html: '⭐',
+                iconSize: [36, 36],
+                iconAnchor: [18, 18]
+            });
+            targetMarker = L.marker([tLat, tLng], { icon: targetIcon }).addTo(map);
+            targetMarker.bindPopup(`<b>⭐ Rzeczywiste miejsce:</b><br><strong style="color:#10b981; font-size:1.05rem;">${secretLocation.name}</strong><br>Strefa: ${secretLocation.zone}<br>${formatCoord(tLat, 'lat')}, ${formatCoord(tLng, 'lng')}`).openPopup();
+
+            // 2. Linia łącząca
+            connectionLine = L.polyline([[gLat, gLng], [tLat, tLng]], {
+                color: '#fbbf24',
+                weight: 3,
+                dashArray: '8, 8',
+                opacity: 0.9
+            }).addTo(map);
+
+            // 3. Dopasowanie kamery
+            const bounds = L.latLngBounds([[gLat, gLng], [tLat, tLng]]);
+            map.fitBounds(bounds, { padding: [50, 50], maxZoom: 6 });
+
+            // 4. Obliczenie odległości sferycznej w km (Haversine)
+            const distance = calculateHaversineDistance(gLat, gLng, tLat, tLng);
+            const distKm = Math.round(distance);
+
+            // 5. Zaokrąglenie w tysiącach kilometrów jako liczba ujemna
+            const roundedThousands = Math.round(distKm / 1000);
+            const negativePenalty = -roundedThousands;
+            totalNegativeKm += negativePenalty;
+
+            // Zapis historii
+            roundsHistory.push({
+                round: currentRound,
+                targetName: secretLocation.name,
+                distKm: distKm,
+                negativePenalty: negativePenalty
+            });
+
+            // 6. Wyświetlenie wyników
+            document.getElementById('res-round-num').innerText = currentRound;
+            document.getElementById('res-distance').innerText = `${distKm.toLocaleString()} km`;
+            document.getElementById('res-points-negative').innerText = `${negativePenalty} tys. km`;
+            document.getElementById('res-target-name').innerText = secretLocation.name;
+            document.getElementById('result-box').style.display = 'flex';
+
+            document.getElementById('stat-total-score').innerText = `${totalNegativeKm} tys. km`;
+
+            // Zmiana przycisków
+            document.getElementById('btn-submit-guess').style.display = 'none';
+            const btnNext = document.getElementById('btn-next');
+            btnNext.style.display = 'flex';
+
+            if (currentRound < TOTAL_ROUNDS) {
+                btnNext.innerText = `🔄 Następna runda (${currentRound + 1} / ${TOTAL_ROUNDS})`;
+            } else {
+                btnNext.innerText = `🏆 Zobacz Podsumowanie Gry (5 Rund)`;
+            }
+
+            showToast(`📍 Błąd: ${distKm.toLocaleString()} km (${negativePenalty} tys. km)`);
+        }
+
+        // =========================================================================
+        // PRZEJŚCIE DO KOLEJNEGO KROKU
+        // =========================================================================
+        function handleNextStep() {
+            if (currentRound < TOTAL_ROUNDS) {
+                startRound(currentRound + 1);
+            } else {
+                showFinalSummary();
+            }
+        }
+
+        function showFinalSummary() {
+            const tableBody = document.getElementById('summary-table-body');
+            tableBody.innerHTML = '';
+
+            roundsHistory.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>Runda ${item.round}</strong></td>
+                    <td style="color:#38bdf8;">${item.targetName}</td>
+                    <td style="font-family:monospace;">${item.distKm.toLocaleString()} km</td>
+                    <td style="color:#f87171; font-weight:bold; font-family:monospace;">${item.negativePenalty} tys. km</td>
+                `;
+                tableBody.appendChild(tr);
+            });
+
+            document.getElementById('final-total-score').innerText = `${totalNegativeKm} tys. km`;
+
+            // Ranga na podstawie wyniku (im bliżej 0, tym lepiej)
+            const absError = Math.abs(totalNegativeKm);
+            let rankText = "";
+            if (absError <= 3) {
+                rankText = "🥇 Mistrz Geoklimatologii! (Ekstremalna precyzja klimatyczna!)";
+            } else if (absError <= 8) {
+                rankText = "🥈 Ekspert Klimatyczny! (Świetna orientacja na kuli ziemskiej!)";
+            } else if (absError <= 18) {
+                rankText = "🥉 Geograf Odkrywca! (Dobra znajomość stref klimatycznych!)";
+            } else {
+                rankText = "🧭 Kosmiczny Podróżnik (Zwracaj uwagę na odwrócenie pór roku na półkuli południowej!)";
+            }
+            document.getElementById('final-rank-title').innerText = rankText;
+
+            document.getElementById('final-summary-modal').classList.add('active');
+        }
+
+        function restartEntireGame() {
+            document.getElementById('final-summary-modal').classList.remove('active');
+            totalNegativeKm = 0;
+            roundsHistory = [];
+            document.getElementById('stat-total-score').innerText = `0 tys. km`;
+            startRound(1);
+        }
+
+        // =========================================================================
+        // FUNKCJE MATEMATYCZNE (HAVERSINE SFERYCZNY)
+        // =========================================================================
+        function formatCoord(val, type) {
+            const dir = (type === 'lat') ? (val >= 0 ? 'N' : 'S') : (val >= 0 ? 'E' : 'W');
+            return `${Math.abs(val).toFixed(2)}° ${dir}`;
+        }
+
+        function calculateHaversineDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371; // Średni promień Ziemi w km
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            return R * c;
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast-box');
+            toast.innerText = msg;
+            toast.classList.add('show');
+            setTimeout(() => { toast.classList.remove('show'); }, 3000);
+        }
+
+        // Start gry po załadowaniu
+        window.addEventListener('DOMContentLoaded', () => {
+            initLeafletMap();
+        });
+    </script>
+</body>
+
+</html>
