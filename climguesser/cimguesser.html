@@ -158,6 +158,49 @@
             color: #f87171;
         }
 
+        /* Przełącznik poziomu trudności (Łatwy vs Pełny) */
+        .mode-toggle-group {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            border-radius: 12px;
+            padding: 4px 8px;
+            flex-wrap: wrap;
+        }
+
+        .mode-label {
+            font-size: 0.84rem;
+            color: #94a3b8;
+            font-weight: 600;
+            padding-left: 4px;
+        }
+
+        .mode-toggle-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            color: #cbd5e1;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .mode-toggle-btn:hover {
+            color: #ffffff;
+            background: rgba(56, 189, 248, 0.15);
+        }
+
+        .mode-toggle-btn.active {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            border-color: #38bdf8;
+            color: #ffffff;
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
+        }
+
         /* Układ dwukolumnowy: Lewo = Mapa + Wyniki, Prawo = Klimatogram + Analiza */
         .game-layout {
             display: grid;
@@ -593,9 +636,22 @@
                 </div>
             </div>
 
-            <div class="round-stats-badge">
-                <span>Runda: <b id="stat-round">1 / 5</b></span>
-                <span>Łączny błąd: <b id="stat-total-score" class="negative">0 tys. km</b></span>
+            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                <!-- Wybór trybu (Łatwy / Pełny) -->
+                <div class="mode-toggle-group">
+                    <span class="mode-label">Tryb:</span>
+                    <button type="button" class="mode-toggle-btn active" id="btn-mode-easy" onclick="setGameDifficulty('easy')">
+                        🌱 Łatwy (19 stacji)
+                    </button>
+                    <button type="button" class="mode-toggle-btn" id="btn-mode-full" onclick="setGameDifficulty('full')">
+                        🌍 Pełny (79 stacji)
+                    </button>
+                </div>
+
+                <div class="round-stats-badge">
+                    <span>Runda: <b id="stat-round">1 / 5</b></span>
+                    <span>Łączny błąd: <b id="stat-total-score" class="negative">0 tys. km</b></span>
+                </div>
             </div>
         </header>
 
@@ -820,9 +876,39 @@
         ];
 
         // =========================================================================
-        // STAN GRY (5 RUND)
+        // 19 NAJBARDZIEJ REPREZENTATYWNYCH STACJI (TRYB ŁATWY)
+        // Odniesienia (referencje) do obiektów z głównej tablicy LAND_WEATHER_STATIONS
+        // =========================================================================
+        const EASY_STATION_NAMES = [
+            "Manaus (Amazonia, Brazylia)",
+            "Singapur (Azja Południowo-Wschodnia)",
+            "Kinszasa (Demokratyczna Republika Konga)",
+            "Nairobi (Kenia, Afryka Wschodnia)",
+            "Kair (Egipt, Afryka Północna)",
+            "Rijad (Arabia Saudyjska)",
+            "Alice Springs (Australia Centralna)",
+            "Las Vegas (Nevada, USA)",
+            "Rzym (Włochy, Europa Południowa)",
+            "Kapsztad (Republika Południowej Afryki)",
+            "Tokio (Japonia, Azja Wschodnia)",
+            "Sydney (Australia Wschodnia)",
+            "Warszawa (Polska, Europa Środkowa)",
+            "Londyn (Wielka Brytania, Europa Zachodnia)",
+            "Chicago (Stany Zjednoczone, Wielkie Jeziora)",
+            "Jakuck (Syberia Wschodnia, Rosja)",
+            "Yellowknife (Północna Kanada)",
+            "Longyearbyen (Svalbard / Arktyka)",
+            "Baza McMurdo (Antarktyda Wybrzeże)"
+        ];
+
+        // Tablica referencji do 19 klasycznych stacji
+        const EASY_WEATHER_STATIONS = LAND_WEATHER_STATIONS.filter(st => EASY_STATION_NAMES.includes(st.name));
+
+        // =========================================================================
+        // STAN GRY (5 RUND & POZIOM TRUDNOŚCI)
         // =========================================================================
         const TOTAL_ROUNDS = 5;
+        let gameDifficulty = 'easy'; // 'easy' (19 stacji) | 'full' (79 stacji)
         let currentRound = 1;
         let totalNegativeKm = 0; // w tysiącach km
         let roundsHistory = []; // { round, targetName, distKm, negativeThousands }
@@ -835,6 +921,25 @@
         let targetMarker = null;
         let connectionLine = null;
         let chartInstance = null;
+
+        // Przełączanie poziomu trudności
+        function setGameDifficulty(mode) {
+            if (gameDifficulty === mode) return;
+            gameDifficulty = mode;
+            document.getElementById('btn-mode-easy').classList.toggle('active', mode === 'easy');
+            document.getElementById('btn-mode-full').classList.toggle('active', mode === 'full');
+            
+            showToast(mode === 'easy' ? '🌱 Wybrano Tryb Łatwy (19 klasycznych stacji)' : '🌍 Wybrano Tryb Pełny (79 stacji ze świata)');
+            
+            // Jeśli runda 1 trwa i nie zatwierdzono jeszcze odpowiedzi, resetujemy rundę
+            if (currentRound === 1 && !isRoundFinished) {
+                startRound(1);
+            }
+        }
+
+        function getActiveStationPool() {
+            return gameDifficulty === 'easy' ? EASY_WEATHER_STATIONS : LAND_WEATHER_STATIONS;
+        }
 
         // =========================================================================
         // INICJALIZACJA MAPY LEAFLET
@@ -924,11 +1029,12 @@
             document.getElementById('result-box').style.display = 'none';
             document.getElementById('map-hint').innerHTML = '🖱️ <strong>Kliknij w dowolne miejsce na mapie</strong>, aby postawić swój strzał (pomarańczowa pinezka).';
 
-            // Losowanie stacji, która jeszcze nie była w tej grze
-            const availableStations = LAND_WEATHER_STATIONS.filter(st => !roundsHistory.some(h => h.targetName === st.name));
-            const pool = availableStations.length > 0 ? availableStations : LAND_WEATHER_STATIONS;
-            const randomIndex = Math.floor(Math.random() * pool.length);
-            secretLocation = pool[randomIndex];
+            // Losowanie stacji z puli aktywnego trybu (Łatwy vs Pełny), unikając powtórek w grze
+            const pool = getActiveStationPool();
+            const availableStations = pool.filter(st => !roundsHistory.some(h => h.targetName === st.name));
+            const activePool = availableStations.length > 0 ? availableStations : pool;
+            const randomIndex = Math.floor(Math.random() * activePool.length);
+            secretLocation = activePool[randomIndex];
 
             // Pobranie danych z Open-Meteo i narysowanie wykresu
             fetchAndRenderMeteogram(secretLocation);
