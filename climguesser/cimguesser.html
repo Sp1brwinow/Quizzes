@@ -640,25 +640,7 @@
                     </div>
                 </div>
 
-                <!-- 2. Analiza Klimatu Wybranego Punktu -->
-                <div class="analysis-box" id="analysis-section">
-                    <div class="analysis-header">
-                        <span>📍 Analiza Twojego Strzału</span>
-                    </div>
 
-                    <div class="analysis-row">
-                        <span>Współrzędne strzału:</span>
-                        <span class="analysis-val" id="guess-coords">Brak zaznaczenia</span>
-                    </div>
-                    <div class="analysis-row">
-                        <span>Strefa klimatyczna:</span>
-                        <span class="analysis-val" id="guess-climate" style="color:#34d399;">Kliknij na mapie</span>
-                    </div>
-                    <div class="analysis-row">
-                        <span>Półkule:</span>
-                        <span class="analysis-val" id="guess-hemisphere">-- / --</span>
-                    </div>
-                </div>
 
                 <!-- 3. Wynik Rundy po Zatwierdzeniu -->
                 <div class="result-summary-box" id="result-box">
@@ -935,10 +917,7 @@
             document.getElementById('stat-round').innerText = `${currentRound} / ${TOTAL_ROUNDS}`;
             document.getElementById('question-text').innerText = `Runda ${currentRound} / ${TOTAL_ROUNDS}: Zaznacz miejsce na mapie!`;
             document.getElementById('question-subtext').innerText = "Przeanalizuj poniższy klimatogram (temperatury i sumy opadów) i wskaż, skąd pochodzi ten klimat.";
-            
-            document.getElementById('guess-coords').innerText = "Brak zaznaczenia";
-            document.getElementById('guess-climate').innerText = "Kliknij na mapie";
-            document.getElementById('guess-hemisphere').innerText = "-- / --";
+
             document.getElementById('btn-submit-guess').style.display = 'flex';
             document.getElementById('btn-submit-guess').disabled = true;
             document.getElementById('btn-next').style.display = 'none';
@@ -1150,22 +1129,7 @@
         // ANALIZA KLIMATU DLA STRZAŁU
         // =========================================================================
         function updateGuessAnalysis(lat, lng) {
-            document.getElementById('guess-coords').innerText = `${formatCoord(lat, 'lat')}, ${formatCoord(lng, 'lng')}`;
-
-            const ns = lat >= 0 ? 'Północna' : 'Południowa';
-            const ew = lng >= 0 ? 'Wschodnia' : 'Zachodnia';
-            document.getElementById('guess-hemisphere').innerText = `${ns} / ${ew}`;
-
-            const absLat = Math.abs(lat);
-            let climateZone = "";
-            if (absLat <= 12) climateZone = "🌴 Równikowa (Deszczowa)";
-            else if (absLat <= 24) climateZone = "🏜️ Zwrotnikowa (Sucha/Sawanna)";
-            else if (absLat <= 38) climateZone = "🍇 Podzwrotnikowa (Śródziemnomorska)";
-            else if (absLat <= 58) climateZone = "🌲 Umiarkowana Ciepła / Mieszana";
-            else if (absLat <= 68) climateZone = "❄️ Umiarkowana Chłodna (Tajga)";
-            else climateZone = "🧊 Okołobiegunowa (Tundra/Lądolód)";
-
-            document.getElementById('guess-climate').innerText = climateZone;
+            // Sekcja analizy strzału została usunięta
         }
 
         // =========================================================================
