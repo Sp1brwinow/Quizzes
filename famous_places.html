@@ -4,7 +4,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="referrer" content="no-referrer">
     <title>Famous Places – Zgadnij miejsce na świecie po zdjęciu (5 Rund)</title>
     <link rel="stylesheet" href="../style.css" />
 
@@ -311,33 +310,8 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.4s ease, opacity 0.3s ease;
+            transition: transform 0.4s ease, opacity 0.2s ease;
             display: block;
-            opacity: 1;
-        }
-
-        .photo-img-wrapper.loading img {
-            opacity: 0.3;
-        }
-
-        .photo-spinner {
-            position: absolute;
-            width: 40px;
-            height: 40px;
-            border: 3px solid rgba(56, 189, 248, 0.2);
-            border-top-color: #38bdf8;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            display: none;
-            z-index: 5;
-        }
-
-        .photo-img-wrapper.loading .photo-spinner {
-            display: block;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
         }
 
         .photo-img-wrapper:hover img {
@@ -702,7 +676,7 @@
                         🏛️ Najsłynniejsze (20)
                     </button>
                     <button type="button" class="mode-toggle-btn" id="btn-mode-full" onclick="setGameDifficulty('full')">
-                        🌍 Wszystkie Miejsca (35+)
+                        🌍 Wszystkie Miejsca (34)
                     </button>
                 </div>
 
@@ -734,15 +708,14 @@
                         <span id="photo-category-badge" class="meta-tag">Architektura</span>
                     </div>
 
-                    <div class="photo-img-wrapper loading" id="photo-wrapper" onclick="openZoomModal()">
-                        <div class="photo-spinner"></div>
-                        <img id="location-photo" src="" alt="Tajemnicze miejsce" crossorigin="anonymous" referrerpolicy="no-referrer" onload="onPhotoLoaded()" onerror="onPhotoError()" />
+                    <div class="photo-img-wrapper" onclick="openZoomModal()">
+                        <img id="location-photo" src="" alt="Tajemnicze miejsce" />
                         <div class="photo-zoom-hint">🔍 Kliknij, aby powiększyć</div>
                     </div>
 
                     <div class="photo-meta-bar">
                         <span id="photo-continent-tag" class="meta-tag">Europa</span>
-                        <span id="photo-license-text">Fotografia HD (Unsplash / CC)</span>
+                        <span id="photo-license-text">Fotografia lokalna HD</span>
                     </div>
                 </div>
 
@@ -790,7 +763,7 @@
 
     <!-- Modal Powiększenia Zdjęcia -->
     <div id="img-zoom-modal" onclick="closeZoomModal()">
-        <img id="zoomed-img" src="" alt="Powiększone zdjęcie" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <img id="zoomed-img" src="" alt="Powiększone zdjęcie" />
     </div>
 
     <!-- Modal Końcowy po 5 Rundach -->
@@ -838,7 +811,7 @@
 
     <script>
         // =========================================================================
-        // BAZA DANYCH SŁYNNYCH MIEJSC ZE ŚWIATA (STABILNY CDN UNSPLASH / COMMONS)
+        // BAZA DANYCH SŁYNNYCH MIEJSC ZE ŚWIATA (ZDJĘCIA LOKALNE)
         // =========================================================================
         const FAMOUS_PLACES_DB = [
             // --- EUROPA ---
@@ -849,9 +822,8 @@
                 continent: "Europa",
                 category: "Architektura / Symbol",
                 easy: true,
-                img: "https://images.unsplash.com/photo-1511739001486-6bfe10ce785f?auto=format&fit=crop&w=1200&q=80",
-                fallbackImg: "https://upload.wikimedia.org/wikipedia/commons/8/85/Tour_Eiffel_Wikimedia_Commons_%28cropped%29.jpg",
-                license: "Unsplash Free License",
+                img: "img/eiffel_tower.jpg",
+                license: "Unsplash / CC",
                 clue: "Stalowa wieża wybudowana na Wystawę Światową w 1889 roku nad rzeką Sekwaną.",
                 desc: "Monumentalna wieża kratowa na Polu Marsowym w Paryżu o wysokości 330 metrów, najsłynniejszy symbol Francji."
             },
@@ -862,9 +834,8 @@
                 continent: "Europa",
                 category: "Starożytność / Amfiteatr",
                 easy: true,
-                img: "https://images.unsplash.com/photo-1552832230-c0197dd311b5?auto=format&fit=crop&w=1200&q=80",
-                fallbackImg: "https://upload.wikimedia.org/wikipedia/commons/d/de/Colosseo_2020.jpg",
-                license: "Unsplash Free License",
+                img: "img/colosseum.jpg",
+                license: "Unsplash / CC",
                 clue: "Najsłynniejszy amfiteatr cesarzy rzymskich i walk gladiatorów w Wiecznym Mieście.",
                 desc: "Amfiteatr Flawiuszy wzniesiony w I wieku n.e. w sercu Rzymu. Mógł pomieścić do 50 tysięcy widzów."
             },
@@ -875,9 +846,8 @@
                 continent: "Europa",
                 category: "Starożytność / Świątynia",
                 easy: true,
-                img: "https://images.unsplash.com/photo-1555993539-1732b0258235?auto=format&fit=crop&w=1200&q=80",
-                fallbackImg: "https://upload.wikimedia.org/wikipedia/commons/a/a7/The_Parthenon_in_Athens.jpg",
-                license: "Unsplash Free License",
+                img: "img/acropolis.jpg",
+                license: "Unsplash / CC",
                 clue: "Wzgórze ze świątynią Partenon górujące nad stolicą i kolebką demokracji.",
                 desc: "Wapienne wzgórze w Atenach ze słynnym Partenonem poświęconym bogini Atenie, zbudowanym w V wieku p.n.e."
             },
@@ -888,9 +858,8 @@
                 continent: "Europa",
                 category: "Architektura / Bazylika",
                 easy: true,
-                img: "https://images.unsplash.com/photo-1583779457094-0cefcc400b41?auto=format&fit=crop&w=1200&q=80",
-                fallbackImg: "https://upload.wikimedia.org/wikipedia/commons/2/26/Sagrada_Familia_01.jpg",
-                license: "Unsplash Free License",
+                img: "img/sagrada_familia.jpg",
+                license: "Unsplash / CC",
                 clue: "Niezwykła secesyjna bazylika projektu Antoniego Gaudíego budowana od ponad 140 lat.",
                 desc: "Słynna bazylika w Katalonii o organicznych, rzeźbiarskich wieżach, będąca symbolem Barcelony."
             },
@@ -901,9 +870,8 @@
                 continent: "Europa",
                 category: "Architektura / Parlament",
                 easy: true,
-                img: "https://images.unsplash.com/photo-1529655683826-aba9b3e77383?auto=format&fit=crop&w=1200&q=80",
-                fallbackImg: "https://upload.wikimedia.org/wikipedia/commons/9/93/Clock_Tower_-_Palace_of_Westminster%2C_London_-_May_2007.jpg",
-                license: "Unsplash Free License",
+                img: "img/big_ben.jpg",
+                license: "Unsplash / CC",
                 clue: "Neogotycka wieża zegarowa nad Tamizą w stolicy Wielkiej Brytanii.",
                 desc: "Słynna wieża zegarowa Elizabeth Tower (potocznie Big Ben) przy siedzibie brytyjskiego parlamentu."
             },
@@ -914,9 +882,8 @@
                 continent: "Europa",
                 category: "Średniowiecze / Twierdza",
                 easy: false,
-                img: "https://images.unsplash.com/photo-1596422846543-75c6fc197f07?auto=format&fit=crop&w=1200&q=80",
-                fallbackImg: "https://upload.wikimedia.org/wikipedia/commons/6/6f/Malbork_Castle_Poland.jpg",
-                license: "Unsplash Free License",
+                img: "img/malbork.jpg",
+                license: "Unsplash / CC",
                 clue: "Największy zamek ceglany na świecie, dawna stolica Zakonu Krzyżackiego.",
                 desc: "Potężna twierdza krzyżacka nad rzeką Nogat, wpisana na listę światowego dziedzictwa UNESCO."
             },
@@ -927,9 +894,8 @@
                 continent: "Europa",
                 category: "Architektura / Dzwonnica",
                 easy: true,
-                img: "https://images.unsplash.com/photo-1543429776-2782fc8e1acd?auto=format&fit=crop&w=1200&q=80",
-                fallbackImg: "https://upload.wikimedia.org/wikipedia/commons/4/4b/Tower_of_Pisa_2020.jpg",
-                license: "Unsplash Free License",
+                img: "img/pisa.jpg",
+                license: "Unsplash / CC",
                 clue: "Słynna romańska dzwonnica o wyraźnym przechyleniu na Polu Cudów w Toskanii.",
                 desc: "Marmurowa dzwonnica katedralna w Pizie, która zaczęła się przechylać niemal natychmiast po rozpoczęciu budowy w 1173 roku."
             },
@@ -940,9 +906,8 @@
                 continent: "Europa",
                 category: "Prehistoria / Megality",
                 easy: true,
-                img: "https://images.unsplash.com/photo-1599833975787-5c143f373c30?auto=format&fit=crop&w=1200&q=80",
-                fallbackImg: "https://upload.wikimedia.org/wikipedia/commons/3/3c/Stonehenge2007_07_18.jpg",
-                license: "Unsplash Free License",
+                img: "img/stonehenge.jpg",
+                license: "Unsplash / CC",
                 clue: "Prehistoryczny kamienny krąg w południowej Anglii powiązany z przesileniem letnim.",
                 desc: "Megalityczna budowla z epoki neolitu i brązu, składająca się z monumentalnych stojących głazów."
             },
@@ -953,9 +918,8 @@
                 continent: "Europa",
                 category: "Architektura / Zamek",
                 easy: true,
-                img: "https://images.unsplash.com/photo-1534351590666-13e3e96b5017?auto=format&fit=crop&w=1200&q=80",
-                fallbackImg: "https://upload.wikimedia.org/wikipedia/commons/f/f8/Schloss_Neuschwanstein_2013.jpg",
-                license: "Unsplash Free License",
+                img: "img/neuschwanstein.jpg",
+                license: "Unsplash / CC",
                 clue: "Bajkowy zamek króla Ludwika II w bawarskich Alpach, inspiracja dla Disneya.",
                 desc: "XIX-wieczny neoromański zamek rycerski wzniesiony na urwistej skale w południowej Bawarii."
             },
@@ -966,9 +930,8 @@
                 continent: "Europa",
                 category: "Cuda Natury / Wulkany",
                 easy: false,
-                img: "https://images.unsplash.com/photo-1529963183134-61a90db47eaf?auto=format&fit=crop&w=1200&q=80",
-                fallbackImg: "https://upload.wikimedia.org/wikipedia/commons/e/e0/Strokkur%2C_Iceland_2.jpg",
-                license: "Unsplash Free License",
+                img: "img/strokkur.jpg",
+                license: "Unsplash / CC",
                 clue: "Wybuchający co 5-10 minut wrzątkiem gejzer w krainie lodu i ognia.",
                 desc: "Bardzo aktywny gejzer w dolinie Haukadalur na Islandii, wyrzucający słup gorącej wody na wysokość do 30 metrów."
             },
@@ -981,9 +944,8 @@
                 continent: "Azja",
                 category: "Mauzoleum / Architektura",
                 easy: true,
-                img: "https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&w=1200&q=80",
-                fallbackImg: "https://upload.wikimedia.org/wikipedia/commons/b/bd/Taj_Mahal%2C_Agra%2C_India_edit3.jpg",
-                license: "Unsplash Free License",
+                img: "img/taj_mahal.jpg",
+                license: "Unsplash / CC",
                 clue: "Mauzoleum z białego marmuru wzniesione przez cesarza Szahdżahana z miłości do żony.",
                 desc: "Jeden z siedmiu nowych cudów świata, klejnot sztuki muzułmańskiej w Indiach nad rzeką Jamuna."
             },
@@ -994,9 +956,8 @@
                 continent: "Azja",
                 category: "Fortyfikacja / Starożytność",
                 easy: true,
-                img: "https://images.unsplash.com/photo-1508804185872-d7badad00f7d?auto=format&fit=crop&w=1200&q=80",
-                fallbackImg: "https://upload.wikimedia.org/wikipedia/commons/2/23/The_Great_Wall_of_China_at_Mutianyu%2C_Beijing_-_panoramio__%284%29.jpg",
-                license: "Unsplash Free License",
+                img: "img/great_wall.jpg",
+                license: "Unsplash / CC",
                 clue: "Tysiąckilometrowy system obronny wznoszony przez wieki na północy Chin.",
                 desc: "Zbiorcza nazwa systemów obronnych z ziemi i kamienia, ciągnących się przez tysiące kilometrów wzdłuż północnych granic Chin."
             },
@@ -1007,9 +968,8 @@
                 continent: "Azja",
                 category: "Cuda Natury / Wulkan",
                 easy: true,
-                img: "https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?auto=format&fit=crop&w=1200&q=80",
-                fallbackImg: "https://upload.wikimedia.org/wikipedia/commons/1/1b/080103_hakkai_fuji.jpg",
-                license: "Unsplash Free License",
+                img: "img/mount_fuji.jpg",
+                license: "Unsplash / CC",
                 clue: "Święty, ośnieżony stratowulkan o idealnie symetrycznym stożku w Japonii.",
                 desc: "Czynny stratowulkan i najwyższy szczyt Japonii (3776 m n.p.m.), symbol i święta góra kultury japońskiej."
             },
@@ -1020,9 +980,8 @@
                 continent: "Azja",
                 category: "Starożytność / Miasto Skalne",
                 easy: true,
-                img: "https://images.unsplash.com/photo-1579606032834-d92233f2e46b?auto=format&fit=crop&w=1200&q=80",
-                fallbackImg: "https://upload.wikimedia.org/wikipedia/commons/2/2f/Treasury_petra_crop.jpeg",
-                license: "Unsplash Free License",
+                img: "img/petra.jpg",
+                license: "Wikimedia CC",
                 clue: "Starożytne miasto Nabatejczyków wykute w różowych piaskowcach pustyni.",
                 desc: "Ruiny starożytnego miasta wykutego w skałach wąwozu Siq w południowej Jordanii."
             },
@@ -1033,9 +992,8 @@
                 continent: "Azja",
                 category: "Architektura / Wieżowiec",
                 easy: true,
-                img: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&q=80",
-                fallbackImg: "https://upload.wikimedia.org/wikipedia/commons/9/93/Burj_Khalifa.jpg",
-                license: "Unsplash Free License",
+                img: "img/burj_khalifa.jpg",
+                license: "Unsplash / CC",
                 clue: "Najwyższy wieżowiec i budowla wzniesiona kiedykolwiek przez człowieka (828 m).",
                 desc: "Superwieżowiec w Dubaju o wysokości 828 metrów, liczący 163 piętra użytkowe."
             },
@@ -1046,9 +1004,8 @@
                 continent: "Azja",
                 category: "Starożytność / Kompleks Świątynny",
                 easy: false,
-                img: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
-                fallbackImg: "https://upload.wikimedia.org/wikipedia/commons/d/d4/Angkor_Wat_from_North.JPG",
-                license: "Unsplash Free License",
+                img: "img/angkor_wat.jpg",
+                license: "Unsplash / CC",
                 clue: "Największy kompleks świątynny na Ziemi, dawne serce Imperium Khmerskiego.",
                 desc: "Monumentalna świątynia hinduistyczno-buddyjska wzniesiona w XII wieku w dżungli Kambodży."
             },
@@ -1059,9 +1016,8 @@
                 continent: "Azja",
                 category: "Cuda Natury / Kras",
                 easy: false,
-                img: "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=1200&q=80",
-                fallbackImg: "https://upload.wikimedia.org/wikipedia/commons/f/f6/Halong_bay.jpg",
-                license: "Unsplash Free License",
+                img: "img/halong_bay.jpg",
+                license: "Unsplash / CC",
                 clue: "Tysiące wapiennych wysepek i ostańców wyrastających ze szmaragdowych wód Zatoki Tonkińskiej.",
                 desc: "Malowniczy krasowy krajobraz wysp i jaskiń w północnym Wietnamie wpisany na listę UNESCO."
             },
@@ -1074,9 +1030,8 @@
                 continent: "Afryka",
                 category: "Starożytność / Piramidy",
                 easy: true,
-                img: "https://images.unsplash.com/photo-1503177119275-0aa32b3a9368?auto=format&fit=crop&w=1200&q=80",
-                fallbackImg: "https://upload.wikimedia.org/wikipedia/commons/e/e3/Kheops-Pyramid.jpg",
-                license: "Unsplash Free License",
+                img: "img/giza_pyramids.jpg",
+                license: "Unsplash / CC",
                 clue: "Piramida Cheopsa i monumentalny posąg lwa z ludzką twarzą na skraju Sahary.",
                 desc: "Jedyne zachowane do dziś z siedmiu starożytnych cudów świata, grobowce faraonów sprzed 4500 lat."
             },
@@ -1087,9 +1042,8 @@
                 continent: "Afryka",
                 category: "Cuda Natury / Wodospad",
                 easy: false,
-                img: "https://images.unsplash.com/photo-1603565816030-6b389eeb23cb?auto=format&fit=crop&w=1200&q=80",
-                fallbackImg: "https://upload.wikimedia.org/wikipedia/commons/6/61/Victoria_Falls.jpg",
-                license: "Unsplash Free License",
+                img: "img/victoria_falls.jpg",
+                license: "Unsplash / CC",
                 clue: "„Dym, który grzmi” – potężny uskok rzeki Zambezi o szerokości ponad 1,7 km.",
                 desc: "Jeden z najwspanialszych wodospadów świata na granicy Zambii i Zimbabwe na rzece Zambezi."
             },
@@ -1100,9 +1054,8 @@
                 continent: "Afryka",
                 category: "Cuda Natury / Płaskowyż",
                 easy: false,
-                img: "https://images.unsplash.com/photo-1580618672591-eb180b1a973f?auto=format&fit=crop&w=1200&q=80",
-                fallbackImg: "https://upload.wikimedia.org/wikipedia/commons/3/30/Table_Mountain_Cape_Town_South_Africa.jpg",
-                license: "Unsplash Free License",
+                img: "img/table_mountain.jpg",
+                license: "Unsplash / CC",
                 clue: "Płaska jak stół góra z piaskowca górująca nad Zatoką Stołową w Afryce Południowej.",
                 desc: "Charakterystyczny szczyt o płaskiej wierzchowinie w Kapsztadzie, otoczony unikalną florą przylądkową."
             },
@@ -1113,9 +1066,8 @@
                 continent: "Afryka",
                 category: "Cuda Natury / Pustynia",
                 easy: false,
-                img: "https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=1200&q=80",
-                fallbackImg: "https://upload.wikimedia.org/wikipedia/commons/9/96/Erg_Chebbi%2C_Morocco.jpg",
-                license: "Unsplash Free License",
+                img: "img/sahara.jpg",
+                license: "Unsplash / CC",
                 clue: "Monumentalne, pomarańczowe wydmy piaskowe na największej gorącej pustyni Ziemi.",
                 desc: "Pole piaszczystych wydm (erg) dochodzących do 150 metrów wysokości w południowo-wschodnim Maroku."
             },
@@ -1128,9 +1080,8 @@
                 continent: "Ameryka Północna",
                 category: "Pomnik / Symbol",
                 easy: true,
-                img: "https://images.unsplash.com/photo-1605130284535-11dd9eedc58a?auto=format&fit=crop&w=1200&q=80",
-                fallbackImg: "https://upload.wikimedia.org/wikipedia/commons/a/a1/Statue_of_Liberty_7.jpg",
-                license: "Unsplash Free License",
+                img: "img/statue_of_liberty.jpg",
+                license: "Unsplash / CC",
                 clue: "Monumentalny posąg z pochodnią na Liberty Island, dar narodu francuskiego dla USA.",
                 desc: "Neoklasycystyczny posąg na wyspie w porcie Nowego Jorku, symbol wolności i demokracji."
             },
@@ -1141,9 +1092,8 @@
                 continent: "Ameryka Północna",
                 category: "Cuda Natury / Kanion",
                 easy: true,
-                img: "https://images.unsplash.com/photo-1474044159687-1ee9f3a51722?auto=format&fit=crop&w=1200&q=80",
-                fallbackImg: "https://upload.wikimedia.org/wikipedia/commons/a/af/Grand_Canyon_view_from_Pima_Point_2010.jpg",
-                license: "Unsplash Free License",
+                img: "img/grand_canyon.jpg",
+                license: "Unsplash / CC",
                 clue: "Olbrzymi przełom rzeki Kolorado odsłaniający miliardy lat historii geologicznej.",
                 desc: "Jeden z najgłębszych i najbardziej spektakularnych kanionów na świecie o długości 446 km w stanie Arizona."
             },
@@ -1154,9 +1104,8 @@
                 continent: "Ameryka Północna",
                 category: "Inżynieria / Most",
                 easy: true,
-                img: "https://images.unsplash.com/photo-1501594907352-04cda38ebc29?auto=format&fit=crop&w=1200&q=80",
-                fallbackImg: "https://upload.wikimedia.org/wikipedia/commons/0/0c/GoldenGateBridge-001.jpg",
-                license: "Unsplash Free License",
+                img: "img/golden_gate.jpg",
+                license: "Unsplash / CC",
                 clue: "Pomarańczowy most wiszący spowity pacyficzną mgłą nad cieśniną w Kalifornii.",
                 desc: "Słynny most wiszący w San Francisco pomalowany na charakterystyczny kolor International Orange."
             },
@@ -1167,9 +1116,8 @@
                 continent: "Ameryka Północna",
                 category: "Cuda Natury / Wodospad",
                 easy: true,
-                img: "https://images.unsplash.com/photo-1533094602577-198d3beab8ea?auto=format&fit=crop&w=1200&q=80",
-                fallbackImg: "https://upload.wikimedia.org/wikipedia/commons/a/ab/Niagara_Falls_during_daylight.jpg",
-                license: "Unsplash Free License",
+                img: "img/niagara.jpg",
+                license: "Unsplash / CC",
                 clue: "Najpotężniejszy pod względem przepływu wodospad Ameryki Północnej na granicy z Kanadą.",
                 desc: "Kompleks wodospadów na rzece Niagara łączącej jeziora Erie i Ontario."
             },
@@ -1180,9 +1128,8 @@
                 continent: "Ameryka Północna",
                 category: "Starożytność / Piramida Majów",
                 easy: true,
-                img: "https://images.unsplash.com/photo-1518638150340-f706e86654de?auto=format&fit=crop&w=1200&q=80",
-                fallbackImg: "https://upload.wikimedia.org/wikipedia/commons/5/51/Chichen_Itza_3.jpg",
-                license: "Unsplash Free License",
+                img: "img/chichen_itza.jpg",
+                license: "Unsplash / CC",
                 clue: "Schodkowa piramida boga Kukulkana w prekolumbijskim mieście Majów.",
                 desc: "Słynna piramida Majów na półwyspie Jukatan w Meksyku, zaprojektowana zgodnie z astronomicznym kalendarzem."
             },
@@ -1195,9 +1142,8 @@
                 continent: "Ameryka Południowa",
                 category: "Starożytność / Miasto Inków",
                 easy: true,
-                img: "https://images.unsplash.com/photo-1526392060635-9d6019884377?auto=format&fit=crop&w=1200&q=80",
-                fallbackImg: "https://upload.wikimedia.org/wikipedia/commons/e/eb/Machu_Picchu%2C_Peru.jpg",
-                license: "Unsplash Free License",
+                img: "img/machu_picchu.jpg",
+                license: "Unsplash / CC",
                 clue: "Tajemnicze zaginione miasto Inków położone na grzbiecie górskim w Andach.",
                 desc: "Najlepiej zachowane miasto Inków z XV wieku, ukryte na wysokości 2430 m n.p.m. nad doliną rzeki Urubamba."
             },
@@ -1208,9 +1154,8 @@
                 continent: "Ameryka Południowa",
                 category: "Pomnik / Symbol",
                 easy: true,
-                img: "https://images.unsplash.com/photo-1598977123418-454555aa13b6?auto=format&fit=crop&w=1200&q=80",
-                fallbackImg: "https://upload.wikimedia.org/wikipedia/commons/4/4f/Christ_the_Redeemer_-_Rio_de_Janeiro%2C_Brazil.jpg",
-                license: "Unsplash Free License",
+                img: "img/christ_redeemer.jpg",
+                license: "Unsplash / CC",
                 clue: "30-metrowy posąg z rozpostartymi ramionami górujący nad Zatoką Guanabara.",
                 desc: "Monolityczny posąg Jezusa Chrystusa na szczycie góry Corcovado w Rio de Janeiro."
             },
@@ -1221,9 +1166,8 @@
                 continent: "Ameryka Południowa",
                 category: "Cuda Natury / Wodospad",
                 easy: false,
-                img: "https://images.unsplash.com/photo-1589553416260-f586c8f1514f?auto=format&fit=crop&w=1200&q=80",
-                fallbackImg: "https://upload.wikimedia.org/wikipedia/commons/a/a4/Iguazu_Cataratas2.jpg",
-                license: "Unsplash Free License",
+                img: "img/iguazu_falls.jpg",
+                license: "Unsplash / CC",
                 clue: "Ponad 275 kaskad wodnych w sercu lasu deszczowego z Diabelskim Gardłem.",
                 desc: "Jeden z najpotężniejszych systemów wodospadów na świecie na rzece Iguazú na granicy argentyńsko-brazylijskiej."
             },
@@ -1234,9 +1178,8 @@
                 continent: "Ameryka Południowa",
                 category: "Cuda Natury / Lodowiec",
                 easy: false,
-                img: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1200&q=80",
-                fallbackImg: "https://upload.wikimedia.org/wikipedia/commons/a/ae/Perito_Moreno_Glacier_Patagonia_Argentina_Luca_Galuzzi_2005.JPG",
-                license: "Unsplash Free License",
+                img: "img/perito_moreno.jpg",
+                license: "Unsplash / CC",
                 clue: "Potężna ściana błękitnego lodu schodząca do jeziora Lago Argentino w Patagonii.",
                 desc: "Jeden z nielicznych lodowców na Ziemi, który wciąż rośnie, mający czoło o wysokości 70 metrów nad taflą wody."
             },
@@ -1249,9 +1192,8 @@
                 continent: "Australia i Oceania",
                 category: "Architektura / Teatr",
                 easy: true,
-                img: "https://images.unsplash.com/photo-1528072164453-f4e8ef0d475a?auto=format&fit=crop&w=1200&q=80",
-                fallbackImg: "https://upload.wikimedia.org/wikipedia/commons/7/7c/Sydney_Opera_House_-_Dec_2008.jpg",
-                license: "Unsplash Free License",
+                img: "img/sydney_opera.jpg",
+                license: "Unsplash / CC",
                 clue: "Ekspresjonistyczny budynek opery przypominający białe muszle lub żagle w porcie Sydney.",
                 desc: "Projekt duńskiego architekta Jørna Utzona, arcydzieło architektury XX wieku wpisane na listę UNESCO."
             },
@@ -1262,9 +1204,8 @@
                 continent: "Australia i Oceania",
                 category: "Cuda Natury / Monolit",
                 easy: true,
-                img: "https://images.unsplash.com/photo-1529108190281-9a4f620bc2d8?auto=format&fit=crop&w=1200&q=80",
-                fallbackImg: "https://upload.wikimedia.org/wikipedia/commons/3/3e/Uluru_Panorama.jpg",
-                license: "Unsplash Free License",
+                img: "img/uluru.jpg",
+                license: "Unsplash / CC",
                 clue: "Święta dla Aborygenów olbrzymia czerwona skała z piaskowca w sercu pustynnego Outbacku.",
                 desc: "Monumentalna formacja skalna wznosząca się na 348 metrów ponad płaską pustynię w środkowej Australii."
             },
@@ -1275,9 +1216,8 @@
                 continent: "Australia i Oceania",
                 category: "Starożytność / Posągi",
                 easy: true,
-                img: "https://images.unsplash.com/photo-1510253687831-0f982d7862fc?auto=format&fit=crop&w=1200&q=80",
-                fallbackImg: "https://upload.wikimedia.org/wikipedia/commons/a/a2/Ahu_Tongariki.jpg",
-                license: "Unsplash Free License",
+                img: "img/moai.jpg",
+                license: "Unsplash / CC",
                 clue: "Tajemnicze, kamienne posągi o wielkich głowach na samotnej wyspie na Pacyfiku.",
                 desc: "Setki monolitycznych rzeźb z tufu wulkanicznego wykutych przez dawnych mieszkańców polinezyjskiej wyspy Rapa Nui."
             },
@@ -1288,9 +1228,8 @@
                 continent: "Australia i Oceania",
                 category: "Cuda Natury / Fiord",
                 easy: false,
-                img: "https://images.unsplash.com/photo-1507699622108-4be3abd695ad?auto=format&fit=crop&w=1200&q=80",
-                fallbackImg: "https://upload.wikimedia.org/wikipedia/commons/0/09/Milford_Sound_Mitre_Peak.jpg",
-                license: "Unsplash Free License",
+                img: "img/milford_sound.jpg",
+                license: "Unsplash / CC",
                 clue: "Zatoka polodowcowa z ikonicznym szczytem Mitre Peak na Wyspie Południowej Nowej Zelandii.",
                 desc: "Jeden z najbardziej deszczowych i spektakularnych fiordów świata, nazwany przez Rudyarda Kiplinga „ósmym cudem świata”."
             }
@@ -1317,23 +1256,6 @@
         let targetMarker = null;
         let connectionLine = null;
 
-        // Obsługa ładowania zdjęć i fallbacku
-        function onPhotoLoaded() {
-            document.getElementById('photo-wrapper').classList.remove('loading');
-        }
-
-        function onPhotoError() {
-            if (secretLocation && secretLocation.fallbackImg) {
-                const photoEl = document.getElementById('location-photo');
-                if (photoEl.src !== secretLocation.fallbackImg) {
-                    photoEl.src = secretLocation.fallbackImg;
-                    document.getElementById('zoomed-img').src = secretLocation.fallbackImg;
-                    return;
-                }
-            }
-            document.getElementById('photo-wrapper').classList.remove('loading');
-        }
-
         // Przełączanie poziomu trudności
         function setGameDifficulty(mode) {
             if (gameDifficulty === mode) return;
@@ -1341,7 +1263,7 @@
             document.getElementById('btn-mode-easy').classList.toggle('active', mode === 'easy');
             document.getElementById('btn-mode-full').classList.toggle('active', mode === 'full');
 
-            showToast(mode === 'easy' ? '🏛️ Wybrano Najsłynniejsze Miejsca (20)' : '🌍 Wybrano Wszystkie Miejsca Świata (35+)');
+            showToast(mode === 'easy' ? '🏛️ Wybrano Najsłynniejsze Miejsca (20)' : '🌍 Wybrano Wszystkie Miejsca Świata (34)');
 
             if (currentRound === 1 && !isRoundFinished) {
                 startRound(1);
@@ -1445,16 +1367,13 @@
             secretLocation = activePool[randomIndex];
 
             // Ładowanie zdjęcia i metadanych
-            const wrapper = document.getElementById('photo-wrapper');
-            wrapper.classList.add('loading');
-
             const photoEl = document.getElementById('location-photo');
             photoEl.src = secretLocation.img;
             document.getElementById('zoomed-img').src = secretLocation.img;
 
             document.getElementById('photo-category-badge').innerText = secretLocation.category;
             document.getElementById('photo-continent-tag').innerText = secretLocation.continent;
-            document.getElementById('photo-license-text').innerText = `Licencja: ${secretLocation.license}`;
+            document.getElementById('photo-license-text').innerText = `Fotografia: ${secretLocation.name.split('(')[0].trim()}`;
 
             map.setView([20, 0], 2);
         }
