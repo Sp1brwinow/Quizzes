@@ -682,7 +682,7 @@
 
                 <div class="round-stats-badge">
                     <span>Runda: <b id="stat-round">1 / 5</b></span>
-                    <span>Łączny błąd: <b id="stat-total-score" class="negative">0 tys. km</b></span>
+                    <span>Łączny błąd: <b id="stat-total-score" class="negative">0 x 10 km</b></span>
                 </div>
             </div>
         </header>
@@ -714,8 +714,8 @@
                     </div>
 
                     <div class="photo-meta-bar">
-                        <span id="photo-continent-tag" class="meta-tag">Europa</span>
-                        <span id="photo-license-text">Fotografia lokalna HD</span>
+                        <span class="meta-tag">🔒 Tajemnicza lokalizacja</span>
+                        <span style="font-size:0.75rem; color:#94a3b8;">🔍 Kliknij, aby powiększyć</span>
                     </div>
                 </div>
 
@@ -738,7 +738,7 @@
                     </div>
                     <div class="result-score-line">
                         <span>Naliczony błąd:</span>
-                        <span class="score-pill-negative" id="res-points-negative">-0 tys. km</span>
+                        <span class="score-pill-negative" id="res-points-negative">-0 x 10 km</span>
                     </div>
                     <div style="font-size: 0.92rem; color: #cbd5e1; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 6px;">
                         <span>Rzeczywiste miejsce:</span> <b id="res-target-name" style="color:#10b981; font-size:1.02rem;">--</b>
@@ -780,7 +780,7 @@
                         <th>Runda</th>
                         <th>Miejsce</th>
                         <th>Błąd w km</th>
-                        <th>Punkty</th>
+                        <th>Punkty (x 10 km)</th>
                     </tr>
                 </thead>
                 <tbody id="summary-table-body">
@@ -790,7 +790,7 @@
 
             <div class="summary-total-banner">
                 <span>Łączny wynik (suma ujemna):</span>
-                <b id="final-total-score" style="font-size:1.4rem; color:#f87171; font-family:monospace;">-0 tys. km</b>
+                <b id="final-total-score" style="font-size:1.4rem; color:#f87171; font-family:monospace;">-0 x 10 km</b>
             </div>
 
             <div class="summary-rank-badge" id="final-rank-title">
@@ -1337,9 +1337,9 @@
                 document.getElementById('btn-submit-guess').disabled = false;
             });
 
-            map.on('mousemove', function (e) {
-                document.getElementById('hover-coords').innerText = `Kursor: ${formatCoord(e.latlng.lat, 'lat')} ${formatCoord(e.latlng.lng, 'lng')}`;
-            });
+            const easyCount = FAMOUS_PLACES_DB.filter(p => p.easy).length;
+            document.getElementById('btn-mode-easy').innerHTML = `🏛️ Najsłynniejsze (${easyCount})`;
+            document.getElementById('btn-mode-full').innerHTML = `🌍 Wszystkie Miejsca (${FAMOUS_PLACES_DB.length})`;
 
             startRound(1);
         }
@@ -1384,8 +1384,6 @@
             document.getElementById('zoomed-img').src = secretLocation.img;
 
             document.getElementById('photo-category-badge').innerText = secretLocation.category;
-            document.getElementById('photo-continent-tag').innerText = secretLocation.continent;
-            document.getElementById('photo-license-text').innerText = `Fotografia: ${secretLocation.name.split('(')[0].trim()}`;
 
             map.setView([20, 0], 2);
         }
@@ -1436,9 +1434,9 @@
             const distance = calculateHaversineDistance(gLat, gLng, tLat, tLng);
             const distKm = Math.round(distance);
 
-            // 5. Zaokrąglenie w tysiącach kilometrów
-            const roundedThousands = Math.round(distKm / 1000);
-            const negativePenalty = -roundedThousands;
+            // 5. Zaokrąglenie w dziesiątkach kilometrów (/ 10)
+            const roundedTens = Math.round(distKm / 10);
+            const negativePenalty = -roundedTens;
             totalNegativeKm += negativePenalty;
 
             // Zapis historii
@@ -1452,12 +1450,12 @@
             // 6. Wyświetlenie wyników
             document.getElementById('res-round-num').innerText = currentRound;
             document.getElementById('res-distance').innerText = `${distKm.toLocaleString()} km`;
-            document.getElementById('res-points-negative').innerText = `${negativePenalty} tys. km`;
+            document.getElementById('res-points-negative').innerText = `${negativePenalty} x 10 km`;
             document.getElementById('res-target-name').innerText = secretLocation.name;
             document.getElementById('res-target-desc').innerText = secretLocation.desc;
             document.getElementById('result-box').style.display = 'flex';
 
-            document.getElementById('stat-total-score').innerText = `${totalNegativeKm} tys. km`;
+            document.getElementById('stat-total-score').innerText = `${totalNegativeKm} x 10 km`;
 
             // Zmiana przycisków
             document.getElementById('btn-submit-guess').style.display = 'none';
@@ -1470,7 +1468,7 @@
                 btnNext.innerText = `🏆 Zobacz Podsumowanie Gry (5 Rund)`;
             }
 
-            showToast(`📍 Błąd: ${distKm.toLocaleString()} km (${negativePenalty} tys. km)`);
+            showToast(`📍 Błąd: ${distKm.toLocaleString()} km (${negativePenalty} x 10 km)`);
         }
 
         function handleNextStep() {
@@ -1491,20 +1489,20 @@
                     <td><strong>Runda ${item.round}</strong></td>
                     <td style="color:#38bdf8;">${item.targetName}</td>
                     <td style="font-family:monospace;">${item.distKm.toLocaleString()} km</td>
-                    <td style="color:#f87171; font-weight:bold; font-family:monospace;">${item.negativePenalty} tys. km</td>
+                    <td style="color:#f87171; font-weight:bold; font-family:monospace;">${item.negativePenalty} x 10 km</td>
                 `;
                 tableBody.appendChild(tr);
             });
 
-            document.getElementById('final-total-score').innerText = `${totalNegativeKm} tys. km`;
+            document.getElementById('final-total-score').innerText = `${totalNegativeKm} x 10 km`;
 
             const absError = Math.abs(totalNegativeKm);
             let rankText = "";
-            if (absError <= 2) {
+            if (absError <= 200) {
                 rankText = "🥇 Genialny Podróżnik i Mistrz Geografii! (Perfekcyjna orientacja na świecie!)";
-            } else if (absError <= 6) {
+            } else if (absError <= 600) {
                 rankText = "🥈 Doświadczony Odkrywca Świata! (Znakomita znajomość zabytków i cudów natury!)";
-            } else if (absError <= 15) {
+            } else if (absError <= 1500) {
                 rankText = "🥉 Geograficzny Globtroter! (Dobra znajomość kontynentów i państw!)";
             } else {
                 rankText = "🧭 Ambitny Turysta (Ćwicz dalej, świat kryje wciąż wiele tajemnic!)";
@@ -1518,7 +1516,7 @@
             document.getElementById('final-summary-modal').classList.remove('active');
             totalNegativeKm = 0;
             roundsHistory = [];
-            document.getElementById('stat-total-score').innerText = `0 tys. km`;
+            document.getElementById('stat-total-score').innerText = `0 x 10 km`;
             startRound(1);
         }
 
