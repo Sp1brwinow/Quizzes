@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClimTrainer – Eksplorator Klimatogramów Świata</title>
+    <link rel="stylesheet" href="../style.css" />
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <!-- Chart.js dla wykresu klimatogramu -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            --bg-dark: #07152b;
+            --card-bg: rgba(14, 30, 56, 0.92);
+            --card-border: rgba(56, 189, 248, 0.35);
+            --primary: #38bdf8;
+            --primary-hover: #0284c7;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-cyan: #22d3ee;
+            --accent-temp: #fb923c;
+            --accent-rain: #38bdf8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: linear-gradient(180deg, #051024 0%, #082142 45%, #0d3461 100%);
+            color: #f8fafc;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            padding: 16px 16px 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .main-container {
+            max-width: 1400px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Górna belka nawigacji */
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            background: rgba(14, 30, 56, 0.85);
+            border: 1px solid rgba(125, 211, 252, 0.4);
+            color: #7dd3fc;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(8px);
+        }
+
+        .nav-btn:hover {
+            color: #ffffff;
+            border-color: #38bdf8;
+            background: #0284c7;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.4);
+        }
+
+        /* Baner nagłówkowy */
+        .header-banner {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.92) 100%);
+            border: 2px solid #38bdf8;
+            border-radius: 16px;
+            padding: 16px 24px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(56, 189, 248, 0.25);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+
+        .banner-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .banner-icon {
+            font-size: 2.2rem;
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid #38bdf8;
+            width: 52px;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+        }
+
+        .banner-text h1 {
+            font-size: 1.45rem;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 2px;
+            letter-spacing: 0.5px;
+        }
+
+        .banner-text p {
+            color: #38bdf8;
+            font-size: 0.92rem;
+            font-weight: 600;
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .toggle-btn {
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            color: #cbd5e1;
+            padding: 7px 14px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .toggle-btn:hover {
+            border-color: #38bdf8;
+            color: #ffffff;
+            background: rgba(56, 189, 248, 0.2);
+        }
+
+        .toggle-btn.active {
+            background: #0284c7;
+            color: #ffffff;
+            border-color: #38bdf8;
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
+        }
+
+        /* Układ dwukolumnowy */
+        .trainer-layout {
+            display: grid;
+            grid-template-columns: 1.15fr 0.85fr;
+            gap: 18px;
+            align-items: start;
+        }
+
+        @media (max-width: 1024px) {
+            .trainer-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Karta Mapy */
+        .map-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 14px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .map-container {
+            width: 100%;
+            height: 580px;
+            border-radius: 14px;
+            overflow: hidden;
+            background: #020617;
+            border: 2px solid rgba(56, 189, 248, 0.35);
+            box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.9);
+            z-index: 10;
+        }
+
+        .map-footer-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            color: #94a3b8;
+            padding: 0 4px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .coords-chip {
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-family: monospace;
+            color: #38bdf8;
+            font-weight: bold;
+        }
+
+        /* Prawa kolumna: Panel Klimatogramu */
+        .sidebar-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 18px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            backdrop-filter: blur(10px);
+        }
+
+        .location-info-box {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            border-radius: 14px;
+            padding: 14px 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .loc-title {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .loc-zone-badge {
+            display: inline-block;
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            color: #38bdf8;
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            align-self: flex-start;
+        }
+
+        /* Kontener Wykresu */
+        .chart-box {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 14px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: #38bdf8;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 6px;
+        }
+
+        .chart-canvas-wrapper {
+            position: relative;
+            height: 230px;
+            width: 100%;
+        }
+
+        /* Wskaźniki klimatyczne */
+        .climate-indicators-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-top: 4px;
+        }
+
+        .indicator-item {
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 8px 10px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .indicator-item span {
+            display: block;
+            color: #94a3b8;
+            font-size: 0.74rem;
+            margin-bottom: 2px;
+        }
+
+        .indicator-item b {
+            color: #fbbf24;
+            font-size: 1rem;
+            font-family: monospace;
+        }
+
+        /* Szybki wybór stacji wzorcowych */
+        .presets-box {
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .presets-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #cbd5e1;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .presets-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 6px;
+            max-height: 180px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .preset-btn {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(71, 85, 105, 0.6);
+            color: #e2e8f0;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.78rem;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .preset-btn:hover {
+            background: #0284c7;
+            color: #ffffff;
+            border-color: #38bdf8;
+        }
+
+        .help-note {
+            font-size: 0.82rem;
+            color: #94a3b8;
+            line-height: 1.45;
+            background: rgba(30, 41, 59, 0.5);
+            padding: 10px 14px;
+            border-radius: 8px;
+            border-left: 3px solid #38bdf8;
+        }
+
+        .custom-marker-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            filter: drop-shadow(0 2px 6px rgba(0,0,0,0.8));
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="main-container">
+        <!-- Nawigacja górna -->
+        <div class="top-nav">
+            <a href="../index.html" class="nav-btn">🏠 Strona Główna</a>
+            <a href="../games.html" class="nav-btn">🎯 Nie Wiem, Ale Strzelę (Gry)</a>
+            <a href="cimguesser.html" class="nav-btn">🌡️ Gra ClimGuesser</a>
+            <a href="../famous_places/famous_places.html" class="nav-btn">📸 Famous Places</a>
+        </div>
+
+        <!-- Baner informacyjny -->
+        <header class="header-banner">
+            <div class="banner-left">
+                <div class="banner-icon">🌍</div>
+                <div class="banner-text">
+                    <h1>ClimTrainer – Eksplorator Klimatogramów Świata</h1>
+                    <p>Kliknij w dowolne miejsce na Ziemi, aby natychmiast zobaczyć i przeanalizować jego klimatogram!</p>
+                </div>
+            </div>
+
+            <div class="header-controls">
+                <button type="button" class="toggle-btn" id="btn-toggle-stations" onclick="toggleStationsLayer()">
+                    📍 Pokaż 79 Stacji Świata
+                </button>
+            </div>
+        </header>
+
+        <!-- Główny układ -->
+        <div class="trainer-layout">
+            <!-- Lewa kolumna: Mapa Świata Leaflet -->
+            <div class="map-card">
+                <div class="map-container" id="map"></div>
+
+                <div class="map-footer-bar">
+                    <span>🖱️ <strong>Kliknij w dowolne miejsce na mapie</strong>, aby wygenerować klimatogram tego punktu.</span>
+                    <span class="coords-chip" id="hover-coords">Kursor: --° N, --° E</span>
+                </div>
+            </div>
+
+            <!-- Prawa kolumna: Dane wybranego miejsca i Klimatogram -->
+            <div class="sidebar-card">
+                <!-- Informacja o wybranym miejscu -->
+                <div class="location-info-box">
+                    <div class="loc-title">
+                        <span>📍</span> <span id="loc-name">Warszawa (Polska)</span>
+                    </div>
+                    <div style="font-family: monospace; font-size: 0.85rem; color: #38bdf8;" id="loc-coords">
+                        52.23° N, 21.01° E
+                    </div>
+                    <div class="loc-zone-badge" id="loc-zone">
+                        Strefa Umiarkowana Ciepła Przejściowa
+                    </div>
+                </div>
+
+                <!-- Wykres Klimatogramu (Chart.js) -->
+                <div class="chart-box">
+                    <div class="chart-header">
+                        <span>📊 Klimatogram Roczny (I – XII)</span>
+                        <span id="chart-status" style="font-size: 0.8rem; color: #10b981;">● Gotowy</span>
+                    </div>
+
+                    <div class="chart-canvas-wrapper">
+                        <canvas id="meteogramChart"></canvas>
+                    </div>
+
+                    <div class="climate-indicators-grid">
+                        <div class="indicator-item">
+                            <span>Śr. roczna temp.</span>
+                            <b id="ind-temp">+8.8°C</b>
+                        </div>
+                        <div class="indicator-item">
+                            <span>Roczna suma opadów</span>
+                            <b id="ind-precip">532 mm</b>
+                        </div>
+                        <div class="indicator-item">
+                            <span>Amplituda roczna</span>
+                            <b id="ind-amp">21.8°C</b>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Szybki wybór stacji wzorcowych -->
+                <div class="presets-box">
+                    <div class="presets-title">
+                        <span>⚡ Szybki wybór charakterystycznych stacji:</span>
+                    </div>
+                    <div class="presets-grid" id="presets-container">
+                        <!-- Generowane dynamicznie w JS z bazy stacji -->
+                    </div>
+                </div>
+
+                <div class="help-note">
+                    💡 <strong>Wskazówka dydaktyczna:</strong> Klimatogram łączy sumy opadów (niebieskie słupki, lewa oś) ze średnią temperaturą miesięczną (pomarańczowa linia, prawa oś). Zwróć uwagę na przebieg fali temperatur w lipcu i styczniu w zależności od półkuli!
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+        // =========================================================================
+        // BAZA DANYCH 79 STACJI METEOROLOGICZNYCH ZE ŚWIATA
+        // =========================================================================
+        const LAND_WEATHER_STATIONS = [
+            // 1. RÓWNIKOWY I PODRÓWNIKOWY
+            { name: "Manaus (Amazonia, Brazylia)", lat: -3.1190, lng: -60.0217, zone: "Równikowy wilgotny", temps: [26.8, 26.6, 26.7, 26.9, 27.2, 27.4, 27.7, 28.1, 28.3, 28.2, 27.9, 27.3], precips: [280, 310, 340, 320, 250, 120, 75, 55, 70, 130, 190, 240] },
+            { name: "Singapur (Azja Południowo-Wschodnia)", lat: 1.3521, lng: 103.8198, zone: "Równikowy wybitnie wilgotny", temps: [27.0, 27.5, 28.0, 28.3, 28.5, 28.4, 28.2, 28.1, 28.0, 27.9, 27.4, 27.0], precips: [240, 165, 180, 185, 175, 135, 155, 150, 160, 170, 260, 310] },
+            { name: "Kinszasa (DR Konga)", lat: -4.4419, lng: 15.2663, zone: "Podrównikowy wilgotny", temps: [25.5, 26.0, 26.2, 26.1, 25.4, 23.2, 22.5, 23.8, 25.0, 25.8, 25.6, 25.3], precips: [140, 135, 175, 220, 100, 10, 5, 10, 45, 140, 240, 180] },
+            { name: "Nairobi (Kenia)", lat: -1.2921, lng: 36.8219, zone: "Podrównikowy wyżynny", temps: [19.0, 19.8, 20.0, 19.5, 18.2, 16.8, 16.0, 16.5, 18.0, 19.2, 18.8, 18.5], precips: [60, 55, 95, 215, 150, 35, 18, 22, 28, 55, 150, 105] },
+            { name: "Dżakarta (Indonezja)", lat: -6.2088, lng: 106.8456, zone: "Równikowy monsunowy", temps: [26.5, 26.5, 27.0, 27.5, 27.5, 27.2, 27.0, 27.2, 27.5, 27.8, 27.5, 26.8], precips: [300, 300, 210, 150, 115, 95, 65, 45, 65, 110, 145, 205] },
+            { name: "Mumbaj / Bombaj (Indie)", lat: 19.0760, lng: 72.8777, zone: "Podrównikowy skrajnie monsunowy", temps: [24.5, 25.2, 27.5, 29.5, 30.8, 29.5, 27.8, 27.5, 27.8, 28.5, 27.5, 25.5], precips: [2, 1, 1, 2, 12, 520, 720, 560, 320, 80, 10, 2] },
+            { name: "Bangkok (Tajlandia)", lat: 13.7563, lng: 100.5018, zone: "Podrównikowy monsunowy", temps: [27.0, 28.5, 30.0, 31.0, 30.5, 29.8, 29.2, 29.0, 28.5, 28.2, 27.5, 26.2], precips: [15, 20, 35, 70, 220, 180, 180, 220, 340, 240, 50, 10] },
+
+            // 2. ZWROTNIKOWY PUSTYNNY I SUCHY
+            { name: "Kair (Egipt)", lat: 30.0444, lng: 31.2357, zone: "Zwrotnikowy wybitnie suchy", temps: [14.0, 15.2, 18.0, 22.1, 26.2, 29.0, 30.2, 30.0, 27.8, 24.5, 19.8, 15.5], precips: [5, 4, 3, 1, 1, 0, 0, 0, 0, 1, 3, 6] },
+            { name: "Rijad (Arabia Saudyjska)", lat: 24.7136, lng: 46.6753, zone: "Zwrotnikowy kontynentalny suchy", temps: [15.0, 17.5, 22.0, 27.5, 33.5, 36.5, 37.8, 37.5, 34.0, 28.5, 21.5, 16.5], precips: [12, 10, 22, 26, 4, 0, 0, 0, 0, 1, 8, 12] },
+            { name: "Alice Springs (Australia Centralna)", lat: -23.6980, lng: 133.8807, zone: "Zwrotnikowy suchy (Outback)", temps: [28.5, 27.5, 25.0, 20.0, 15.0, 12.0, 11.8, 14.5, 19.0, 23.5, 26.0, 28.0], precips: [40, 42, 32, 16, 18, 13, 15, 8, 9, 21, 28, 38] },
+            { name: "Las Vegas (Nevada, USA)", lat: 36.1699, lng: -115.1398, zone: "Zwrotnikowy pustynny", temps: [9.0, 11.5, 15.2, 19.5, 25.0, 30.5, 34.0, 33.0, 28.0, 20.5, 13.5, 8.5], precips: [14, 18, 11, 4, 3, 2, 8, 9, 6, 7, 9, 13] },
+            { name: "Dubaj (ZEA)", lat: 25.2048, lng: 55.2708, zone: "Zwrotnikowy skrajnie suchy", temps: [19.0, 20.5, 23.5, 27.5, 31.8, 34.0, 36.0, 36.2, 33.5, 29.5, 25.0, 21.0], precips: [15, 25, 20, 7, 1, 0, 0, 0, 0, 1, 3, 15] },
+            { name: "Lima (Peru)", lat: -12.0464, lng: -77.0428, zone: "Zwrotnikowy nadbrzeżny pustynny", temps: [22.5, 23.5, 23.2, 21.5, 19.0, 17.2, 16.5, 16.2, 16.5, 17.8, 19.2, 21.0], precips: [1, 1, 1, 0, 1, 2, 3, 4, 3, 1, 1, 1] },
+
+            // 3. PODZWROTNIKOWY (ŚRÓDZIEMNOMORSKI / MORSKI)
+            { name: "Rzym (Włochy)", lat: 41.9028, lng: 12.4964, zone: "Podzwrotnikowy śródziemnomorski", temps: [8.0, 8.8, 11.2, 14.0, 18.2, 22.5, 25.2, 25.4, 21.8, 17.4, 12.5, 9.0], precips: [65, 60, 55, 60, 45, 30, 15, 25, 65, 105, 115, 90] },
+            { name: "Ateny (Grecja)", lat: 37.9838, lng: 23.7275, zone: "Podzwrotnikowy śródziemnomorski suchy", temps: [10.2, 10.8, 13.0, 16.5, 21.2, 26.0, 29.0, 28.8, 24.5, 19.8, 15.2, 11.8], precips: [50, 40, 42, 25, 18, 8, 5, 6, 14, 48, 60, 65] },
+            { name: "Los Angeles (Kalifornia, USA)", lat: 34.0522, lng: -118.2437, zone: "Podzwrotnikowy śródziemnomorski", temps: [14.5, 15.0, 16.0, 17.5, 19.0, 21.0, 23.2, 24.0, 23.2, 20.8, 17.2, 14.5], precips: [75, 80, 50, 18, 7, 2, 0, 1, 5, 15, 28, 60] },
+            { name: "Kapsztad (RPA)", lat: -33.9249, lng: 18.4241, zone: "Podzwrotnikowy morski", temps: [21.5, 21.8, 20.2, 17.5, 15.0, 13.0, 12.5, 13.2, 14.5, 16.8, 18.8, 20.5], precips: [15, 15, 20, 45, 70, 95, 85, 75, 45, 30, 15, 15] },
+            { name: "Sydney (Australia)", lat: -33.8688, lng: 151.2093, zone: "Podzwrotnikowy wilgotny", temps: [23.5, 23.4, 22.0, 19.2, 16.0, 13.8, 13.0, 14.2, 16.5, 18.8, 20.5, 22.2], precips: [100, 120, 130, 125, 100, 120, 70, 75, 65, 75, 85, 80] },
+            { name: "Tokio (Japonia)", lat: 35.6762, lng: 139.6503, zone: "Podzwrotnikowy wilgotny monsunowy", temps: [5.5, 6.2, 9.5, 14.5, 19.0, 22.5, 26.2, 27.5, 24.0, 18.5, 13.0, 8.0], precips: [50, 55, 115, 130, 140, 170, 155, 165, 210, 200, 95, 50] },
+
+            // 4. UMIARKOWANY CIEPŁY
+            { name: "Warszawa (Polska)", lat: 52.2297, lng: 21.0122, zone: "Umiarkowany ciepły przejściowy", temps: [-1.5, -0.2, 3.8, 9.5, 14.8, 18.2, 20.3, 19.7, 14.5, 9.0, 4.0, 0.0], precips: [32, 29, 34, 38, 55, 70, 85, 62, 48, 39, 37, 36] },
+            { name: "Londyn (Wielka Brytania)", lat: 51.5074, lng: -0.1278, zone: "Umiarkowany ciepły morski", temps: [5.5, 5.8, 8.0, 10.5, 13.8, 16.8, 19.0, 18.8, 16.0, 12.2, 8.5, 6.0], precips: [52, 40, 42, 44, 48, 46, 45, 52, 50, 62, 58, 55] },
+            { name: "Paryż (Francja)", lat: 48.8566, lng: 2.3522, zone: "Umiarkowany ciepły morski", temps: [5.0, 5.8, 9.0, 11.8, 15.5, 18.8, 20.8, 20.5, 17.0, 13.0, 8.5, 5.8], precips: [50, 45, 48, 50, 62, 55, 58, 52, 50, 60, 55, 60] },
+            { name: "Chicago (USA)", lat: 41.8781, lng: -87.6298, zone: "Umiarkowany ciepły kontynentalny", temps: [-4.5, -2.5, 3.5, 10.0, 16.0, 21.8, 24.5, 23.5, 19.2, 12.5, 5.0, -1.8], precips: [50, 48, 65, 95, 115, 105, 100, 110, 85, 80, 75, 60] },
+            { name: "Nowy Jork (USA)", lat: 40.7128, lng: -74.0060, zone: "Umiarkowany ciepły wilgotny", temps: [0.5, 2.0, 6.0, 12.0, 17.5, 22.8, 25.8, 25.0, 21.0, 15.0, 9.2, 3.8], precips: [90, 80, 105, 105, 105, 110, 115, 110, 105, 110, 95, 100] },
+
+            // 5. UMIARKOWANY CHŁODNY I SUBARKTYCZNY
+            { name: "Jakuck (Syberia, Rosja)", lat: 62.0355, lng: 129.6755, zone: "Umiarkowany chłodny skrajnie kontynentalny", temps: [-38.5, -34.0, -20.5, -5.0, 7.5, 16.5, 19.5, 15.0, 6.0, -8.0, -27.0, -37.0], precips: [9, 8, 7, 10, 20, 38, 45, 38, 30, 18, 14, 10] },
+            { name: "Yellowknife (Kanada)", lat: 62.4540, lng: -114.3718, zone: "Umiarkowany chłodny subarktyczny", temps: [-26.0, -23.0, -16.0, -4.5, 6.5, 14.0, 17.0, 14.5, 7.5, -1.5, -14.5, -22.5], precips: [14, 12, 12, 10, 18, 28, 42, 40, 36, 32, 22, 16] },
+            { name: "Tromsø (Norwegia)", lat: 69.6492, lng: 18.9553, zone: "Subarktyczny morski (Golfsztrom)", temps: [-3.8, -3.8, -2.2, 1.2, 5.8, 10.0, 13.0, 12.0, 8.0, 3.2, -0.5, -2.5], precips: [105, 95, 80, 70, 55, 55, 65, 80, 110, 130, 110, 110] },
+
+            // 6. OKOŁOBIEGUNOWY
+            { name: "Longyearbyen (Svalbard)", lat: 78.2232, lng: 15.6267, zone: "Okołobiegunowy polarny (Tundra)", temps: [-13.5, -14.0, -13.5, -10.5, -3.0, 2.5, 6.5, 5.5, 1.0, -5.0, -9.0, -11.5], precips: [18, 16, 16, 12, 10, 12, 18, 24, 22, 18, 20, 22] },
+            { name: "Utqiaġvik / Barrow (Alaska)", lat: 71.2906, lng: -156.7886, zone: "Okołobiegunowy polarny skrajny", temps: [-25.0, -26.5, -24.5, -16.0, -5.5, 2.5, 5.0, 4.5, 0.5, -8.0, -17.5, -22.5], precips: [4, 4, 4, 4, 5, 10, 25, 30, 20, 12, 6, 5] },
+            { name: "Baza McMurdo (Antarktyda)", lat: -77.8419, lng: 166.6863, zone: "Okołobiegunowy skrajnie polarny", temps: [-3.0, -8.5, -16.0, -20.5, -22.0, -23.5, -25.5, -25.8, -23.0, -18.5, -10.0, -4.0], precips: [15, 20, 22, 18, 16, 14, 15, 14, 12, 14, 12, 15] },
+
+            // 7. WYSOKOGÓRSKI
+            { name: "La Paz (Boliwia - 3640 m n.p.m.)", lat: -16.4897, lng: -68.1193, zone: "Wysokogórski zwrotnikowy", temps: [11.5, 11.5, 11.8, 11.2, 9.8, 8.5, 8.2, 9.5, 10.8, 12.0, 12.5, 12.0], precips: [130, 110, 75, 30, 12, 6, 8, 15, 30, 40, 50, 95] },
+            { name: "Quito (Ekwador - 2850 m n.p.m.)", lat: -0.1807, lng: -78.4678, zone: "Równikowy wysokogórski", temps: [14.0, 14.0, 14.2, 14.2, 14.2, 14.0, 14.0, 14.2, 14.2, 14.0, 13.8, 14.0], precips: [115, 130, 150, 175, 125, 50, 30, 35, 75, 120, 110, 105] },
+            { name: "Zakopane (Tatry - 850 m n.p.m.)", lat: 49.2992, lng: 19.9496, zone: "Umiarkowany górski chłodny", temps: [-4.5, -3.5, 0.2, 5.5, 10.5, 13.8, 15.5, 15.0, 10.8, 6.5, 1.5, -3.0], precips: [45, 42, 55, 75, 135, 165, 175, 140, 100, 70, 58, 48] }
+        ];
+
+        let map = null;
+        let selectedMarker = null;
+        let stationsLayerGroup = null;
+        let showStations = false;
+        let chartInstance = null;
+
+        // Inicjalizacja Mapy
+        function initMap() {
+            const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors',
+                maxZoom: 18
+            });
+
+            const satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                attribution: '&copy; Esri & Earthstar Geographics',
+                maxZoom: 18
+            });
+
+            map = L.map('map', {
+                center: [52.23, 21.01],
+                zoom: 4,
+                layers: [osm],
+                minZoom: 1.5,
+                worldCopyJump: true
+            });
+
+            L.control.layers({
+                "🗺️ Mapa Standardowa": osm,
+                "🛰️ Zdjęcia Satelitarne": satellite
+            }).addTo(map);
+
+            stationsLayerGroup = L.layerGroup().addTo(map);
+
+            // Początkowy marker (Warszawa)
+            const initialIcon = L.divIcon({
+                className: 'custom-marker-icon',
+                html: '📍',
+                iconSize: [30, 30],
+                iconAnchor: [15, 30]
+            });
+            selectedMarker = L.marker([52.2297, 21.0122], { icon: initialIcon }).addTo(map);
+
+            // Obsługa kliknięcia w dowolne miejsce na mapie
+            map.on('click', function (e) {
+                const lat = parseFloat(e.latlng.lat.toFixed(4));
+                const lng = parseFloat(e.latlng.lng.toFixed(4));
+                handleSelectLocation(lat, lng);
+            });
+
+            map.on('mousemove', function (e) {
+                document.getElementById('hover-coords').innerText = `Kursor: ${formatCoord(e.latlng.lat, 'lat')} ${formatCoord(e.latlng.lng, 'lng')}`;
+            });
+
+            populatePresetsList();
+            initChart();
+
+            // Załaduj początkową stację (Warszawa)
+            loadLocationData("Warszawa (Polska)", 52.2297, 21.0122, "Umiarkowany ciepły przejściowy", LAND_WEATHER_STATIONS[20].temps, LAND_WEATHER_STATIONS[20].precips);
+        }
+
+        // Formatowanie współrzędnych
+        function formatCoord(val, type) {
+            const abs = Math.abs(val).toFixed(2);
+            if (type === 'lat') return `${abs}° ${val >= 0 ? 'N' : 'S'}`;
+            return `${abs}° ${val >= 0 ? 'E' : 'W'}`;
+        }
+
+        // Obsługa wyboru punktu na mapie
+        async function handleSelectLocation(lat, lng) {
+            selectedMarker.setLatLng([lat, lng]);
+
+            const latStr = formatCoord(lat, 'lat');
+            const lngStr = formatCoord(lng, 'lng');
+            document.getElementById('loc-coords').innerText = `${latStr}, ${lngStr}`;
+            document.getElementById('loc-name').innerText = `Wyszukiwanie nazwy punktu...`;
+            document.getElementById('chart-status').innerText = "⏳ Pobieranie danych...";
+            document.getElementById('chart-status').style.color = "#fbbf24";
+
+            // Sprawdź czy kliknięto bardzo blisko znanej stacji
+            const nearest = findNearestStation(lat, lng);
+            if (nearest && nearest.dist < 60) {
+                document.getElementById('loc-name').innerText = nearest.station.name;
+                document.getElementById('loc-zone').innerText = nearest.station.zone;
+                renderChart(nearest.station.temps, nearest.station.precips);
+                updateIndicators(nearest.station.temps, nearest.station.precips);
+                document.getElementById('chart-status').innerText = "● Stacja WMO (Baza)";
+                document.getElementById('chart-status').style.color = "#34d399";
+                return;
+            }
+
+            // Próba pobrania nazwy z OpenStreetMap
+            try {
+                fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=6`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data && data.display_name) {
+                            const parts = data.display_name.split(',');
+                            document.getElementById('loc-name').innerText = parts.slice(0, 2).join(', ');
+                        } else {
+                            document.getElementById('loc-name').innerText = `Punkt (${latStr}, ${lngStr})`;
+                        }
+                    }).catch(() => {
+                        document.getElementById('loc-name').innerText = `Punkt (${latStr}, ${lngStr})`;
+                    });
+            } catch (e) {}
+
+            // Pobranie danych z Open-Meteo ERA5
+            fetchOpenMeteoClimate(lat, lng);
+        }
+
+        // Pobieranie klimatu z Open-Meteo API
+        async function fetchOpenMeteoClimate(lat, lng) {
+            try {
+                const url = `https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lng}&start_date=2023-01-01&end_date=2023-12-31&daily=temperature_2m_mean,precipitation_sum&timezone=auto`;
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 4000);
+
+                const response = await fetch(url, { signal: controller.signal });
+                clearTimeout(timeoutId);
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data && data.daily && data.daily.time) {
+                        const agg = aggregateDailyToMonthly(data.daily.time, data.daily.temperature_2m_mean, data.daily.precipitation_sum);
+                        const zone = classifyClimateZone(lat, agg.temps, agg.precips);
+                        document.getElementById('loc-zone').innerText = zone;
+                        renderChart(agg.temps, agg.precips);
+                        updateIndicators(agg.temps, agg.precips);
+                        document.getElementById('chart-status').innerText = "● Open-Meteo ERA5 (Na żywo)";
+                        document.getElementById('chart-status').style.color = "#34d399";
+                        return;
+                    }
+                }
+            } catch (err) {}
+
+            // Fallback: fizyczny model interpolacji klimatu
+            const fallback = estimatePhysicalClimate(lat, lng);
+            document.getElementById('loc-zone').innerText = fallback.zone;
+            renderChart(fallback.temps, fallback.precips);
+            updateIndicators(fallback.temps, fallback.precips);
+            document.getElementById('chart-status').innerText = "● Model Klimatyczny (Symulacja)";
+            document.getElementById('chart-status').style.color = "#38bdf8";
+        }
+
+        function aggregateDailyToMonthly(dates, temps, precips) {
+            const monthTempsSum = new Array(12).fill(0);
+            const monthTempsCount = new Array(12).fill(0);
+            const monthPrecipsSum = new Array(12).fill(0);
+
+            for (let i = 0; i < dates.length; i++) {
+                const m = parseInt(dates[i].substring(5, 7), 10) - 1;
+                const t = temps[i];
+                const p = precips[i];
+
+                if (t !== null && !isNaN(t)) {
+                    monthTempsSum[m] += t;
+                    monthTempsCount[m]++;
+                }
+                if (p !== null && !isNaN(p)) {
+                    monthPrecipsSum[m] += p;
+                }
+            }
+
+            const finalTemps = [];
+            const finalPrecips = [];
+
+            for (let m = 0; m < 12; m++) {
+                const avgT = monthTempsCount[m] > 0 ? (monthTempsSum[m] / monthTempsCount[m]) : 0;
+                finalTemps.push(parseFloat(avgT.toFixed(1)));
+                finalPrecips.push(Math.round(monthPrecipsSum[m]));
+            }
+
+            return { temps: finalTemps, precips: finalPrecips };
+        }
+
+        // Klasyfikacja strefy klimatycznej
+        function classifyClimateZone(lat, temps, precips) {
+            const absLat = Math.abs(lat);
+            const totalRain = precips.reduce((a, b) => a + b, 0);
+            const meanTemp = temps.reduce((a, b) => a + b, 0) / 12;
+            const minTemp = Math.min(...temps);
+
+            if (absLat < 10) return "Strefa Równikowa (wybitnie wilgotna)";
+            if (absLat < 23.5) {
+                if (totalRain < 250) return "Strefa Zwrotnikowa (sucha / pustynna)";
+                if (totalRain > 1200) return "Strefa Podrównikowa (monsunowa)";
+                return "Strefa Podrównikowa (wilgotna/sucha)";
+            }
+            if (absLat < 40) {
+                if (totalRain < 200) return "Strefa Zwrotnikowa (kontynentalna sucha)";
+                if (minTemp > 5 && totalRain > 400) return "Strefa Podzwrotnikowa (śródziemnomorska/morska)";
+                return "Strefa Podzwrotnikowa (kontynentalna)";
+            }
+            if (absLat < 60) {
+                if (minTemp < -15) return "Strefa Umiarkowana (chłodna / skrajnie kontynentalna)";
+                if (minTemp < -2) return "Strefa Umiarkowana Ciepła (przejściowa / kontynentalna)";
+                return "Strefa Umiarkowana Ciepła (morska)";
+            }
+            if (absLat < 75) return "Strefa Okołobiegunowa (subpolarna / tundra)";
+            return "Strefa Biegunowa (wieczny mróz)";
+        }
+
+        // Model fizyczny do natychmiastowej symulacji
+        function estimatePhysicalClimate(lat, lng) {
+            const absLat = Math.abs(lat);
+            const isSouth = lat < 0;
+            const phase = isSouth ? Math.PI : 0;
+
+            const baseTemp = 28.5 - (absLat * 0.78);
+            const amp = Math.min(48, (absLat / 90) * 36 + (Math.abs(lng) > 30 && Math.abs(lng) < 130 && absLat > 30 ? 14 : 4));
+
+            let temps = [];
+            let precips = [];
+
+            for (let m = 0; m < 12; m++) {
+                const angle = (m / 12) * Math.PI * 2 - (Math.PI / 2) + phase;
+                let t = baseTemp + (Math.sin(angle) * (amp / 2));
+                temps.push(parseFloat(t.toFixed(1)));
+
+                let r = 40;
+                if (absLat < 10) r = 200 + Math.sin(m) * 50;
+                else if (absLat < 25) r = (lng > 60 && lng < 120 && lat > 0 && m >= 5 && m <= 8) ? 380 : 15;
+                else if (absLat < 45) r = 45 + Math.cos(angle) * 25;
+                else if (absLat < 65) r = 40 + Math.sin(angle) * 30;
+                else r = 12 + Math.sin(angle) * 8;
+
+                precips.push(Math.max(2, Math.round(r)));
+            }
+
+            const zone = classifyClimateZone(lat, temps, precips);
+            return { temps, precips, zone };
+        }
+
+        function findNearestStation(lat, lng) {
+            let minD = Infinity;
+            let nearest = null;
+            for (let st of LAND_WEATHER_STATIONS) {
+                const d = Math.hypot(st.lat - lat, st.lng - lng) * 111;
+                if (d < minD) {
+                    minD = d;
+                    nearest = { station: st, dist: d };
+                }
+            }
+            return nearest;
+        }
+
+        // Inicjalizacja Wykresu Chart.js
+        function initChart() {
+            const ctx = document.getElementById('meteogramChart').getContext('2d');
+            const months = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
+
+            chartInstance = new Chart(ctx, {
+                data: {
+                    labels: months,
+                    datasets: [
+                        {
+                            type: 'line',
+                            label: 'Temperatura (°C)',
+                            data: [],
+                            borderColor: '#fb923c',
+                            backgroundColor: 'rgba(251, 146, 60, 0.2)',
+                            borderWidth: 3,
+                            pointBackgroundColor: '#ea580c',
+                            pointBorderColor: '#fff',
+                            pointRadius: 4,
+                            pointHoverRadius: 6,
+                            yAxisID: 'yTemp',
+                            tension: 0.35,
+                            order: 1
+                        },
+                        {
+                            type: 'bar',
+                            label: 'Opady (mm)',
+                            data: [],
+                            backgroundColor: 'rgba(56, 189, 248, 0.65)',
+                            borderColor: '#0284c7',
+                            borderWidth: 1,
+                            borderRadius: 4,
+                            yAxisID: 'yPrecip',
+                            order: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#cbd5e1',
+                                font: { size: 11, family: 'Segoe UI' },
+                                boxWidth: 12
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                            titleColor: '#38bdf8',
+                            bodyColor: '#f8fafc',
+                            borderColor: '#38bdf8',
+                            borderWidth: 1
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: 'rgba(255, 255, 255, 0.06)' },
+                            ticks: { color: '#94a3b8', font: { weight: 'bold' } }
+                        },
+                        yPrecip: {
+                            type: 'linear',
+                            position: 'left',
+                            beginAtZero: true,
+                            grid: { color: 'rgba(56, 189, 248, 0.1)' },
+                            ticks: {
+                                color: '#38bdf8',
+                                callback: val => `${val} mm`
+                            },
+                            title: {
+                                display: true,
+                                text: 'Opady (mm)',
+                                color: '#38bdf8',
+                                font: { size: 10 }
+                            }
+                        },
+                        yTemp: {
+                            type: 'linear',
+                            position: 'right',
+                            grid: { drawOnChartArea: false },
+                            ticks: {
+                                color: '#fb923c',
+                                callback: val => `${val}°C`
+                            },
+                            title: {
+                                display: true,
+                                text: 'Temp. (°C)',
+                                color: '#fb923c',
+                                font: { size: 10 }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderChart(temps, precips) {
+            if (!chartInstance) return;
+            chartInstance.data.datasets[0].data = temps;
+            chartInstance.data.datasets[1].data = precips;
+            const maxR = Math.max(...precips);
+            chartInstance.options.scales.yPrecip.suggestedMax = Math.max(80, Math.ceil(maxR / 20) * 20 + 20);
+            chartInstance.update();
+        }
+
+        function updateIndicators(temps, precips) {
+            const sumPrecip = precips.reduce((a, b) => a + b, 0);
+            const meanTemp = (temps.reduce((a, b) => a + b, 0) / temps.length).toFixed(1);
+            const maxTemp = Math.max(...temps);
+            const minTemp = Math.min(...temps);
+            const amp = (maxTemp - minTemp).toFixed(1);
+
+            document.getElementById('ind-temp').innerText = `${meanTemp > 0 ? '+' : ''}${meanTemp}°C`;
+            document.getElementById('ind-precip').innerText = `${sumPrecip} mm`;
+            document.getElementById('ind-amp').innerText = `${amp}°C`;
+        }
+
+        function loadLocationData(name, lat, lng, zone, temps, precips) {
+            selectedMarker.setLatLng([lat, lng]);
+            map.flyTo([lat, lng], 4);
+            document.getElementById('loc-name').innerText = name;
+            document.getElementById('loc-coords').innerText = `${formatCoord(lat, 'lat')}, ${formatCoord(lng, 'lng')}`;
+            document.getElementById('loc-zone').innerText = zone;
+            renderChart(temps, precips);
+            updateIndicators(temps, precips);
+        }
+
+        // Generowanie listy stacji wzorcowych
+        function populatePresetsList() {
+            const container = document.getElementById('presets-container');
+            container.innerHTML = '';
+
+            LAND_WEATHER_STATIONS.forEach((st) => {
+                const btn = document.createElement('button');
+                btn.className = 'preset-btn';
+                const shortName = st.name.split('(')[0].trim();
+                btn.innerHTML = `<span>${shortName}</span> <span style="opacity:0.6; font-size:0.7rem;">${formatCoord(st.lat, 'lat')}</span>`;
+                btn.onclick = () => {
+                    loadLocationData(st.name, st.lat, st.lng, st.zone, st.temps, st.precips);
+                };
+                container.appendChild(btn);
+            });
+        }
+
+        // Warstwa pinezek 79 stacji na mapie
+        function toggleStationsLayer() {
+            showStations = !showStations;
+            const btn = document.getElementById('btn-toggle-stations');
+            btn.classList.toggle('active', showStations);
+
+            if (showStations) {
+                stationsLayerGroup.clearLayers();
+                LAND_WEATHER_STATIONS.forEach(st => {
+                    const m = L.circleMarker([st.lat, st.lng], {
+                        radius: 5,
+                        fillColor: '#38bdf8',
+                        color: '#ffffff',
+                        weight: 1.5,
+                        opacity: 1,
+                        fillOpacity: 0.85
+                    });
+                    m.bindTooltip(`<b>${st.name}</b><br>${st.zone}`);
+                    m.on('click', () => {
+                        loadLocationData(st.name, st.lat, st.lng, st.zone, st.temps, st.precips);
+                    });
+                    stationsLayerGroup.addLayer(m);
+                });
+            } else {
+                stationsLayerGroup.clearLayers();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', initMap);
+    </script>
+</body>
+
+</html>

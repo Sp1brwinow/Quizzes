@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nie Wiem, Ale Strzelę – Gry Geograficzne HACK CLUB</title>
+
+    <!-- Google Analytics Tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZP827DTZJ5"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-ZP827DTZJ5');
+    </script>
+
+    <link rel="stylesheet" href="style.css" />
+
+    <style>
+        :root {
+            --bg-dark: #070d18;
+            --card-bg: rgba(15, 23, 42, 0.85);
+            --card-border: rgba(16, 185, 129, 0.35);
+            --primary: #10b981;
+            --accent-gold: #fbbf24;
+            --accent-cyan: #38bdf8;
+            --accent-rose: #f43f5e;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 30px 20px 60px;
+            min-height: 100vh;
+            background: linear-gradient(180deg, #05131e 0%, #08212e 45%, #0d3b42 100%);
+            color: #ffffff;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            overflow-x: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #star-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1050px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Górna belka nawigacji */
+        .top-nav {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            width: 100%;
+        }
+
+        .nav-btn {
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            color: #6ee7b7;
+            text-decoration: none;
+            padding: 8px 18px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(8px);
+        }
+
+        .nav-btn:hover {
+            color: #ffffff;
+            border-color: #10b981;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
+            transform: translateY(-2px);
+            background: rgba(6, 78, 59, 0.9);
+        }
+
+        /* Nagłówek */
+        .header {
+            text-align: center;
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.92) 0%, rgba(30, 41, 59, 0.88) 100%);
+            border: 1px solid rgba(16, 185, 129, 0.45);
+            padding: 34px 24px;
+            border-radius: 22px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(16, 185, 129, 0.2);
+            backdrop-filter: blur(12px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px;
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            border-radius: 999px;
+            color: #10b981;
+            font-size: 0.88rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.2);
+        }
+
+        .title {
+            font-size: 2.3rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #ffffff 0%, #6ee7b7 50%, #10b981 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+            margin: 0;
+            text-shadow: 0 0 35px rgba(16, 185, 129, 0.3);
+        }
+
+        .subtitle {
+            font-size: 1.05rem;
+            color: #cbd5e1;
+            max-width: 720px;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        /* Siatka gier (2 duże karty) */
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+            gap: 22px;
+        }
+
+        .game-card {
+            background: rgba(15, 23, 42, 0.88);
+            border-radius: 20px;
+            padding: 28px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            min-height: 380px;
+        }
+
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: currentColor;
+            opacity: 0.9;
+            transition: height 0.3s;
+        }
+
+        .game-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.7), 0 0 35px currentColor;
+        }
+
+        .game-card:hover::before {
+            height: 8px;
+        }
+
+        .card-top {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .game-icon {
+            font-size: 3rem;
+            line-height: 1;
+            transition: transform 0.3s;
+        }
+
+        .game-card:hover .game-icon {
+            transform: scale(1.15) rotate(6deg);
+        }
+
+        .game-title {
+            font-size: 1.7rem;
+            font-weight: 800;
+            color: #ffffff;
+            line-height: 1.25;
+        }
+
+        .game-desc {
+            font-size: 0.98rem;
+            color: #94a3b8;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            flex-grow: 1;
+        }
+
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .tag {
+            font-size: 0.82rem;
+            padding: 4px 10px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            color: #e2e8f0;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        /* Przyciski wewnątrz karty */
+        .card-actions-box {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .btn-play-primary {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 13px 20px;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 1.05rem;
+            text-decoration: none;
+            color: #ffffff;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        .btn-play-secondary {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 9px 16px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.88rem;
+            text-decoration: none;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #cbd5e1;
+            transition: all 0.2s ease;
+        }
+
+        .btn-play-secondary:hover {
+            background: rgba(255, 255, 255, 0.14);
+            color: #ffffff;
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Warianty kart */
+        .card-climguesser {
+            color: #38bdf8;
+            border: 2px solid rgba(56, 189, 248, 0.35);
+        }
+
+        .card-climguesser:hover {
+            border-color: #38bdf8;
+        }
+
+        .card-climguesser .btn-play-primary {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+        }
+
+        .card-climguesser .btn-play-primary:hover {
+            background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);
+            box-shadow: 0 6px 20px rgba(56, 189, 248, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .card-famous {
+            color: #10b981;
+            border: 2px solid rgba(16, 185, 129, 0.35);
+        }
+
+        .card-famous:hover {
+            border-color: #10b981;
+        }
+
+        .card-famous .btn-play-primary {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+        }
+
+        .card-famous .btn-play-primary:hover {
+            background: linear-gradient(135deg, #047857 0%, #059669 100%);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
+            transform: translateY(-2px);
+        }
+
+        /* Stopka */
+        .footer-nav {
+            display: flex;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .games-grid {
+                grid-template-columns: 1fr;
+            }
+            .title {
+                font-size: 1.85rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="star-canvas"></canvas>
+
+    <div class="container">
+        <!-- Górna belka nawigacji -->
+        <nav class="top-nav">
+            <a href="index.html" class="nav-btn">← Powrót do strony głównej</a>
+        </nav>
+
+        <!-- Nagłówek -->
+        <header class="header">
+            <div class="badge">🎯 HACK CLUB – Strefa Wyzwań Geograficznych</div>
+            <h1 class="title">Nie Wiem, Ale Strzelę!</h1>
+            <p class="subtitle">
+                Sprawdź swoją intuicję, wiedzę o Ziemi i umiejętność czytania mapy! Wybierz wyzwanie klimatyczne lub fotograficzne i celuj jak najbliżej celu!
+            </p>
+        </header>
+
+        <!-- Siatka 2 podsekcji gier -->
+        <div class="games-grid">
+            
+            <!-- Podsekcja 1: ClimGuesser -->
+            <div class="game-card card-climguesser">
+                <div>
+                    <div class="card-top">
+                        <span class="game-icon">🌡️</span>
+                        <h2 class="game-title">ClimGuesser</h2>
+                    </div>
+                    <p class="game-desc">
+                        Analizuj roczne wykresy temperatur i opadów (klimatogramy Walter-Lieth) tajemniczych miejsc na Ziemi. Zgadnij, gdzie znajduje się stacja meteo i strzelaj na mapie świata w 5 rundach!
+                    </p>
+                    <div class="tags-container">
+                        <span class="tag">5 Rund z Punktacją</span>
+                        <span class="tag">Klimatogramy I-XII</span>
+                        <span class="tag">Strefy Klimatyczne</span>
+                        <span class="tag">Globus 3D & Mapa 2D</span>
+                        <span class="tag">Pomiar Błędu w km</span>
+                    </div>
+                </div>
+
+                <div class="card-actions-box">
+                    <a href="climguesser/cimguesser.html" class="btn-play-primary">
+                        <span>🎮 Zagraj w ClimGuesser</span>
+                        <span>→</span>
+                    </a>
+                    <a href="climguesser/climtrainer.html" class="btn-play-secondary">
+                        <span>📊 Otwórz ClimTrainer (Tryb Eksploracji)</span>
+                        <span>↗</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Podsekcja 2: Famous Places -->
+            <div class="game-card card-famous">
+                <div>
+                    <div class="card-top">
+                        <span class="game-icon">📸</span>
+                        <h2 class="game-title">Famous Places</h2>
+                    </div>
+                    <p class="game-desc">
+                        Rozpoznawaj najsłynniejsze zabytki, arcydzieła architektury, starożytne ruiny i cuda natury na wysokiej jakości fotografiach. Wskaż ich lokalizację na mapie i zdobywaj rangi odkrywcy!
+                    </p>
+                    <div class="tags-container">
+                        <span class="tag">5 Rund ze Zdjęciami</span>
+                        <span class="tag">45+ Miejsc Świata</span>
+                        <span class="tag">Cuda Natury & Zabytki</span>
+                        <span class="tag">Wskazówki i Ciekawostki</span>
+                        <span class="tag">Licencje Creative Commons</span>
+                    </div>
+                </div>
+
+                <div class="card-actions-box">
+                    <a href="famous_places/famous_places.html" class="btn-play-primary">
+                        <span>🎮 Zagraj w Famous Places</span>
+                        <span>→</span>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Przycisk powrotu -->
+        <div class="footer-nav">
+            <a href="index.html" class="nav-btn">← Powrót do strony głównej</a>
+        </div>
+    </div>
+
+    <!-- Animacja tła z zielono-błękitnymi cząsteczkami -->
+    <script>
+        const canvas = document.getElementById('star-canvas');
+        const ctx = canvas.getContext('2d');
+
+        let width = window.innerWidth;
+        let height = window.innerHeight;
+
+        function resizeCanvas() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        const particleCount = 100;
+        const particles = [];
+
+        for (let i = 0; i < particleCount; i++) {
+            particles.push({
+                x: Math.random() * width,
+                y: Math.random() * height,
+                radius: Math.random() * 2 + 0.8,
+                speedY: Math.random() * 0.6 + 0.2,
+                speedX: (Math.random() - 0.5) * 0.4,
+                opacity: Math.random() * 0.6 + 0.3,
+                color: Math.random() > 0.5 ? '16, 185, 129' : '56, 189, 248'
+            });
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            for (let p of particles) {
+                p.y -= p.speedY;
+                p.x += p.speedX;
+
+                if (p.y < 0) {
+                    p.y = height;
+                    p.x = Math.random() * width;
+                }
+                if (p.x < 0) p.x = width;
+                if (p.x > width) p.x = 0;
+
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(${p.color}, ${p.opacity})`;
+                ctx.shadowBlur = p.radius * 3;
+                ctx.shadowColor = `rgb(${p.color})`;
+                ctx.fill();
+            }
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    </script>
+</body>
+
+</html>

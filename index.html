@@ -1,21 +1,32 @@
 <!DOCTYPE html>
 <html lang="pl">
 
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HACK CLUB – Szkoła Podstawowa nr 1 w Brwinowie</title>
+
+    <!-- Google Analytics Tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZP827DTZJ5"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-ZP827DTZJ5');
+    </script>
+
     <link rel="stylesheet" href="style.css" />
+
     <style>
         :root {
-            --primary-glow: #38bdf8;
-            --quiz-color: #ef4444;
-            --rozrywka-color: #f59e0b;
-            --hack-color: #06b6d4;
             --bg-dark: #070d18;
-            --card-bg: rgba(15, 23, 42, 0.75);
+            --card-bg: rgba(15, 23, 42, 0.85);
             --card-border: rgba(56, 189, 248, 0.25);
+            --primary: #38bdf8;
+            --accent-quiz: #f87171;
+            --accent-strzel: #10b981;
+            --accent-rozrywka: #fbbf24;
+            --accent-hack: #38bdf8;
         }
 
         * {
@@ -33,120 +44,111 @@
             flex-direction: column;
             align-items: center;
             justify-content: flex-start;
+            padding: 30px 16px 50px;
             overflow-x: hidden;
             position: relative;
-            padding: 40px 20px 60px;
         }
 
-        /* Tło z animowanymi cząsteczkami kosmosu */
+        /* Tło z gwiazdami Canvas */
         #bg-canvas {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: -1;
+            width: 100%;
+            height: 100%;
             pointer-events: none;
+            z-index: 0;
         }
 
         .main-container {
-            max-width: 1000px;
+            max-width: 1100px;
             width: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 28px;
+            gap: 24px;
+            position: relative;
             z-index: 1;
         }
 
-        /* Nagłówek główny */
+        /* Główny nagłówek */
         .hero-header {
             text-align: center;
-            background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.8) 100%);
-            border: 1px solid rgba(56, 189, 248, 0.35);
-            padding: 24px 32px;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7), 0 0 20px rgba(56, 189, 248, 0.15);
-            backdrop-filter: blur(12px);
-            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
         }
 
         .badge-club {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            background: rgba(6, 182, 212, 0.15);
-            border: 1px solid #06b6d4;
-            color: #67e8f9;
-            font-size: 0.85rem;
-            font-weight: 700;
-            padding: 6px 14px;
-            border-radius: 9999px;
-            margin-bottom: 12px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-
-        .hero-title {
-            font-size: 2.1rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, #ffffff 0%, #38bdf8 50%, #818cf8 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 8px;
-            line-height: 1.25;
-        }
-
-        .hero-subtitle {
-            font-size: 1.1rem;
-            color: #94a3b8;
-            font-weight: 400;
-        }
-
-        /* Karta powitalna AI */
-        .ai-welcome-card {
-            background: rgba(15, 23, 42, 0.8);
-            border: 1px solid rgba(129, 140, 248, 0.3);
-            border-radius: 16px;
-            padding: 20px 28px;
-            width: 100%;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.5);
+            padding: 6px 16px;
+            background: rgba(56, 189, 248, 0.12);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            border-radius: 999px;
+            color: #38bdf8;
+            font-size: 0.9rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
             backdrop-filter: blur(8px);
         }
 
+        .hero-title {
+            font-size: 2.3rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #ffffff 0%, #38bdf8 50%, #818cf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+            text-shadow: 0 0 30px rgba(56, 189, 248, 0.3);
+        }
+
+        .hero-subtitle {
+            font-size: 1.05rem;
+            color: #94a3b8;
+            max-width: 650px;
+            line-height: 1.5;
+        }
+
+        /* Karta Wirtualnego Asystenta AI */
+        .ai-welcome-card {
+            width: 100%;
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.85) 100%);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            border-radius: 18px;
+            padding: 18px 24px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(56, 189, 248, 0.15);
+            backdrop-filter: blur(12px);
+        }
+
         .ai-avatar {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #06b6d4, #8b5cf6);
+            font-size: 2.5rem;
+            background: rgba(56, 189, 248, 0.15);
+            border: 2px solid #38bdf8;
+            width: 65px;
+            height: 65px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.8rem;
-            box-shadow: 0 0 15px rgba(6, 182, 212, 0.5);
+            border-radius: 50%;
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
             flex-shrink: 0;
-            animation: pulse-avatar 3s infinite ease-in-out;
+            animation: pulse-glow 2.5s infinite ease-in-out;
         }
 
-        @keyframes pulse-avatar {
-
-            0%,
-            100% {
-                transform: scale(1);
-                box-shadow: 0 0 15px rgba(6, 182, 212, 0.4);
-            }
-
-            50% {
-                transform: scale(1.05);
-                box-shadow: 0 0 25px rgba(139, 92, 246, 0.7);
-            }
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 15px rgba(56, 189, 248, 0.3); transform: scale(1); }
+            50% { box-shadow: 0 0 28px rgba(56, 189, 248, 0.6); transform: scale(1.03); }
         }
 
         .ai-text h4 {
-            color: #e0e7ff;
+            color: #38bdf8;
             font-size: 1.15rem;
             margin-bottom: 4px;
             display: flex;
@@ -157,23 +159,22 @@
         .ai-status-dot {
             width: 8px;
             height: 8px;
-            background-color: #10b981;
+            background: #10b981;
             border-radius: 50%;
-            display: inline-block;
             box-shadow: 0 0 8px #10b981;
         }
 
         .ai-text p {
-            color: #94a3b8;
-            font-size: 0.95rem;
+            color: #cbd5e1;
+            font-size: 0.93rem;
             line-height: 1.5;
         }
 
-        /* Siatka głównych sekcji (Kafle nawigacyjne) */
+        /* Siatka kart głównych (2x2 na komputerach, 1 kolumna na telefonach) */
         .cards-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 22px;
+            grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+            gap: 18px;
             width: 100%;
         }
 
@@ -181,7 +182,7 @@
             background: var(--card-bg);
             border: 1px solid var(--card-border);
             border-radius: 18px;
-            padding: 24px;
+            padding: 22px;
             text-decoration: none;
             display: flex;
             flex-direction: column;
@@ -191,6 +192,7 @@
             overflow: hidden;
             backdrop-filter: blur(10px);
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+            min-height: 230px;
         }
 
         .nav-card::before {
@@ -201,7 +203,7 @@
             width: 100%;
             height: 4px;
             background: currentColor;
-            opacity: 0.8;
+            opacity: 0.85;
             transition: height 0.3s;
         }
 
@@ -227,7 +229,7 @@
 
         .card-title {
             font-size: 1.35rem;
-            font-weight: 700;
+            font-weight: 800;
             color: #ffffff;
             margin-bottom: 8px;
         }
@@ -235,8 +237,8 @@
         .card-desc {
             font-size: 0.92rem;
             color: #94a3b8;
-            line-height: 1.45;
-            margin-bottom: 20px;
+            line-height: 1.5;
+            margin-bottom: 18px;
             flex-grow: 1;
         }
 
@@ -254,50 +256,42 @@
             gap: 10px;
         }
 
-        /* Kolory specyficzne dla kart */
+        /* Kolory specyficzne dla poszczególnych modułów */
         .card-quiz {
-            color: #f87171;
+            color: var(--accent-quiz);
             border-color: rgba(239, 68, 68, 0.35);
         }
-
         .card-quiz:hover {
             border-color: #ef4444;
-            color: #ef4444;
+        }
+
+        .card-strzel {
+            color: var(--accent-strzel);
+            border-color: rgba(16, 185, 129, 0.4);
+        }
+        .card-strzel:hover {
+            border-color: #10b981;
         }
 
         .card-rozrywka {
-            color: #fbbf24;
+            color: var(--accent-rozrywka);
             border-color: rgba(245, 158, 11, 0.35);
         }
-
         .card-rozrywka:hover {
             border-color: #f59e0b;
-            color: #f59e0b;
         }
 
         .card-hack {
-            color: #38bdf8;
+            color: var(--accent-hack);
             border-color: rgba(6, 182, 212, 0.35);
         }
-
         .card-hack:hover {
             border-color: #06b6d4;
-            color: #06b6d4;
-        }
-
-        .card-climate {
-            color: #34d399;
-            border-color: rgba(52, 211, 153, 0.35);
-        }
-
-        .card-climate:hover {
-            border-color: #10b981;
-            color: #10b981;
         }
 
         /* Stopka i licznik */
         .footer-section {
-            margin-top: 30px;
+            margin-top: 25px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -318,18 +312,9 @@
         }
 
         @media (max-width: 640px) {
-            .hero-title {
-                font-size: 1.6rem;
-            }
-
-            .ai-welcome-card {
-                flex-direction: column;
-                text-align: center;
-            }
-
-            .cards-grid {
-                grid-template-columns: 1fr;
-            }
+            .hero-title { font-size: 1.7rem; }
+            .ai-welcome-card { flex-direction: column; text-align: center; }
+            .cards-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -343,7 +328,7 @@
         <header class="hero-header">
             <div class="badge-club">🚀 Szkoła Podstawowa nr 1 w Brwinowie</div>
             <h1 class="hero-title">Witaj w HACK CLUB</h1>
-            <p class="hero-subtitle">Centrum wiedzy, edukacji z AI, quizów szkolnych i symulacji 3D</p>
+            <p class="hero-subtitle">Centrum wiedzy, edukacji z AI, quizów szkolnych, wyzwań geograficznych i symulacji 3D</p>
         </header>
 
         <!-- Karta powitania AI -->
@@ -358,16 +343,16 @@
             </div>
         </div>
 
-        <!-- Siatka kart głównych modułów -->
+        <!-- Siatka kart 4 głównych modułów -->
         <div class="cards-grid">
+            
             <!-- Karta 1: Quizy Szkolne -->
             <a href="pomocnicze.html" class="nav-card card-quiz">
                 <div>
                     <span class="card-icon">📚</span>
                     <h3 class="card-title">Quizy Szkolne</h3>
                     <p class="card-desc">
-                        Interaktywne pytania z języka angielskiego, polskiego, historii, geografii i matematyki. Ucz się
-                        z asystentem głosowym AI!
+                        Interaktywne pytania z języka angielskiego, polskiego, historii, geografii, matematyki i chemii. Ucz się z asystentem głosowym AI!
                     </p>
                 </div>
                 <div class="card-action">
@@ -376,14 +361,28 @@
                 </div>
             </a>
 
-            <!-- Karta 2: Strefa Rozrywki i Fraktali -->
+            <!-- Karta 2: NOWOŚĆ - Nie Wiem, Ale Strzelę (Hub Gier Geograficznych: ClimGuesser & Famous Places) -->
+            <a href="games.html" class="nav-card card-strzel">
+                <div>
+                    <span class="card-icon">🎯</span>
+                    <h3 class="card-title">Nie Wiem, Ale Strzelę</h3>
+                    <p class="card-desc">
+                        Wyzwania geograficzne! <strong>🌡️ ClimGuesser</strong> (zgaduj po klimatogramach) oraz <strong>📸 Famous Places</strong> (zgaduj po fotografiach zabytków i cudów świata).
+                    </p>
+                </div>
+                <div class="card-action">
+                    <span>Otwórz Gry i Wyzwania</span>
+                    <span>→</span>
+                </div>
+            </a>
+
+            <!-- Karta 3: Strefa Rozrywki i Fraktali -->
             <a href="rozrywka.html" class="nav-card card-rozrywka">
                 <div>
                     <span class="card-icon">🪐</span>
                     <h3 class="card-title">Strefa Rozrywki</h3>
                     <p class="card-desc">
-                        Nieskończony Zoom, Mandelbulb 3D, generowanie gór i chmur, efekty ognia i błyskawic oraz 3D
-                        głębia jeziora!
+                        Nieskończony Zoom wektorowy, Mandelbulb 3D, proceduralne góry i chmury, efekty ognia i błyskawic oraz 3D głębia jeziora!
                     </p>
                 </div>
                 <div class="card-action">
@@ -392,14 +391,13 @@
                 </div>
             </a>
 
-            <!-- Karta 3: Hack Club -->
+            <!-- Karta 4: Hack Club -->
             <a href="hack_club.html" class="nav-card card-hack">
                 <div>
                     <span class="card-icon">💻</span>
                     <h3 class="card-title">Hack Club</h3>
                     <p class="card-desc">
-                        Poznaj nasz klub programistyczny, projekty kodowania, warsztaty i technologiczne wyzwania dla
-                        uczniów.
+                        Poznaj nasz klub programistyczny, projekty kodowania, warsztaty i technologiczne wyzwania dla uczniów.
                     </p>
                 </div>
                 <div class="card-action">
@@ -408,20 +406,6 @@
                 </div>
             </a>
 
-            <!-- Karta 4: Climate Guesser -->
-            <a href="climguesser/cimguesser.html" class="nav-card card-climate">
-                <div>
-                    <span class="card-icon">🌍</span>
-                    <h3 class="card-title">Climate Guesser</h3>
-                    <p class="card-desc">
-                        Interaktywny Globus 3D, płaska mapa świata 2D i mapa z zoomem. Odczytuj współrzędne geograficzne i strefy klimatyczne!
-                    </p>
-                </div>
-                <div class="card-action">
-                    <span>Odkryj Ziemię</span>
-                    <span>→</span>
-                </div>
-            </a>
         </div>
 
         <!-- Stopka, licznik i analityka -->
@@ -472,7 +456,6 @@
                 ctx.shadowColor = '#38bdf8';
                 ctx.fill();
             }
-            ctx.shadowBlur = 0;
             requestAnimationFrame(animateStars);
         }
 
@@ -481,23 +464,17 @@
         animateStars();
     </script>
 
-    <!-- Licznik i statystyki -->
+    <!-- Skrypt zewnętrznego licznika odwiedzin optistats -->
     <script type="text/javascript"
-        src="https://counter4.optistats.ovh/private/counter.js?c=f6k7ajzr2quygt5cp9cycrfdabry7y56&down=async"
+        src="https://counter8.optistats.ovh/private/counter.js?c=f6k7ajzr2quygt5cp9cycrfdabry7y56&down=async"
         async></script>
-    <noscript><a href="https://www.freecounterstat.com" title="page counter"><img
-                src="https://counter4.optistats.ovh/private/freecounterstat.php?c=f6k7ajzr2quygt5cp9cycrfdabry7y56"
-                border="0" title="page counter" alt="page counter"></a></noscript>
+    <noscript>
+        <a href="https://www.freecounterstat.com" title="free counter">
+            <img src="https://counter8.optistats.ovh/private/freecounterstat.php?c=f6k7ajzr2quygt5cp9cycrfdabry7y56"
+                border="0" title="free counter" alt="free counter">
+        </a>
+    </noscript>
 
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZP827DTZJ5"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag() { dataLayer.push(arguments); }
-        gtag('js', new Date());
-
-        gtag('config', 'G-ZP827DTZJ5');
-    </script>
 </body>
 
 </html>
