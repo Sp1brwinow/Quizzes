@@ -2760,6 +2760,7 @@
 
         let gameDifficulty = 'easy'; // 'easy' (20 miejsc) | 'full' (34 miejsca)
         let currentRound = 1;
+        let lastLoadedMpRound = 0; // Śledzenie załadowanej rundy w trybie multiplayer
         let totalNegativeKm = 0; // w dziesiątkach km (x 10 km)
         let roundsHistory = [];
         let secretLocation = null;
@@ -2779,9 +2780,9 @@
             return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
         }
 
-        function startTimer() {
+        function startTimer(initialSeconds = czas_zadania) {
             stopTimer();
-            timeLeft = czas_zadania;
+            timeLeft = initialSeconds;
             updateTimerDisplay();
 
             timerInterval = setInterval(() => {
@@ -3168,7 +3169,8 @@
                 if (currentRound < TOTAL_ROUNDS) {
                     roomRef.update({
                         currentRound: currentRound + 1,
-                        status: 'playing'
+                        status: 'playing',
+                        roundStartTime: firebase.database.ServerValue.TIMESTAMP
                     });
                 } else {
                     roomRef.update({ status: 'finished' });
@@ -3263,7 +3265,8 @@
                         status: 'playing',
                         currentRound: 1,
                         roundPlaces: selectedIndices,
-                        players: resetPlayers
+                        players: resetPlayers,
+                        roundStartTime: firebase.database.ServerValue.TIMESTAMP
                     });
                 }
                 return;
@@ -3525,8 +3528,8 @@
                 document.getElementById('final-summary-modal').classList.remove('active');
                 document.getElementById('mp-live-hud').style.display = 'block';
 
-                // Synchronizacja rundy
-                if (currentRound !== roomData.currentRound || !secretLocation) {
+                // Synchronizacja rundy (sprawdzamy czy ta runda nie została jeszcze załadowana)
+                if (lastLoadedMpRound !== roomData.currentRound) {
                     startMultiplayerRound(roomData.currentRound);
                 }
 
@@ -3568,7 +3571,8 @@
             if (!isHost || !roomRef) return;
             roomRef.update({
                 status: 'playing',
-                currentRound: 1
+                currentRound: 1,
+                roundStartTime: firebase.database.ServerValue.TIMESTAMP
             });
         }
 
@@ -3576,6 +3580,7 @@
         function startMultiplayerRound(rNum) {
             stopRevealTimer();
             currentRound = rNum;
+            lastLoadedMpRound = rNum;
             isRoundFinished = false;
             clueRevealed = false;
             userGuessLatLng = null;
@@ -3607,8 +3612,13 @@
 
             map.setView([20, 0], 2);
 
-            // Start 20-sekundowego timera na rundę
-            startTimer();
+            // Obliczenie pozostałego czasu i start timera (synchronizacja z czasem serwerowym)
+            let remainingSec = czas_zadania;
+            if (roomData && roomData.roundStartTime) {
+                const elapsedSec = Math.floor((Date.now() - roomData.roundStartTime) / 1000);
+                remainingSec = Math.max(1, czas_zadania - elapsedSec);
+            }
+            startTimer(remainingSec);
         }
 
         // 7. Render paska HUD w trakcie rundy
@@ -3911,6 +3921,7 @@
             mpRoomId = null;
             isHost = false;
             roomData = null;
+            lastLoadedMpRound = 0;
 
             closeMultiplayerModal();
             document.getElementById('final-summary-modal').classList.remove('active');
