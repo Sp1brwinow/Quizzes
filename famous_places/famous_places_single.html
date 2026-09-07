@@ -4,477 +4,2380 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HACK CLUB – Szkoła Podstawowa nr 1 w Brwinowie</title>
+    <title>Famous Places – Zgadnij miejsce na świecie po zdjęciu (5 Rund)</title>
+    <link rel="stylesheet" href="../style.css" />
 
-    <!-- Google Analytics Tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZP827DTZJ5"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag() { dataLayer.push(arguments); }
-        gtag('js', new Date());
-        gtag('config', 'G-ZP827DTZJ5');
-    </script>
-
-    <link rel="stylesheet" href="style.css" />
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
     <style>
         :root {
-            --bg-dark: #070d18;
-            --card-bg: rgba(15, 23, 42, 0.85);
-            --card-border: rgba(56, 189, 248, 0.25);
+            --bg-dark: #07152b;
+            --card-bg: rgba(14, 30, 56, 0.92);
+            --card-border: rgba(56, 189, 248, 0.35);
             --primary: #38bdf8;
-            --accent-quiz: #f87171;
-            --accent-strzel: #10b981;
-            --accent-rozrywka: #fbbf24;
-            --accent-hack: #38bdf8;
+            --primary-hover: #0284c7;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-cyan: #22d3ee;
+            --accent-purple: #c084fc;
+            --accent-rose: #f43f5e;
+            --user-guess: #f59e0b;
+            --target-color: #10b981;
         }
 
         * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
         }
 
         body {
-            background-color: var(--bg-dark);
-            color: #f1f5f9;
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(180deg, #051024 0%, #082142 45%, #0d3461 100%);
+            color: #f8fafc;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             min-height: 100vh;
+            padding: 16px 16px 60px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-start;
-            padding: 30px 16px 50px;
-            overflow-x: hidden;
+        }
+
+        .main-container {
+            max-width: 1400px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Górna nawigacja */
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            background: rgba(14, 30, 56, 0.85);
+            border: 1px solid rgba(125, 211, 252, 0.4);
+            color: #7dd3fc;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(8px);
+        }
+
+        .nav-btn:hover {
+            color: #ffffff;
+            border-color: #38bdf8;
+            background: #0284c7;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.4);
+        }
+
+        /* Główny baner z pytaniem */
+        .question-banner {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.92) 100%);
+            border: 2px solid #38bdf8;
+            border-radius: 16px;
+            padding: 16px 24px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(56, 189, 248, 0.25);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+
+        .banner-title-box {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .banner-icon {
+            font-size: 2.2rem;
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid #38bdf8;
+            width: 52px;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+        }
+
+        .banner-text h1 {
+            font-size: 1.45rem;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 2px;
+            letter-spacing: 0.5px;
+        }
+
+        .banner-text p {
+            color: #38bdf8;
+            font-size: 0.92rem;
+            font-weight: 600;
+        }
+
+        .round-stats-badge {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(251, 191, 36, 0.4);
+            padding: 8px 18px;
+            border-radius: 12px;
+            font-family: monospace;
+            font-size: 0.95rem;
+        }
+
+        .round-stats-badge span b {
+            color: #fbbf24;
+            font-size: 1.1rem;
+        }
+
+        .round-stats-badge span b.negative {
+            color: #f87171;
+        }
+
+        /* Wybór kategorii trudności */
+        .mode-toggle-group {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            border-radius: 12px;
+            padding: 4px 8px;
+            flex-wrap: wrap;
+        }
+
+        .mode-label {
+            font-size: 0.84rem;
+            color: #94a3b8;
+            font-weight: 600;
+            padding-left: 4px;
+        }
+
+        .mode-toggle-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            color: #cbd5e1;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .mode-toggle-btn:hover {
+            color: #ffffff;
+            background: rgba(56, 189, 248, 0.15);
+        }
+
+        .mode-toggle-btn.active {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            border-color: #38bdf8;
+            color: #ffffff;
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
+        }
+
+        /* Układ dwukolumnowy: Lewo = Mapa, Prawo = Zdjęcie i Panel */
+        .game-layout {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 18px;
+            align-items: start;
+        }
+
+        @media (max-width: 1024px) {
+            .game-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Karta Mapy */
+        .map-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 14px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .map-container {
+            width: 100%;
+            height: 560px;
+            border-radius: 14px;
+            overflow: hidden;
+            background: #020617;
+            border: 2px solid rgba(56, 189, 248, 0.35);
+            box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.9);
+            z-index: 10;
+        }
+
+        .map-footer-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            color: #94a3b8;
+            padding: 0 4px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .coords-chip {
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-family: monospace;
+            color: #38bdf8;
+            font-weight: bold;
+        }
+
+        /* Prawa kolumna: Karta Zdjęcia Miejsca i Wyniku */
+        .sidebar-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 18px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Kontener Zdjęcia */
+        .photo-box {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 14px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
             position: relative;
         }
 
-        /* Tło z gwiazdami Canvas */
-        #bg-canvas {
+        .photo-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: #38bdf8;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 6px;
+        }
+
+        .photo-img-wrapper {
+            position: relative;
+            width: 100%;
+            height: 310px;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #020617;
+            border: 1px solid #334155;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .photo-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease, opacity 0.2s ease;
+            display: block;
+        }
+
+        .photo-img-wrapper:hover img {
+            transform: scale(1.04);
+        }
+
+        .photo-zoom-hint {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            color: #38bdf8;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            backdrop-filter: blur(6px);
+            pointer-events: none;
+            z-index: 6;
+        }
+
+        /* Informacje o licencji i tagach */
+        .photo-meta-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+            font-size: 0.78rem;
+            color: #94a3b8;
+        }
+
+        .meta-tag {
+            background: rgba(56, 189, 248, 0.12);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            color: #38bdf8;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        /* Podpowiedź / Wskazówka */
+        .clue-box {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-size: 0.86rem;
+            color: #cbd5e1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .clue-btn {
+            background: rgba(251, 191, 36, 0.15);
+            border: 1px solid #fbbf24;
+            color: #fbbf24;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.78rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .clue-btn:hover {
+            background: #fbbf24;
+            color: #0f172a;
+        }
+
+        /* Wynik Rundy */
+        .result-summary-box {
+            background: rgba(15, 23, 42, 0.92);
+            border: 1px solid #10b981;
+            border-radius: 14px;
+            padding: 14px 18px;
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-title {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: #10b981;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .result-score-line {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.95rem;
+            color: #cbd5e1;
+        }
+
+        .score-pill-negative {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid #ef4444;
+            color: #f87171;
+            padding: 2px 10px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-weight: bold;
+        }
+
+        .target-desc-text {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            line-height: 1.45;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 8px 10px;
+            border-radius: 6px;
+            border-left: 3px solid #10b981;
+        }
+
+        /* Przyciski Akcji */
+        .action-bar {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .btn-submit,
+        .btn-next-round {
+            flex: 1;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.25s ease;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4);
+        }
+
+        .btn-submit:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(56, 189, 248, 0.5);
+            background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: #334155;
+            box-shadow: none;
+        }
+
+        .btn-next-round {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            color: white;
+            display: none;
+            box-shadow: 0 4px 15px rgba(5, 150, 105, 0.4);
+        }
+
+        .btn-next-round:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
+        }
+
+        /* Modal podsumowania */
+        .modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .main-container {
-            max-width: 1100px;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 24px;
-            position: relative;
-            z-index: 1;
-        }
-
-        /* Główny nagłówek */
-        .hero-header {
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .badge-club {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 6px 16px;
-            background: rgba(56, 189, 248, 0.12);
-            border: 1px solid rgba(56, 189, 248, 0.35);
-            border-radius: 999px;
-            color: #38bdf8;
-            font-size: 0.9rem;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
-            backdrop-filter: blur(8px);
-        }
-
-        .hero-title {
-            font-size: 2.3rem;
-            font-weight: 900;
-            background: linear-gradient(135deg, #ffffff 0%, #38bdf8 50%, #818cf8 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: -0.5px;
-            text-shadow: 0 0 30px rgba(56, 189, 248, 0.3);
-        }
-
-        .hero-subtitle {
-            font-size: 1.05rem;
-            color: #94a3b8;
-            max-width: 650px;
-            line-height: 1.5;
-        }
-
-        /* Karta Wirtualnego Asystenta AI */
-        .ai-welcome-card {
-            width: 100%;
-            background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.85) 100%);
-            border: 1px solid rgba(56, 189, 248, 0.35);
-            border-radius: 18px;
-            padding: 18px 24px;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(56, 189, 248, 0.15);
-            backdrop-filter: blur(12px);
-        }
-
-        .ai-avatar {
-            font-size: 2.5rem;
-            background: rgba(56, 189, 248, 0.15);
-            border: 2px solid #38bdf8;
-            width: 65px;
-            height: 65px;
-            display: flex;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            display: none;
             align-items: center;
             justify-content: center;
-            border-radius: 50%;
-            box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
-            flex-shrink: 0;
-            animation: pulse-glow 2.5s infinite ease-in-out;
+            z-index: 9999;
+            padding: 20px;
         }
 
-        @keyframes pulse-glow {
-            0%, 100% { box-shadow: 0 0 15px rgba(56, 189, 248, 0.3); transform: scale(1); }
-            50% { box-shadow: 0 0 28px rgba(56, 189, 248, 0.6); transform: scale(1.03); }
-        }
-
-        .ai-text h4 {
-            color: #38bdf8;
-            font-size: 1.15rem;
-            margin-bottom: 4px;
+        .modal-overlay.active {
             display: flex;
-            align-items: center;
-            gap: 8px;
         }
 
-        .ai-status-dot {
-            width: 8px;
-            height: 8px;
-            background: #10b981;
-            border-radius: 50%;
-            box-shadow: 0 0 8px #10b981;
-        }
-
-        .ai-text p {
-            color: #cbd5e1;
-            font-size: 0.93rem;
-            line-height: 1.5;
-        }
-
-        /* Siatka kart głównych (2x2 na komputerach, 1 kolumna na telefonach) */
-        .cards-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
-            gap: 18px;
+        .summary-card {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            border: 2px solid #fbbf24;
+            border-radius: 20px;
+            max-width: 680px;
             width: 100%;
-        }
-
-        .nav-card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 18px;
-            padding: 22px;
-            text-decoration: none;
+            padding: 28px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9), 0 0 35px rgba(251, 191, 36, 0.3);
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
-            min-height: 230px;
+            gap: 18px;
+            animation: popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        .nav-card::before {
-            content: '';
-            position: absolute;
+        @keyframes popIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .summary-header {
+            text-align: center;
+        }
+
+        .summary-header h2 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #fbbf24;
+            margin-bottom: 4px;
+        }
+
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+            margin-top: 6px;
+        }
+
+        .summary-table th {
+            background: rgba(15, 23, 42, 0.9);
+            color: #38bdf8;
+            padding: 8px 10px;
+            border-bottom: 1px solid rgba(56, 189, 248, 0.3);
+            text-align: left;
+        }
+
+        .summary-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            color: #e2e8f0;
+        }
+
+        .summary-total-banner {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid #fbbf24;
+            border-radius: 12px;
+            padding: 14px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .summary-rank-badge {
+            text-align: center;
+            background: rgba(56, 189, 248, 0.12);
+            border: 1px solid #38bdf8;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 1.02rem;
+            font-weight: 700;
+            color: #38bdf8;
+        }
+
+        /* Modal powiększenia zdjęcia (75% ekranu) */
+        #img-zoom-modal {
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            height: 4px;
-            background: currentColor;
-            opacity: 0.85;
-            transition: height 0.3s;
-        }
-
-        .nav-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7), 0 0 25px currentColor;
-        }
-
-        .nav-card:hover::before {
-            height: 6px;
-        }
-
-        .card-icon {
-            font-size: 2.2rem;
-            margin-bottom: 12px;
-            display: inline-block;
-            transition: transform 0.3s;
-        }
-
-        .nav-card:hover .card-icon {
-            transform: scale(1.15) rotate(5deg);
-        }
-
-        .card-title {
-            font-size: 1.35rem;
-            font-weight: 800;
-            color: #ffffff;
-            margin-bottom: 8px;
-        }
-
-        .card-desc {
-            font-size: 0.92rem;
-            color: #94a3b8;
-            line-height: 1.5;
-            margin-bottom: 18px;
-            flex-grow: 1;
-        }
-
-        .card-action {
-            display: inline-flex;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.88);
+            backdrop-filter: blur(10px);
+            display: none;
             align-items: center;
-            gap: 6px;
-            font-weight: 700;
-            font-size: 0.95rem;
-            color: inherit;
-            transition: gap 0.2s;
+            justify-content: center;
+            z-index: 10000;
+            padding: 20px;
         }
 
-        .nav-card:hover .card-action {
-            gap: 10px;
+        #img-zoom-modal.active {
+            display: flex;
         }
 
-        /* Kolory specyficzne dla poszczególnych modułów */
-        .card-quiz {
-            color: var(--accent-quiz);
-            border-color: rgba(239, 68, 68, 0.35);
-        }
-        .card-quiz:hover {
-            border-color: #ef4444;
-        }
-
-        .card-strzel {
-            color: var(--accent-strzel);
-            border-color: rgba(16, 185, 129, 0.4);
-        }
-        .card-strzel:hover {
-            border-color: #10b981;
-        }
-
-        .card-rozrywka {
-            color: var(--accent-rozrywka);
-            border-color: rgba(245, 158, 11, 0.35);
-        }
-        .card-rozrywka:hover {
-            border-color: #f59e0b;
-        }
-
-        .card-hack {
-            color: var(--accent-hack);
-            border-color: rgba(6, 182, 212, 0.35);
-        }
-        .card-hack:hover {
-            border-color: #06b6d4;
-        }
-
-        /* Stopka i licznik */
-        .footer-section {
-            margin-top: 25px;
+        .zoom-card {
+            width: 75vw;
+            height: 75vh;
+            max-width: 1400px;
+            background: #0f172a;
+            border: 2px solid #38bdf8;
+            border-radius: 18px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.95), 0 0 35px rgba(56, 189, 248, 0.35);
             display: flex;
             flex-direction: column;
+            overflow: hidden;
+            animation: popIn 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .zoom-header {
+            display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 10px;
-            color: #64748b;
-            font-size: 0.82rem;
+            padding: 10px 18px;
+            background: rgba(15, 23, 42, 0.95);
+            border-bottom: 1px solid rgba(56, 189, 248, 0.25);
+            color: #38bdf8;
+            font-weight: 700;
+            font-size: 0.95rem;
         }
 
-        #sfcf6k7ajzr2quygt5cp9cycrfdabry7y56 {
-            transform: scale(0.72);
-            transform-origin: center center;
-            opacity: 0.8;
-            transition: opacity 0.2s;
+        .zoom-close-btn {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid #ef4444;
+            color: #f87171;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            font-weight: bold;
+            transition: all 0.2s;
         }
 
-        #sfcf6k7ajzr2quygt5cp9cycrfdabry7y56:hover {
-            opacity: 1;
+        .zoom-close-btn:hover {
+            background: #ef4444;
+            color: #ffffff;
+            transform: scale(1.05);
         }
 
-        @media (max-width: 640px) {
-            .hero-title { font-size: 1.7rem; }
-            .ai-welcome-card { flex-direction: column; text-align: center; }
-            .cards-grid { grid-template-columns: 1fr; }
+        .zoom-body {
+            flex: 1;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #020617;
+            padding: 8px;
+        }
+
+        .zoom-body img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 10px;
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .zoom-card {
+                width: 92vw;
+                height: 80vh;
+            }
+        }
+
+        /* Toast */
+        #toast-box {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid #38bdf8;
+            color: #38bdf8;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(56, 189, 248, 0.4);
+            z-index: 99999;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none;
+        }
+
+        #toast-box.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .custom-guess-icon,
+        .custom-target-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.8));
         }
     </style>
 </head>
 
 <body>
 
-    <canvas id="bg-canvas"></canvas>
-
     <div class="main-container">
-        <!-- Nagłówek -->
-        <header class="hero-header">
-            <div class="badge-club">🚀 Szkoła Podstawowa nr 1 w Brwinowie</div>
-            <h1 class="hero-title">Witaj w HACK CLUB</h1>
-            <p class="hero-subtitle">Centrum wiedzy, edukacji z AI, quizów szkolnych, wyzwań geograficznych i symulacji 3D</p>
+        <!-- Nawigacja -->
+        <div class="top-nav">
+            <a href="../index.html" class="nav-btn">🏠 Strona Główna</a>
+            <a href="../games.html" class="nav-btn">🎯 Nie Wiem, Ale Strzelę (Gry)</a>
+            <a href="../climguesser/cimguesser.html" class="nav-btn">🌡️ ClimGuesser</a>
+        </div>
+
+        <!-- Baner z Pytaniem -->
+        <header class="question-banner">
+            <div class="banner-title-box">
+                <div class="banner-icon">📸</div>
+                <div class="banner-text">
+                    <h1 id="question-text">Zgadnij miejsce po zdjęciu!</h1>
+                    <p id="question-subtext">Przeanalizuj poniższe zdjęcie (architekturę, krajobraz, przyrodę) i wskaż
+                        na mapie, gdzie się znajduje.</p>
+                </div>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                <!-- Wybór trybu trudności -->
+                <div class="mode-toggle-group">
+                    <span class="mode-label">Pula:</span>
+                    <button type="button" class="mode-toggle-btn active" id="btn-mode-easy"
+                        onclick="setGameDifficulty('easy')">
+                        🏛️ Najsłynniejsze (20)
+                    </button>
+                    <button type="button" class="mode-toggle-btn" id="btn-mode-full"
+                        onclick="setGameDifficulty('full')">
+                        🌍 Wszystkie Miejsca (34)
+                    </button>
+                </div>
+
+                <div class="round-stats-badge">
+                    <span>Runda: <b id="stat-round">1 / 5</b></span>
+                    <span>Łączny błąd: <b id="stat-total-score" class="negative">0 x 10 km</b></span>
+                </div>
+            </div>
         </header>
 
-        <!-- Karta powitania AI -->
-        <div class="ai-welcome-card">
-            <div class="ai-avatar">🤖</div>
-            <div class="ai-text">
-                <h4><span class="ai-status-dot"></span> Cześć, jestem Twoją Wirtualną Prowadzącą!</h4>
-                <p>
-                    Jestem Sztuczną Inteligencją, która towarzyszy Ci podczas quizów i nauki.
-                    Zadaję inspirujące pytania, sprawdzam odpowiedzi, tłumaczę gramatykę i dbam o świetną zabawę!
-                </p>
+        <!-- Główny Układ Gry -->
+        <div class="game-layout">
+            <!-- Lewa Strona: Mapa Świata Leaflet -->
+            <div class="map-card">
+                <div class="map-container" id="map"></div>
+
+                <div class="map-footer-bar">
+                    <span id="map-hint">🖱️ <strong>Kliknij na mapie</strong>, aby postawić swój strzał (pomarańczowa
+                        pinezka 📍).</span>
+                    <span class="coords-chip" id="hover-coords">Kursor: --° N, --° E</span>
+                </div>
+            </div>
+
+            <!-- Prawa Strona: Zdjęcie Zagadki i Wyniki -->
+            <div class="sidebar-card">
+                <!-- Zdjęcie Zagadki -->
+                <div class="photo-box">
+                    <div class="photo-header">
+                        <span>📷 Zagadka – Gdzie to jest?</span>
+                        <span id="photo-category-badge" class="meta-tag">Architektura</span>
+                    </div>
+
+                    <div class="photo-img-wrapper" onclick="openZoomModal()">
+                        <img id="location-photo" src="" alt="Tajemnicze miejsce" />
+                        <div class="photo-zoom-hint">🔍 Kliknij, aby powiększyć</div>
+                    </div>
+
+                    <div class="photo-meta-bar">
+                        <span class="meta-tag">🔒 Tajemnicza lokalizacja</span>
+                    </div>
+                </div>
+
+                <!-- Wskazówka / Clue -->
+                <div class="clue-box">
+                    <span id="clue-text">💡 Potrzebujesz pomocy z kontynentem lub kontekstem?</span>
+                    <button type="button" class="clue-btn" id="btn-show-clue" onclick="revealClue()">
+                        🔍 Pokaż podpowiedź
+                    </button>
+                </div>
+
+                <!-- Wynik Rundy po Zatwierdzeniu -->
+                <div class="result-summary-box" id="result-box">
+                    <div class="result-title">
+                        <span>🏆 Wynik Rundy <span id="res-round-num">1</span>:</span>
+                    </div>
+                    <div class="result-score-line">
+                        <span>Błąd sferyczny:</span>
+                        <b id="res-distance" style="color:#38bdf8; font-family:monospace; font-size:1.05rem;">-- km</b>
+                    </div>
+                    <div class="result-score-line">
+                        <span>Naliczony błąd:</span>
+                        <span class="score-pill-negative" id="res-points-negative">-0 x 10 km</span>
+                    </div>
+                    <div
+                        style="font-size: 0.92rem; color: #cbd5e1; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 6px;">
+                        <span>Rzeczywiste miejsce:</span> <b id="res-target-name"
+                            style="color:#10b981; font-size:1.02rem;">--</b>
+                    </div>
+                    <div class="target-desc-text" id="res-target-desc">
+                        Opis ciekawostki o danym miejscu...
+                    </div>
+                </div>
+
+                <!-- Przyciski Akcji -->
+                <div class="action-bar">
+                    <button type="button" class="btn-submit" id="btn-submit-guess" onclick="submitGuess()" disabled>
+                        🎯 Zatwierdź strzał
+                    </button>
+                    <button type="button" class="btn-next-round" id="btn-next" onclick="handleNextStep()">
+                        🔄 Następna runda (2 / 5)
+                    </button>
+                </div>
             </div>
         </div>
-
-        <!-- Siatka kart 4 głównych modułów -->
-        <div class="cards-grid">
-            
-            <!-- Karta 1: Quizy Szkolne -->
-            <a href="pomocnicze.html" class="nav-card card-quiz">
-                <div>
-                    <span class="card-icon">📚</span>
-                    <h3 class="card-title">Quizy Szkolne</h3>
-                    <p class="card-desc">
-                        Interaktywne pytania z języka angielskiego, polskiego, historii, geografii, matematyki i chemii. Ucz się z asystentem głosowym AI!
-                    </p>
-                </div>
-                <div class="card-action">
-                    <span>Otwórz Quizy</span>
-                    <span>→</span>
-                </div>
-            </a>
-
-            <!-- Karta 2: NOWOŚĆ - Nie Wiem, Ale Strzelę (Hub Gier Geograficznych: ClimGuesser & Famous Places) -->
-            <a href="games.html" class="nav-card card-strzel">
-                <div>
-                    <span class="card-icon">🎯</span>
-                    <h3 class="card-title">Nie Wiem, Ale Strzelę</h3>
-                    <p class="card-desc">
-                        Wyzwania geograficzne! <strong>🌡️ ClimGuesser</strong> (zgaduj po klimatogramach) oraz <strong>📸 Famous Places</strong> (zgaduj po fotografiach zabytków i cudów świata).
-                    </p>
-                </div>
-                <div class="card-action">
-                    <span>Otwórz Gry i Wyzwania</span>
-                    <span>→</span>
-                </div>
-            </a>
-
-            <!-- Karta 3: Strefa Rozrywki i Fraktali -->
-            <a href="rozrywka.html" class="nav-card card-rozrywka">
-                <div>
-                    <span class="card-icon">🪐</span>
-                    <h3 class="card-title">Strefa Rozrywki</h3>
-                    <p class="card-desc">
-                        Nieskończony Zoom wektorowy, Mandelbulb 3D, proceduralne góry i chmury, efekty ognia i błyskawic oraz 3D głębia jeziora!
-                    </p>
-                </div>
-                <div class="card-action">
-                    <span>Odkryj Świat 3D</span>
-                    <span>→</span>
-                </div>
-            </a>
-
-            <!-- Karta 4: Hack Club -->
-            <a href="hack_club.html" class="nav-card card-hack">
-                <div>
-                    <span class="card-icon">💻</span>
-                    <h3 class="card-title">Hack Club</h3>
-                    <p class="card-desc">
-                        Poznaj nasz klub programistyczny, projekty kodowania, warsztaty i technologiczne wyzwania dla uczniów.
-                    </p>
-                </div>
-                <div class="card-action">
-                    <span>Zobacz Projekty</span>
-                    <span>→</span>
-                </div>
-            </a>
-
-        </div>
-
-        <!-- Stopka, licznik i analityka -->
-        <footer class="footer-section">
-            <div id="sfcf6k7ajzr2quygt5cp9cycrfdabry7y56"></div>
-            <p>© HACK CLUB – Szkoła Podstawowa nr 1 w Brwinowie</p>
-        </footer>
     </div>
 
-    <!-- Tło z ruchomymi gwiazdami (Starfield) -->
+    <!-- Modal Powiększenia Zdjęcia (75% ekranu) -->
+    <div id="img-zoom-modal" onclick="closeZoomModal()">
+        <div class="zoom-card" onclick="event.stopPropagation()">
+            <div class="zoom-header">
+                <span>🔍 Powiększenie fotografii</span>
+                <button type="button" class="zoom-close-btn" onclick="closeZoomModal()"
+                    title="Zamknij (lub kliknij poza oknem)">✕</button>
+            </div>
+            <div class="zoom-body">
+                <img id="zoomed-img" src="" alt="Powiększone zdjęcie" />
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Końcowy po 5 Rundach -->
+    <div class="modal-overlay" id="final-summary-modal">
+        <div class="summary-card">
+            <div class="summary-header">
+                <h2>🎉 Podsumowanie Gry (5 Rund)</h2>
+                <p>Oto zestawienie Twoich strzałów i odległości od odkrytych miejsc:</p>
+            </div>
+
+            <table class="summary-table">
+                <thead>
+                    <tr>
+                        <th>Runda</th>
+                        <th>Miejsce</th>
+                        <th>Błąd w km</th>
+                        <th>Punkty (x 10 km)</th>
+                    </tr>
+                </thead>
+                <tbody id="summary-table-body">
+                    <!-- Wiersze generowane w JS -->
+                </tbody>
+            </table>
+
+            <div class="summary-total-banner">
+                <span>Łączny wynik (suma ujemna):</span>
+                <b id="final-total-score" style="font-size:1.4rem; color:#f87171; font-family:monospace;">-0 x 10 km</b>
+            </div>
+
+            <div class="summary-rank-badge" id="final-rank-title">
+                🏆 Mistrz Geografii Świata!
+            </div>
+
+            <button type="button" class="btn-submit" onclick="restartEntireGame()" style="margin-top: 4px;">
+                🎮 Zagraj Ponownie (Nowe 5 Miejsc)
+            </button>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast-box">Wiadomość</div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
     <script>
-        const canvas = document.getElementById('bg-canvas');
-        const ctx = canvas.getContext('2d');
-        let stars = [];
+        // =========================================================================
+        // BAZA DANYCH SŁYNNYCH MIEJSC ZE ŚWIATA (ZDJĘCIA LOKALNE)
+        // =========================================================================
+        const FAMOUS_PLACES_DB = [
+            // --- EUROPA ---
+            {
+                name: "Wieża Eiffla (Paryż, Francja)",
+                lat: 48.8584,
+                lng: 2.2945,
+                continent: "Europa",
+                category: "Architektura / Symbol",
+                easy: true,
+                img: "img/eiffel_tower.jpg",
+                license: "Unsplash / CC",
+                clue: "Stalowa wieża wybudowana na Wystawę Światową w 1889 roku nad rzeką Sekwaną.",
+                desc: "Monumentalna wieża kratowa na Polu Marsowym w Paryżu o wysokości 330 metrów, najsłynniejszy symbol Francji."
+            },
+            {
+                name: "Koloseum (Rzym, Włochy)",
+                lat: 41.8902,
+                lng: 12.4922,
+                continent: "Europa",
+                category: "Starożytność / Amfiteatr",
+                easy: true,
+                img: "img/colosseum.jpg",
+                license: "Unsplash / CC",
+                clue: "Najsłynniejszy amfiteatr cesarzy rzymskich i walk gladiatorów w Wiecznym Mieście.",
+                desc: "Amfiteatr Flawiuszy wzniesiony w I wieku n.e. w sercu Rzymu. Mógł pomieścić do 50 tysięcy widzów."
+            },
+            {
+                name: "Akropol Ateński (Ateny, Grecja)",
+                lat: 37.9715,
+                lng: 23.7257,
+                continent: "Europa",
+                category: "Starożytność / Świątynia",
+                easy: true,
+                img: "img/acropolis.jpg",
+                license: "Unsplash / CC",
+                clue: "Wzgórze ze świątynią Partenon górujące nad stolicą i kolebką demokracji.",
+                desc: "Wapienne wzgórze w Atenach ze słynnym Partenonem poświęconym bogini Atenie, zbudowanym w V wieku p.n.e."
+            },
+            {
+                name: "Sagrada Família (Barcelona, Hiszpania)",
+                lat: 41.4036,
+                lng: 2.1744,
+                continent: "Europa",
+                category: "Architektura / Bazylika",
+                easy: true,
+                img: "img/sagrada_familia.jpg",
+                license: "Unsplash / CC",
+                clue: "Niezwykła secesyjna bazylika projektu Antoniego Gaudíego budowana od ponad 140 lat.",
+                desc: "Słynna bazylika w Katalonii o organicznych, rzeźbiarskich wieżach, będąca symbolem Barcelony."
+            },
+            {
+                name: "Big Ben i Pałac Westminsterski (Londyn, Wielka Brytania)",
+                lat: 51.5007,
+                lng: -0.1246,
+                continent: "Europa",
+                category: "Architektura / Parlament",
+                easy: true,
+                img: "img/big_ben.jpg",
+                license: "Unsplash / CC",
+                clue: "Neogotycka wieża zegarowa nad Tamizą w stolicy Wielkiej Brytanii.",
+                desc: "Słynna wieża zegarowa Elizabeth Tower (potocznie Big Ben) przy siedzibie brytyjskiego parlamentu."
+            },
+            {
+                name: "Zamek w Malborku (Polska)",
+                lat: 54.0398,
+                lng: 19.0280,
+                continent: "Europa",
+                category: "Średniowiecze / Twierdza",
+                easy: false,
+                img: "img/malbork.jpg",
+                license: "Unsplash / CC",
+                clue: "Największy zamek ceglany na świecie, dawna stolica Zakonu Krzyżackiego.",
+                desc: "Potężna twierdza krzyżacka nad rzeką Nogat, wpisana na listę światowego dziedzictwa UNESCO."
+            },
+            {
+                name: "Pałac Kultury i Nauki (Warszawa, Polska)",
+                lat: 52.2319,
+                lng: 21.0067,
+                continent: "Europa",
+                category: "Architektura / Wieżowiec",
+                easy: true,
+                img: "img/warszawa.jpg",
+                license: "AI Generated HD",
+                clue: "Charakterystyczny socrealistyczny wieżowiec z zegarem milenijnym w centrum stolicy Polski.",
+                desc: "Najbardziej rozpoznawalny budynek Warszawy o wysokości 237 metrów, otoczony nowoczesnymi drapaczami chmur nad Wisłą."
+            },
+            {
+                name: "Krzywa Wieża w Pizie (Włochy)",
+                lat: 43.7230,
+                lng: 10.3966,
+                continent: "Europa",
+                category: "Architektura / Dzwonnica",
+                easy: true,
+                img: "img/pisa.jpg",
+                license: "Unsplash / CC",
+                clue: "Słynna romańska dzwonnica o wyraźnym przechyleniu na Polu Cudów w Toskanii.",
+                desc: "Marmurowa dzwonnica katedralna w Pizie, która zaczęła się przechylać niemal natychmiast po rozpoczęciu budowy w 1173 roku."
+            },
+            {
+                name: "Stonehenge (Wiltshire, Anglia)",
+                lat: 51.1789,
+                lng: -1.8262,
+                continent: "Europa",
+                category: "Prehistoria / Megality",
+                easy: true,
+                img: "img/stonehenge.jpg",
+                license: "Unsplash / CC",
+                clue: "Prehistoryczny kamienny krąg w południowej Anglii powiązany z przesileniem letnim.",
+                desc: "Megalityczna budowla z epoki neolitu i brązu, składająca się z monumentalnych stojących głazów."
+            },
+            {
+                name: "Zamek Neuschwanstein (Bawaria, Niemcy)",
+                lat: 47.5576,
+                lng: 10.7498,
+                continent: "Europa",
+                category: "Architektura / Zamek",
+                easy: true,
+                img: "img/neuschwanstein.jpg",
+                license: "Unsplash / CC",
+                clue: "Bajkowy zamek króla Ludwika II w bawarskich Alpach, inspiracja dla Disneya.",
+                desc: "XIX-wieczny neoromański zamek rycerski wzniesiony na urwistej skale w południowej Bawarii."
+            },
+            {
+                name: "Gejzer Strokkur (Islandia)",
+                lat: 64.3127,
+                lng: -20.3008,
+                continent: "Europa",
+                category: "Cuda Natury / Wulkany",
+                easy: false,
+                img: "img/strokkur.jpg",
+                license: "Unsplash / CC",
+                clue: "Wybuchający co 5-10 minut wrzątkiem gejzer w krainie lodu i ognia.",
+                desc: "Bardzo aktywny gejzer w dolinie Haukadalur na Islandii, wyrzucający słup gorącej wody na wysokość do 30 metrów."
+            },
 
-        function resize() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            initStars();
-        }
+            // --- AZJA ---
+            {
+                name: "Tadż Mahal (Agra, Indie)",
+                lat: 27.1751,
+                lng: 78.0421,
+                continent: "Azja",
+                category: "Mauzoleum / Architektura",
+                easy: true,
+                img: "img/taj_mahal.jpg",
+                license: "Unsplash / CC",
+                clue: "Mauzoleum z białego marmuru wzniesione przez cesarza Szahdżahana z miłości do żony.",
+                desc: "Jeden z siedmiu nowych cudów świata, klejnot sztuki muzułmańskiej w Indiach nad rzeką Jamuna."
+            },
+            {
+                name: "Wielki Mur Chiński (Chiny)",
+                lat: 40.4319,
+                lng: 116.5704,
+                continent: "Azja",
+                category: "Fortyfikacja / Starożytność",
+                easy: true,
+                img: "img/great_wall.jpg",
+                license: "Unsplash / CC",
+                clue: "Tysiąckilometrowy system obronny wznoszony przez wieki na północy Chin.",
+                desc: "Zbiorcza nazwa systemów obronnych z ziemi i kamienia, ciągnących się przez tysiące kilometrów wzdłuż północnych granic Chin."
+            },
+            {
+                name: "Góra Fudżi (Honsiu, Japonia)",
+                lat: 35.3606,
+                lng: 138.7274,
+                continent: "Azja",
+                category: "Cuda Natury / Wulkan",
+                easy: true,
+                img: "img/mount_fuji.jpg",
+                license: "Unsplash / CC",
+                clue: "Święty, ośnieżony stratowulkan o idealnie symetrycznym stożku w Japonii.",
+                desc: "Czynny stratowulkan i najwyższy szczyt Japonii (3776 m n.p.m.), symbol i święta góra kultury japońskiej."
+            },
+            {
+                name: "Petra – Skarbiec Al-Chazna (Jordania)",
+                lat: 30.3285,
+                lng: 35.4444,
+                continent: "Azja",
+                category: "Starożytność / Miasto Skalne",
+                easy: true,
+                img: "img/petra.jpg",
+                license: "Wikimedia CC",
+                clue: "Starożytne miasto Nabatejczyków wykute w różowych piaskowcach pustyni.",
+                desc: "Ruiny starożytnego miasta wykutego w skałach wąwozu Siq w południowej Jordanii."
+            },
+            {
+                name: "Burdż Chalifa (Dubaj, ZEA)",
+                lat: 25.1972,
+                lng: 55.2744,
+                continent: "Azja",
+                category: "Architektura / Wieżowiec",
+                easy: true,
+                img: "img/burj_khalifa.jpg",
+                license: "Unsplash / CC",
+                clue: "Najwyższy wieżowiec i budowla wzniesiona kiedykolwiek przez człowieka (828 m).",
+                desc: "Superwieżowiec w Dubaju o wysokości 828 metrów, liczący 163 piętra użytkowe."
+            },
+            {
+                name: "Angkor Wat (Siem Reap, Kambodża)",
+                lat: 13.4125,
+                lng: 103.8670,
+                continent: "Azja",
+                category: "Starożytność / Kompleks Świątynny",
+                easy: false,
+                img: "img/angkor_wat.jpg",
+                license: "Unsplash / CC",
+                clue: "Największy kompleks świątynny na Ziemi, dawne serce Imperium Khmerskiego.",
+                desc: "Monumentalna świątynia hinduistyczno-buddyjska wzniesiona w XII wieku w dżungli Kambodży."
+            },
+            {
+                name: "Zatoka Ha Long (Wietnam)",
+                lat: 20.9101,
+                lng: 107.1839,
+                continent: "Azja",
+                category: "Cuda Natury / Kras",
+                easy: false,
+                img: "img/halong_bay.jpg",
+                license: "Unsplash / CC",
+                clue: "Tysiące wapiennych wysepek i ostańców wyrastających ze szmaragdowych wód Zatoki Tonkińskiej.",
+                desc: "Malowniczy krasowy krajobraz wysp i jaskiń w północnym Wietnamie wpisany na listę UNESCO."
+            },
 
-        function initStars() {
-            stars = [];
-            const numStars = Math.floor((canvas.width * canvas.height) / 8000);
-            for (let i = 0; i < numStars; i++) {
-                stars.push({
-                    x: Math.random() * canvas.width,
-                    y: Math.random() * canvas.height,
-                    radius: Math.random() * 1.5 + 0.5,
-                    alpha: Math.random() * 0.7 + 0.3,
-                    speed: Math.random() * 0.4 + 0.1
-                });
+            // --- AFRYKA ---
+            {
+                name: "Piramidy w Gizie i Sfinks (Kair, Egipt)",
+                lat: 29.9792,
+                lng: 31.1342,
+                continent: "Afryka",
+                category: "Starożytność / Piramidy",
+                easy: true,
+                img: "img/giza_pyramids.jpg",
+                license: "Unsplash / CC",
+                clue: "Piramida Cheopsa i monumentalny posąg lwa z ludzką twarzą na skraju Sahary.",
+                desc: "Jedyne zachowane do dziś z siedmiu starożytnych cudów świata, grobowce faraonów sprzed 4500 lat."
+            },
+            {
+                name: "Wodospady Wiktorii (Zambia / Zimbabwe)",
+                lat: -17.9243,
+                lng: 25.8572,
+                continent: "Afryka",
+                category: "Cuda Natury / Wodospad",
+                easy: false,
+                img: "img/victoria_falls.jpg",
+                license: "Unsplash / CC",
+                clue: "„Dym, który grzmi” – potężny uskok rzeki Zambezi o szerokości ponad 1,7 km.",
+                desc: "Jeden z najwspanialszych wodospadów świata na granicy Zambii i Zimbabwe na rzece Zambezi."
+            },
+            {
+                name: "Góra Stołowa (Kapsztad, RPA)",
+                lat: -33.9628,
+                lng: 18.4098,
+                continent: "Afryka",
+                category: "Cuda Natury / Płaskowyż",
+                easy: false,
+                img: "img/table_mountain.jpg",
+                license: "Unsplash / CC",
+                clue: "Płaska jak stół góra z piaskowca górująca nad Zatoką Stołową w Afryce Południowej.",
+                desc: "Charakterystyczny szczyt o płaskiej wierzchowinie w Kapsztadzie, otoczony unikalną florą przylądkową."
+            },
+            {
+                name: "Pustynia Sahara – Wydmy Erg Chebbi (Maroko)",
+                lat: 31.1492,
+                lng: -3.9723,
+                continent: "Afryka",
+                category: "Cuda Natury / Pustynia",
+                easy: false,
+                img: "img/sahara.jpg",
+                license: "Unsplash / CC",
+                clue: "Monumentalne, pomarańczowe wydmy piaskowe na największej gorącej pustyni Ziemi.",
+                desc: "Pole piaszczystych wydm (erg) dochodzących do 150 metrów wysokości w południowo-wschodnim Maroku."
+            },
+
+            // --- AMERYKA PÓŁNOCNA ---
+            {
+                name: "Statua Wolności (Nowy Jork, USA)",
+                lat: 40.6892,
+                lng: -74.0445,
+                continent: "Ameryka Północna",
+                category: "Pomnik / Symbol",
+                easy: true,
+                img: "img/statue_of_liberty.jpg",
+                license: "Unsplash / CC",
+                clue: "Monumentalny posąg z pochodnią na Liberty Island, dar narodu francuskiego dla USA.",
+                desc: "Neoklasycystyczny posąg na wyspie w porcie Nowego Jorku, symbol wolności i demokracji."
+            },
+            {
+                name: "Wielki Kanion Kolorado (Arizona, USA)",
+                lat: 36.1069,
+                lng: -112.1129,
+                continent: "Ameryka Północna",
+                category: "Cuda Natury / Kanion",
+                easy: true,
+                img: "img/grand_canyon.jpg",
+                license: "Unsplash / CC",
+                clue: "Olbrzymi przełom rzeki Kolorado odsłaniający miliardy lat historii geologicznej.",
+                desc: "Jeden z najgłębszych i najbardziej spektakularnych kanionów na świecie o długości 446 km w stanie Arizona."
+            },
+            {
+                name: "Most Golden Gate (San Francisco, Kalifornia, USA)",
+                lat: 37.8199,
+                lng: -122.4783,
+                continent: "Ameryka Północna",
+                category: "Inżynieria / Most",
+                easy: true,
+                img: "img/golden_gate.jpg",
+                license: "Unsplash / CC",
+                clue: "Pomarańczowy most wiszący spowity pacyficzną mgłą nad cieśniną w Kalifornii.",
+                desc: "Słynny most wiszący w San Francisco pomalowany na charakterystyczny kolor International Orange."
+            },
+            {
+                name: "Wodospad Niagara (USA / Kanada)",
+                lat: 43.0800,
+                lng: -79.0710,
+                continent: "Ameryka Północna",
+                category: "Cuda Natury / Wodospad",
+                easy: true,
+                img: "img/niagara.jpg",
+                license: "Unsplash / CC",
+                clue: "Najpotężniejszy pod względem przepływu wodospad Ameryki Północnej na granicy z Kanadą.",
+                desc: "Kompleks wodospadów na rzece Niagara łączącej jeziora Erie i Ontario."
+            },
+            {
+                name: "Chichén Itzá – El Castillo (Jukatan, Meksyk)",
+                lat: 20.6843,
+                lng: -88.5678,
+                continent: "Ameryka Północna",
+                category: "Starożytność / Piramida Majów",
+                easy: true,
+                img: "img/chichen_itza.jpg",
+                license: "Unsplash / CC",
+                clue: "Schodkowa piramida boga Kukulkana w prekolumbijskim mieście Majów.",
+                desc: "Słynna piramida Majów na półwyspie Jukatan w Meksyku, zaprojektowana zgodnie z astronomicznym kalendarzem."
+            },
+
+            // --- AMERYKA POŁUDNIOWA ---
+            {
+                name: "Machu Picchu (Andy, Peru)",
+                lat: -13.1631,
+                lng: -72.5450,
+                continent: "Ameryka Południowa",
+                category: "Starożytność / Miasto Inków",
+                easy: true,
+                img: "img/machu_picchu.jpg",
+                license: "Unsplash / CC",
+                clue: "Tajemnicze zaginione miasto Inków położone na grzbiecie górskim w Andach.",
+                desc: "Najlepiej zachowane miasto Inków z XV wieku, ukryte na wysokości 2430 m n.p.m. nad doliną rzeki Urubamba."
+            },
+            {
+                name: "Chrystus Odkupiciel na Corcovado (Rio de Janeiro, Brazylia)",
+                lat: -22.9519,
+                lng: -43.2105,
+                continent: "Ameryka Południowa",
+                category: "Pomnik / Symbol",
+                easy: true,
+                img: "img/christ_redeemer.jpg",
+                license: "Unsplash / CC",
+                clue: "30-metrowy posąg z rozpostartymi ramionami górujący nad Zatoką Guanabara.",
+                desc: "Monolityczny posąg Jezusa Chrystusa na szczycie góry Corcovado w Rio de Janeiro."
+            },
+            {
+                name: "Wodospady Iguazú (Argentyna / Brazylia)",
+                lat: -25.6953,
+                lng: -54.4367,
+                continent: "Ameryka Południowa",
+                category: "Cuda Natury / Wodospad",
+                easy: false,
+                img: "img/iguazu_falls.jpg",
+                license: "Unsplash / CC",
+                clue: "Ponad 275 kaskad wodnych w sercu lasu deszczowego z Diabelskim Gardłem.",
+                desc: "Jeden z najpotężniejszych systemów wodospadów na świecie na rzece Iguazú na granicy argentyńsko-brazylijskiej."
+            },
+            {
+                name: "Lodowiec Perito Moreno (Patagonia, Argentyna)",
+                lat: -50.4950,
+                lng: -73.1369,
+                continent: "Ameryka Południowa",
+                category: "Cuda Natury / Lodowiec",
+                easy: false,
+                img: "img/perito_moreno.jpg",
+                license: "Unsplash / CC",
+                clue: "Potężna ściana błękitnego lodu schodząca do jeziora Lago Argentino w Patagonii.",
+                desc: "Jeden z nielicznych lodowców na Ziemi, który wciąż rośnie, mający czoło o wysokości 70 metrów nad taflą wody."
+            },
+
+            // --- AUSTRALIA I OCEANIA ---
+            {
+                name: "Opera w Sydney (Australia)",
+                lat: -33.8568,
+                lng: 151.2153,
+                continent: "Australia i Oceania",
+                category: "Architektura / Teatr",
+                easy: true,
+                img: "img/sydney_opera.jpg",
+                license: "Unsplash / CC",
+                clue: "Ekspresjonistyczny budynek opery przypominający białe muszle lub żagle w porcie Sydney.",
+                desc: "Projekt duńskiego architekta Jørna Utzona, arcydzieło architektury XX wieku wpisane na listę UNESCO."
+            },
+            {
+                name: "Uluru / Ayers Rock (Australia Centralna)",
+                lat: -25.3444,
+                lng: 131.0369,
+                continent: "Australia i Oceania",
+                category: "Cuda Natury / Monolit",
+                easy: true,
+                img: "img/uluru.jpg",
+                license: "Unsplash / CC",
+                clue: "Święta dla Aborygenów olbrzymia czerwona skała z piaskowca w sercu pustynnego Outbacku.",
+                desc: "Monumentalna formacja skalna wznosząca się na 348 metrów ponad płaską pustynię w środkowej Australii."
+            },
+            {
+                name: "Moai na Wyspie Wielkanocnej (Rapa Nui, Chile)",
+                lat: -27.1212,
+                lng: -109.3667,
+                continent: "Australia i Oceania",
+                category: "Starożytność / Posągi",
+                easy: true,
+                img: "img/moai.jpg",
+                license: "Unsplash / CC",
+                clue: "Tajemnicze, kamienne posągi o wielkich głowach na samotnej wyspie na Pacyfiku.",
+                desc: "Setki monolitycznych rzeźb z tufu wulkanicznego wykutych przez dawnych mieszkańców polinezyjskiej wyspy Rapa Nui."
+            },
+            {
+                name: "Fiord Milford Sound (Nowa Zelandia)",
+                lat: -44.6414,
+                lng: 167.8975,
+                continent: "Australia i Oceania",
+                category: "Cuda Natury / Fiord",
+                easy: false,
+                img: "img/milford_sound.jpg",
+                license: "Unsplash / CC",
+                clue: "Zatoka polodowcowa z ikonicznym szczytem Mitre Peak na Wyspie Południowej Nowej Zelandii.",
+                desc: "Jeden z najbardziej deszczowych i spektakularnych fiordów świata, nazwany przez Rudyarda Kiplinga „ósmym cudem świata”."
+            },
+            // --- NOWE 60 CIEKAWYCH MIEJSC ZE ŚWIATA ---
+            {
+                name: "Kapadocja / Dolina Goreme (Turcja)",
+                lat: 38.6431,
+                lng: 34.8289,
+                continent: "Azja",
+                category: "Geologia / Formacje tufowe",
+                easy: false,
+                img: "img/cappadocia.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Baśniowy krajobraz stożków wulkanicznych, podziemnych miast i setek balonów o wschodzie słońca w Anatolii.",
+                desc: "Region w środkowej Turcji uformowany przez erozję popiołów wulkanicznych (tuf). Od starożytności ludzie drążyli tu domy, kościoły i wielopoziomowe podziemne schronienia."
+            },
+            {
+                name: "Pamukkale / Bawełniany Zamek (Turcja)",
+                lat: 37.9250,
+                lng: 29.1214,
+                continent: "Azja",
+                category: "Geologia / Tarasy trawertynowe",
+                easy: false,
+                img: "img/pamukkale.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Śnieżnobiałe wapienne tarasy z turkusową wodą termalną tuż pod ruinami starożytnego Hierapolis.",
+                desc: "Wody termalne bogate w wodorowęglan wapnia spływające po zboczu góry stworzyły kaskadę naturalnych basenów i stalaktytów przypominających bawełnianą twierdzę."
+            },
+            {
+                name: "Klasztory w Meteorach (Grecja)",
+                lat: 39.7217,
+                lng: 21.6306,
+                continent: "Europa",
+                category: "Klasztory / Formacje skalne",
+                easy: false,
+                img: "img/meteora.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Średniowieczne prawosławne monastery wzniesione na szczytach pionowych, niedostępnych wież z piaskowca w Tesalii.",
+                desc: "Klasztory dosłownie 'zawieszone w powietrzu' (gr. meteora), budowane od XIV wieku przez mnichów uciekających przed najazdami tureckimi. Dostęp zapewniały liny i kołowroty."
+            },
+            {
+                name: "Mont Saint-Michel (Normandia, Francja)",
+                lat: 48.6360,
+                lng: -1.5115,
+                continent: "Europa",
+                category: "Średniowiecze / Opactwo pływowe",
+                easy: false,
+                img: "img/mont_saint_michel.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Gotyckie benedyktyńskie opactwo na skalistej wysepce, która podczas przypływu staje się całkowicie odcięta od lądu.",
+                desc: "Jeden z cudów architektury średniowiecza w zatoce o największych przypływach w Europie (różnica poziomów wody sięga nawet 14 metrów)."
+            },
+            {
+                name: "Grobla Olbrzyma / Giant's Causeway (Irlandia Północna)",
+                lat: 55.2408,
+                lng: -6.5116,
+                continent: "Europa",
+                category: "Geologia / Kolumny bazaltowe",
+                easy: false,
+                img: "img/giants_causeway.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Około 40 tysięcy ciasno przylegających do siebie wielokątnych kolumn bazaltowych schodzących wprost do morza.",
+                desc: "Formacja powstała około 50-60 mln lat temu w wyniku gwałtownego stygnięcia lawy bazaltowej. Według legendy groblę ułożył mityczny celtycki olbrzym Finn McCool."
+            },
+            {
+                name: "Klify Moheru (Hrabstwo Clare, Irlandia)",
+                lat: 52.9715,
+                lng: -9.4265,
+                continent: "Europa",
+                category: "Przyroda / Klify atlantyckie",
+                easy: false,
+                img: "img/cliffs_of_moher.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Ponad 200-metrowe pionowe ściany skalne ciągnące się wzdłuż wzburzonego Atlantyku na zachodnim krańcu Europy.",
+                desc: "Jedna z najbardziej spektakularnych formacji brzegowych na świecie, zbudowana z warstw łupków i piaskowców, będąca siedliskiem tysięcy ptaków morskich, m.in. maskonurów."
+            },
+            {
+                name: "Park Narodowy Jezior Plitwickich (Chorwacja)",
+                lat: 44.8654,
+                lng: 15.5820,
+                continent: "Europa",
+                category: "Przyroda / Jeziora krasowe",
+                easy: false,
+                img: "img/plitvice.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Kaskadowy układ 16 turkusowych jezior połączonych setkami szumiących wodospadów pośród bujnych lasów.",
+                desc: "Unikalny ekosystem krasowy w Górach Dynarskich, w którym naturalne tamy trawertynowe wciąż rosną i przekształcają bieg rzek i jezior."
+            },
+            {
+                name: "Jezioro Bled (Słowenia)",
+                lat: 46.3636,
+                lng: 14.0938,
+                continent: "Europa",
+                category: "Przyroda / Krajobraz alpejski",
+                easy: false,
+                img: "img/lake_bled.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Alpejskie jezioro ze średniowiecznym zamkiem na stromej skale i jedyną naturalną wyspą w kraju z kościołem z Dzwonem Życzeń.",
+                desc: "Malownicze jezioro polodowcowe w Alpach Julijskich, zasilane przez źródła termalne, słynące z tradycyjnych drewnianych łodzi pletna."
+            },
+            {
+                name: "Krzywy Las (Nowe Czarnowo k. Gryfina, Polska)",
+                lat: 53.2144,
+                lng: 14.4764,
+                continent: "Europa",
+                category: "Przyroda / Osobliwość dendrologiczna",
+                easy: false,
+                img: "img/krzywy_las.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Niezwykłe skupisko około 100 sosen wygiętych tuż nad ziemią pod kątem 90 stopni w stronę północy.",
+                desc: "Pomnik przyrody w województwie zachodniopomorskim, zasadzony prawdopodobnie w latach 30. XX wieku. Przyczyna wygięcia pni do dziś pozostaje fascynującą zagadką."
+            },
+            {
+                name: "Morskie Oko (Tatry Wysokie, Polska)",
+                lat: 49.1974,
+                lng: 20.0712,
+                continent: "Europa",
+                category: "Przyroda / Jezioro karowe",
+                easy: false,
+                img: "img/morskie_oko.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Największe i najbardziej znane jezioro w polskich Tatrach, położone w Dolinie Rybiego Potoku u stóp Mięguszowieckich Szczytów i Rysów.",
+                desc: "Jezioro polodowcowe karowo-morenowe na wysokości 1395 m n.p.m., o krystalicznie czystej wodzie, jedno z nielicznych naturalnie zarybionych jezior tatrzańskich."
+            },
+            {
+                name: "Alhambra (Grenada, Andaluzja, Hiszpania)",
+                lat: 37.1773,
+                lng: -3.5881,
+                continent: "Europa",
+                category: "Architektura / Pałac mauretański",
+                easy: false,
+                img: "img/alhambra.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Ufortyfikowany kompleks pałacowy emirów z dynastii Nasrydów z kunsztownymi stiukami, fontannami i Dziedzińcem Lwów.",
+                desc: "Szczytowe osiągnięcie architektury arabskiej w Europie, ostatni bastion Maurów na Półwyspie Iberyjskim, zdobyty przez królów katolickich w 1492 roku."
+            },
+            {
+                name: "Trulli w Alberobello (Apulia, Włochy)",
+                lat: 40.7838,
+                lng: 17.2408,
+                continent: "Europa",
+                category: "Architektura / Domy stożkowe",
+                easy: false,
+                img: "img/trulli_alberobello.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Białe cylindryczne domki z wapienia wznoszone bez użycia zaprawy murarskiej, zwieńczone stożkowymi dachami z symbolami.",
+                desc: "Tradycyjne budowle pasterskie i mieszkalne w dolinie Itria, budowane w taki sposób, by w razie kontroli poborców podatkowych można je było błyskawicznie rozebrać."
+            },
+            {
+                name: "Zamek Eilean Donan (Szkocja, Wielka Brytania)",
+                lat: 57.2740,
+                lng: -5.5161,
+                continent: "Europa",
+                category: "Średniowiecze / Zamek na wyspie",
+                easy: false,
+                img: "img/eilean_donan.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Kamienna twierdza klanu MacRae na małej wysepce połączonej kamiennym mostem u zbiegu trzech szkockich jezior.",
+                desc: "Jeden z najczęściej fotografowanych zamków w Szkocji, położony w Highlands w drodze na wyspę Skye, znany z filmów 'Nieśmiertelny' i 'Świat to za mało'."
+            },
+            {
+                name: "Geirangerfjord (Norwegia)",
+                lat: 62.1015,
+                lng: 7.0940,
+                continent: "Europa",
+                category: "Przyroda / Fiord polodowcowy",
+                easy: false,
+                img: "img/geirangerfjord.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Głęboki błękitny fiord otoczony stromymi, ponadtysiącmetrowymi urwiskami i wodospadem Siedem Sióstr.",
+                desc: "Wpisany na listę UNESCO fiord w regionie Møre og Romsdal, uznawany za jeden z najwspanialszych krajobrazów polodowcowych na naszej planecie."
+            },
+            {
+                name: "Matterhorn / Monte Cervino (Szwajcaria / Włochy)",
+                lat: 45.9765,
+                lng: 7.6585,
+                continent: "Europa",
+                category: "Góry / Szczyt piramidalny",
+                easy: false,
+                img: "img/matterhorn.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Charakterystyczny, samotny szczyt w kształcie niemal idealnej czterobocznej piramidy o wysokości 4478 m n.p.m. nad Zermatt.",
+                desc: "Jeden z najbardziej rozpoznawalnych szczytów świata w Alpach Pennińskich, symbol szwajcarskiej czekolady Toblerone i wielkie wyzwanie alpinizmu."
+            },
+            {
+                name: "Santorini / Oia (Cyklady, Grecja)",
+                lat: 36.4618,
+                lng: 25.3753,
+                continent: "Europa",
+                category: "Architektura / Kaldera wulkaniczna",
+                easy: false,
+                img: "img/santorini.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Kaskada śnieżnobiałych domów z kobaltowymi kopułami kościołów przyklejonych do stromych ścian wulkanicznej kaldery.",
+                desc: "Wyspa ukształtowana przez jeden z największych wybuchów wulkanicznych w historii ludzkości około 1600 r. p.n.e., który zniszczył cywilizację minojską."
+            },
+            {
+                name: "Jaskinia Benagil (Algarve, Portugalia)",
+                lat: 37.0872,
+                lng: -8.4239,
+                continent: "Europa",
+                category: "Geologia / Morska grota katedralna",
+                easy: false,
+                img: "img/benagil_cave.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Monumentalna grota morska z piaszczystą plażą wewnątrz i wielkim okrągłym oknem w sklepieniu zwanym 'Okiem'.",
+                desc: "Naturalna jaskinia krasowa wyrzeźbiona w wapiennych klifach przez fale Oceanu Atlantyckiego, dostępna wyłącznie od strony wody (kajakiem lub wpław)."
+            },
+            {
+                name: "Hallstatt (Salzkammergut, Austria)",
+                lat: 47.5622,
+                lng: 13.6493,
+                continent: "Europa",
+                category: "Kultura / Wioska alpejska",
+                easy: false,
+                img: "img/hallstatt.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Zabytkowa wioska z drewnianą architekturą ściśnięta na wąskim skrawku lądu między jeziorem a stromym masywem Dachstein.",
+                desc: "Kolebka epoki żelaza (kultura halsztacka) z najstarszą kopalnią soli na świecie, tak zachwycająca, że w Chinach wybudowano jej pełnowymiarową replikę."
+            },
+            {
+                name: "Mury Obronne Dubrownika (Dalmacja, Chorwacja)",
+                lat: 42.6412,
+                lng: 18.1093,
+                continent: "Europa",
+                category: "Średniowiecze / Fortyfikacje miejskie",
+                easy: false,
+                img: "img/dubrovnik.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Niezdobyte kamienne mury obronne o długości niemal 2 km otaczające starówkę 'Perły Adriatyku'.",
+                desc: "Potężny system baszt, fortów i murów wznoszony od XII do XVII wieku w dawnej Republice Raguzy, znany współcześnie także jako Królewska Przystań z Gry o Tron."
+            },
+            {
+                name: "Kopalnia Soli 'Wieliczka' (Polska)",
+                lat: 49.9831,
+                lng: 20.0537,
+                continent: "Europa",
+                category: "Historia / Podziemna kopalnia soli",
+                easy: false,
+                img: "img/wieliczka.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Zabytkowa kopalnia soli kamiennej z monumentalną podziemną Kaplicą św. Kingi oświetloną solnymi żyrandolami.",
+                desc: "Działająca nieprzerwanie od XIII wieku do końca XX wieku, jedna z najstarszych kopalni soli na świecie, wpisana na I listę UNESCO w 1978 roku."
+            },
+            {
+                name: "Trolltunga / Język Trolla (Norwegia)",
+                lat: 60.1242,
+                lng: 6.7400,
+                continent: "Europa",
+                category: "Geologia / Półka skalna",
+                easy: false,
+                img: "img/trolltunga.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Wąska, pozioma półka skalna wysunięta w przestrzeń 700 metrów ponad błękitną taflą jeziora Ringedalsvatnet.",
+                desc: "Formacja polodowcowa powstała około 10 000 lat temu, gdy woda z topniejącego lodowca zamarzła w szczelinach góry i odłupała wielkie bloki skalne."
+            },
+            {
+                name: "Błękitna Laguna / Blue Lagoon (Grindavík, Islandia)",
+                lat: 63.8804,
+                lng: -22.4495,
+                continent: "Europa",
+                category: "Geotermia / Baseny termalne",
+                easy: false,
+                img: "img/blue_lagoon.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Mlecznoniebieskie geotermalne uzdrowisko parujące pośród czarnego, postrzępionego pola lawy na półwyspie Reykjanes.",
+                desc: "Woda bogata w krzemionkę i minerały ma stałą temperaturę 37-39°C i naturalnie odnawia się co 48 godzin dzięki sąsiedniej elektrowni geotermalnej Svartsengi."
+            },
+            {
+                name: "Zamek Spiski / Spišský hrad (Żehra, Słowacja)",
+                lat: 49.0019,
+                lng: 20.7681,
+                continent: "Europa",
+                category: "Średniowiecze / Ruiny zamku",
+                easy: false,
+                img: "img/spis_castle.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Jedne z największych ruin zamkowych w Europie Środkowej, górujące na trawiastym wapiennym wzgórzu Spiszu.",
+                desc: "Zamek wzniesiony na przełomie XI i XII wieku, zajmujący powierzchnię ponad 4 hektarów, stanowiący dawne centrum administracyjne i obronne Królestwa Węgier."
+            },
+            // --- AZJA ---
+            {
+                name: "Błękitny Meczet / Sultanahmet (Stambuł, Turcja)",
+                lat: 41.0054,
+                lng: 28.9768,
+                continent: "Azja",
+                category: "Architektura / Świątynia osmańska",
+                easy: false,
+                img: "img/blue_mosque.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Monumentalna świątynia z 6 minaretami, której wnętrze zdobi ponad 20 tysięcy ręcznie malowanych ceramicznych płytek z Izniku.",
+                desc: "Arcydzieło architektury osmańskiej wzniesione na początku XVII wieku z rozkazu sułtana Ahmeda I naprzeciwko bazyliki Hagia Sophia."
+            },
+            {
+                name: "Sigirija / Lwia Skała (Sri Lanka)",
+                lat: 7.9570,
+                lng: 80.7603,
+                continent: "Azja",
+                category: "Starożytność / Forteca na monolicie",
+                easy: false,
+                img: "img/sigiriya.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Starożytna forteca pałacowa króla Kassjapy na szczycie 200-metrowej pionowej bryły magmowej pośród dżungli.",
+                desc: "Do ruin pałacu na szczycie prowadziły monumentalne schody wycięte między gigantycznymi łapami wykutego w skale lwa. Słynie też z fresków 'Niebiańskich Dziewic'."
+            },
+            {
+                name: "Dolina Świątyń w Bagan (Mjanma / Birma)",
+                lat: 21.1717,
+                lng: 94.8585,
+                continent: "Azja",
+                category: "Starożytność / Buddyjskie pagody",
+                easy: false,
+                img: "img/bagan.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Równina nad rzeką Irawadi usiana ponad dwoma tysiącami ceglanych buddyjskich pagód, stup i klasztorów.",
+                desc: "Stolica pierwszego Królestwa Paganu od IX do XIII wieku. W okresie największego rozkwitu na obszarze 100 km² wzniesiono ponad 10 tysięcy świątyń."
+            },
+            {
+                name: "Pustynia Wadi Rum / Dolina Księżycowa (Jordania)",
+                lat: 29.5734,
+                lng: 35.4208,
+                continent: "Azja",
+                category: "Pustynia / Formacje piaskowcowe",
+                easy: false,
+                img: "img/wadi_rum.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Dolina pustynna z czerwonym piaskiem, naturalnymi łukami skalnymi i pionowymi masywami z granitu i piaskowca.",
+                desc: "Słynny krajobraz związany z postacią Lawrence'a z Arabii, ze względu na swój pozaziemski wygląd wykorzystywany jako Mars w filmie 'Marsjanin'."
+            },
+            {
+                name: "Tarasy Ryżowe Tegallalang (Ubud, Bali, Indonezja)",
+                lat: -8.4332,
+                lng: 115.2800,
+                continent: "Azja",
+                category: "Krajobraz / Tarasy rolnicze",
+                easy: false,
+                img: "img/tegalalang_rice.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Szmaragdowe, strome tarasy ryżowe ułożone schodkowo wzdłuż wąwozu, nawadniane tradycyjnym systemem subak.",
+                desc: "Tradycyjny balijski system irygacyjny z VIII wieku oparty na filozofii Tri Hita Karana, łączącej świat duchów, ludzi i natury w harmonijną całość."
+            },
+            {
+                name: "Wulkan Bromo (Wschodnia Jawa, Indonezja)",
+                lat: -7.9425,
+                lng: 112.9530,
+                continent: "Azja",
+                category: "Wulkany / Kaldera Tengger",
+                easy: false,
+                img: "img/mount_bromo.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Dymiący aktywny krater wulkaniczny wyrastający pośrodku rozległego 'Morza Piasku' (Lautan Pasir).",
+                desc: "Jeden z najbardziej aktywnych wulkanów Jawy o wysokości 2329 m n.p.m., święte miejsce dla miejscowego ludu Tengger, który składa w ofierze do krateru owoce i zwierzęta."
+            },
+            {
+                name: "Złota Świątynia / Harmandir Sahib (Amritsar, Indie)",
+                lat: 31.6200,
+                lng: 74.8765,
+                continent: "Azja",
+                category: "Architektura / Świątynia sikhijska",
+                easy: false,
+                img: "img/golden_temple.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Marmurowa świątynia pokryta setkami kilogramów czystego złota, stojąca pośrodku świętego zbiornika wodnego 'Amrit Sarovar'.",
+                desc: "Najświętsze sanktuarium sikhizmu w Pendżabie. Prowadzi darmową kuchnię (langar), która codziennie karmi bezpłatnie ponad 100 tysięcy pielgrzymów bez względu na wyznanie czy kastę."
+            },
+            {
+                name: "Jezioro Bajkał / Wyspa Olchon (Syberia, Rosja)",
+                lat: 53.1639,
+                lng: 107.3828,
+                continent: "Azja",
+                category: "Przyroda / Jezioro tektoniczne",
+                easy: false,
+                img: "img/lake_baikal.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Najstarsze i najgłębsze (1642 m) jezioro świata, zawierające około 20% światowych zasobów niezamarzniętej słodkiej wody powierzchniowej.",
+                desc: "Błękitne Oko Syberii słynące z niezwykłej przejrzystości wody (do 40 metrów), unikalnej fauny (foka bajkalska - nerpa) i spektakularnego zimowego lodu z pęcherzami metanu."
+            },
+            {
+                name: "Góry Zhangjiajie / Kolumny Awatara (Hunan, Chiny)",
+                lat: 29.3444,
+                lng: 110.4792,
+                continent: "Azja",
+                category: "Geologia / Kwarcytowe iglice",
+                easy: false,
+                img: "img/zhangjiajie.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Ponad 3000 smukłych, kilkusetmetrowych filarów skalnych wyłaniających się z mgły w subtropikalnym lesie.",
+                desc: "Niezwykłe formy wietrzenia piaskowców kwarcytowych, które posłużyły reżyserowi Jamesowi Cameronowi jako pierwowzór latających gór Hallelujah na planecie Pandora w filmie 'Avatar'."
+            },
+            {
+                name: "Wzgórza Czekoladowe / Chocolate Hills (Bohol, Filipiny)",
+                lat: 9.8297,
+                lng: 124.1672,
+                continent: "Azja",
+                category: "Geologia / Kras stożkowy",
+                easy: false,
+                img: "img/chocolate_hills.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Ponad 1200 niemal identycznych, trawiastych pagórków stożkowych, które w porze suchej brązowieją niczym czekoladowe praliny.",
+                desc: "Unikalna formacja geologiczna powstała z morskich osadów wapiennych i koralowych wypiętrzonych i zerodowanych przez tysiąclecia opadów deszczu."
+            },
+            {
+                name: "Zamek Himeji / Zamek Białej Czapli (Hyogo, Japonia)",
+                lat: 34.8394,
+                lng: 134.6939,
+                continent: "Azja",
+                category: "Architektura / Zamek samurajski",
+                easy: false,
+                img: "img/himeji_castle.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Kunsztowny, wielopiętrowy zamek samurajski o lśniąco białych ścianach przypominających zrywającego się do lotu ptaka.",
+                desc: "Najlepiej zachowany oryginalny drewniany zamek Japonii z początku XVII wieku, z labiryntem spiralnych bram i umocnień, który przetrwał nienaruszony bombardowania II wojny światowej."
+            },
+            {
+                name: "Fushimi Inari-Taisha / Tysiąc Bram Torii (Kioto, Japonia)",
+                lat: 34.9671,
+                lng: 135.7727,
+                continent: "Azja",
+                category: "Kultura / Świątynia shinto",
+                easy: false,
+                img: "img/fushimi_inari.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Kilometry tuneli utworzonych z ponad 10 tysięcy cynobrowych bram torii wspinających się po zboczu świętej góry Inari.",
+                desc: "Główna świątynia poświęcona bóstwu ryżu, rolnictwa i biznesu Inari, strzeżona przez setki kamiennych rzeźb lisów (kitsune) trzymających w pyskach klucze do spichlerzy."
+            },
+            // --- AMERYKA PÓŁNOCNA I ŚRODKOWA ---
+            {
+                name: "Wielka Błękitna Dziura / Great Blue Hole (Belize)",
+                lat: 17.3156,
+                lng: -87.5344,
+                continent: "Ameryka Północna",
+                category: "Geologia / Podwodny lej krasowy",
+                easy: false,
+                img: "img/great_blue_hole.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Idealnie okrągła, ciemnogranatowa morska rozpadlina o średnicy ponad 300 m i głębokości 124 m w centrum rafy koralowej.",
+                desc: "Zatopiona jaskinia krasowa z epoki lodowcowej, rozsławiona przez Jacques'a Cousteau jako jedno z dziesięciu najlepszych miejsc do nurkowania na Ziemi."
+            },
+            {
+                name: "Kanion Antylopy / Antelope Canyon (Arizona, USA)",
+                lat: 36.8619,
+                lng: -111.3743,
+                continent: "Ameryka Północna",
+                category: "Geologia / Kanion szczelinowy",
+                easy: false,
+                img: "img/antelope_canyon.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Falisty, ciasny wąwóz w czerwonym piaskowcu oświetlany przez spektakularne pionowe snopy promieni słonecznych.",
+                desc: "Święte miejsce Indian Nawaho (Navajo), wyrzeźbione przez tysiąclecia nagłych powodzi błyskawicznych w miękkim piaskowcu Navajo."
+            },
+            {
+                name: "Monument Valley (Utah / Arizona, USA)",
+                lat: 36.9980,
+                lng: -110.0985,
+                continent: "Ameryka Północna",
+                category: "Geologia / Ostańce pustynne",
+                easy: false,
+                img: "img/monument_valley.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Gigantyczne, samotne ostańce z czerwonego piaskowca (Mitten Buttes) wyrastające z płaskiej pustyni na terenie rezerwatu Nawaho.",
+                desc: "Ikoniczny symbol Dzikiego Zachodu, sceneria klasycznych westernów Johna Forda i Johna Wayne'a oraz filmu 'Forrest Gump'."
+            },
+            {
+                name: "Jezioro Moraine / Dolina Dziesięciu Szczytów (Banff, Kanada)",
+                lat: 51.3217,
+                lng: -116.1860,
+                continent: "Ameryka Północna",
+                category: "Przyroda / Jezioro polodowcowe",
+                easy: false,
+                img: "img/lake_moraine.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Niewiarygodnie turkusowe jezioro górskie w kanadyjskich Górach Skalistych, otoczone dziesięcią strzelistymi szczytami.",
+                desc: "Niezwykły, intensywnie niebieski kolor wody wynika ze zjawiska załamywania światła na drobinkach zawiesiny skalnej (mączki lodowcowej) zasilającej jezioro."
+            },
+            {
+                name: "Gejzer Old Faithful (Park Narodowy Yellowstone, USA)",
+                lat: 44.4605,
+                lng: -110.8281,
+                continent: "Ameryka Północna",
+                category: "Geotermia / Gejzer stożkowy",
+                easy: false,
+                img: "img/yellowstone_geyser.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Najsłynniejszy gejzer na świecie, wyrzucający słup wrzącej wody na wysokość do 55 metrów z zegarmistrzowską regularnością co ok. 90 minut.",
+                desc: "Odkryty w 1870 roku w najstarszym parku narodowym świata, położonym nad gigantyczną kalderą superwulkanu Yellowstone."
+            },
+            {
+                name: "Piramida Słońca w Teotihuacan (Meksyk)",
+                lat: 19.6925,
+                lng: -98.8437,
+                continent: "Ameryka Północna",
+                category: "Starożytność / Piramida prekolumbijska",
+                easy: false,
+                img: "img/teotihuacan.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Jedna z największych piramid Mezoameryki (wysokość 65 m), stojąca przy monumentalnej Alei Zmarłych.",
+                desc: "Centralna budowla 'Miasta Bogów', wzniesiona około II wieku n.e. przez tajemniczą cywilizację poprzedzającą Azteków o ponad tysiąc lat."
+            },
+            {
+                name: "Park Narodowy Tikal (Peten, Gwatemala)",
+                lat: 17.2220,
+                lng: -89.6237,
+                continent: "Ameryka Północna",
+                category: "Starożytność / Metropolia Majów",
+                easy: false,
+                img: "img/tikal.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Strome kamienne piramidy świątynne Majów wyrastające ponad gęsty, wiecznie zielony baldachim dżungli tropikalnej.",
+                desc: "Jedno z najpotężniejszych królestw cywilizacji Majów okresu klasycznego, zamieszkiwane przez ponad 100 tysięcy ludzi, opuszczone w X wieku."
+            },
+            {
+                name: "Kanion Sumidero (Chiapas, Meksyk)",
+                lat: 16.8333,
+                lng: -93.0833,
+                continent: "Ameryka Północna",
+                category: "Przyroda / Kanion rzeczny",
+                easy: false,
+                img: "img/sumidero_canyon.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Głęboki wąwóz rzeki Grijalva o niemal pionowych wapiennych ścianach sięgających 1000 metrów wysokości.",
+                desc: "Kanion o unikalnym mikroklimacie, porośnięty lasem deszczowym z wodospadami (m.in. 'Drzewo Bożonarodzeniowe') i żyjącymi w rzece krokodylami."
+            },
+            {
+                name: "Cenote Ik Kil (Jukatan, Meksyk)",
+                lat: 20.6606,
+                lng: -88.5503,
+                continent: "Ameryka Północna",
+                category: "Geologia / Studnia krasowa",
+                easy: false,
+                img: "img/cenote_ik_kil.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Głęboka, otwarta studnia wapienna wypełniona krystaliczną wodą, do której z powierzchni zwisają bujne liany i korzenie drzew.",
+                desc: "Święta studnia Majów położona w pobliżu Chichen Itza, używana w starożytności do rytuałów religijnych ku czci boga deszczu Chaaka."
+            },
+            // --- AMERYKA POŁUDNIOWA ---
+            {
+                name: "Salar de Uyuni (Boliwia)",
+                lat: -20.1338,
+                lng: -67.4891,
+                continent: "Ameryka Południowa",
+                category: "Geologia / Solnisko wysokogórskie",
+                easy: false,
+                img: "img/salar_de_uyuni.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Największe solnisko świata (ponad 10 tys. km²), które w porze deszczowej zamienia się w gigantyczne lustro idealnie odbijające niebo.",
+                desc: "Pozostałość po wyschniętym prehistorycznym jeziorze na płaskowyżu Altiplano na wysokości 3653 m n.p.m., zawierające ponad połowę światowych rezerw litu."
+            },
+            {
+                name: "Park Narodowy Torres del Paine (Patagonia, Chile)",
+                lat: -51.2532,
+                lng: -72.8814,
+                continent: "Ameryka Południowa",
+                category: "Góry / Granitowe iglice",
+                easy: false,
+                img: "img/torres_del_paine.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Trzy potężne pionowe iglice granitowe wznoszące się 2500 m ponad turkusowymi lodowcowymi jeziorami i wietrzną pampą.",
+                desc: "Jeden z najbardziej dziewiczych parków narodowych Ameryki Południowej, słynący z lodowców Grey, rzeki Paine oraz stad dzikich gwanako i kondorów."
+            },
+            {
+                name: "Pustynia Atakama / Dolina Księżycowa (Chile)",
+                lat: -22.9150,
+                lng: -68.2980,
+                continent: "Ameryka Południowa",
+                category: "Pustynia / Formacje solno-piaskowe",
+                easy: false,
+                img: "img/atacama_desert.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Najbardziej suche niepolarne miejsce na Ziemi, o surowych formacjach solnych i wydmach przypominających powierzchnię Księżyca lub Marsa.",
+                desc: "W niektórych częściach Atakamy deszcz nie spadł od setek lat. Ze względu na krystaliczne, bezchmurne niebo działają tu największe na świecie teleskopy astronomiczne (ALMA, VLT)."
+            },
+            {
+                name: "Góra Roraima / Tepui (Wenezuela / Brazylia / Gujana)",
+                lat: 5.1433,
+                lng: -60.7625,
+                continent: "Ameryka Południowa",
+                category: "Góry / Płaskowyż stołowy Tepui",
+                easy: false,
+                img: "img/mount_roraima.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Potężna góra stołowa z płaskim wierzchołkiem otoczona ze wszystkich stron pionowymi, 400-metrowymi urwiskami tonącymi w chmurach.",
+                desc: "Najstarsze formacje geologiczne Ziemi (sprzed 2 miliardów lat), z unikalną endemiczną florą owadożerną, które zainspirowały powieść 'Zaginiony Świat' Arthura Conan Doyle'a."
+            },
+            {
+                name: "Wodospad Salto Angel (Park Narodowy Canaima, Wenezuela)",
+                lat: 5.9675,
+                lng: -62.5356,
+                continent: "Ameryka Południowa",
+                category: "Przyroda / Najwyższy wodospad świata",
+                easy: false,
+                img: "img/angel_falls.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Najwyższy wodospad świata (979 metrów), spadający swobodnym strumieniem ze szczytu góry stołowej Auyantepui wprost do dziewiczej dżungli.",
+                desc: "Woda spada z tak wielkiej wysokości, że zanim dotrze do dna doliny, w dużej mierze rozpyla się w mgłę chmurową. Nazwany na cześć amerykańskiego lotnika Jimmiego Angela."
+            },
+            // --- AFRYKA ---
+            {
+                name: "Aleja Baobabów (Menabe, Madagaskar)",
+                lat: -20.2508,
+                lng: 44.4184,
+                continent: "Afryka",
+                category: "Przyroda / Monumentalne drzewa",
+                easy: false,
+                img: "img/baobab_avenue.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Grupa monumentalnych, 800-letnich baobabów Grandidiera o pniach przypominających kolumny, rosnących wzdłuż polnej drogi.",
+                desc: "Niezwykły pomnik przyrody będący pozostałością po gęstym lesie tropikalnym, wykarczowanym pod pola uprawne. Baobaby magazynują w pniach tysiące litrów wody."
+            },
+            {
+                name: "Kościół św. Jerzego w Lalibeli (Etiopia)",
+                lat: 12.0319,
+                lng: 39.0436,
+                continent: "Afryka",
+                category: "Starożytność / Kościół monolityczny",
+                easy: false,
+                img: "img/lalibela.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Średniowieczny kościół w kształcie równoramiennego krzyża greckiego, wykuty w całości w dół w litej skale wulkanicznej.",
+                desc: "Jeden z 11 monolitycznych kościołów wzniesionych w XII-XIII wieku z rozkazu króla Lalibeli, który pragnął stworzyć 'Nową Jerozolimę' w górach Etiopii."
+            },
+            {
+                name: "Wydmy Sossusvlei i Deadvlei (Pustynia Namib, Namibia)",
+                lat: -24.7276,
+                lng: 15.2928,
+                continent: "Afryka",
+                category: "Pustynia / Wydmy i biała glinka",
+                easy: false,
+                img: "img/sossusvlei.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Wyschnięte, spękane białe dno z martwymi 900-letnimi czarnymi drzewami akacjowymi, otoczone najwyższymi rdzawoczerwonymi wydmami świata.",
+                desc: "Część najstarszej pustyni świata (Namib). Rdzawy kolor piasku pochodzi od tlenków żelaza, a wydmy (m.in. Big Daddy) osiągają ponad 300 metrów wysokości."
+            },
+            {
+                name: "Piramidy w Meroe (Sudan)",
+                lat: 16.9388,
+                lng: 33.7497,
+                continent: "Afryka",
+                category: "Starożytność / Piramidy nubijskie",
+                easy: false,
+                img: "img/meroe_pyramids.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Dziesiątki stromych, wąskich piramid z czerwonego piaskowca wznoszących się pośród pustynnych wydm nad Nilem.",
+                desc: "Nekropolia królów i królowych (kandake) starożytnego nubijskiego Królestwa Kusz, budowana od około 300 r. p.n.e. do 300 r. n.e."
+            },
+            {
+                name: "Wielki Meczet w Dżenne (Mali)",
+                lat: 13.9052,
+                lng: -4.5552,
+                continent: "Afryka",
+                category: "Architektura / Budowla z suszonej gliny",
+                easy: false,
+                img: "img/djenne_mosque.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Największa na świecie budowla wzniesiona z suszonej na słońcu gliny (banco/adobe) z wystającymi drewnianymi belkami toron.",
+                desc: "Arcydzieło architektury sudańsko-sahelyjskiej na wyspie na rzece Bani. Co roku cała społeczność miasta bierze udział w festiwalu ponownego tynkowania ścian meczetu świeżą gliną."
+            },
+            {
+                name: "Dolina Królów (Teby Zachodnie, Luksor, Egipt)",
+                lat: 25.7402,
+                lng: 32.6014,
+                continent: "Afryka",
+                category: "Starożytność / Nekropolia faraonów",
+                easy: false,
+                img: "img/valley_of_the_kings.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Ukryta w pustynnym wąwozie skalnym nekropolia władców Nowego Państwa z bogato malowanymi grobowcami, w tym grobowcem Tutanchamona.",
+                desc: "Miejsce spoczynku faraonów XVIII, XIX i XX dynastii (m.in. Ramzesa II i Setiego I), wykute głęboko w wapiennych skałach pod szczytem Al-Qurn przypominającym naturalną piramidę."
+            },
+            {
+                name: "Depresja Danakilska / Wulkan Dallol (Kotlina Danakilska, Etiopia)",
+                lat: 14.2417,
+                lng: 40.2989,
+                continent: "Afryka",
+                category: "Geologia / Źródła hydrotermalne",
+                easy: false,
+                img: "img/dallol.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Jaskrawożółte, zielone i rdzawe wrzące baseny kwasowo-solne położone w depresji 120 metrów poniżej poziomu morza.",
+                desc: "Jedno z najgorętszych i najbardziej ekstremalnych miejsc na Ziemi, ukształtowane przez intruzje magmowe reagujące z grubymi pokładami soli morskiej."
+            },
+            // --- AUSTRALIA I OCEANIA ---
+            {
+                name: "Wielka Rafa Koralowa / Heart Reef (Queensland, Australia)",
+                lat: -19.7749,
+                lng: 149.2317,
+                continent: "Australia i Oceania",
+                category: "Przyroda / Ekosystem koralowy",
+                easy: false,
+                img: "img/great_barrier_reef.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Największy na świecie żywy organizm i system raf koralowych o długości ponad 2300 km na Morzu Koralowym.",
+                desc: "Złożona z niemal 3000 pojedynczych raf i setek wysp, widoczna z kosmosu, będąca domem dla tysięcy gatunków ryb, wielorybów, żółwi i koralowców."
+            },
+            {
+                name: "Dolina Geotermalna Te Puia (Rotorua, Nowa Zelandia)",
+                lat: -38.1611,
+                lng: 176.2547,
+                continent: "Australia i Oceania",
+                category: "Geotermia / Gejzer Pohutu",
+                easy: false,
+                img: "img/rotorua_geothermal.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Obszar aktywności wulkanicznej z bulgoczącymi basenami błotnymi i największym aktywnym gejzerem półkuli południowej Pohutu.",
+                desc: "Serce kultury Maorysów w strefie wulkanicznej Taupo, gdzie ciepło geotermalne od wieków służy mieszkańcom do gotowania i ogrzewania domostw."
+            },
+            {
+                name: "Wioska Hobbiton (Matamata, Nowa Zelandia)",
+                lat: -37.8721,
+                lng: 175.6829,
+                continent: "Australia i Oceania",
+                category: "Kultura / Plan filmowy Shire",
+                easy: false,
+                img: "img/hobbiton.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Malownicze zielone wzgórza z 44 norkami hobbitów o okrągłych kolorowych drzwiach i gospodą 'Pod Zielonym Smokiem'.",
+                desc: "Oryginalny plan filmowy trylogii 'Władca Pierścieni' i 'Hobbit' Petera Jacksona, zachowany na stałe pośród farmy owiec w regionie Waikato."
+            },
+            {
+                name: "Bora Bora (Wyspy Pod Wiatrem, Polinezja Francuska)",
+                lat: -16.5004,
+                lng: -151.7415,
+                continent: "Australia i Oceania",
+                category: "Przyroda / Laguna atolowa",
+                easy: false,
+                img: "img/bora_bora.jpg",
+                license: "Wikimedia Commons / CC",
+                clue: "Wygasły wulkan Mount Otemanu wyrastający pośrodku krystalicznie turkusowej laguny otoczonej pierścieniem motu (wysepek).",
+                desc: "Perła Pacyfiku na Oceanie Spokojnym, ukształtowana przez powolne zapadanie się stożka wulkanicznego i narastanie zewnętrznej bariery koralowej."
+            }
+        ];
+
+        // Filtrowana lista dla trybu łatwego
+        const EASY_PLACES = FAMOUS_PLACES_DB.filter(p => p.easy);
+
+        // =========================================================================
+        // STAN GRY (5 RUND)
+        // =========================================================================
+        const TOTAL_ROUNDS = 5;
+        let gameDifficulty = 'easy'; // 'easy' (20 miejsc) | 'full' (wszystkie)
+        let currentRound = 1;
+        let totalNegativeKm = 0; // w tysiącach km
+        let roundsHistory = [];
+        let secretLocation = null;
+        let userGuessLatLng = null;
+        let isRoundFinished = false;
+        let clueRevealed = false;
+
+        let map = null;
+        let guessMarker = null;
+        let targetMarker = null;
+        let connectionLine = null;
+
+        // Przełączanie poziomu trudności
+        function setGameDifficulty(mode) {
+            if (gameDifficulty === mode) return;
+            gameDifficulty = mode;
+            document.getElementById('btn-mode-easy').classList.toggle('active', mode === 'easy');
+            document.getElementById('btn-mode-full').classList.toggle('active', mode === 'full');
+
+            showToast(mode === 'easy' ? '🏛️ Wybrano Najsłynniejsze Miejsca (20)' : '🌍 Wybrano Wszystkie Miejsca Świata (34)');
+
+            if (currentRound === 1 && !isRoundFinished) {
+                startRound(1);
             }
         }
 
-        function animateStars() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            for (let star of stars) {
-                star.y -= star.speed;
-                if (star.y < 0) {
-                    star.y = canvas.height;
-                    star.x = Math.random() * canvas.width;
+        function getActivePool() {
+            return gameDifficulty === 'easy' ? EASY_PLACES : FAMOUS_PLACES_DB;
+        }
+
+        // =========================================================================
+        // INICJALIZACJA MAPY LEAFLET
+        // =========================================================================
+        function initLeafletMap() {
+            const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors',
+                maxZoom: 18
+            });
+
+            const satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                attribution: '&copy; Esri & Earthstar Geographics',
+                maxZoom: 18
+            });
+
+            map = L.map('map', {
+                center: [20, 0],
+                zoom: 2,
+                layers: [osm],
+                minZoom: 1.5,
+                worldCopyJump: true
+            });
+
+            L.control.layers({
+                "🗺️ Mapa Standardowa": osm,
+                "🛰️ Zdjęcia Satelitarne": satellite
+            }).addTo(map);
+
+            // Kliknięcie na mapie
+            map.on('click', function (e) {
+                if (isRoundFinished) return;
+
+                const lat = parseFloat(e.latlng.lat.toFixed(4));
+                const lng = parseFloat(e.latlng.lng.toFixed(4));
+                userGuessLatLng = { lat, lng };
+
+                if (!guessMarker) {
+                    const guessIcon = L.divIcon({
+                        className: 'custom-guess-icon',
+                        html: '📍',
+                        iconSize: [30, 30],
+                        iconAnchor: [15, 30]
+                    });
+                    guessMarker = L.marker([lat, lng], { icon: guessIcon }).addTo(map);
+                } else {
+                    guessMarker.setLatLng([lat, lng]);
                 }
-                ctx.beginPath();
-                ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(125, 211, 252, ${star.alpha})`;
-                ctx.shadowBlur = star.radius * 4;
-                ctx.shadowColor = '#38bdf8';
-                ctx.fill();
-            }
-            requestAnimationFrame(animateStars);
+
+                guessMarker.bindPopup(`<b>📍 Twój strzał:</b><br>${formatCoord(lat, 'lat')}, ${formatCoord(lng, 'lng')}`).openPopup();
+                document.getElementById('btn-submit-guess').disabled = false;
+            });
+
+            const easyCount = FAMOUS_PLACES_DB.filter(p => p.easy).length;
+            document.getElementById('btn-mode-easy').innerHTML = `🏛️ Najsłynniejsze (${easyCount})`;
+            document.getElementById('btn-mode-full').innerHTML = `🌍 Wszystkie Miejsca (${FAMOUS_PLACES_DB.length})`;
+
+            startRound(1);
         }
 
-        window.addEventListener('resize', resize);
-        resize();
-        animateStars();
+        // =========================================================================
+        // ROZPOCZĘCIE RUNDY
+        // =========================================================================
+        function startRound(roundNum) {
+            currentRound = roundNum;
+            isRoundFinished = false;
+            clueRevealed = false;
+            userGuessLatLng = null;
+
+            // Reset markerów
+            if (guessMarker) { map.removeLayer(guessMarker); guessMarker = null; }
+            if (targetMarker) { map.removeLayer(targetMarker); targetMarker = null; }
+            if (connectionLine) { map.removeLayer(connectionLine); connectionLine = null; }
+
+            // Aktualizacja nagłówka
+            document.getElementById('stat-round').innerText = `${currentRound} / ${TOTAL_ROUNDS}`;
+            document.getElementById('question-text').innerText = `Runda ${currentRound} / ${TOTAL_ROUNDS}: Zgadnij miejsce po zdjęciu!`;
+            document.getElementById('btn-submit-guess').style.display = 'flex';
+            document.getElementById('btn-submit-guess').disabled = true;
+            document.getElementById('btn-next').style.display = 'none';
+            document.getElementById('result-box').style.display = 'none';
+
+            // Reset wskazówki
+            document.getElementById('clue-text').innerText = "💡 Potrzebujesz pomocy z kontynentem lub kontekstem?";
+            document.getElementById('btn-show-clue').style.display = 'inline-block';
+            document.getElementById('btn-show-clue').innerText = "🔍 Pokaż podpowiedź";
+
+            // Losowanie miejsca z aktywnej puli
+            const pool = getActivePool();
+            const available = pool.filter(p => !roundsHistory.some(h => h.targetName === p.name));
+            const activePool = available.length > 0 ? available : pool;
+            const randomIndex = Math.floor(Math.random() * activePool.length);
+            secretLocation = activePool[randomIndex];
+
+            // Ładowanie zdjęcia i metadanych
+            const photoEl = document.getElementById('location-photo');
+            photoEl.src = secretLocation.img;
+            document.getElementById('zoomed-img').src = secretLocation.img;
+
+            document.getElementById('photo-category-badge').innerText = secretLocation.category;
+
+            map.setView([20, 0], 2);
+        }
+
+        // Odkrywanie wskazówki
+        function revealClue() {
+            if (!secretLocation) return;
+            clueRevealed = true;
+            document.getElementById('clue-text').innerHTML = `🔎 <strong>Wskazówka:</strong> ${secretLocation.clue}`;
+            document.getElementById('btn-show-clue').style.display = 'none';
+        }
+
+        // =========================================================================
+        // ZATWIERDZENIE ODPOWIEDZI
+        // =========================================================================
+        function submitGuess() {
+            if (!userGuessLatLng || isRoundFinished) return;
+            isRoundFinished = true;
+
+            const tLat = secretLocation.lat;
+            const tLng = secretLocation.lng;
+            const gLat = userGuessLatLng.lat;
+            const gLng = userGuessLatLng.lng;
+
+            // 1. Zaznaczenie celu na mapie (gwiazda ⭐)
+            const targetIcon = L.divIcon({
+                className: 'custom-target-icon',
+                html: '⭐',
+                iconSize: [36, 36],
+                iconAnchor: [18, 18]
+            });
+            targetMarker = L.marker([tLat, tLng], { icon: targetIcon }).addTo(map);
+            targetMarker.bindPopup(`<b>⭐ To tutaj:</b><br><strong style="color:#10b981; font-size:1.05rem;">${secretLocation.name}</strong><br>${formatCoord(tLat, 'lat')}, ${formatCoord(tLng, 'lng')}`).openPopup();
+
+            // 2. Linia łącząca
+            connectionLine = L.polyline([[gLat, gLng], [tLat, tLng]], {
+                color: '#fbbf24',
+                weight: 3,
+                dashArray: '8, 8',
+                opacity: 0.9
+            }).addTo(map);
+
+            // 3. Dopasowanie kamery
+            const bounds = L.latLngBounds([[gLat, gLng], [tLat, tLng]]);
+            map.fitBounds(bounds, { padding: [50, 50], maxZoom: 6 });
+
+            // 4. Obliczenie odległości sferycznej w km (Haversine)
+            const distance = calculateHaversineDistance(gLat, gLng, tLat, tLng);
+            const distKm = Math.round(distance);
+
+            // 5. Zaokrąglenie w dziesiątkach kilometrów (/ 10)
+            const roundedTens = Math.round(distKm / 10);
+            const negativePenalty = -roundedTens;
+            totalNegativeKm += negativePenalty;
+
+            // Zapis historii
+            roundsHistory.push({
+                round: currentRound,
+                targetName: secretLocation.name,
+                distKm: distKm,
+                negativePenalty: negativePenalty
+            });
+
+            // 6. Wyświetlenie wyników
+            document.getElementById('res-round-num').innerText = currentRound;
+            document.getElementById('res-distance').innerText = `${distKm.toLocaleString()} km`;
+            document.getElementById('res-points-negative').innerText = `${negativePenalty} x 10 km`;
+            document.getElementById('res-target-name').innerText = secretLocation.name;
+            document.getElementById('res-target-desc').innerText = secretLocation.desc;
+            document.getElementById('result-box').style.display = 'flex';
+
+            document.getElementById('stat-total-score').innerText = `${totalNegativeKm} x 10 km`;
+
+            // Zmiana przycisków
+            document.getElementById('btn-submit-guess').style.display = 'none';
+            const btnNext = document.getElementById('btn-next');
+            btnNext.style.display = 'flex';
+
+            if (currentRound < TOTAL_ROUNDS) {
+                btnNext.innerText = `🔄 Następna runda (${currentRound + 1} / ${TOTAL_ROUNDS})`;
+            } else {
+                btnNext.innerText = `🏆 Zobacz Podsumowanie Gry (5 Rund)`;
+            }
+
+            showToast(`📍 Błąd: ${distKm.toLocaleString()} km (${negativePenalty} x 10 km)`);
+        }
+
+        function handleNextStep() {
+            if (currentRound < TOTAL_ROUNDS) {
+                startRound(currentRound + 1);
+            } else {
+                showFinalSummary();
+            }
+        }
+
+        function showFinalSummary() {
+            const tableBody = document.getElementById('summary-table-body');
+            tableBody.innerHTML = '';
+
+            roundsHistory.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>Runda ${item.round}</strong></td>
+                    <td style="color:#38bdf8;">${item.targetName}</td>
+                    <td style="font-family:monospace;">${item.distKm.toLocaleString()} km</td>
+                    <td style="color:#f87171; font-weight:bold; font-family:monospace;">${item.negativePenalty} x 10 km</td>
+                `;
+                tableBody.appendChild(tr);
+            });
+
+            document.getElementById('final-total-score').innerText = `${totalNegativeKm} x 10 km`;
+
+            const absError = Math.abs(totalNegativeKm);
+            let rankText = "";
+            if (absError <= 200) {
+                rankText = "🥇 Genialny Podróżnik i Mistrz Geografii! (Perfekcyjna orientacja na świecie!)";
+            } else if (absError <= 600) {
+                rankText = "🥈 Doświadczony Odkrywca Świata! (Znakomita znajomość zabytków i cudów natury!)";
+            } else if (absError <= 1500) {
+                rankText = "🥉 Geograficzny Globtroter! (Dobra znajomość kontynentów i państw!)";
+            } else {
+                rankText = "🧭 Ambitny Turysta (Ćwicz dalej, świat kryje wciąż wiele tajemnic!)";
+            }
+            document.getElementById('final-rank-title').innerText = rankText;
+
+            document.getElementById('final-summary-modal').classList.add('active');
+        }
+
+        function restartEntireGame() {
+            document.getElementById('final-summary-modal').classList.remove('active');
+            totalNegativeKm = 0;
+            roundsHistory = [];
+            document.getElementById('stat-total-score').innerText = `0 x 10 km`;
+            startRound(1);
+        }
+
+        // Zoom zdjęcia
+        function openZoomModal() {
+            document.getElementById('img-zoom-modal').classList.add('active');
+        }
+
+        function closeZoomModal() {
+            document.getElementById('img-zoom-modal').classList.remove('active');
+        }
+
+        // Pomocnicze
+        function formatCoord(val, type) {
+            const dir = (type === 'lat') ? (val >= 0 ? 'N' : 'S') : (val >= 0 ? 'E' : 'W');
+            return `${Math.abs(val).toFixed(2)}° ${dir}`;
+        }
+
+        function calculateHaversineDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371;
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            return R * c;
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast-box');
+            toast.innerText = msg;
+            toast.classList.add('show');
+            setTimeout(() => { toast.classList.remove('show'); }, 3000);
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initLeafletMap();
+        });
     </script>
-
-    <!-- Skrypt zewnętrznego licznika odwiedzin optistats -->
-    <script type="text/javascript"
-        src="https://counter8.optistats.ovh/private/counter.js?c=f6k7ajzr2quygt5cp9cycrfdabry7y56&down=async"
-        async></script>
-    <noscript>
-        <a href="https://www.freecounterstat.com" title="free counter">
-            <img src="https://counter8.optistats.ovh/private/freecounterstat.php?c=f6k7ajzr2quygt5cp9cycrfdabry7y56"
-                border="0" title="free counter" alt="free counter">
-        </a>
-    </noscript>
-
 </body>
 
 </html>
