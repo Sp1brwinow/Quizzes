@@ -1496,9 +1496,14 @@
                         <div class="mp-code-label">KOD POKOJU:</div>
                         <div class="mp-code-val" id="mp-lobby-code-display">----</div>
                     </div>
-                    <button type="button" class="mp-btn-copy" onclick="copyMpRoomLink()" title="Kopiuj link do pokoju">
-                        📋 Kopiuj Link dla Graczy
-                    </button>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <button type="button" class="mp-btn-copy" onclick="copyMpRoomCode()" title="Kopiuj sam 4-znakowy kod pokoju">
+                            📋 Kopiuj Kod Pokoju
+                        </button>
+                        <button type="button" class="mp-btn-copy" style="background: rgba(30, 58, 138, 0.4); border-color: rgba(96, 165, 250, 0.4);" onclick="copyMpRoomLink()" title="Kopiuj pełny link z adresem URL">
+                            🔗 Kopiuj Pełny Link
+                        </button>
+                    </div>
                 </div>
 
                 <div style="font-size: 0.9rem; color: #cbd5e1; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
@@ -3868,12 +3873,21 @@
             document.getElementById('final-summary-modal').classList.add('active');
         }
 
-        // 10. Kopiowanie linku
+        // 10. Kopiowanie kodu lub linku
+        function copyMpRoomCode() {
+            if (!mpRoomId) return;
+            navigator.clipboard.writeText(mpRoomId).then(() => {
+                showToast(`📋 Skopiowano kod pokoju: ${mpRoomId}`);
+            }).catch(() => {
+                showToast(`KOD: ${mpRoomId} (Skopiuj ręcznie)`);
+            });
+        }
+
         function copyMpRoomLink() {
             if (!mpRoomId) return;
             const url = `${window.location.origin}${window.location.pathname}?room=${mpRoomId}`;
             navigator.clipboard.writeText(url).then(() => {
-                showToast("📋 Link do pokoju skopiowany do schowka!");
+                showToast("🔗 Link do pokoju skopiowany do schowka!");
             }).catch(() => {
                 showToast(`KOD: ${mpRoomId} (Skopiuj ręcznie)`);
             });
