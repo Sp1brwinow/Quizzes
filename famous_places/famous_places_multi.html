@@ -1250,10 +1250,10 @@
                     <span>Łączny błąd: <b id="stat-total-score" class="negative">0 x 10 km</b></span>
                 </div>
 
-                <!-- Licznik czasu gry -->
+                <!-- Licznik czasu gry (20s na pytanie) -->
                 <div class="timer-badge" id="timer-badge">
                     <span>⏱️ Czas:</span>
-                    <b id="game-timer">02:30</b>
+                    <b id="game-timer">00:20</b>
                 </div>
             </div>
         </header>
@@ -2744,15 +2744,16 @@
         const EASY_PLACES = FAMOUS_PLACES_DB.filter(p => p.easy);
 
         // =========================================================================
-        // STAN GRY I LICZNIK CZASU
+        // STAN GRY I LICZNIK CZASU (20s NA PYTANIE)
         // =========================================================================
-        const czas_zadania = 30; // czas na jedno zadanie w sekundach
+        const czas_zadania = 20; // 20 sekund na każde pytanie/rundę
         const TOTAL_ROUNDS = 5;
-        let totalGameTime = TOTAL_ROUNDS * czas_zadania; // np. 5 * 30 = 150s
-        let timeLeft = totalGameTime;
+        let timeLeft = czas_zadania;
         let timerInterval = null;
+        let revealTimerInterval = null;
+        let currentRevealRound = null;
 
-        let gameDifficulty = 'easy'; // 'easy' (25 miejsc) | 'full' (95 miejsc)
+        let gameDifficulty = 'easy'; // 'easy' (20 miejsc) | 'full' (34 miejsca)
         let currentRound = 1;
         let totalNegativeKm = 0; // w dziesiątkach km (x 10 km)
         let roundsHistory = [];
@@ -2766,7 +2767,7 @@
         let targetMarker = null;
         let connectionLine = null;
 
-        // --- OBSŁUGA TIMERA ---
+        // --- OBSŁUGA TIMERA (20 SEKUND NA PYTANIE) ---
         function formatTimerDisplay(seconds) {
             const m = Math.floor(seconds / 60);
             const s = seconds % 60;
@@ -2775,7 +2776,7 @@
 
         function startTimer() {
             stopTimer();
-            timeLeft = TOTAL_ROUNDS * czas_zadania;
+            timeLeft = czas_zadania;
             updateTimerDisplay();
 
             timerInterval = setInterval(() => {
@@ -2796,6 +2797,14 @@
             }
         }
 
+        function stopRevealTimer() {
+            if (revealTimerInterval) {
+                clearInterval(revealTimerInterval);
+                revealTimerInterval = null;
+            }
+            currentRevealRound = null;
+        }
+
         function updateTimerDisplay() {
             const timerEl = document.getElementById('game-timer');
             const badgeEl = document.getElementById('timer-badge');
@@ -2804,59 +2813,96 @@
             timerEl.innerText = formatTimerDisplay(timeLeft);
 
             badgeEl.classList.remove('warning', 'critical');
-            if (timeLeft <= 15) {
+            if (timeLeft <= 5) {
                 badgeEl.classList.add('critical');
-            } else if (timeLeft <= 45) {
+            } else if (timeLeft <= 10) {
                 badgeEl.classList.add('warning');
             }
         }
 
         function handleTimeExpired() {
-            if (isRoundFinished && currentRound === TOTAL_ROUNDS) return;
-
-            showToast("⏰ Czas minął! Naliczono karę za nieukończone zadania.");
+            if (isRoundFinished) return;
 
             if (isMultiplayer) {
-                // W trybie wieloosobowym wyślij karę dla bieżącej rundy jeśli gracz nie strzelił
+                // W trybie wieloosobowym reaguj WYŁĄCZNIE gdy gra jest w trakcie rundy (status === 'playing')
+                if (!roomData || roomData.status !== 'playing') {
+                    return;
+                }
+
+                showToast("⏰ Czas minął (20s)!");
+
                 if (!isRoundFinished && roomRef) {
                     isRoundFinished = true;
+                    const penalty = -1200;
+                    const distKm = 12000;
                     roomRef.child(`players/${myPlayerId}/rounds/${currentRound}`).set({
                         lat: 0,
                         lng: 0,
-                        distKm: 12000,
-                        penalty: -1200,
+                        distKm: distKm,
+                        penalty: penalty,
                         submitted: true,
                         timeout: true
                     });
+                    const currentTotal = ((roomData && roomData.players && roomData.players[myPlayerId] && roomData.players[myPlayerId].totalScore) || 0) + penalty;
+                    roomRef.child(`players/${myPlayerId}/totalScore`).set(currentTotal);
+                }
+                if (isHost && roomRef) {
+                    roomRef.update({ status: 'round_reveal' });
                 }
                 return;
             }
 
+            showToast("⏰ Czas minął (20s)!");
+
             // Tryb Solo
-            if (!isRoundFinished && secretLocation) {
+            isRoundFinished = true;
+            const distKm = 12000;
+            const negativePenalty = -1200;
+            totalNegativeKm += negativePenalty;
+            if (secretLocation) {
                 roundsHistory.push({
                     round: currentRound,
-                    targetName: `${secretLocation.name} (Przekroczono czas)`,
-                    distKm: 12000,
-                    negativePenalty: -1200
+                    targetName: `${secretLocation.name} (Czas minął)`,
+                    distKm: distKm,
+                    negativePenalty: negativePenalty
                 });
-                totalNegativeKm += -1200;
-            }
-
-            const nextRoundToPenalize = currentRound + 1;
-            for (let r = nextRoundToPenalize; r <= TOTAL_ROUNDS; r++) {
-                roundsHistory.push({
-                    round: r,
-                    targetName: "Brak odpowiedzi (Przekroczono czas)",
-                    distKm: 12000,
-                    negativePenalty: -1200
-                });
-                totalNegativeKm += -1200;
             }
 
             document.getElementById('stat-total-score').innerText = `${totalNegativeKm} x 10 km`;
-            isRoundFinished = true;
-            showFinalSummary();
+
+            // Zaznaczenie celu na mapie
+            if (secretLocation) {
+                const tLat = secretLocation.lat;
+                const tLng = secretLocation.lng;
+                const targetIcon = L.divIcon({
+                    className: 'custom-target-icon',
+                    html: '⭐',
+                    iconSize: [36, 36],
+                    iconAnchor: [18, 18]
+                });
+                targetMarker = L.marker([tLat, tLng], { icon: targetIcon }).addTo(map);
+                targetMarker.bindPopup(`<b>⭐ To tutaj:</b><br><strong style="color:#10b981; font-size:1.05rem;">${secretLocation.name}</strong><br>${formatCoord(tLat, 'lat')}, ${formatCoord(tLng, 'lng')}`).openPopup();
+                map.setView([tLat, tLng], 3);
+
+                document.getElementById('res-target-name').innerText = secretLocation.name;
+                document.getElementById('res-target-desc').innerText = secretLocation.desc;
+            }
+
+            // Wyświetlenie wyników rundy
+            document.getElementById('res-round-num').innerText = currentRound;
+            document.getElementById('res-distance').innerText = `Przekroczono czas (${distKm.toLocaleString()} km)`;
+            document.getElementById('res-points-negative').innerText = `${negativePenalty} x 10 km`;
+            document.getElementById('result-box').style.display = 'flex';
+
+            document.getElementById('btn-submit-guess').style.display = 'none';
+            const btnNext = document.getElementById('btn-next');
+            btnNext.style.display = 'flex';
+
+            if (currentRound < TOTAL_ROUNDS) {
+                btnNext.innerText = `🔄 Następna runda (${currentRound + 1} / ${TOTAL_ROUNDS})`;
+            } else {
+                btnNext.innerText = `🏆 Zobacz Podsumowanie Gry (5 Rund)`;
+            }
         }
 
         // Przełączanie poziomu trudności (Solo)
@@ -2871,7 +2917,6 @@
             showToast(mode === 'easy' ? `🏛️ Wybrano Najsłynniejsze Miejsca (${easyCount})` : `🌍 Wybrano Wszystkie Miejsca Świata (${FAMOUS_PLACES_DB.length})`);
 
             if (currentRound === 1 && !isRoundFinished) {
-                startTimer();
                 startRound(1);
             }
         }
@@ -2917,6 +2962,7 @@
             // Kliknięcie na mapie
             map.on('click', function (e) {
                 if (isRoundFinished) return;
+                if (isMultiplayer && document.getElementById('btn-submit-guess').style.display === 'none') return;
 
                 const lat = parseFloat(e.latlng.lat.toFixed(4));
                 const lng = parseFloat(e.latlng.lng.toFixed(4));
@@ -2952,7 +2998,6 @@
                 switchMpTab('join');
                 document.getElementById('mp-input-code').value = queryRoom.toUpperCase();
             } else {
-                startTimer();
                 startRound(1);
             }
         }
@@ -2961,6 +3006,7 @@
         // ROZPOCZĘCIE RUNDY (SOLO)
         // =========================================================================
         function startRound(roundNum) {
+            stopRevealTimer();
             currentRound = roundNum;
             isRoundFinished = false;
             clueRevealed = false;
@@ -2984,7 +3030,7 @@
 
             // Losowanie miejsca z aktywnej puli
             const pool = getActivePool();
-            const available = pool.filter(p => !roundsHistory.some(h => h.targetName === p.name));
+            const available = pool.filter(p => !roundsHistory.some(h => h.targetName.startsWith(p.name)));
             const activePool = available.length > 0 ? available : pool;
             const randomIndex = Math.floor(Math.random() * activePool.length);
             secretLocation = activePool[randomIndex];
@@ -2995,6 +3041,9 @@
             document.getElementById('zoomed-img').src = secretLocation.img;
 
             map.setView([20, 0], 2);
+
+            // Start 20-sekundowego timera na rundę
+            startTimer();
         }
 
         function clearAllMapMarkers() {
@@ -3046,12 +3095,13 @@
                 });
 
                 // Aktualizacja sumarycznego wyniku gracza w bazie
-                const playerTotal = ((roomData.players[myPlayerId] && roomData.players[myPlayerId].totalScore) || 0) + negativePenalty;
+                const playerTotal = ((roomData && roomData.players && roomData.players[myPlayerId] && roomData.players[myPlayerId].totalScore) || 0) + negativePenalty;
                 roomRef.child(`players/${myPlayerId}/totalScore`).set(playerTotal);
                 return;
             }
 
             // --- TRYB SOLO ---
+            stopTimer();
             totalNegativeKm += negativePenalty;
             roundsHistory.push({
                 round: currentRound,
@@ -3100,7 +3150,6 @@
             if (currentRound < TOTAL_ROUNDS) {
                 btnNext.innerText = `🔄 Następna runda (${currentRound + 1} / ${TOTAL_ROUNDS})`;
             } else {
-                stopTimer();
                 btnNext.innerText = `🏆 Zobacz Podsumowanie Gry (5 Rund)`;
             }
 
@@ -3108,6 +3157,7 @@
         }
 
         function handleNextStep() {
+            stopRevealTimer();
             if (isMultiplayer) {
                 if (!isHost) return;
                 if (currentRound < TOTAL_ROUNDS) {
@@ -3131,6 +3181,7 @@
 
         function showFinalSummary() {
             stopTimer();
+            stopRevealTimer();
 
             if (isMultiplayer) {
                 renderMultiplayerFinalSummary();
@@ -3178,6 +3229,8 @@
         }
 
         function restartEntireGame() {
+            stopTimer();
+            stopRevealTimer();
             document.getElementById('final-summary-modal').classList.remove('active');
 
             if (isMultiplayer) {
@@ -3215,7 +3268,6 @@
             totalNegativeKm = 0;
             roundsHistory = [];
             document.getElementById('stat-total-score').innerText = `0 x 10 km`;
-            startTimer();
             startRound(1);
         }
 
@@ -3227,6 +3279,8 @@
                 showToast("⚠️ Firebase nie jest zainicjalizowany.");
                 return;
             }
+            stopTimer();
+            stopRevealTimer();
             const nickInput = document.getElementById('mp-input-nickname');
             if (nickInput && !nickInput.value) {
                 nickInput.value = myPlayerName;
@@ -3260,6 +3314,8 @@
 
         // 1. Tworzenie pokoju (Host)
         function createMultiplayerRoom() {
+            stopTimer();
+            stopRevealTimer();
             const nick = validateNickname();
             if (!nick) return;
 
@@ -3311,6 +3367,8 @@
 
         // 2. Dołączanie do pokoju
         function joinMultiplayerRoom() {
+            stopTimer();
+            stopRevealTimer();
             const nick = validateNickname();
             if (!nick) return;
 
@@ -3329,13 +3387,14 @@
                 }
 
                 const r = snapshot.val();
-                if (r.status !== 'lobby' && !r.players[myPlayerId]) {
-                    showToast("⚠️ Gra w tym pokoju już się rozpoczęła!");
+                if (r.status === 'finished') {
+                    showToast("⚠️ Gra w tym pokoju została już zakończona!");
                     return;
                 }
 
                 const existingPlayers = Object.values(r.players || {});
-                if (existingPlayers.length >= 6 && !r.players[myPlayerId]) {
+                const isAlreadyIn = r.players && r.players[myPlayerId];
+                if (existingPlayers.length >= 6 && !isAlreadyIn) {
                     showToast("⚠️ Pokój jest już pełny (max 6 graczy)!");
                     return;
                 }
@@ -3350,7 +3409,7 @@
                     }
                 }
 
-                mySlot = (r.players[myPlayerId] && r.players[myPlayerId].slot !== undefined) ? r.players[myPlayerId].slot : assignedSlot;
+                mySlot = (isAlreadyIn && isAlreadyIn.slot !== undefined) ? isAlreadyIn.slot : assignedSlot;
                 isHost = (r.hostId === myPlayerId);
 
                 const myData = {
@@ -3358,7 +3417,7 @@
                     name: nick,
                     slot: mySlot,
                     isHost: isHost,
-                    totalScore: (r.players[myPlayerId] && r.players[myPlayerId].totalScore) || 0
+                    totalScore: (isAlreadyIn && isAlreadyIn.totalScore) || 0
                 };
 
                 fbDb.ref(`rooms/${code}/players/${myPlayerId}`).set(myData).then(() => {
@@ -3372,6 +3431,8 @@
 
         // 3. Nasłuchiwanie pokoju
         function attachRoomListener(code) {
+            stopTimer();
+            stopRevealTimer();
             mpRoomId = code;
             isMultiplayer = true;
 
@@ -3410,6 +3471,8 @@
 
             // Stan: LOBBY
             if (roomData.status === 'lobby') {
+                stopTimer();
+                stopRevealTimer();
                 document.getElementById('mp-view-menu').style.display = 'none';
                 document.getElementById('mp-view-lobby').style.display = 'block';
                 document.getElementById('mp-modal').classList.add('active');
@@ -3498,7 +3561,6 @@
         // 5. Rozpoczęcie gry przez Hosta
         function startMultiplayerGame() {
             if (!isHost || !roomRef) return;
-            startTimer();
             roomRef.update({
                 status: 'playing',
                 currentRound: 1
@@ -3507,6 +3569,7 @@
 
         // 6. Start rundy wieloosobowej
         function startMultiplayerRound(rNum) {
+            stopRevealTimer();
             currentRound = rNum;
             isRoundFinished = false;
             clueRevealed = false;
@@ -3528,7 +3591,9 @@
             document.getElementById('btn-show-clue').innerText = "🔍 Pokaż podpowiedź";
 
             // Ładowanie miejsca ze zsynchronizowanego indeksu
-            const placeIndex = roomData.roundPlaces[currentRound - 1];
+            const placeIndex = (roomData && roomData.roundPlaces && roomData.roundPlaces[currentRound - 1] !== undefined)
+                ? roomData.roundPlaces[currentRound - 1]
+                : 0;
             secretLocation = FAMOUS_PLACES_DB[placeIndex] || FAMOUS_PLACES_DB[0];
 
             const photoEl = document.getElementById('location-photo');
@@ -3536,6 +3601,9 @@
             document.getElementById('zoomed-img').src = secretLocation.img;
 
             map.setView([20, 0], 2);
+
+            // Start 20-sekundowego timera na rundę
+            startTimer();
         }
 
         // 7. Render paska HUD w trakcie rundy
@@ -3566,6 +3634,7 @@
         // 8. Wyświetlenie wszystkich strzałów na mapie w rundzie
         function renderMultiplayerRoundReveal(playersList, rNum) {
             isRoundFinished = true;
+            stopTimer();
             clearAllMapMarkers();
 
             const tLat = secretLocation.lat;
@@ -3666,16 +3735,43 @@
             const btnNext = document.getElementById('btn-next');
             btnNext.style.display = 'flex';
 
-            if (isHost) {
-                if (currentRound < TOTAL_ROUNDS) {
-                    btnNext.innerText = `🔄 Następna runda (${currentRound + 1} / ${TOTAL_ROUNDS})`;
-                } else {
-                    btnNext.innerText = `🏆 Zobacz Finałowe Podium i Wyniki`;
-                }
-                btnNext.disabled = false;
-            } else {
-                btnNext.innerText = `⏳ Oczekiwanie na następną rundę (Host)...`;
-                btnNext.disabled = true;
+            // Automatyczne przejście do następnej rundy (odliczanie 6s)
+            if (currentRevealRound !== rNum) {
+                currentRevealRound = rNum;
+                if (revealTimerInterval) clearInterval(revealTimerInterval);
+
+                let revealTimeLeft = 6;
+                const updateRevealBtn = () => {
+                    if (isHost) {
+                        btnNext.disabled = false;
+                        if (currentRound < TOTAL_ROUNDS) {
+                            btnNext.innerText = `🔄 Następna runda za ${revealTimeLeft}s (lub kliknij)`;
+                        } else {
+                            btnNext.innerText = `🏆 Podium za ${revealTimeLeft}s (lub kliknij)`;
+                        }
+                    } else {
+                        btnNext.disabled = true;
+                        if (currentRound < TOTAL_ROUNDS) {
+                            btnNext.innerText = `⏳ Następna runda za ${revealTimeLeft}s...`;
+                        } else {
+                            btnNext.innerText = `⏳ Finałowe podium za ${revealTimeLeft}s...`;
+                        }
+                    }
+                };
+
+                updateRevealBtn();
+
+                revealTimerInterval = setInterval(() => {
+                    revealTimeLeft--;
+                    if (revealTimeLeft <= 0) {
+                        stopRevealTimer();
+                        if (isHost) {
+                            handleNextStep();
+                        }
+                    } else {
+                        updateRevealBtn();
+                    }
+                }, 1000);
             }
         }
 
@@ -3815,10 +3911,11 @@
             window.history.replaceState({}, '', url);
 
             showToast("👋 Powrót do trybu jednoosobowego.");
+            stopRevealTimer();
+            stopTimer();
             totalNegativeKm = 0;
             roundsHistory = [];
             document.getElementById('stat-total-score').innerText = `0 x 10 km`;
-            startTimer();
             startRound(1);
         }
 
