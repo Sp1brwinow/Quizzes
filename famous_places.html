@@ -1299,14 +1299,6 @@
                     </div>
                 </div>
 
-                <!-- Wskazówka / Clue -->
-                <div class="clue-box">
-                    <span id="clue-text">💡 Potrzebujesz pomocy z kontynentem lub kontekstem?</span>
-                    <button type="button" class="clue-btn" id="btn-show-clue" onclick="revealClue()">
-                        🔍 Pokaż podpowiedź
-                    </button>
-                </div>
-
                 <!-- Wynik Rundy po Zatwierdzeniu -->
                 <div class="result-summary-box" id="result-box">
                     <div class="result-title">
@@ -1904,11 +1896,6 @@
             document.getElementById('result-box').style.display = 'none';
             document.getElementById('mp-round-results').style.display = 'none';
 
-            // Reset wskazówki
-            document.getElementById('clue-text').innerText = "💡 Potrzebujesz pomocy z kontynentem lub kontekstem?";
-            document.getElementById('btn-show-clue').style.display = 'inline-block';
-            document.getElementById('btn-show-clue').innerText = "🔍 Pokaż podpowiedź";
-
             // Losowanie miejsca z aktywnej puli
             const pool = getActivePool();
             const available = pool.filter(p => !roundsHistory.some(h => h.targetName.startsWith(p.name)));
@@ -1935,14 +1922,6 @@
             mpOtherMarkers = [];
             mpOtherLines.forEach(l => map.removeLayer(l));
             mpOtherLines = [];
-        }
-
-        // Odkrywanie wskazówki
-        function revealClue() {
-            if (!secretLocation) return;
-            clueRevealed = true;
-            document.getElementById('clue-text').innerHTML = `🔎 <strong>Wskazówka:</strong> ${secretLocation.clue}`;
-            document.getElementById('btn-show-clue').style.display = 'none';
         }
 
         // =========================================================================
@@ -2489,11 +2468,6 @@
             document.getElementById('btn-next').style.display = 'none';
             document.getElementById('result-box').style.display = 'none';
             document.getElementById('mp-round-results').style.display = 'none';
-
-            // Wskazówka
-            document.getElementById('clue-text').innerText = "💡 Potrzebujesz pomocy z kontynentem lub kontekstem?";
-            document.getElementById('btn-show-clue').style.display = 'inline-block';
-            document.getElementById('btn-show-clue').innerText = "🔍 Pokaż podpowiedź";
 
             // Ładowanie miejsca ze zsynchronizowanego indeksu
             const placeIndex = (roomData && roomData.roundPlaces && roomData.roundPlaces[currentRound - 1] !== undefined)
