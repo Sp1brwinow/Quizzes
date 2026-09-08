@@ -567,30 +567,6 @@ const FAMOUS_PLACES_DB = [
                 desc: "Jeden z najbardziej rozpoznawalnych szczytów świata w Alpach Pennińskich, symbol szwajcarskiej czekolady Toblerone i wielkie wyzwanie alpinizmu."
             },
             {
-                name: "Santorini / Oia (Cyklady, Grecja)",
-                lat: 36.4618,
-                lng: 25.3753,
-                continent: "Europa",
-                category: "Architektura / Kaldera wulkaniczna",
-                easy: false,
-                img: "img/santorini.jpg",
-                license: "Wikimedia Commons / CC",
-                clue: "Kaskada śnieżnobiałych domów z kobaltowymi kopułami kościołów przyklejonych do stromych ścian wulkanicznej kaldery.",
-                desc: "Wyspa ukształtowana przez jeden z największych wybuchów wulkanicznych w historii ludzkości około 1600 r. p.n.e., który zniszczył cywilizację minojską."
-            },
-            {
-                name: "Jaskinia Benagil (Algarve, Portugalia)",
-                lat: 37.0872,
-                lng: -8.4239,
-                continent: "Europa",
-                category: "Geologia / Morska grota katedralna",
-                easy: false,
-                img: "img/benagil_cave.jpg",
-                license: "Wikimedia Commons / CC",
-                clue: "Monumentalna grota morska z piaszczystą plażą wewnątrz i wielkim okrągłym oknem w sklepieniu zwanym 'Okiem'.",
-                desc: "Naturalna jaskinia krasowa wyrzeźbiona w wapiennych klifach przez fale Oceanu Atlantyckiego, dostępna wyłącznie od strony wody (kajakiem lub wpław)."
-            },
-            {
                 name: "Hallstatt (Salzkammergut, Austria)",
                 lat: 47.5622,
                 lng: 13.6493,
@@ -734,18 +710,6 @@ const FAMOUS_PLACES_DB = [
                 license: "Wikimedia Commons / CC",
                 clue: "Marmurowa świątynia pokryta setkami kilogramów czystego złota, stojąca pośrodku świętego zbiornika wodnego 'Amrit Sarovar'.",
                 desc: "Najświętsze sanktuarium sikhizmu w Pendżabie. Prowadzi darmową kuchnię (langar), która codziennie karmi bezpłatnie ponad 100 tysięcy pielgrzymów bez względu na wyznanie czy kastę."
-            },
-            {
-                name: "Jezioro Bajkał / Wyspa Olchon (Syberia, Rosja)",
-                lat: 53.1639,
-                lng: 107.3828,
-                continent: "Azja",
-                category: "Przyroda / Jezioro tektoniczne",
-                easy: false,
-                img: "img/lake_baikal.jpg",
-                license: "Wikimedia Commons / CC",
-                clue: "Najstarsze i najgłębsze (1642 m) jezioro świata, zawierające około 20% światowych zasobów niezamarzniętej słodkiej wody powierzchniowej.",
-                desc: "Błękitne Oko Syberii słynące z niezwykłej przejrzystości wody (do 40 metrów), unikalnej fauny (foka bajkalska - nerpa) i spektakularnego zimowego lodu z pęcherzami metanu."
             },
             {
                 name: "Góry Zhangjiajie / Kolumny Awatara (Hunan, Chiny)",
@@ -930,18 +894,6 @@ const FAMOUS_PLACES_DB = [
                 desc: "Jeden z najbardziej dziewiczych parków narodowych Ameryki Południowej, słynący z lodowców Grey, rzeki Paine oraz stad dzikich gwanako i kondorów."
             },
             {
-                name: "Pustynia Atakama / Dolina Księżycowa (Chile)",
-                lat: -22.9150,
-                lng: -68.2980,
-                continent: "Ameryka Południowa",
-                category: "Pustynia / Formacje solno-piaskowe",
-                easy: false,
-                img: "img/atacama_desert.jpg",
-                license: "Wikimedia Commons / CC",
-                clue: "Najbardziej suche niepolarne miejsce na Ziemi, o surowych formacjach solnych i wydmach przypominających powierzchnię Księżyca lub Marsa.",
-                desc: "W niektórych częściach Atakamy deszcz nie spadł od setek lat. Ze względu na krystaliczne, bezchmurne niebo działają tu największe na świecie teleskopy astronomiczne (ALMA, VLT)."
-            },
-            {
                 name: "Góra Roraima / Tepui (Wenezuela / Brazylia / Gujana)",
                 lat: 5.1433,
                 lng: -60.7625,
@@ -1052,18 +1004,6 @@ const FAMOUS_PLACES_DB = [
             },
             // --- AUSTRALIA I OCEANIA ---
             {
-                name: "Wielka Rafa Koralowa / Heart Reef (Queensland, Australia)",
-                lat: -19.7749,
-                lng: 149.2317,
-                continent: "Australia i Oceania",
-                category: "Przyroda / Ekosystem koralowy",
-                easy: false,
-                img: "img/great_barrier_reef.jpg",
-                license: "Wikimedia Commons / CC",
-                clue: "Największy na świecie żywy organizm i system raf koralowych o długości ponad 2300 km na Morzu Koralowym.",
-                desc: "Złożona z niemal 3000 pojedynczych raf i setek wysp, widoczna z kosmosu, będąca domem dla tysięcy gatunków ryb, wielorybów, żółwi i koralowców."
-            },
-            {
                 name: "Dolina Geotermalna Te Puia (Rotorua, Nowa Zelandia)",
                 lat: -38.1611,
                 lng: 176.2547,
@@ -1086,17 +1026,5 @@ const FAMOUS_PLACES_DB = [
                 license: "Wikimedia Commons / CC",
                 clue: "Malownicze zielone wzgórza z 44 norkami hobbitów o okrągłych kolorowych drzwiach i gospodą 'Pod Zielonym Smokiem'.",
                 desc: "Oryginalny plan filmowy trylogii 'Władca Pierścieni' i 'Hobbit' Petera Jacksona, zachowany na stałe pośród farmy owiec w regionie Waikato."
-            },
-            {
-                name: "Bora Bora (Wyspy Pod Wiatrem, Polinezja Francuska)",
-                lat: -16.5004,
-                lng: -151.7415,
-                continent: "Australia i Oceania",
-                category: "Przyroda / Laguna atolowa",
-                easy: false,
-                img: "img/bora_bora.jpg",
-                license: "Wikimedia Commons / CC",
-                clue: "Wygasły wulkan Mount Otemanu wyrastający pośrodku krystalicznie turkusowej laguny otoczonej pierścieniem motu (wysepek).",
-                desc: "Perła Pacyfiku na Oceanie Spokojnym, ukształtowana przez powolne zapadanie się stożka wulkanicznego i narastanie zewnętrznej bariery koralowej."
             }
         ];
