@@ -2619,13 +2619,13 @@
             const btnNext = document.getElementById('btn-next');
             btnNext.style.display = 'flex';
 
-            // Automatyczne przejście do następnej rundy (odliczanie 6s)
+            // Automatyczne przejście do następnej rundy (odliczanie 10s)
             const totalR = (roomData && roomData.totalRounds) || TOTAL_ROUNDS;
             if (currentRevealRound !== rNum) {
                 currentRevealRound = rNum;
                 if (revealTimerInterval) clearInterval(revealTimerInterval);
 
-                let revealTimeLeft = 6;
+                let revealTimeLeft = 10;
                 const updateRevealBtn = () => {
                     if (isHost) {
                         btnNext.disabled = false;
