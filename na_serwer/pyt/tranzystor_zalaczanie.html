@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tranzystor jako klucz przełączający – Symulacja i Charakterystyki WB | Fizyka</title>
+  
+  <!-- Three.js & OrbitControls z CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  
+  <style>
+    :root {
+      --bg-dark: #070d18;
+      --panel-bg: #0f172a;
+      --card-bg: #1e293b;
+      --accent-blue: #38bdf8;
+      --accent-green: #4ade80;
+      --accent-yellow: #facc15;
+      --accent-red: #f87171;
+      --accent-purple: #c084fc;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-color: #334155;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      line-height: 1.5;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      min-height: 100vh;
+    }
+
+    /* HEADER */
+    header {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      padding: 16px 24px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    .header-title-box {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .badge-subject {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--accent-blue);
+      letter-spacing: 0.8px;
+    }
+
+    header h1 {
+      font-size: 1.45rem;
+      color: #fff;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .badge-status {
+      padding: 8px 18px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+      transition: all 0.3s ease;
+    }
+
+    .status-cutoff { background: rgba(248, 113, 113, 0.15); color: var(--accent-red); border: 1px solid var(--accent-red); box-shadow: 0 0 15px rgba(248, 113, 113, 0.2); }
+    .status-active { background: rgba(250, 204, 21, 0.15); color: var(--accent-yellow); border: 1px solid var(--accent-yellow); box-shadow: 0 0 15px rgba(250, 204, 21, 0.2); }
+    .status-saturation { background: rgba(74, 222, 128, 0.15); color: var(--accent-green); border: 1px solid var(--accent-green); box-shadow: 0 0 15px rgba(74, 222, 128, 0.3); }
+
+    /* GŁÓWNA SIATKA */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 1100px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel {
+      background-color: var(--panel-bg);
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+    }
+
+    .panel-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--accent-blue);
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    /* 3D Viewport Three.js */
+    #view3d-container {
+      width: 100%;
+      height: 310px;
+      border-radius: 8px;
+      overflow: hidden;
+      position: relative;
+      background-color: #020617;
+      border: 1px solid #1e293b;
+    }
+
+    #view3d-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .canvas-overlay-hint {
+      position: absolute;
+      bottom: 8px;
+      left: 8px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(4px);
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid rgba(255,255,255,0.1);
+      pointer-events: none;
+    }
+
+    /* Presets */
+    .presets-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      background: rgba(30, 41, 59, 0.5);
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+    }
+
+    .presets-buttons {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .btn-preset {
+      background-color: var(--card-bg);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-preset:hover {
+      background-color: var(--accent-blue);
+      color: #000;
+      border-color: var(--accent-blue);
+    }
+
+    /* Controls & Table */
+    .controls-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .controls-table th, .controls-table td {
+      padding: 8px 10px;
+      text-align: left;
+      border-bottom: 1px solid rgba(51, 65, 85, 0.6);
+      font-size: 0.88rem;
+    }
+
+    .controls-table th {
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.5px;
+    }
+
+    .slider-container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    input[type="range"] {
+      flex: 1;
+      accent-color: var(--accent-blue);
+      cursor: pointer;
+    }
+
+    input[type="number"] {
+      width: 76px;
+      background-color: #0b1120;
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 4px 6px;
+      border-radius: 4px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      text-align: right;
+    }
+    input[type="number"]:focus {
+      outline: none;
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 6px rgba(56, 189, 248, 0.4);
+    }
+
+    /* Circuit 2D Schematic */
+    .schematic-box {
+      width: 100%;
+      height: 310px;
+      background: #020617;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Results Grid */
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 10px;
+    }
+
+    .res-card {
+      background-color: var(--card-bg);
+      border-radius: 8px;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      border-left: 4px solid var(--accent-blue);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    .res-label {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 0.4px;
+    }
+
+    .res-value {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-top: 3px;
+    }
+
+    /* Charts Section */
+    .chart-container {
+      width: 100%;
+      height: 360px;
+      position: relative;
+      background-color: #020617;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+    }
+
+    .tab-nav {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      padding: 6px 14px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .tab-btn:hover {
+      color: #fff;
+    }
+
+    .tab-btn.active {
+      color: var(--accent-blue);
+      border-bottom-color: var(--accent-blue);
+    }
+
+    .theory-box {
+      background: rgba(30, 41, 59, 0.4);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 0.85rem;
+      border-left: 4px solid var(--accent-purple);
+      color: #cbd5e1;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-title-box">
+      <div class="badge-subject">⚡ Fizyka &bull; Elektronika Półprzewodnikowa</div>
+      <h1>Tranzystor NPN: Układ Przełączający LED (Klucz)</h1>
+    </div>
+    <div id="statusBadge" class="badge-status status-cutoff">
+      <span id="statusIcon">⭕</span>
+      <span id="statusText">Stan: ZATKANY (OFF)</span>
+    </div>
+  </header>
+
+  <!-- GŁÓWNA SIATKA -->
+  <div class="main-grid">
+    
+    <!-- LEWA KOLUMNA: WIZUALIZACJA 3D ORAZ TABELA NASTAWÓW -->
+    <div class="panel">
+      <div class="panel-title">
+        <span>🎮 Model 3D Układu (Three.js)</span>
+        <span style="font-size: 0.78rem; color: var(--text-muted);">LPM: Obrót | PPM: Przesunięcie | Kółko: Zoom</span>
+      </div>
+      
+      <!-- 3D Canvas -->
+      <div id="view3d-container">
+        <canvas id="view3d-canvas"></canvas>
+        <div class="canvas-overlay-hint">Płytka PCB, tranzystor TO-92, dioda LED z poświatą, animowane elektrony</div>
+      </div>
+
+      <!-- Presety -->
+      <div class="presets-container">
+        <span style="font-size: 0.82rem; font-weight: 700; color: var(--text-muted);">Szybkie stany:</span>
+        <div class="presets-buttons">
+          <button class="btn-preset" onclick="setPreset('off')">1. Zatkanie (OFF)</button>
+          <button class="btn-preset" onclick="setPreset('active')">2. Stan aktywny</button>
+          <button class="btn-preset" onclick="setPreset('sat')">3. Nasycenie (Klucz ON)</button>
+        </div>
+      </div>
+
+      <!-- Tabela rezystorów i napięcia zasilania -->
+      <table class="controls-table">
+        <thead>
+          <tr>
+            <th>Element</th>
+            <th>Funkcja fizyczna</th>
+            <th>Wartość</th>
+            <th>Regulacja</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>V<sub>CC</sub></strong></td>
+            <td>Napięcie zasilania układu</td>
+            <td><input type="number" id="num_vcc" value="9.0" step="0.5" min="1" max="24"> V</td>
+            <td><input type="range" id="rng_vcc" min="1" max="24" step="0.5" value="9.0"></td>
+          </tr>
+          <tr>
+            <td><strong>R<sub>1</sub></strong></td>
+            <td>Górny rezystor dzielnika (V<sub>CC</sub> &rarr; Baza)</td>
+            <td><input type="number" id="num_r1" value="22" step="1" min="1" max="200"> k&Omega;</td>
+            <td><input type="range" id="rng_r1" min="1" max="200" step="1" value="22"></td>
+          </tr>
+          <tr>
+            <td><strong>R<sub>2</sub></strong></td>
+            <td>Dolny rezystor dzielnika (Baza &rarr; GND)</td>
+            <td><input type="number" id="num_r2" value="10" step="1" min="1" max="200"> k&Omega;</td>
+            <td><input type="range" id="rng_r2" min="1" max="200" step="1" value="10"></td>
+          </tr>
+          <tr>
+            <td><strong>R<sub>C</sub></strong></td>
+            <td>Rezystor kolektora (ochrona LED)</td>
+            <td><input type="number" id="num_rc" value="220" step="10" min="10" max="2000"> &Omega;</td>
+            <td><input type="range" id="rng_rc" min="10" max="2000" step="10" value="220"></td>
+          </tr>
+          <tr>
+            <td><strong>R<sub>E</sub></strong></td>
+            <td>Rezystor emitera (ujemne sprzężenie)</td>
+            <td><input type="number" id="num_re" value="100" step="10" min="0" max="2000"> &Omega;</td>
+            <td><input type="range" id="rng_re" min="0" max="2000" step="10" value="100"></td>
+          </tr>
+          <tr>
+            <td><strong>&beta; (h<sub>FE</sub>)</strong></td>
+            <td>Współczynnik wzmocnienia prądowego</td>
+            <td><input type="number" id="num_beta" value="150" step="10" min="20" max="500"></td>
+            <td><input type="range" id="rng_beta" min="20" max="500" step="10" value="150"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- PRAWA KOLUMNA: SCHEMAT IDEOWY 2D ORAZ WYNIKI POMIARÓW -->
+    <div class="panel">
+      <div class="panel-title">
+        <span>📐 Schemat Ideowy Obwodu</span>
+        <span style="font-size: 0.8rem; color: var(--accent-green);">Automatyczna analiza węzłowa</span>
+      </div>
+
+      <!-- Schemat SVG -->
+      <div class="schematic-box">
+        <svg id="schematicSvg" width="100%" height="100%" viewBox="0 0 500 310">
+          <defs>
+            <path id="gnd" d="M -15,0 L 15,0 M -10,5 L 10,5 M -5,10 L 5,10" stroke="#94a3b8" stroke-width="2"/>
+            <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#38bdf8"/>
+            </marker>
+          </defs>
+
+          <!-- Szyny zasilania VCC & GND -->
+          <line x1="30" y1="25" x2="450" y2="25" stroke="#f87171" stroke-width="3"/>
+          <text x="35" y="20" fill="#f87171" font-weight="800" font-size="13">+Vcc (<tspan id="txt_vcc_sch">9.0V</tspan>)</text>
+
+          <line x1="30" y1="280" x2="450" y2="280" stroke="#64748b" stroke-width="3"/>
+          <use href="#gnd" x="240" y="280"/>
+          <text x="35" y="300" fill="#94a3b8" font-size="12">GND (0V)</text>
+
+          <!-- Dzielnik R1 & R2 -->
+          <line x1="110" y1="25" x2="110" y2="65" stroke="#cbd5e1" stroke-width="2"/>
+          <rect x="95" y="65" width="30" height="50" fill="#1e293b" stroke="#38bdf8" stroke-width="2" rx="4"/>
+          <text x="132" y="94" fill="#cbd5e1" font-size="12" font-weight="600">R1</text>
+          
+          <line x1="110" y1="115" x2="110" y2="175" stroke="#cbd5e1" stroke-width="2"/>
+          <circle cx="110" cy="145" r="4" fill="#facc15"/>
+          <text x="60" y="149" fill="#facc15" font-size="11" font-weight="700">Vb=<tspan id="txt_vb_sch">2.41V</tspan></text>
+          
+          <rect x="95" y="175" width="30" height="50" fill="#1e293b" stroke="#38bdf8" stroke-width="2" rx="4"/>
+          <text x="132" y="204" fill="#cbd5e1" font-size="12" font-weight="600">R2</text>
+          <line x1="110" y1="225" x2="110" y2="280" stroke="#cbd5e1" stroke-width="2"/>
+
+          <!-- Linia Baza -> Tranzystor -->
+          <line x1="110" y1="145" x2="250" y2="145" stroke="#cbd5e1" stroke-width="2"/>
+          <line x1="160" y1="140" x2="205" y2="140" stroke="#38bdf8" stroke-width="1.5" marker-end="url(#arrow)"/>
+          <text x="165" y="132" fill="#38bdf8" font-size="11">Ib = <tspan id="txt_ib_sch">0.05 mA</tspan></text>
+
+          <!-- Gałąź Kolektora: LED i RC -->
+          <line x1="330" y1="25" x2="330" y2="55" stroke="#cbd5e1" stroke-width="2"/>
+          <g transform="translate(330, 75)">
+            <polygon points="-12,-15 12,-15 0,10" fill="#f87171" id="svg_led_body" stroke="#fff" stroke-width="1.5"/>
+            <line x1="-12" y1="10" x2="12" y2="10" stroke="#fff" stroke-width="2"/>
+            <line x1="0" y1="-20" x2="0" y2="-15" stroke="#cbd5e1" stroke-width="2"/>
+            <line x1="0" y1="10" x2="0" y2="20" stroke="#cbd5e1" stroke-width="2"/>
+            <g id="svg_led_rays" stroke="#f87171" stroke-width="1.5">
+              <line x1="14" y1="-5" x2="24" y2="-12"/>
+              <line x1="14" y1="5" x2="24" y2="-2"/>
+            </g>
+          </g>
+          <text x="355" y="80" fill="#f87171" font-size="12" font-weight="700">LED</text>
+          
+          <line x1="330" y1="95" x2="330" y2="110" stroke="#cbd5e1" stroke-width="2"/>
+          <rect x="315" y="110" width="30" height="40" fill="#1e293b" stroke="#38bdf8" stroke-width="2" rx="4"/>
+          <text x="352" y="134" fill="#cbd5e1" font-size="12" font-weight="600">Rc</text>
+          <line x1="330" y1="150" x2="330" y2="165" stroke="#cbd5e1" stroke-width="2"/>
+          <circle cx="330" cy="165" r="4" fill="#38bdf8"/>
+          <text x="342" y="169" fill="#38bdf8" font-size="11" font-weight="700">Vc=<tspan id="txt_vc_sch">4.18V</tspan></text>
+
+          <!-- TRANZYSTOR NPN -->
+          <g transform="translate(290, 185)">
+            <line x1="-40" y1="-40" x2="-10" y2="-40" stroke="#cbd5e1" stroke-width="2"/>
+            <line x1="-10" y1="-60" x2="-10" y2="-20" stroke="#fff" stroke-width="3"/>
+            <line x1="-10" y1="-50" x2="40" y2="-20" stroke="#cbd5e1" stroke-width="2"/>
+            <line x1="-10" y1="-30" x2="40" y2="0" stroke="#cbd5e1" stroke-width="2"/>
+            <polygon points="18,-10 29,-5 24,-17" fill="#cbd5e1"/>
+            <text x="-30" y="-60" fill="#facc15" font-size="11" font-weight="bold">B</text>
+            <text x="45" y="-22" fill="#38bdf8" font-size="11" font-weight="bold">C</text>
+            <text x="45" y="8" fill="#4ade80" font-size="11" font-weight="bold">E</text>
+          </g>
+
+          <!-- Rezystor RE i połączenie do masy -->
+          <line x1="330" y1="185" x2="330" y2="205" stroke="#cbd5e1" stroke-width="2"/>
+          <circle cx="330" cy="195" r="4" fill="#4ade80"/>
+          <text x="342" y="199" fill="#4ade80" font-size="11" font-weight="700">Ve=<tspan id="txt_ve_sch">1.73V</tspan></text>
+          <rect x="315" y="205" width="30" height="40" fill="#1e293b" stroke="#38bdf8" stroke-width="2" rx="4"/>
+          <text x="352" y="230" fill="#cbd5e1" font-size="12" font-weight="600">RE</text>
+          <line x1="330" y1="245" x2="330" y2="280" stroke="#cbd5e1" stroke-width="2"/>
+        </svg>
+      </div>
+
+      <!-- Wyniki pomiarów -->
+      <div class="results-grid">
+        <div class="res-card" style="border-left-color: #facc15;">
+          <span class="res-label">Napięcie Bazy (V<sub>B</sub>)</span>
+          <span class="res-value" id="val_vb">2.41 V</span>
+        </div>
+        <div class="res-card" style="border-left-color: #4ade80;">
+          <span class="res-label">Napięcie Emitera (V<sub>E</sub>)</span>
+          <span class="res-value" id="val_ve">1.73 V</span>
+        </div>
+        <div class="res-card" style="border-left-color: #38bdf8;">
+          <span class="res-label">Napięcie Kolektora (V<sub>C</sub>)</span>
+          <span class="res-value" id="val_vc">4.18 V</span>
+        </div>
+        <div class="res-card" style="border-left-color: #c084fc;">
+          <span class="res-label">V<sub>BE</sub> / V<sub>CE</sub></span>
+          <span class="res-value" id="val_vbe_vce">0.68V / 2.45V</span>
+        </div>
+        <div class="res-card" style="border-left-color: #38bdf8;">
+          <span class="res-label">Prąd Bazy (I<sub>B</sub>)</span>
+          <span class="res-value" id="val_ib">0.11 mA</span>
+        </div>
+        <div class="res-card" style="border-left-color: #f87171;">
+          <span class="res-label">Prąd Kolektora (I<sub>C</sub>)</span>
+          <span class="res-value" id="val_ic">16.8 mA</span>
+        </div>
+        <div class="res-card" style="border-left-color: #fb923c;">
+          <span class="res-label">Moc Strat Tranzystora</span>
+          <span class="res-value" id="val_pt">41.2 mW</span>
+        </div>
+        <div class="res-card" style="border-left-color: #e879f9;">
+          <span class="res-label">Stan Diody LED</span>
+          <span class="res-value" id="val_led">Świeci (85%)</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- DOLNY PANEL: RODZINY CHARAKTERYSTYK WB ORAZ WE -->
+  <div class="panel">
+    <div class="panel-title">
+      <div class="tab-nav">
+        <button class="tab-btn active" id="btnTabWB" onclick="switchChartTab('WB')">
+          📈 Rodzina Charakterystyk WB (Wspólna Baza): I<sub>C</sub> = f(U<sub>CB</sub>) [Zadana]
+        </button>
+        <button class="tab-btn" id="btnTabWE" onclick="switchChartTab('WE')">
+          📈 Konfiguracja WE (Wspólny Emiter): I<sub>C</sub> = f(U<sub>CE</sub>) + Prosta Obciążenia
+        </button>
+      </div>
+      <div style="font-size: 0.85rem; color: var(--accent-yellow); font-weight: 700;" id="chartPointInfo">
+        Punkt pracy Q: U<sub>CB</sub> = 1.77 V, I<sub>C</sub> = 16.8 mA
+      </div>
+    </div>
+
+    <div class="chart-container">
+      <canvas id="transistorChartCanvas"></canvas>
+    </div>
+
+    <div class="theory-box" id="theoryTextBox">
+      💡 <strong>Interpretacja Fizyczna (Konfiguracja WB):</strong> W konfiguracji Wspólnej Bazy (WB) prąd wyjściowy kolektora $I_C$ jest niemal całkowicie zdeterminowany przez prąd emitera $I_E$ ($I_C = \alpha \cdot I_E$, gdzie $\alpha \approx 0.993$). Dla $U_{CB} \ge 0\,\text{V}$ złącze kolektor-baza jest spolaryzowane zaporowo, a charakterystyki wyjściowe są niemal idealnie poziome (źródło prądowe o b. dużej rezystancji wyjściowej). Dla $U_{CB} < 0\,\text{V}$ następuje przewodzenie złącza C-B i prąd gwałtownie spada.
+    </div>
+  </div>
+
+  <!-- SKRYPT LOGIKI I THREE.JS -->
+  <script>
+    // --- STAN SYMULACJI ---
+    const state = {
+      vcc: 9.0,        // V
+      r1: 22000,       // Ohm (22k)
+      r2: 10000,       // Ohm (10k)
+      rc: 220,         // Ohm
+      re: 100,         // Ohm
+      beta: 150,       // wzmocnienie hFE
+      vbe_nom: 0.68,   // V
+      vled_f: 2.0,     // V dla czerwonej diody LED
+      activeTab: 'WB', // 'WB' lub 'WE'
+      
+      // Wyliczone wartości:
+      vb: 0,
+      ve: 0,
+      vc: 0,
+      vbe: 0,
+      vce: 0,
+      vcb: 0,
+      ib: 0,           // A
+      ic: 0,           // A
+      ie: 0,           // A
+      pt: 0,           // W
+      mode: 'cutoff',  // 'cutoff', 'active', 'saturation'
+      ledBrightness: 0
+    };
+
+    // --- RÓWNANIA FIZYCZNE MODELU TRANZYSTORA ---
+    function computeCircuit() {
+      const { vcc, r1, r2, rc, re, beta, vbe_nom, vled_f } = state;
+      
+      // Zastępcze parametry Thevenina dla dzielnika bazy
+      const vth = vcc * (r2 / (r1 + r2));
+      const rth = (r1 * r2) / (r1 + r2);
+
+      // 1. Zatkanie (Cut-off)
+      if (vth < 0.62) {
+        state.mode = 'cutoff';
+        state.ib = 0;
+        state.ic = 0;
+        state.ie = 0;
+        state.vb = vth;
+        state.ve = 0;
+        state.vc = vcc;
+        state.vbe = vth;
+        state.vce = vcc;
+        state.vcb = vcc - vth;
+        state.pt = 0;
+        state.ledBrightness = 0;
+        return;
+      }
+
+      // 2. Stan aktywny liniowy
+      let ib_active = (vth - vbe_nom) / (rth + (beta + 1) * re);
+      if (ib_active < 0) ib_active = 0;
+
+      let ic_active = beta * ib_active;
+      let ie_active = (beta + 1) * ib_active;
+      let ve_active = ie_active * re;
+      let vb_active = ve_active + vbe_nom;
+
+      let vc_active = vcc - (ic_active > 0.0003 ? vled_f : 0) - ic_active * rc;
+      let vce_active = vc_active - ve_active;
+
+      const VCE_SAT = 0.20; // Napięcie nasycenia tranzystora krzemowego
+
+      if (vce_active <= VCE_SAT) {
+        // 3. Stan nasycenia (Saturation)
+        state.mode = 'saturation';
+        state.vce = VCE_SAT;
+        
+        const vbe_sat = 0.75;
+        const A11 = rc + re, A12 = re, B1 = Math.max(0, vcc - vled_f - VCE_SAT);
+        const A21 = re, A22 = rth + re, B2 = Math.max(0, vth - vbe_sat);
+        
+        const det = A11 * A22 - A12 * A21;
+        let ic_sat = (B1 * A22 - B2 * A12) / det;
+        let ib_sat = (A11 * B2 - A21 * B1) / det;
+
+        if (ic_sat < 0) ic_sat = 0;
+        if (ib_sat < 0) ib_sat = 0;
+
+        state.ic = ic_sat;
+        state.ib = ib_sat;
+        state.ie = ic_sat + ib_sat;
+        state.ve = state.ie * re;
+        state.vb = state.ve + vbe_sat;
+        state.vc = state.ve + VCE_SAT;
+        state.vbe = vbe_sat;
+        state.vcb = state.vc - state.vb;
+      } else {
+        state.mode = 'active';
+        state.ib = ib_active;
+        state.ic = ic_active;
+        state.ie = ie_active;
+        state.vb = vb_active;
+        state.ve = ve_active;
+        state.vc = vc_active;
+        state.vbe = vbe_nom;
+        state.vce = vce_active;
+        state.vcb = vc_active - vb_active;
+      }
+
+      state.pt = Math.max(0, state.vce * state.ic);
+      state.ledBrightness = Math.min(1.0, state.ic / 0.020);
+    }
+
+    // --- AKTUALIZACJA UI ---
+    function updateUI() {
+      computeCircuit();
+
+      // Badge statusu
+      const badge = document.getElementById('statusBadge');
+      const icon = document.getElementById('statusIcon');
+      const text = document.getElementById('statusText');
+      
+      badge.className = 'badge-status ' + 
+        (state.mode === 'cutoff' ? 'status-cutoff' : (state.mode === 'active' ? 'status-active' : 'status-saturation'));
+      icon.textContent = state.mode === 'cutoff' ? '⭕' : (state.mode === 'active' ? '🟡' : '🟢');
+      text.textContent = state.mode === 'cutoff' ? 'Stan: ZATKANY (OFF)' : 
+                        (state.mode === 'active' ? 'Stan: AKTYWNY (Liniowy)' : 'Stan: NASYCONY (Klucz ON)');
+
+      // Wyniki liczbowe
+      document.getElementById('val_vb').textContent = state.vb.toFixed(2) + ' V';
+      document.getElementById('val_ve').textContent = state.ve.toFixed(2) + ' V';
+      document.getElementById('val_vc').textContent = state.vc.toFixed(2) + ' V';
+      document.getElementById('val_vbe_vce').textContent = state.vbe.toFixed(2) + 'V / ' + state.vce.toFixed(2) + 'V';
+      document.getElementById('val_ib').textContent = (state.ib * 1000).toFixed(3) + ' mA';
+      document.getElementById('val_ic').textContent = (state.ic * 1000).toFixed(2) + ' mA';
+      document.getElementById('val_pt').textContent = (state.pt * 1000).toFixed(1) + ' mW';
+      document.getElementById('val_led').textContent = state.ic < 0.0003 ? 'Zgaszona (0%)' : 'Świeci (' + Math.round(state.ledBrightness * 100) + '%)';
+
+      // Wartości na schemacie SVG
+      document.getElementById('txt_vcc_sch').textContent = state.vcc.toFixed(1) + 'V';
+      document.getElementById('txt_vb_sch').textContent = state.vb.toFixed(2) + 'V';
+      document.getElementById('txt_ve_sch').textContent = state.ve.toFixed(2) + 'V';
+      document.getElementById('txt_vc_sch').textContent = state.vc.toFixed(2) + 'V';
+      document.getElementById('txt_ib_sch').textContent = (state.ib * 1000).toFixed(2) + ' mA';
+
+      // Kolor diody LED na schemacie SVG
+      const ledColor = state.ledBrightness > 0.05 ? 
+        `rgb(255, ${Math.round(110 - state.ledBrightness * 80)}, ${Math.round(110 - state.ledBrightness * 80)})` : '#475569';
+      document.getElementById('svg_led_body').setAttribute('fill', ledColor);
+      document.getElementById('svg_led_rays').style.opacity = state.ledBrightness;
+
+      // 3D aktualizacja
+      if (threeScene) {
+        threeScene.updateMaterials();
+      }
+
+      // Wykres
+      drawChart();
+    }
+
+    // --- SYNCHRONIZACJA KONTROLEK ---
+    function syncControl(idNum, idRng, key, scale = 1) {
+      const num = document.getElementById(idNum);
+      const rng = document.getElementById(idRng);
+
+      num.addEventListener('input', () => {
+        state[key] = parseFloat(num.value) * scale;
+        rng.value = num.value;
+        updateUI();
+      });
+
+      rng.addEventListener('input', () => {
+        num.value = rng.value;
+        state[key] = parseFloat(rng.value) * scale;
+        updateUI();
+      });
+    }
+
+    syncControl('num_vcc', 'rng_vcc', 'vcc', 1);
+    syncControl('num_r1', 'rng_r1', 'r1', 1000);
+    syncControl('num_r2', 'rng_r2', 'r2', 1000);
+    syncControl('num_rc', 'rng_rc', 'rc', 1);
+    syncControl('num_re', 'rng_re', 're', 1);
+    syncControl('num_beta', 'rng_beta', 'beta', 1);
+
+    // --- PRESETY ---
+    function setPreset(type) {
+      if (type === 'off') {
+        setValues(9.0, 100, 4.7, 220, 100, 150);
+      } else if (type === 'active') {
+        setValues(9.0, 33, 10, 220, 150, 150);
+      } else if (type === 'sat') {
+        setValues(9.0, 10, 47, 220, 50, 150);
+      }
+    }
+
+    function setValues(vcc, r1_k, r2_k, rc, re, beta) {
+      document.getElementById('num_vcc').value = vcc; document.getElementById('rng_vcc').value = vcc; state.vcc = vcc;
+      document.getElementById('num_r1').value = r1_k; document.getElementById('rng_r1').value = r1_k; state.r1 = r1_k * 1000;
+      document.getElementById('num_r2').value = r2_k; document.getElementById('rng_r2').value = r2_k; state.r2 = r2_k * 1000;
+      document.getElementById('num_rc').value = rc; document.getElementById('rng_rc').value = rc; state.rc = rc;
+      document.getElementById('num_re').value = re; document.getElementById('rng_re').value = re; state.re = re;
+      document.getElementById('num_beta').value = beta; document.getElementById('rng_beta').value = beta; state.beta = beta;
+      updateUI();
+    }
+
+    // --- WIZUALIZACJA 3D (THREE.JS) ---
+    let threeScene = null;
+
+    function initThreeJS() {
+      const container = document.getElementById('view3d-container');
+      const canvas = document.getElementById('view3d-canvas');
+
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x070d18);
+
+      const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
+      camera.position.set(0, 6.5, 9.5);
+
+      const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+      renderer.setSize(container.clientWidth, container.clientHeight);
+      renderer.setPixelRatio(window.devicePixelRatio);
+      renderer.shadowMap.enabled = true;
+
+      const controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.05;
+      controls.maxPolarAngle = Math.PI / 2 + 0.1;
+
+      // Oświetlenie
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+      scene.add(ambientLight);
+
+      const dirLight = new THREE.DirectionalLight(0xffffff, 0.9);
+      dirLight.position.set(6, 12, 8);
+      dirLight.castShadow = true;
+      scene.add(dirLight);
+
+      // Światło z diody LED (punktowe)
+      const ledPointLight = new THREE.PointLight(0xff3333, 0, 9);
+      ledPointLight.position.set(2, 1.8, -1.2);
+      scene.add(ledPointLight);
+
+      // Płytka PCB
+      const pcbGeo = new THREE.BoxGeometry(8.5, 0.35, 6.5);
+      const pcbMat = new THREE.MeshStandardMaterial({ color: 0x064e3b, roughness: 0.35, metalness: 0.1 });
+      const pcb = new THREE.Mesh(pcbGeo, pcbMat);
+      pcb.receiveShadow = true;
+      scene.add(pcb);
+
+      // Ścieżki miedziane
+      const trackMat = new THREE.MeshStandardMaterial({ color: 0xd97706, metalness: 0.8, roughness: 0.2 });
+      const t1 = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.36, 4.5), trackMat);
+      t1.position.set(-2, 0, 0); scene.add(t1);
+      const t2 = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.36, 4.5), trackMat);
+      t2.position.set(2, 0, 0); scene.add(t2);
+
+      // 1. Tranzystor NPN (TO-92)
+      const transistorGroup = new THREE.Group();
+      const bodyGeo = new THREE.CylinderGeometry(0.48, 0.48, 0.8, 16, 1, false, 0, Math.PI);
+      const bodyMat = new THREE.MeshStandardMaterial({ color: 0x111827, roughness: 0.2 });
+      const tBody = new THREE.Mesh(bodyGeo, bodyMat);
+      tBody.rotation.y = Math.PI / 2;
+      tBody.position.y = 0.75;
+      transistorGroup.add(tBody);
+
+      // Płaski tył obudowy TO-92
+      const backGeo = new THREE.BoxGeometry(0.96, 0.8, 0.05);
+      const tBack = new THREE.Mesh(backGeo, bodyMat);
+      tBack.position.set(0, 0.75, 0);
+      transistorGroup.add(tBack);
+
+      // Nóżki metalowe tranzystora (B, C, E)
+      const pinMat = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, metalness: 0.95, roughness: 0.1 });
+      for (let i = -1; i <= 1; i++) {
+        const pin = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, 0.75), pinMat);
+        pin.position.set(i * 0.24, 0.35, 0);
+        transistorGroup.add(pin);
+      }
+      transistorGroup.position.set(0, 0.18, 0);
+      scene.add(transistorGroup);
+
+      // 2. Dioda LED
+      const ledGroup = new THREE.Group();
+      const ledDomeGeo = new THREE.SphereGeometry(0.35, 16, 16, 0, Math.PI * 2, 0, Math.PI / 2);
+      const ledCylGeo = new THREE.CylinderGeometry(0.35, 0.35, 0.4, 16);
+      
+      const ledMaterial = new THREE.MeshStandardMaterial({
+        color: 0xff1111,
+        emissive: 0x000000,
+        roughness: 0.1,
+        transparent: true,
+        opacity: 0.85
+      });
+      
+      const ledDome = new THREE.Mesh(ledDomeGeo, ledMaterial);
+      ledDome.position.y = 0.85;
+      ledGroup.add(ledDome);
+
+      const ledCyl = new THREE.Mesh(ledCylGeo, ledMaterial);
+      ledCyl.position.y = 0.65;
+      ledGroup.add(ledCyl);
+
+      const lPin1 = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.65), pinMat);
+      lPin1.position.set(-0.12, 0.32, 0); ledGroup.add(lPin1);
+      const lPin2 = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.65), pinMat);
+      lPin2.position.set(0.12, 0.32, 0); ledGroup.add(lPin2);
+
+      ledGroup.position.set(2, 0.18, -1.2);
+      scene.add(ledGroup);
+
+      // 3. Rezystory przewlekane
+      function createResistor(x, z) {
+        const rGroup = new THREE.Group();
+        const rBody = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.16, 0.65, 12), 
+          new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.4 }));
+        rBody.rotation.z = Math.PI / 2;
+        rBody.position.y = 0.35;
+        rGroup.add(rBody);
+
+        const b1 = new THREE.Mesh(new THREE.CylinderGeometry(0.165, 0.165, 0.07, 12), 
+          new THREE.MeshBasicMaterial({ color: 0xef4444 }));
+        b1.rotation.z = Math.PI / 2; b1.position.set(-0.14, 0.35, 0); rGroup.add(b1);
+        const b2 = new THREE.Mesh(new THREE.CylinderGeometry(0.165, 0.165, 0.07, 12), 
+          new THREE.MeshBasicMaterial({ color: 0x000000 }));
+        b2.rotation.z = Math.PI / 2; b2.position.set(0.05, 0.35, 0); rGroup.add(b2);
+
+        rGroup.position.set(x, 0.18, z);
+        scene.add(rGroup);
+      }
+
+      createResistor(-2, -1.3); // R1
+      createResistor(-2, 1.3);  // R2
+      createResistor(2, 0.2);   // RC
+      createResistor(0.8, 1.6); // RE
+
+      // 4. Cząsteczki płynącego prądu
+      const particleCount = 70;
+      const particleGeo = new THREE.BufferGeometry();
+      const particlePos = new Float32Array(particleCount * 3);
+
+      for (let i = 0; i < particleCount * 3; i += 3) {
+        particlePos[i] = (Math.random() - 0.5) * 4.2;
+        particlePos[i + 1] = 0.32;
+        particlePos[i + 2] = (Math.random() - 0.5) * 4.2;
+      }
+      particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePos, 3));
+      const particleMat = new THREE.PointsMaterial({ color: 0x38bdf8, size: 0.09, transparent: true, opacity: 0.7 });
+      const particleSystem = new THREE.Points(particleGeo, particleMat);
+      scene.add(particleSystem);
+
+      function updateMaterials() {
+        const b = state.ledBrightness;
+        ledMaterial.emissive.setRGB(b * 0.95, 0.08 * b, 0.08 * b);
+        ledPointLight.intensity = b * 4.0;
+        particleMat.opacity = Math.max(0.15, b * 0.95);
+      }
+
+      function animate() {
+        requestAnimationFrame(animate);
+        controls.update();
+
+        if (state.ic > 0.0003) {
+          const positions = particleGeo.attributes.position.array;
+          const speed = state.ic * 18;
+          for (let i = 0; i < particleCount * 3; i += 3) {
+            positions[i + 2] += (0.015 + speed * 0.006);
+            if (positions[i + 2] > 2.6) positions[i + 2] = -2.6;
+          }
+          particleGeo.attributes.position.needsUpdate = true;
+        }
+
+        renderer.render(scene, camera);
+      }
+      animate();
+
+      window.addEventListener('resize', () => {
+        camera.aspect = container.clientWidth / container.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        drawChart();
+      });
+
+      threeScene = { updateMaterials };
+    }
+
+    // --- WYKRESY CHARAKTERYSTYK (WB & WE) ---
+    function switchChartTab(tab) {
+      state.activeTab = tab;
+      document.getElementById('btnTabWB').className = 'tab-btn ' + (tab === 'WB' ? 'active' : '');
+      document.getElementById('btnTabWE').className = 'tab-btn ' + (tab === 'WE' ? 'active' : '');
+      
+      const box = document.getElementById('theoryTextBox');
+      if (tab === 'WB') {
+        box.innerHTML = '💡 <strong>Interpretacja Fizyczna (Konfiguracja WB):</strong> W konfiguracji Wspólnej Bazy (WB) prąd wyjściowy kolektora $I_C$ jest niemal całkowicie zdeterminowany przez prąd emitera $I_E$ ($I_C = \\alpha \\cdot I_E$, gdzie $\\alpha \\approx 0.993$). Dla $U_{CB} \\ge 0\\,\\text{V}$ złącze kolektor-baza jest spolaryzowane zaporowo, a charakterystyki wyjściowe są niemal idealnie poziome (źródło prądowe o b. dużej rezystancji wyjściowej). Dla $U_{CB} < 0\\,\\text{V}$ następuje przewodzenie złącza C-B i prąd gwałtownie spada.';
+      } else {
+        box.innerHTML = '💡 <strong>Interpretacja Fizyczna (Konfiguracja WE):</strong> W konfiguracji Wspólnego Emitera (WE) prąd kolektora $I_C$ zależy od prądu bazy ($I_C = \\beta \\cdot I_B$). Czerwona <strong>Prosta Obciążenia</strong> łączy punkt odcięcia ($U_{CE} = V_{CC}$) z punktem maksymalnego prądu zwarcia. Żółty <strong>Punkt pracy Q</strong> przemieszcza się po prostej obciążenia: w lewo do nasycenia ($U_{CE} \\approx 0.2\\text{V}$, dioda świeci) lub w prawo do odcięcia ($I_C \\approx 0$, dioda zgaszona).';
+      }
+
+      drawChart();
+    }
+
+    function drawChart() {
+      const canvas = document.getElementById('transistorChartCanvas');
+      const ctx = canvas.getContext('2d');
+      const rect = canvas.parentElement.getBoundingClientRect();
+      
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+
+      const W = canvas.width;
+      const H = canvas.height;
+      const padLeft = 65, padBottom = 45, padTop = 30, padRight = 35;
+      const plotW = W - padLeft - padRight;
+      const plotH = H - padTop - padBottom;
+
+      ctx.fillStyle = '#020617';
+      ctx.fillRect(0, 0, W, H);
+
+      if (state.activeTab === 'WB') {
+        // --- CHARAKTERYSTYKI WB: Ic = f(Ucb, Ie) ---
+        const maxUcb = Math.max(12.0, state.vcc + 1);
+        const minUcb = -1.0;
+        const maxIc = 40.0; // mA
+
+        const toX = (ucb) => padLeft + ((ucb - minUcb) / (maxUcb - minUcb)) * plotW;
+        const toY = (ic_mA) => padTop + plotH - (ic_mA / maxIc) * plotH;
+
+        // Siatka i osie
+        ctx.strokeStyle = '#1e293b';
+        ctx.lineWidth = 1;
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '11px Segoe UI';
+
+        for (let u = 0; u <= maxUcb; u += 2) {
+          const x = toX(u);
+          ctx.beginPath(); ctx.moveTo(x, padTop); ctx.lineTo(x, padTop + plotH); ctx.stroke();
+          ctx.fillText(u + 'V', x - 8, padTop + plotH + 18);
+        }
+        for (let i = 0; i <= maxIc; i += 10) {
+          const y = toY(i);
+          ctx.beginPath(); ctx.moveTo(padLeft, y); ctx.lineTo(padLeft + plotW, y); ctx.stroke();
+          ctx.fillText(i + ' mA', 12, y + 4);
+        }
+
+        // Granica Ucb = 0
+        const xZero = toX(0);
+        ctx.strokeStyle = '#475569';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.moveTo(xZero, padTop); ctx.lineTo(xZero, padTop + plotH); ctx.stroke();
+        ctx.fillText('0V', xZero - 8, padTop + plotH + 18);
+
+        // Rodzina charakterystyk dla stałych prądów Ie
+        const ieSeries = [5, 10, 15, 20, 25, 30, 35];
+        const alpha = state.beta / (state.beta + 1);
+
+        ieSeries.forEach((ie_mA) => {
+          ctx.strokeStyle = 'rgba(56, 189, 248, 0.45)';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+
+          for (let u = minUcb; u <= maxUcb; u += 0.1) {
+            let ic_calc = u >= 0 ? alpha * ie_mA * (1 + u * 0.005) : alpha * ie_mA * Math.exp(u / 0.15);
+            const px = toX(u);
+            const py = toY(ic_calc);
+            if (u === minUcb) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+          }
+          ctx.stroke();
+
+          const labelY = toY(alpha * ie_mA);
+          ctx.fillStyle = 'rgba(56, 189, 248, 0.85)';
+          ctx.fillText(`IE = ${ie_mA}mA`, toX(maxUcb) - 62, labelY - 4);
+        });
+
+        // BIEŻĄCY PUNKT PRACY Q (WB)
+        const curUcb = state.vcb;
+        const curIc_mA = state.ic * 1000;
+        const curIe_mA = state.ie * 1000;
+
+        const qX = toX(Math.max(minUcb, Math.min(maxUcb, curUcb)));
+        const qY = toY(Math.max(0, Math.min(maxIc, curIc_mA)));
+
+        // Rysowanie dynamicznej krzywej dla aktualnego Ie
+        ctx.strokeStyle = '#facc15';
+        ctx.lineWidth = 2.5;
+        ctx.setLineDash([5, 4]);
+        ctx.beginPath();
+        for (let u = minUcb; u <= maxUcb; u += 0.1) {
+          let ic_calc = u >= 0 ? alpha * curIe_mA * (1 + u * 0.005) : alpha * curIe_mA * Math.exp(u / 0.15);
+          const px = toX(u);
+          const py = toY(ic_calc);
+          if (u === minUcb) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+        }
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Linie rzutowania punktu Q na osie
+        ctx.strokeStyle = 'rgba(250, 204, 21, 0.5)';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([3, 3]);
+        ctx.beginPath(); ctx.moveTo(qX, padTop + plotH); ctx.lineTo(qX, qY); ctx.lineTo(padLeft, qY); ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Rysowanie punktu Q
+        ctx.fillStyle = '#facc15';
+        ctx.beginPath(); ctx.arc(qX, qY, 6.5, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
+
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 12px Segoe UI';
+        ctx.fillText(`Punkt Q (UCB=${curUcb.toFixed(2)}V, IC=${curIc_mA.toFixed(2)}mA)`, qX + 10, qY - 10);
+
+        // Opisy osi
+        ctx.fillStyle = '#e2e8f0';
+        ctx.font = 'bold 12px Segoe UI';
+        ctx.fillText('Napięcie Kolektor-Baza U_CB [V]', padLeft + plotW / 2 - 80, H - 10);
+        ctx.save();
+        ctx.translate(16, padTop + plotH / 2 + 50);
+        ctx.rotate(-Math.PI / 2);
+        ctx.fillText('Prąd Kolektora I_C [mA]', 0, 0);
+        ctx.restore();
+
+        document.getElementById('chartPointInfo').innerHTML = 
+          `Konfiguracja WB: Punkt <strong>Q</strong>: U<sub>CB</sub> = ${curUcb.toFixed(2)} V, I<sub>C</sub> = ${curIc_mA.toFixed(2)} mA (I<sub>E</sub> = ${curIe_mA.toFixed(2)} mA, &alpha; &approx; ${alpha.toFixed(3)})`;
+
+      } else {
+        // --- CHARAKTERYSTYKI WE: Ic = f(Uce, Ib) + Prosta Obciążenia ---
+        const maxUce = state.vcc + 2;
+        const maxIc = (state.vcc / (state.rc + state.re)) * 1000 * 1.35;
+
+        const toX = (uce) => padLeft + (uce / maxUce) * plotW;
+        const toY = (ic_mA) => padTop + plotH - (ic_mA / maxIc) * plotH;
+
+        ctx.strokeStyle = '#1e293b';
+        ctx.lineWidth = 1;
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '11px Segoe UI';
+
+        for (let u = 0; u <= maxUce; u += 2) {
+          const x = toX(u);
+          ctx.beginPath(); ctx.moveTo(x, padTop); ctx.lineTo(x, padTop + plotH); ctx.stroke();
+          ctx.fillText(u + 'V', x - 8, padTop + plotH + 18);
+        }
+        for (let i = 0; i <= maxIc; i += 10) {
+          const y = toY(i);
+          ctx.beginPath(); ctx.moveTo(padLeft, y); ctx.lineTo(padLeft + plotW, y); ctx.stroke();
+          ctx.fillText(i + ' mA', 12, y + 4);
+        }
+
+        const ibSeries_uA = [20, 50, 100, 150, 200, 300];
+        ibSeries_uA.forEach(ib_uA => {
+          ctx.strokeStyle = 'rgba(74, 222, 128, 0.45)';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          for (let u = 0; u <= maxUce; u += 0.1) {
+            const ic_mA = (state.beta * (ib_uA / 1000)) * (1 - Math.exp(-u / 0.4)) * (1 + u * 0.015);
+            const px = toX(u);
+            const py = toY(ic_mA);
+            if (u === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+          }
+          ctx.stroke();
+        });
+
+        // PROSTA OBCIĄŻENIA
+        const ic_max_load = ((state.vcc - state.vled_f) / (state.rc + state.re)) * 1000;
+        const uce_max_load = state.vcc;
+
+        ctx.strokeStyle = '#f87171';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.moveTo(toX(0), toY(Math.max(0, ic_max_load)));
+        ctx.lineTo(toX(uce_max_load), toY(0));
+        ctx.stroke();
+        ctx.fillStyle = '#f87171';
+        ctx.fillText('Prosta obciążenia', toX(uce_max_load * 0.55), toY(ic_max_load * 0.45) - 10);
+
+        // BIEŻĄCY PUNKT PRACY Q (WE)
+        const curUce = state.vce;
+        const curIc_mA = state.ic * 1000;
+        const qX = toX(curUce);
+        const qY = toY(curIc_mA);
+
+        ctx.fillStyle = '#facc15';
+        ctx.beginPath(); ctx.arc(qX, qY, 6.5, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
+
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 12px Segoe UI';
+        ctx.fillText(`Punkt Q (UCE=${curUce.toFixed(2)}V, IC=${curIc_mA.toFixed(2)}mA)`, qX + 10, qY - 10);
+
+        ctx.fillStyle = '#e2e8f0';
+        ctx.font = 'bold 12px Segoe UI';
+        ctx.fillText('Napięcie Kolektor-Emiter U_CE [V]', padLeft + plotW / 2 - 80, H - 10);
+        ctx.save();
+        ctx.translate(16, padTop + plotH / 2 + 50);
+        ctx.rotate(-Math.PI / 2);
+        ctx.fillText('Prąd Kolektora I_C [mA]', 0, 0);
+        ctx.restore();
+
+        document.getElementById('chartPointInfo').innerHTML = 
+          `Konfiguracja WE: Punkt <strong>Q</strong>: U<sub>CE</sub> = ${curUce.toFixed(2)} V, I<sub>C</sub> = ${curIc_mA.toFixed(2)} mA (I<sub>B</sub> = ${(state.ib * 1000).toFixed(3)} mA)`;
+      }
+    }
+
+    // Start aplikacji
+    window.addEventListener('DOMContentLoaded', () => {
+      initThreeJS();
+      updateUI();
+    });
+  </script>
+</body>
+</html>
