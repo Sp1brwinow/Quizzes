@@ -985,6 +985,64 @@
             box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
         }
 
+        /* Przycisk Start Single Player */
+        .btn-start-single {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 1.05rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 13px 22px;
+            width: 100%;
+            transition: all 0.25s ease;
+        }
+
+        .btn-start-single:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 22px rgba(16, 185, 129, 0.6);
+            background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+        }
+
+        /* Nakładka startowa przed rozpoczęciem gry solo */
+        .single-start-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(15, 23, 42, 0.96) 0%, rgba(2, 6, 23, 0.98) 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+            z-index: 5;
+            cursor: default;
+        }
+
+        .single-start-overlay h3 {
+            font-size: 1.25rem;
+            color: #38bdf8;
+            margin: 8px 0 4px 0;
+            font-weight: 800;
+        }
+
+        .single-start-overlay p {
+            font-size: 0.88rem;
+            color: #94a3b8;
+            max-width: 280px;
+            line-height: 1.4;
+            margin-bottom: 0;
+        }
+
         /* Modal podsumowania */
         .modal-overlay {
             position: fixed;
@@ -1289,9 +1347,15 @@
                         <span>📷 Zagadka – Gdzie to jest?</span>
                     </div>
 
-                    <div class="photo-img-wrapper" onclick="openZoomModal()">
-                        <img id="location-photo" src="" alt="Tajemnicze miejsce" />
-                        <div class="photo-zoom-hint">🔍 Kliknij, aby powiększyć</div>
+                    <div class="photo-img-wrapper" id="photo-img-wrapper" onclick="openZoomModal()">
+                        <!-- Ekran powitalny Solo / Placeholder przed startem -->
+                        <div class="single-start-overlay" id="single-start-overlay" onclick="event.stopPropagation()">
+                            <div style="font-size: 3rem; line-height: 1; margin-bottom: 6px;">🌍</div>
+                            <h3>Famous Places Quiz</h3>
+                            <p>Odkryj 5 tajemniczych miejsc na świecie. Masz 20 sekund na każdą rundę!</p>
+                        </div>
+                        <img id="location-photo" src="" alt="Tajemnicze miejsce" style="display: none;" />
+                        <div class="photo-zoom-hint" id="photo-zoom-hint" style="display: none;">🔍 Kliknij, aby powiększyć</div>
                     </div>
 
                     <div class="photo-meta-bar">
@@ -1338,10 +1402,13 @@
 
                 <!-- Przyciski Akcji -->
                 <div class="action-bar">
-                    <button type="button" class="btn-submit" id="btn-submit-guess" onclick="submitGuess()" disabled>
+                    <button type="button" class="btn-start-single" id="btn-start-single" onclick="startSinglePlayerGame()">
+                        ▶️ Rozpocznij grę (Pojedynczy gracz)
+                    </button>
+                    <button type="button" class="btn-submit" id="btn-submit-guess" onclick="submitGuess()" disabled style="display: none;">
                         🎯 Zatwierdź strzał
                     </button>
-                    <button type="button" class="btn-next-round" id="btn-next" onclick="handleNextStep()">
+                    <button type="button" class="btn-next-round" id="btn-next" onclick="handleNextStep()" style="display: none;">
                         🔄 Następna runda (2 / 5)
                     </button>
                 </div>
@@ -1881,8 +1948,64 @@
                 switchMpTab('join');
                 document.getElementById('mp-input-code').value = queryRoom.toUpperCase();
             } else {
-                startRound(1);
+                showSinglePlayerStartScreen();
             }
+        }
+
+        // =========================================================================
+        // EKRAN STARTOWY SINGLE PLAYER & ROZPOCZĘCIE GRY
+        // =========================================================================
+        function showSinglePlayerStartScreen() {
+            stopTimer();
+            stopRevealTimer();
+            isRoundFinished = true;
+            userGuessLatLng = null;
+            clearAllMapMarkers();
+
+            document.getElementById('stat-round').innerText = `- / ${TOTAL_ROUNDS}`;
+            document.getElementById('question-text').innerText = 'Zgadnij miejsce po zdjęciu!';
+            document.getElementById('game-timer').innerText = '00:20';
+            document.getElementById('timer-badge').classList.remove('warning', 'critical');
+
+            const overlay = document.getElementById('single-start-overlay');
+            if (overlay) overlay.style.display = 'flex';
+
+            const photoEl = document.getElementById('location-photo');
+            if (photoEl) {
+                photoEl.style.display = 'none';
+                photoEl.src = '';
+            }
+            const zoomHint = document.getElementById('photo-zoom-hint');
+            if (zoomHint) zoomHint.style.display = 'none';
+
+            const btnStart = document.getElementById('btn-start-single');
+            if (btnStart) btnStart.style.display = 'flex';
+
+            document.getElementById('btn-submit-guess').style.display = 'none';
+            document.getElementById('btn-next').style.display = 'none';
+            document.getElementById('result-box').style.display = 'none';
+            document.getElementById('mp-round-results').style.display = 'none';
+            map.setView([20, 0], 2);
+        }
+
+        function startSinglePlayerGame() {
+            const overlay = document.getElementById('single-start-overlay');
+            if (overlay) overlay.style.display = 'none';
+
+            const photoEl = document.getElementById('location-photo');
+            if (photoEl) photoEl.style.display = 'block';
+
+            const zoomHint = document.getElementById('photo-zoom-hint');
+            if (zoomHint) zoomHint.style.display = 'block';
+
+            const btnStart = document.getElementById('btn-start-single');
+            if (btnStart) btnStart.style.display = 'none';
+
+            totalNegativeKm = 0;
+            roundsHistory = [];
+            document.getElementById('stat-total-score').innerText = '0 x 10 km';
+
+            startRound(1);
         }
 
         // =========================================================================
@@ -1896,6 +2019,18 @@
             userGuessLatLng = null;
 
             clearAllMapMarkers();
+
+            const overlay = document.getElementById('single-start-overlay');
+            if (overlay) overlay.style.display = 'none';
+
+            const photoEl = document.getElementById('location-photo');
+            if (photoEl) photoEl.style.display = 'block';
+
+            const zoomHint = document.getElementById('photo-zoom-hint');
+            if (zoomHint) zoomHint.style.display = 'block';
+
+            const btnStart = document.getElementById('btn-start-single');
+            if (btnStart) btnStart.style.display = 'none';
 
             // Aktualizacja nagłówka
             document.getElementById('stat-round').innerText = `${currentRound} / ${TOTAL_ROUNDS}`;
@@ -1914,7 +2049,6 @@
             secretLocation = activePool[randomIndex];
 
             // Ładowanie zdjęcia
-            const photoEl = document.getElementById('location-photo');
             photoEl.src = secretLocation.img;
             document.getElementById('zoomed-img').src = secretLocation.img;
 
@@ -2142,7 +2276,7 @@
             totalNegativeKm = 0;
             roundsHistory = [];
             document.getElementById('stat-total-score').innerText = `0 x 10 km`;
-            startRound(1);
+            showSinglePlayerStartScreen();
         }
 
         // =========================================================================
@@ -2486,6 +2620,18 @@
 
             clearAllMapMarkers();
 
+            const overlay = document.getElementById('single-start-overlay');
+            if (overlay) overlay.style.display = 'none';
+
+            const photoEl = document.getElementById('location-photo');
+            if (photoEl) photoEl.style.display = 'block';
+
+            const zoomHint = document.getElementById('photo-zoom-hint');
+            if (zoomHint) zoomHint.style.display = 'block';
+
+            const btnStart = document.getElementById('btn-start-single');
+            if (btnStart) btnStart.style.display = 'none';
+
             const totalR = (roomData && roomData.totalRounds) || TOTAL_ROUNDS;
             const roundDuration = (roomData && roomData.roundTime) ? roomData.roundTime : czas_zadania;
 
@@ -2503,7 +2649,6 @@
                 : 0;
             secretLocation = FAMOUS_PLACES_DB[placeIndex] || FAMOUS_PLACES_DB[0];
 
-            const photoEl = document.getElementById('location-photo');
             photoEl.src = secretLocation.img;
             document.getElementById('zoomed-img').src = secretLocation.img;
 
@@ -2840,11 +2985,13 @@
             totalNegativeKm = 0;
             roundsHistory = [];
             document.getElementById('stat-total-score').innerText = `0 x 10 km`;
-            startRound(1);
+            showSinglePlayerStartScreen();
         }
 
         // Zoom zdjęcia
         function openZoomModal() {
+            const photoEl = document.getElementById('location-photo');
+            if (!photoEl || !photoEl.src || photoEl.style.display === 'none') return;
             document.getElementById('img-zoom-modal').classList.add('active');
         }
 
