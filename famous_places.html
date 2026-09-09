@@ -1702,30 +1702,40 @@
                     return;
                 }
 
-                showToast("⏰ Czas minął (20s)!");
+                showToast("⏰ Czas minął!");
 
-                if (!isRoundFinished && roomRef) {
-                    isRoundFinished = true;
-                    const penalty = -1200;
-                    const distKm = 12000;
-                    roomRef.child(`players/${myPlayerId}/rounds/${currentRound}`).set({
-                        lat: 0,
-                        lng: 0,
-                        distKm: distKm,
-                        penalty: penalty,
-                        submitted: true,
-                        timeout: true
-                    });
-                    const currentTotal = ((roomData && roomData.players && roomData.players[myPlayerId] && roomData.players[myPlayerId].totalScore) || 0) + penalty;
-                    roomRef.child(`players/${myPlayerId}/totalScore`).set(currentTotal);
-                }
-                if (isHost && roomRef) {
-                    roomRef.update({ status: 'round_reveal' });
+                if (userGuessLatLng) {
+                    // Gracz postawił punkt na mapie, ale nie kliknął zatwierdź -> zaliczamy strzał!
+                    submitGuess();
+                } else {
+                    // Gracz nie wybrał żadnego punktu -> kara 12000 km (-1200 pkt)
+                    if (!isRoundFinished && roomRef) {
+                        isRoundFinished = true;
+                        const penalty = -1200;
+                        const distKm = 12000;
+                        document.getElementById('btn-submit-guess').style.display = 'none';
+
+                        roomRef.child(`players/${myPlayerId}/rounds/${currentRound}`).set({
+                            lat: 0,
+                            lng: 0,
+                            distKm: distKm,
+                            penalty: penalty,
+                            submitted: true,
+                            timeout: true
+                        });
+                        const currentTotal = ((roomData && roomData.players && roomData.players[myPlayerId] && roomData.players[myPlayerId].totalScore) || 0) + penalty;
+                        roomRef.child(`players/${myPlayerId}/totalScore`).set(currentTotal);
+                    }
                 }
                 return;
             }
 
-            showToast("⏰ Czas minął (20s)!");
+            showToast("⏰ Czas minął!");
+            if (userGuessLatLng) {
+                // Solo: gracz wybrał punkt -> zatwierdzamy normalny strzał
+                submitGuess();
+                return;
+            }
 
             // Tryb Solo
             isRoundFinished = true;
@@ -2313,6 +2323,11 @@
 
             roomRef = fbDb.ref('rooms/' + code);
             roomRef.on('value', onRoomUpdate);
+
+            // onDisconnect: jeśli wyjdzie Host -> status pokoju zmienia się na 'host_left'
+            if (isHost) {
+                roomRef.child('status').onDisconnect().set('host_left');
+            }
             roomRef.child('players/' + myPlayerId).onDisconnect().remove();
         }
 
@@ -2325,6 +2340,16 @@
             }
 
             roomData = snapshot.val();
+
+            // Sprawdzenie czy Host opuścił grę
+            if (roomData.status === 'host_left') {
+                showToast("⚠️ Gospodarz opuścił grę. Rozgrywka została zakończona.");
+                stopTimer();
+                stopRevealTimer();
+                leaveMultiplayerRoom(false);
+                return;
+            }
+
             const playersMap = roomData.players || {};
 
             if (!playersMap[myPlayerId]) {
@@ -2335,6 +2360,9 @@
 
             mySlot = playersMap[myPlayerId].slot || 0;
             isHost = (roomData.hostId === myPlayerId);
+            if (isHost && roomRef) {
+                roomRef.child('status').onDisconnect().set('host_left');
+            }
             const playersList = Object.values(playersMap).sort((a, b) => a.slot - b.slot);
 
             // Stan: LOBBY
