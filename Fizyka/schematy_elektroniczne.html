@@ -427,6 +427,9 @@
       <button class="btn-action active" id="btnAnimToggle" onclick="toggleElectronAnimation()">
         ⚡ Animacja Ładunków (ON)
       </button>
+      <button class="btn-action active" id="btnFlowDirToggle" onclick="toggleCurrentDirection()" title="Zmień kierunek animacji prądu">
+        ⚡ Kierunek: Umowny (+&rarr;-)
+      </button>
       <button class="btn-action active" id="btnGridToggle" onclick="toggleGrid()">
         📐 Siatka Snap (ON)
       </button>
@@ -551,6 +554,23 @@
           <div class="comp-info">
             <span class="comp-name">Tranzystor PNP (BC557)</span>
             <span class="comp-desc">Symbol BJT (&larr; E, B, C)</span>
+          </div>
+        </div>
+
+        <!-- Przyrządy pomiarowe -->
+        <div class="comp-item" onclick="addSymbol('voltmeter')">
+          <div class="comp-icon">📟</div>
+          <div class="comp-info">
+            <span class="comp-name">Woltomierz (V)</span>
+            <span class="comp-desc">Pomiar napięcia (równolegle)</span>
+          </div>
+        </div>
+
+        <div class="comp-item" onclick="addSymbol('ammeter')">
+          <div class="comp-icon">⏲️</div>
+          <div class="comp-info">
+            <span class="comp-name">Amperomierz (A)</span>
+            <span class="comp-desc">Pomiar prądu (szeregowo)</span>
           </div>
         </div>
 
@@ -679,6 +699,9 @@
           <button class="btn-preset" onclick="loadPreset('rlc_filter')">
             <span>🌀 8. Obwód Rezonansowy RLC</span>
           </button>
+          <button class="btn-preset" onclick="loadPreset('meters_demo')">
+            <span>📊 9. Pomiary V & A (Woltomierz + Amperomierz)</span>
+          </button>
         </div>
       </div>
 
@@ -701,6 +724,8 @@
       gridSnap: true,
       gridSize: 20,
       showElectrons: true,
+      currentFlowMode: 'conventional', // 'conventional' (+ -> -) lub 'electrons' (- -> +)
+      pinPotentials: new Map(),
       electronOffset: 0,
       time: 0,
       activeAudio: false,
@@ -1244,6 +1269,58 @@
           ctx.moveTo(4, -14); ctx.lineTo(4, 14);
           ctx.stroke();
           break;
+
+        case 'voltmeter': // Woltomierz IEC (Kółko z V + odczyt)
+          ctx.beginPath();
+          ctx.moveTo(-30, 0); ctx.lineTo(-18, 0);
+          ctx.moveTo(18, 0); ctx.lineTo(30, 0);
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.arc(0, 0, 18, 0, Math.PI * 2);
+          ctx.fillStyle = '#0f172a';
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.font = 'bold 15px sans-serif';
+          ctx.fillStyle = '#38bdf8';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText('V', 0, 1);
+
+          // Cyfrowy odczyt napięcia
+          ctx.font = 'bold 11px monospace';
+          ctx.fillStyle = '#4ade80';
+          ctx.fillText(elem.measuredVal || '0.00 V', 0, -24);
+          ctx.textAlign = 'start';
+          ctx.textBaseline = 'alphabetic';
+          break;
+
+        case 'ammeter': // Amperomierz IEC (Kółko z A + odczyt)
+          ctx.beginPath();
+          ctx.moveTo(-30, 0); ctx.lineTo(-18, 0);
+          ctx.moveTo(18, 0); ctx.lineTo(30, 0);
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.arc(0, 0, 18, 0, Math.PI * 2);
+          ctx.fillStyle = '#0f172a';
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.font = 'bold 15px sans-serif';
+          ctx.fillStyle = '#fb923c';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText('A', 0, 1);
+
+          // Cyfrowy odczyt prądu
+          ctx.font = 'bold 11px monospace';
+          ctx.fillStyle = '#4ade80';
+          ctx.fillText(elem.measuredVal || '0.0 mA', 0, -24);
+          ctx.textAlign = 'start';
+          ctx.textBaseline = 'alphabetic';
+          break;
       }
 
       // Rysowanie pinów / styków terminala
@@ -1292,18 +1369,43 @@
       context.lineTo(x2, y2);
     }
 
-    // Animacja płynących ładunków (elektronów)
+    // Animacja płynących ładunków (umowny kierunek lub ruch elektronów)
     function drawElectrons() {
-      ctx.fillStyle = '#facc15';
+      ctx.fillStyle = circuitState.currentFlowMode === 'conventional' ? '#facc15' : '#38bdf8';
+
       circuitState.wires.forEach(wire => {
         const p1 = getPinWorldPos(wire.fromElem, wire.fromPin);
         const p2 = getPinWorldPos(wire.toElem, wire.toPin);
 
-        const midX = Math.round((p1.x + p2.x) / 2);
+        const v1 = circuitState.pinPotentials.get(`${wire.fromElem.id}:${wire.fromPin.id}`) || 0;
+        const v2 = circuitState.pinPotentials.get(`${wire.toElem.id}:${wire.toPin.id}`) || 0;
+
+        let forward = true;
+        if (Math.abs(v1 - v2) > 0.05) {
+          forward = (v1 > v2);
+        } else {
+          // Gdy potencjały są równe (ten sam węzeł):
+          if (wire.fromElem.type === 'battery' && wire.fromPin.id === 'p') forward = true;
+          else if (wire.toElem.type === 'battery' && wire.toPin.id === 'p') forward = false;
+          else if (wire.fromElem.type === 'battery' && wire.fromPin.id === 'm') forward = false;
+          else if (wire.toElem.type === 'battery' && wire.toPin.id === 'm') forward = true;
+          else if (wire.fromElem.type === 'led' && wire.fromPin.id === 'k') forward = true;
+          else if (wire.toElem.type === 'led' && wire.toPin.id === 'k') forward = false;
+        }
+
+        // W trybie fizycznym ruch elektronów jest przeciwny
+        if (circuitState.currentFlowMode === 'electrons') {
+          forward = !forward;
+        }
+
+        const startPt = forward ? p1 : p2;
+        const endPt = forward ? p2 : p1;
+
+        const midX = Math.round((startPt.x + endPt.x) / 2);
         const segments = [
-          { x1: p1.x, y1: p1.y, x2: midX, y2: p1.y },
-          { x1: midX, y1: p1.y, x2: midX, y2: p2.y },
-          { x1: midX, y1: p2.y, x2: p2.x, y2: p2.y }
+          { x1: startPt.x, y1: startPt.y, x2: midX, y2: startPt.y },
+          { x1: midX, y1: startPt.y, x2: midX, y2: endPt.y },
+          { x1: midX, y1: endPt.y, x2: endPt.x, y2: endPt.y }
         ];
 
         segments.forEach(seg => {
@@ -1415,6 +1517,16 @@
         case 'speaker':
           elem.name = 'Głośnik';
           elem.pins = [{ id: 'in', x: -25, y: -10, label: 'Audio +' }, { id: 'gnd', x: -25, y: 10, label: 'GND' }];
+          break;
+        case 'voltmeter':
+          elem.name = 'Woltomierz (V)';
+          elem.measuredVal = '0.00 V';
+          elem.pins = [{ id: 'p', x: -30, y: 0, label: 'V+' }, { id: 'm', x: 30, y: 0, label: 'V-' }];
+          break;
+        case 'ammeter':
+          elem.name = 'Amperomierz (A)';
+          elem.measuredVal = '0.0 mA';
+          elem.pins = [{ id: 'p', x: -30, y: 0, label: 'A in' }, { id: 'm', x: 30, y: 0, label: 'A out' }];
           break;
       }
 
@@ -1609,6 +1721,26 @@
             <input type="number" class="prop-input" value="${elem.inductance}" step="1" onchange="updateElemProp('inductance', parseFloat(this.value))">
           </div>
         `;
+      } else if (elem.type === 'voltmeter') {
+        html += `
+          <div class="prop-row">
+            <span>Zmierzona wartość U:</span>
+            <span id="liveMeterPropVal" style="color: var(--accent-green); font-weight: 800; font-family: monospace; font-size: 1rem;">${elem.measuredVal || '0.00 V'}</span>
+          </div>
+          <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 6px; background: rgba(56, 189, 248, 0.08); padding: 6px; border-radius: 4px; border: 1px dashed var(--accent-blue);">
+            💡 <b>Zasada pomiaru:</b> Woltomierz wpinamy <b>równolegle</b> do badanego fragmentu obwodu. Rezystancja wewnętrzna R<sub>V</sub> &rarr; &infin;.
+          </div>
+        `;
+      } else if (elem.type === 'ammeter') {
+        html += `
+          <div class="prop-row">
+            <span>Zmierzona wartość I:</span>
+            <span id="liveMeterPropVal" style="color: var(--accent-green); font-weight: 800; font-family: monospace; font-size: 1rem;">${elem.measuredVal || '0.0 mA'}</span>
+          </div>
+          <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 6px; background: rgba(251, 146, 60, 0.08); padding: 6px; border-radius: 4px; border: 1px dashed var(--accent-orange);">
+            💡 <b>Zasada pomiaru:</b> Amperomierz wpinamy <b>szeregowo</b> (rozcinając gałąź obwodu). Rezystancja wewnętrzna R<sub>A</sub> &rarr; 0.
+          </div>
+        `;
       }
 
       html += `
@@ -1628,28 +1760,192 @@
       }
     }
 
-    // --- SYMULACJA FIZYCZNA OBWODU (SOLVER MNA) ---
+    // --- SYMULACJA FIZYCZNA OBWODU (SOLVER MNA / ANALIZA WĘZŁOWA) ---
     function simulateCircuit() {
-      const hasBattery = circuitState.elements.some(e => e.type === 'battery');
-      const hasLed = circuitState.elements.some(e => e.type === 'led');
+      // 1. Identyfikacja węzłów i DSU (Disjoint Set Union)
+      const pinNet = new Map();
+      let nextNetId = 0;
+
+      function getNet(elemId, pinId) {
+        const key = `${elemId}:${pinId}`;
+        if (!pinNet.has(key)) {
+          pinNet.set(key, nextNetId++);
+        }
+        return pinNet.get(key);
+      }
+
+      circuitState.elements.forEach(elem => {
+        elem.pins.forEach(p => getNet(elem.id, p.id));
+      });
+
+      const parent = Array.from({ length: nextNetId }, (_, i) => i);
+
+      function findRoot(id) {
+        while (parent[id] !== id) {
+          parent[id] = parent[parent[id]];
+          id = parent[id];
+        }
+        return id;
+      }
+
+      function unionNets(id1, id2) {
+        const r1 = findRoot(id1);
+        const r2 = findRoot(id2);
+        if (r1 !== r2) parent[r1] = r2;
+      }
+
+      // Połącz przewody (wires)
+      circuitState.wires.forEach(w => {
+        const n1 = getNet(w.fromElem.id, w.fromPin.id);
+        const n2 = getNet(w.toElem.id, w.toPin.id);
+        unionNets(n1, n2);
+      });
+
+      // Połącz zwarcia (zamknięty switch, amperomierz)
+      circuitState.elements.forEach(elem => {
+        if (elem.type === 'switch' && elem.closed) {
+          unionNets(getNet(elem.id, elem.pins[0].id), getNet(elem.id, elem.pins[1].id));
+        } else if (elem.type === 'ammeter') {
+          unionNets(getNet(elem.id, elem.pins[0].id), getNet(elem.id, elem.pins[1].id));
+        }
+      });
+
+      for (let i = 0; i < nextNetId; i++) {
+        parent[i] = findRoot(i);
+      }
+
+      const netPotential = new Map();
+      circuitState.pinPotentials.clear();
+
+      const battery = circuitState.elements.find(e => e.type === 'battery');
+      const generator = circuitState.elements.find(e => e.type === 'generator');
       const hasSwitch = circuitState.elements.find(e => e.type === 'switch');
       const isSwitchOpen = hasSwitch && !hasSwitch.closed;
 
-      if (hasBattery && !isSwitchOpen && circuitState.wires.length >= 2) {
-        const rElem = circuitState.elements.find(e => e.type === 'resistor');
-        const rVal = rElem ? rElem.resistance : 450;
-        const bElem = circuitState.elements.find(e => e.type === 'battery');
-        const vVal = bElem ? bElem.voltage : 9.0;
+      let vSource = 0;
+      let posNetRoot = null;
+      let negNetRoot = null;
 
-        circuitState.voltage = vVal;
-        // Spadek napięcia na diodzie LED Vf = 2.0V
-        const vNet = hasLed ? Math.max(0, vVal - 2.0) : vVal;
-        circuitState.current = (vNet / rVal) * 1000; // mA
-        circuitState.power = (circuitState.voltage * (circuitState.current / 1000)) * 1000; // mW
+      if (battery) {
+        vSource = battery.voltage || 9.0;
+        posNetRoot = findRoot(getNet(battery.id, 'p'));
+        negNetRoot = findRoot(getNet(battery.id, 'm'));
+      } else if (generator) {
+        vSource = generator.voltage || 5.0;
+        posNetRoot = findRoot(getNet(generator.id, 'p'));
+        negNetRoot = findRoot(getNet(generator.id, 'm'));
+      }
+
+      let isClosedCircuit = false;
+      let circuitCurrent = 0;
+      let totalResistance = 0;
+      let totalDiodeDrop = 0;
+
+      if (posNetRoot !== null && negNetRoot !== null && posNetRoot !== negNetRoot && !isSwitchOpen) {
+        circuitState.elements.forEach(e => {
+          if (e.type === 'resistor') totalResistance += (e.resistance || 1000);
+          else if (e.type === 'potentiometer') totalResistance += ((e.resistance || 10) * 1000);
+          else if (e.type === 'speaker') totalResistance += 8;
+          else if (e.type === 'led' || e.type === 'diode') totalDiodeDrop += 2.0;
+        });
+
+        if (totalResistance === 0) totalResistance = 450;
+
+        const vNet = Math.max(0, vSource - totalDiodeDrop);
+        circuitCurrent = (vNet / totalResistance) * 1000; // mA
+
+        if (circuitState.wires.length >= 2 && circuitCurrent > 0) {
+          isClosedCircuit = true;
+        }
+      }
+
+      if (isClosedCircuit) {
+        circuitState.voltage = vSource;
+        circuitState.current = circuitCurrent;
+        circuitState.power = (circuitState.voltage * (circuitCurrent / 1000)) * 1000; // mW
+
+        netPotential.set(negNetRoot, 0.0);
+        netPotential.set(posNetRoot, vSource);
+
+        // Rozkład potencjałów w gałęzi
+        circuitState.elements.forEach(elem => {
+          if (elem.type === 'resistor') {
+            const n1 = findRoot(getNet(elem.id, elem.pins[0].id));
+            const n2 = findRoot(getNet(elem.id, elem.pins[1].id));
+            const vDrop = (circuitCurrent / 1000) * (elem.resistance || 1000);
+            
+            if (n1 === posNetRoot && !netPotential.has(n2)) {
+              netPotential.set(n2, Math.max(0, vSource - vDrop));
+            } else if (n2 === posNetRoot && !netPotential.has(n1)) {
+              netPotential.set(n1, Math.max(0, vSource - vDrop));
+            } else if (n1 === negNetRoot && !netPotential.has(n2)) {
+              netPotential.set(n2, vDrop);
+            } else if (n2 === negNetRoot && !netPotential.has(n1)) {
+              netPotential.set(n1, vDrop);
+            }
+          } else if (elem.type === 'led' || elem.type === 'diode') {
+            const na = findRoot(getNet(elem.id, 'a'));
+            const nk = findRoot(getNet(elem.id, 'k'));
+            if (nk === negNetRoot && !netPotential.has(na)) {
+              netPotential.set(na, 2.0);
+            } else if (na === posNetRoot && !netPotential.has(nk)) {
+              netPotential.set(nk, Math.max(0, vSource - 2.0));
+            }
+          }
+        });
+
+        // Wypełnij mapę potencjałów pinów
+        circuitState.elements.forEach(elem => {
+          elem.pins.forEach(pin => {
+            const net = findRoot(getNet(elem.id, pin.id));
+            const pot = netPotential.has(net) ? netPotential.get(net) : (net === posNetRoot ? vSource : 0);
+            circuitState.pinPotentials.set(`${elem.id}:${pin.id}`, pot);
+          });
+        });
       } else {
         circuitState.voltage = 0;
         circuitState.current = 0;
         circuitState.power = 0;
+        circuitState.elements.forEach(elem => {
+          elem.pins.forEach(pin => {
+            circuitState.pinPotentials.set(`${elem.id}:${pin.id}`, 0);
+          });
+        });
+      }
+
+      // Aktualizacja wartości na miernikach umieszczonych na schemacie (Wariant 2)
+      circuitState.elements.forEach(el => {
+        if (el.type === 'voltmeter') {
+          const p1Net = findRoot(getNet(el.id, el.pins[0].id));
+          const p2Net = findRoot(getNet(el.id, el.pins[1].id));
+          const w1 = circuitState.wires.some(w => (w.fromElem === el && w.fromPin.id === el.pins[0].id) || (w.toElem === el && w.toPin.id === el.pins[0].id));
+          const w2 = circuitState.wires.some(w => (w.fromElem === el && w.fromPin.id === el.pins[1].id) || (w.toElem === el && w.toPin.id === el.pins[1].id));
+
+          if (w1 && w2 && isClosedCircuit) {
+            const v1 = netPotential.has(p1Net) ? netPotential.get(p1Net) : (p1Net === posNetRoot ? vSource : 0);
+            const v2 = netPotential.has(p2Net) ? netPotential.get(p2Net) : (p2Net === posNetRoot ? vSource : 0);
+            const measuredU = Math.abs(v1 - v2);
+            el.measuredVal = measuredU.toFixed(2) + ' V';
+          } else {
+            el.measuredVal = '0.00 V';
+          }
+        } else if (el.type === 'ammeter') {
+          const w1 = circuitState.wires.some(w => (w.fromElem === el && w.fromPin.id === el.pins[0].id) || (w.toElem === el && w.toPin.id === el.pins[0].id));
+          const w2 = circuitState.wires.some(w => (w.fromElem === el && w.fromPin.id === el.pins[1].id) || (w.toElem === el && w.toPin.id === el.pins[1].id));
+          if (w1 && w2 && isClosedCircuit && circuitState.current > 0) {
+            el.measuredVal = circuitState.current.toFixed(1) + ' mA';
+          } else {
+            el.measuredVal = '0.0 mA';
+          }
+        }
+      });
+
+      // Aktualizacja wybranego miernika w panelu bocznym
+      if (circuitState.selectedElement && (circuitState.selectedElement.type === 'voltmeter' || circuitState.selectedElement.type === 'ammeter')) {
+        const liveValElem = document.getElementById('liveMeterPropVal');
+        if (liveValElem) {
+          liveValElem.textContent = circuitState.selectedElement.measuredVal || '0.00 V';
+        }
       }
 
       // Aktualizacja wyświetlacza multimetru
@@ -1740,6 +2036,18 @@
       const btn = document.getElementById('btnAnimToggle');
       btn.classList.toggle('active', circuitState.showElectrons);
       btn.textContent = circuitState.showElectrons ? '⚡ Animacja Ładunków (ON)' : '⚡ Animacja Ładunków (OFF)';
+    }
+
+    function toggleCurrentDirection() {
+      circuitState.currentFlowMode = circuitState.currentFlowMode === 'conventional' ? 'electrons' : 'conventional';
+      const btn = document.getElementById('btnFlowDirToggle');
+      if (circuitState.currentFlowMode === 'conventional') {
+        btn.innerHTML = '⚡ Kierunek: Umowny (+&rarr;-)';
+        showToast('⚡ Ustawiono umowny kierunek prądu: od (+) do (-)');
+      } else {
+        btn.innerHTML = '⚡ Kierunek: Elektrony (-&rarr;+)';
+        showToast('⚡ Ustawiono fizyczny ruch elektronów: od (-) do (+)');
+      }
     }
 
     function toggleGrid() {
@@ -1878,6 +2186,25 @@
           { fromElem: res, fromPin: res.pins[1], toElem: gen, toPin: gen.pins[1] }
         );
         showToast('Wczytano: Obwód rezonansowy RLC');
+
+      } else if (presetName === 'meters_demo') {
+        // 9. Pomiary V & A (Woltomierz równolegle, Amperomierz szeregowo)
+        const bat = createPresetElem('battery', cx - 220, cy, 90, { voltage: 9.0 });
+        const amm = createPresetElem('ammeter', cx - 80, cy - 100, 0);
+        const res = createPresetElem('resistor', cx + 80, cy - 100, 0, { resistance: 470 });
+        const led = createPresetElem('led', cx + 220, cy, 90);
+        const volt = createPresetElem('voltmeter', cx + 80, cy + 40, 0);
+
+        circuitState.wires.push(
+          { fromElem: bat, fromPin: bat.pins[0], toElem: amm, toPin: amm.pins[0] },
+          { fromElem: amm, fromPin: amm.pins[1], toElem: res, toPin: res.pins[0] },
+          { fromElem: res, fromPin: res.pins[1], toElem: led, toPin: led.pins[0] },
+          { fromElem: led, fromPin: led.pins[1], toElem: bat, toPin: bat.pins[1] },
+          // Woltomierz wpięty równolegle do rezystora
+          { fromElem: res, fromPin: res.pins[0], toElem: volt, toPin: volt.pins[0] },
+          { fromElem: res, fromPin: res.pins[1], toElem: volt, toPin: volt.pins[1] }
+        );
+        showToast('Wczytano: Pomiary V & A (Woltomierz równolegle, Amperomierz szeregowo)');
       }
     }
 
@@ -1952,6 +2279,16 @@
         case 'speaker':
           elem.name = 'Głośnik';
           elem.pins = [{ id: 'in', x: -25, y: -10, label: 'Audio +' }, { id: 'gnd', x: -25, y: 10, label: 'GND' }];
+          break;
+        case 'voltmeter':
+          elem.name = 'Woltomierz (V)';
+          elem.measuredVal = props.measuredVal || '0.00 V';
+          elem.pins = [{ id: 'p', x: -30, y: 0, label: 'V+' }, { id: 'm', x: 30, y: 0, label: 'V-' }];
+          break;
+        case 'ammeter':
+          elem.name = 'Amperomierz (A)';
+          elem.measuredVal = props.measuredVal || '0.0 mA';
+          elem.pins = [{ id: 'p', x: -30, y: 0, label: 'A in' }, { id: 'm', x: 30, y: 0, label: 'A out' }];
           break;
       }
 
