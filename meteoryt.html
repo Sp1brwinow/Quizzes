@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Symulacja 3D: Uderzenie Meteorytu & Krater – HACK CLUB</title>
+    <title>Symulacja 3D: Uderzenie Meteorytu w Miasto & Krater – HACK CLUB</title>
 
     <!-- Google Analytics Tag -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZP827DTZJ5"></script>
@@ -21,9 +21,9 @@
 
     <style>
         :root {
-            --bg-dark: #070d18;
-            --panel-bg: rgba(15, 23, 42, 0.88);
-            --panel-border: rgba(56, 189, 248, 0.3);
+            --bg-dark: #040813;
+            --panel-bg: rgba(11, 19, 38, 0.90);
+            --panel-border: rgba(56, 189, 248, 0.35);
             --primary: #38bdf8;
             --accent-orange: #f97316;
             --accent-red: #ef4444;
@@ -63,9 +63,9 @@
         /* Górny pasek nawigacyjny */
         .top-bar {
             position: absolute;
-            top: 16px;
-            left: 16px;
-            right: 16px;
+            top: 14px;
+            left: 14px;
+            right: 14px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -78,19 +78,19 @@
         }
 
         .nav-btn {
-            background: rgba(15, 23, 42, 0.85);
+            background: rgba(15, 23, 42, 0.9);
             border: 1px solid rgba(56, 189, 248, 0.4);
             color: #7dd3fc;
             text-decoration: none;
-            padding: 9px 18px;
+            padding: 8px 16px;
             border-radius: 12px;
             font-weight: 600;
-            font-size: 0.92rem;
+            font-size: 0.9rem;
             display: inline-flex;
             align-items: center;
             gap: 8px;
             transition: all 0.25s ease;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(12px);
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
         }
 
@@ -103,25 +103,31 @@
         }
 
         .title-badge {
-            background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.85) 100%);
-            border: 1px solid rgba(249, 115, 22, 0.45);
-            padding: 8px 20px;
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.92) 0%, rgba(30, 41, 59, 0.88) 100%);
+            border: 1px solid rgba(249, 115, 22, 0.5);
+            padding: 7px 18px;
             border-radius: 999px;
             display: flex;
             align-items: center;
             gap: 10px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 4px 25px rgba(249, 115, 22, 0.2);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 4px 25px rgba(249, 115, 22, 0.25);
         }
 
         .title-badge h1 {
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             font-weight: 800;
-            background: linear-gradient(135deg, #ffffff 0%, #fbbf24 50%, #f97316 100%);
+            background: linear-gradient(135deg, #ffffff 0%, #fbbf24 45%, #f97316 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin: 0;
             letter-spacing: 0.3px;
+        }
+
+        .top-right-tools {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .btn-edu {
@@ -150,27 +156,27 @@
         /* Główny panel sterowania (Sidebar) */
         .controls-panel {
             position: absolute;
-            top: 80px;
-            left: 16px;
-            width: 360px;
-            max-height: calc(100vh - 100px);
+            top: 72px;
+            left: 14px;
+            width: 370px;
+            max-height: calc(100vh - 90px);
             background: var(--panel-bg);
             border: 1px solid var(--panel-border);
             border-radius: 20px;
-            padding: 20px;
+            padding: 18px;
             z-index: 10;
             backdrop-filter: blur(16px);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7), 0 0 25px rgba(56, 189, 248, 0.15);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.75), 0 0 25px rgba(56, 189, 248, 0.15);
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 13px;
             overflow-y: auto;
             scrollbar-width: thin;
             scrollbar-color: rgba(56, 189, 248, 0.4) transparent;
         }
 
         .controls-panel::-webkit-scrollbar {
-            width: 6px;
+            width: 5px;
         }
 
         .controls-panel::-webkit-scrollbar-thumb {
@@ -183,11 +189,11 @@
             align-items: center;
             justify-content: space-between;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding-bottom: 10px;
+            padding-bottom: 8px;
         }
 
         .panel-header h2 {
-            font-size: 1.15rem;
+            font-size: 1.1rem;
             font-weight: 800;
             color: #38bdf8;
             display: flex;
@@ -195,23 +201,35 @@
             gap: 8px;
         }
 
+        .section-title {
+            font-size: 0.78rem;
+            font-weight: 800;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin-top: 2px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
         .param-group {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
         }
 
         .param-row {
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 5px;
         }
 
         .param-label-box {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 0.88rem;
+            font-size: 0.86rem;
             color: #cbd5e1;
         }
 
@@ -227,9 +245,10 @@
             color: #38bdf8;
             font-family: 'Consolas', 'Courier New', monospace;
             background: rgba(56, 189, 248, 0.12);
-            padding: 2px 8px;
+            padding: 2px 7px;
             border-radius: 6px;
             border: 1px solid rgba(56, 189, 248, 0.3);
+            font-size: 0.85rem;
         }
 
         input[type="range"] {
@@ -245,8 +264,8 @@
 
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
-            width: 18px;
-            height: 18px;
+            width: 16px;
+            height: 16px;
             border-radius: 50%;
             background: #38bdf8;
             cursor: pointer;
@@ -257,6 +276,73 @@
         input[type="range"]::-webkit-slider-thumb:hover {
             transform: scale(1.25);
             background: #7dd3fc;
+        }
+
+        /* Wybór Miasta / OpenStreetMap */
+        .city-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            padding: 10px;
+            border-radius: 12px;
+        }
+
+        .city-select {
+            width: 100%;
+            background: rgba(30, 41, 59, 0.9);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            color: #f8fafc;
+            padding: 8px 10px;
+            border-radius: 8px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .city-select option {
+            background: #0f172a;
+            color: #f8fafc;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 6px;
+        }
+
+        .search-input {
+            flex: 1;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #f8fafc;
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            outline: none;
+        }
+
+        .search-input:focus {
+            border-color: #38bdf8;
+            box-shadow: 0 0 8px rgba(56, 189, 248, 0.3);
+        }
+
+        .search-btn {
+            background: rgba(56, 189, 248, 0.2);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            color: #7dd3fc;
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .search-btn:hover {
+            background: #38bdf8;
+            color: #04121d;
         }
 
         /* Wybór typu meteorytu */
@@ -270,9 +356,9 @@
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.12);
             color: #94a3b8;
-            padding: 8px 4px;
+            padding: 7px 4px;
             border-radius: 8px;
-            font-size: 0.78rem;
+            font-size: 0.76rem;
             font-weight: 700;
             cursor: pointer;
             text-align: center;
@@ -280,25 +366,25 @@
         }
 
         .type-btn.active {
-            background: rgba(249, 115, 22, 0.2);
+            background: rgba(249, 115, 22, 0.25);
             border-color: #f97316;
             color: #fdba74;
-            box-shadow: 0 0 12px rgba(249, 115, 22, 0.3);
+            box-shadow: 0 0 10px rgba(249, 115, 22, 0.3);
         }
 
-        /* Skrzynka obliczonych wskaźników fizycznych */
+        /* Skrzynka obliczonych wskaźników fizycznych i zniszczeń */
         .metrics-card {
             background: rgba(10, 16, 30, 0.85);
             border: 1px solid rgba(251, 191, 36, 0.35);
             border-radius: 14px;
-            padding: 12px 14px;
+            padding: 10px 12px;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 6px;
         }
 
         .metrics-title {
-            font-size: 0.82rem;
+            font-size: 0.8rem;
             font-weight: 800;
             color: #fbbf24;
             text-transform: uppercase;
@@ -312,7 +398,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 0.84rem;
+            font-size: 0.82rem;
         }
 
         .metric-label {
@@ -325,31 +411,90 @@
             font-family: 'Consolas', monospace;
         }
 
+        .metric-highlight {
+            color: #ef4444;
+            font-weight: 800;
+        }
+
         .metric-compare {
-            font-size: 0.78rem;
+            font-size: 0.76rem;
             color: #f59e0b;
             background: rgba(245, 158, 11, 0.1);
+            padding: 5px 8px;
+            border-radius: 6px;
+            border-left: 3px solid #f59e0b;
+            line-height: 1.35;
+            margin-top: 2px;
+        }
+
+        /* Warstwy / Strefy Zagrożenia */
+        .hazard-toggle-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             padding: 6px 10px;
             border-radius: 8px;
-            border-left: 3px solid #f59e0b;
-            line-height: 1.4;
-            margin-top: 2px;
+            font-size: 0.8rem;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 36px;
+            height: 20px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider-round {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #334155;
+            transition: .3s;
+            border-radius: 20px;
+        }
+
+        .slider-round:before {
+            position: absolute;
+            content: "";
+            height: 14px;
+            width: 14px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider-round {
+            background-color: #38bdf8;
+        }
+
+        input:checked + .slider-round:before {
+            transform: translateX(16px);
         }
 
         /* Główne przyciski akcji */
         .actions-box {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 7px;
         }
 
         .btn-launch {
             background: linear-gradient(135deg, #ea580c 0%, #dc2626 100%);
             border: none;
             color: #ffffff;
-            padding: 13px;
+            padding: 12px;
             border-radius: 12px;
-            font-size: 1rem;
+            font-size: 0.98rem;
             font-weight: 800;
             cursor: pointer;
             display: flex;
@@ -374,22 +519,22 @@
         .secondary-actions {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 8px;
+            gap: 6px;
         }
 
         .btn-sub {
             background: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(255, 255, 255, 0.15);
             color: #e2e8f0;
-            padding: 9px;
+            padding: 8px;
             border-radius: 10px;
-            font-size: 0.84rem;
+            font-size: 0.82rem;
             font-weight: 600;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
+            gap: 5px;
             transition: all 0.2s;
         }
 
@@ -401,16 +546,16 @@
         /* Pasek dolny: Kontrola Kamery i Czasu */
         .bottom-hud {
             position: absolute;
-            bottom: 20px;
+            bottom: 16px;
             left: 50%;
             transform: translateX(-50%);
             background: var(--panel-bg);
             border: 1px solid var(--panel-border);
             border-radius: 999px;
-            padding: 8px 20px;
+            padding: 6px 18px;
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 16px;
             z-index: 10;
             backdrop-filter: blur(14px);
             box-shadow: 0 10px 35px rgba(0, 0, 0, 0.6);
@@ -419,11 +564,11 @@
         .hud-group {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
 
         .hud-label {
-            font-size: 0.78rem;
+            font-size: 0.75rem;
             color: var(--text-muted);
             font-weight: 700;
             text-transform: uppercase;
@@ -433,9 +578,9 @@
             background: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(255, 255, 255, 0.15);
             color: #cbd5e1;
-            padding: 6px 12px;
+            padding: 5px 11px;
             border-radius: 999px;
-            font-size: 0.8rem;
+            font-size: 0.78rem;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.2s;
@@ -455,6 +600,34 @@
             color: #04121d;
             border-color: #38bdf8;
             box-shadow: 0 0 12px #38bdf8;
+        }
+
+        /* Skala metryczna na ekranie */
+        .scale-overlay {
+            position: absolute;
+            bottom: 16px;
+            right: 16px;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            color: #94a3b8;
+            z-index: 10;
+            pointer-events: none;
+            backdrop-filter: blur(8px);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 2px;
+        }
+
+        .scale-bar {
+            width: 80px;
+            height: 4px;
+            background: #38bdf8;
+            border-radius: 2px;
+            box-shadow: 0 0 8px #38bdf8;
         }
 
         /* Modal Edukacyjny */
@@ -487,7 +660,7 @@
             width: 90%;
             max-height: 85vh;
             overflow-y: auto;
-            padding: 32px;
+            padding: 30px;
             color: #f1f5f9;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9), 0 0 40px rgba(56, 189, 248, 0.2);
             position: relative;
@@ -517,35 +690,35 @@
         }
 
         .modal-title {
-            font-size: 1.6rem;
+            font-size: 1.5rem;
             font-weight: 900;
             color: #38bdf8;
-            margin-bottom: 18px;
+            margin-bottom: 16px;
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
         .modal-body {
-            line-height: 1.65;
-            font-size: 0.96rem;
+            line-height: 1.6;
+            font-size: 0.95rem;
             color: #cbd5e1;
             display: flex;
             flex-direction: column;
-            gap: 18px;
+            gap: 16px;
         }
 
         .edu-card {
             background: rgba(15, 23, 42, 0.6);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 14px;
-            padding: 16px;
+            padding: 14px;
         }
 
         .edu-card h3 {
             color: #fbbf24;
-            font-size: 1.05rem;
-            margin-bottom: 8px;
+            font-size: 1.02rem;
+            margin-bottom: 6px;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -558,14 +731,14 @@
         /* Status lotu (HUD na środku) */
         .flight-status {
             position: absolute;
-            top: 90px;
+            top: 80px;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(15, 23, 42, 0.75);
-            border: 1px solid rgba(249, 115, 22, 0.4);
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(249, 115, 22, 0.5);
             border-radius: 999px;
-            padding: 8px 24px;
-            font-size: 0.9rem;
+            padding: 7px 22px;
+            font-size: 0.88rem;
             font-weight: 700;
             color: #fdba74;
             z-index: 5;
@@ -573,28 +746,32 @@
             display: none;
             align-items: center;
             gap: 8px;
-            box-shadow: 0 0 20px rgba(249, 115, 22, 0.3);
+            box-shadow: 0 0 20px rgba(249, 115, 22, 0.35);
             backdrop-filter: blur(8px);
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 820px) {
             .controls-panel {
-                width: calc(100vw - 32px);
+                width: calc(100vw - 28px);
                 max-height: 48vh;
                 top: auto;
-                bottom: 80px;
+                bottom: 74px;
             }
 
             .bottom-hud {
-                bottom: 12px;
-                padding: 6px 14px;
-                gap: 10px;
-                width: calc(100vw - 32px);
+                bottom: 10px;
+                padding: 5px 12px;
+                gap: 8px;
+                width: calc(100vw - 28px);
                 justify-content: space-around;
             }
 
             .title-badge h1 {
-                font-size: 0.92rem;
+                font-size: 0.9rem;
+            }
+
+            .scale-overlay {
+                display: none;
             }
         }
     </style>
@@ -610,9 +787,11 @@
         <a href="pomocnicze.html" class="nav-btn">← Powrót do Geografii</a>
         <div class="title-badge">
             <span>☄️</span>
-            <h1>Symulacja Uderzenia Meteorytu</h1>
+            <h1>Symulacja Uderzenia Meteorytu w Miasto</h1>
         </div>
-        <button class="btn-edu" id="btn-open-edu">📖 O zjawisku</button>
+        <div class="top-right-tools">
+            <button class="btn-edu" id="btn-open-edu">📖 O zjawisku</button>
+        </div>
     </header>
 
     <!-- Status animacji -->
@@ -623,11 +802,45 @@
     <!-- Panel Sterowania Symulacją (3. Sterowanie symulacją) -->
     <aside class="controls-panel">
         <div class="panel-header">
-            <h2>⚙️ Sterowanie Symulacją</h2>
+            <h2>⚙️ Parametry & Miasto</h2>
             <button id="btn-mute" class="hud-btn" title="Włącz / Wycisz dźwięk">🔊 Dźwięk</button>
         </div>
 
+        <!-- Sekcja wyboru miasta i obszaru OpenStreetMap -->
         <div class="param-group">
+            <div class="section-title">🏙️ Wybór Miasta (OpenStreetMap)</div>
+            <div class="city-controls">
+                <select id="select-city" class="city-select">
+                    <option value="warszawa">🇵🇱 Warszawa (Centrum, PKiN / Wisła)</option>
+                    <option value="krakow">🇵🇱 Kraków (Stare Miasto / Wisła)</option>
+                    <option value="morasko">🇵🇱 Poznań (Rezerwat Meteoryt Morasko)</option>
+                    <option value="trojmiasto">🇵🇱 Gdańsk / Trójmiasto (Zatoka)</option>
+                    <option value="nowyjork">🇺🇸 Nowy Jork (Manhattan / Hudson)</option>
+                    <option value="londyn">🇬🇧 Londyn (City / Tamiza)</option>
+                    <option value="paryz">🇫🇷 Paryż (Centrum / Sekwana)</option>
+                    <option value="tokio">🇯🇵 Tokio (Shinjuku / Zatoka)</option>
+                    <option value="arizona">🏜️ Pustynia Arizona (Krater Barringera)</option>
+                </select>
+                <div class="search-box">
+                    <input type="text" id="input-city-search" class="search-input" placeholder="Wpisz dowolne miasto...">
+                    <button id="btn-city-search" class="search-btn">Szukaj</button>
+                </div>
+            </div>
+
+            <!-- Wielkość obszaru (bok kwadratu w km: 1 - 30 km) -->
+            <div class="param-row">
+                <div class="param-label-box">
+                    <span class="param-name">📐 Bok obszaru symulacji:</span>
+                    <span class="param-val" id="val-area">6 km</span>
+                </div>
+                <input type="range" id="input-area" min="1" max="30" value="6" step="1">
+            </div>
+        </div>
+
+        <!-- Sekcja parametrów meteorytu -->
+        <div class="param-group">
+            <div class="section-title">☄️ Parametry Impaktora</div>
+
             <!-- Prędkość -->
             <div class="param-row">
                 <div class="param-label-box">
@@ -641,9 +854,9 @@
             <div class="param-row">
                 <div class="param-label-box">
                     <span class="param-name">📏 Średnica meteorytu (d):</span>
-                    <span class="param-val" id="val-size">45 m</span>
+                    <span class="param-val" id="val-size">65 m</span>
                 </div>
-                <input type="range" id="input-size" min="5" max="200" value="45" step="1">
+                <input type="range" id="input-size" min="10" max="600" value="65" step="5">
             </div>
 
             <!-- Kąt uderzenia -->
@@ -661,31 +874,44 @@
                     <span class="param-name">🪨 Skład impaktora:</span>
                 </div>
                 <div class="type-selector">
-                    <button class="type-btn" data-density="1000" data-name="Kometarny">❄️ Lód / Kometa</button>
+                    <button class="type-btn" data-density="1000" data-name="Kometarny">❄️ Kometa</button>
                     <button class="type-btn active" data-density="2700" data-name="Kamienny">🪨 Kamienny</button>
                     <button class="type-btn" data-density="7800" data-name="Żelazny">🔩 Żelazny</button>
                 </div>
             </div>
         </div>
 
-        <!-- Wyliczone wskaźniki fizyczne -->
+        <!-- Strefy zniszczeń / Hazard Rings Toggle -->
+        <div class="hazard-toggle-box">
+            <span>🎯 Wizualizacja stref rażenia (Makro)</span>
+            <label class="toggle-switch">
+                <input type="checkbox" id="toggle-hazard-rings" checked>
+                <span class="slider-round"></span>
+            </label>
+        </div>
+
+        <!-- Wyliczone wskaźniki fizyczne i zniszczenia -->
         <div class="metrics-card">
-            <div class="metrics-title">📊 Fizyka & Geologia Impaktu</div>
+            <div class="metrics-title">📊 Fizyka Impaktu & Zniszczenia</div>
             <div class="metric-item">
-                <span class="metric-label">Szacowana masa:</span>
-                <span class="metric-value" id="res-mass">128 800 t</span>
-            </div>
-            <div class="metric-item">
-                <span class="metric-label">Energia kinetyczna (Ek):</span>
-                <span class="metric-value" id="res-energy">9.6 MT TNT</span>
+                <span class="metric-label">Energia kinetyczna:</span>
+                <span class="metric-value" id="res-energy">28 MT TNT</span>
             </div>
             <div class="metric-item">
                 <span class="metric-label">Średnica krateru:</span>
-                <span class="metric-value" id="res-crater-d">1 180 m</span>
+                <span class="metric-value" id="res-crater-d">1.65 km</span>
             </div>
             <div class="metric-item">
                 <span class="metric-label">Głębokość krateru:</span>
-                <span class="metric-value" id="res-crater-depth">195 m</span>
+                <span class="metric-value" id="res-crater-depth">290 m</span>
+            </div>
+            <div class="metric-item">
+                <span class="metric-label">💥 Zniszczone budynki:</span>
+                <span class="metric-value metric-highlight" id="res-destroyed-count">0 / 3 500</span>
+            </div>
+            <div class="metric-item">
+                <span class="metric-label">🌪️ Fala uderzeniowa (20 psi):</span>
+                <span class="metric-value" id="res-blast-r">3.8 km</span>
             </div>
             <div class="metric-compare" id="res-compare">
                 💡 Odpowiednik: Zbliżony do Krateru Barringera w Arizonie (USA).
@@ -699,19 +925,26 @@
             </button>
             <div class="secondary-actions">
                 <button class="btn-sub" id="btn-instant">💥 Błyskawiczny krater</button>
-                <button class="btn-sub" id="btn-reset">🔄 Zresetuj teren</button>
+                <button class="btn-sub" id="btn-reset">🔄 Zresetuj miasto</button>
             </div>
         </div>
     </aside>
+
+    <!-- Skala na ekranie -->
+    <div class="scale-overlay">
+        <div class="scale-bar"></div>
+        <span id="scale-label">1 000 m</span>
+    </div>
 
     <!-- Dolny pasek HUD (Kamery i Slow-Mo) -->
     <div class="bottom-hud">
         <div class="hud-group">
             <span class="hud-label">Kamera:</span>
             <button class="hud-btn active" data-cam="orbit">🌐 Orbitalna</button>
+            <button class="hud-btn" data-cam="sat">🛰️ Satelitarna</button>
             <button class="hud-btn" data-cam="follow">🎬 Śledzenie</button>
-            <button class="hud-btn" data-cam="ground">👁️ Z ziemi</button>
-            <button class="hud-btn" data-cam="top">🛰️ Z góry</button>
+            <button class="hud-btn" data-cam="street">🏙️ Ulica</button>
+            <button class="hud-btn" data-cam="top">🎯 Z góry</button>
         </div>
         <div class="hud-group">
             <span class="hud-label">Tempo:</span>
@@ -725,33 +958,32 @@
     <div class="modal-overlay" id="edu-modal">
         <div class="modal-content">
             <button class="modal-close" id="btn-close-modal">✕</button>
-            <h2 class="modal-title">🌍 Jak powstaje krater uderzeniowy?</h2>
+            <h2 class="modal-title">🌍 Skutki impaktu meteorytu na obszarze zurbanizowanym</h2>
             <div class="modal-body">
                 <p>
-                    Uderzenia ciał kosmicznych w Ziemię to jedno z najbardziej gwałtownych zjawisk w geologii i geomorfologii.
-                    Podczas zderzenia ogromna <strong>energia kinetyczna (Ek = ½mv²)</strong> w ułamku sekundy zamienia się w falę uderzeniową, ciepło, odparowanie skał oraz wyrzut materiału.
+                    Uderzenie meteorytu w obszar miejski wyzwala katastrofalne siły fizyczne. W ułamku sekundy energia kinetyczna (<strong>Ek = ½mv²</strong>) przekształca się w falę ciśnieniową, promieniowanie cieplne oraz zjawisko ekscawacji gruntu.
                 </p>
 
                 <div class="edu-card">
-                    <h3>1. Faza kompresji i fali uderzeniowej</h3>
-                    <p>Meteoryt wbija się w grunt z prędkością kilkudziesięciu km/s. Ciśnienie przekracza miliony atmosfer, topiąc i odparowując impaktor oraz skały podłoża.</p>
+                    <h3>1. Odparowanie i Krater (Strefa Zero)</h3>
+                    <p>W promieniu krateru temperatura przekracza 10 000°C. Wszystkie budynki, infrastruktura i materiał skalny ulegają natychmiastowej sublimacji (odparowaniu) lub stopieniu do szkła uderzeniowego (impaktyt).</p>
                 </div>
 
                 <div class="edu-card">
-                    <h3>2. Faza ekscawacji (Wyrzutu i Pyłu)</h3>
-                    <p>Fala uderzeniowa rozchodzi się we wszystkich kierunkach, wyrzucając miliony ton rozdrobnionej skały w powietrze (tzw. <em>ejecta</em>). Drobny pył tworzy wznoszący się grzyb pyłowy, a cięższe odłamki opadają wokół krawędzi.</p>
+                    <h3>2. Fala Uderzeniowa (Nadciśnienie 20 psi & 5 psi)</h3>
+                    <p>Fala nadciśnienia 20 psi (ok. 138 kPa) z łatwością burzy wielopiętrowe budynki żelbetowe i zmiata konstrukcje stalowe. Prędkość wiatru za czołem fali przekracza 800 km/h.</p>
                 </div>
 
                 <div class="edu-card">
-                    <h3>3. Faza modyfikacji i wał krateru</h3>
-                    <p>Ziemia wokół krawędzi zostaje spiętrzona i odwrócona, tworząc charakterystyczny <strong>wyniesiony wał krateru (crater rim)</strong>. Ściany osuwają się ku środkowi, formując misowate zagłębienie.</p>
+                    <h3>3. Promieniowanie Cieplne (Thermal Flash)</h3>
+                    <p>Kula ognia emituje intensywne promieniowanie podczerwone, powodując spontaniczny zapłon drewna, tkanin i materiałów palnych na obszarze wielokrotnie większym niż sam krater.</p>
                 </div>
 
                 <div class="edu-card">
                     <h3>🇵🇱 Kratery na Ziemi i w Polsce:</h3>
-                    <p>• <strong>Rezerwat Meteoryt Morasko (Poznań, Polska)</strong> – zespół 7 kraterów powstałych ok. 5000 lat temu w wyniku uderzenia żelaznego meteorytu.</p>
-                    <p>• <strong>Meteor Crater (Barringer, USA)</strong> – doskonale zachowany krater o średnicy 1200 m i głębokości 170 m.</p>
-                    <p>• <strong>Chicxulub (Meksyk)</strong> – gigantyczny krater o średnicy 180 km, którego uderzenie 66 mln lat temu doprowadziło do wymarcia dinozaurów.</p>
+                    <p>• <strong>Rezerwat Meteoryt Morasko (Poznań, Polska)</strong> – unikalny zespół kraterów uderzeniowych w Europie Środkowej powstały ok. 5000 lat temu.</p>
+                    <p>• <strong>Krater Barringera (Arizona, USA)</strong> – 1 200 m średnicy, powstał po uderzeniu żelaznego meteorytu o średnicy ok. 50 m.</p>
+                    <p>• <strong>Ries (Niemcy)</strong> – krater o średnicy 24 km, na którego obszarze wybudowano średniowieczne miasto Nördlingen.</p>
                 </div>
             </div>
         </div>
@@ -759,27 +991,44 @@
 
     <!-- Skrypt Symulacji Three.js -->
     <script>
-        /* --- GLOBALNE PARAMETRY & STAN --- */
+        /* --- GLOBALNY STAN I PARAMETRY SYMULACJI --- */
         const state = {
-            speed: 25,          // km/s
-            diameter: 45,       // m
-            angle: 45,          // stopnie
-            density: 2700,      // kg/m3 (kamienny)
+            areaKm: 6,           // Rozmiar boku obszaru (km): 1 - 30
+            speed: 25,           // km/s
+            diameter: 65,        // m
+            angle: 45,           // stopnie
+            density: 2700,       // kg/m3 (kamienny)
             meteoriteType: 'Kamienny',
+            selectedCity: 'warszawa',
+            cityName: 'Warszawa',
             timeScale: 1.0,
             camMode: 'orbit',
             soundEnabled: true,
+            showHazardRings: true,
             isFlying: false,
             hasImpacted: false
         };
 
-        // Geometria i dane krateru (do kolizji brył z ukształtowanym terenem)
+        // Geometria i dane krateru (1 unit = 1 meter w skali Three.js)
         const craterState = {
             epicenter: new THREE.Vector3(0, 0, 0),
-            radius3D: 0,
-            depth3D: 0,
-            rimHeight3D: 0,
+            radiusM: 0,
+            depthM: 0,
+            rimHeightM: 0,
             elongation: 1.0
+        };
+
+        // Dane predefiniowanych miast
+        const CITY_PRESETS = {
+            warszawa: { name: 'Warszawa', riverAngle: 0.35, riverWidth: 260, centerDensity: 1.0, highRiseRatio: 0.35, desert: false },
+            krakow: { name: 'Kraków', riverAngle: 1.1, riverWidth: 180, centerDensity: 0.85, highRiseRatio: 0.2, desert: false },
+            morasko: { name: 'Poznań (Morasko)', riverAngle: 0.2, riverWidth: 120, centerDensity: 0.4, highRiseRatio: 0.1, desert: false },
+            trojmiasto: { name: 'Gdańsk / Trójmiasto', riverAngle: 1.8, riverWidth: 800, centerDensity: 0.75, highRiseRatio: 0.25, isBay: true, desert: false },
+            nowyjork: { name: 'Nowy Jork (Manhattan)', riverAngle: 0.5, riverWidth: 450, centerDensity: 1.4, highRiseRatio: 0.7, gridAligned: true, desert: false },
+            londyn: { name: 'Londyn', riverAngle: 0.85, riverWidth: 320, centerDensity: 0.95, highRiseRatio: 0.4, desert: false },
+            paryz: { name: 'Paryż', riverAngle: 0.6, riverWidth: 240, centerDensity: 0.9, highRiseRatio: 0.3, desert: false },
+            tokio: { name: 'Tokio', riverAngle: 1.4, riverWidth: 500, centerDensity: 1.3, highRiseRatio: 0.6, desert: false },
+            arizona: { name: 'Pustynia Arizona', riverAngle: 0, riverWidth: 0, centerDensity: 0.02, highRiseRatio: 0.0, desert: true }
         };
 
         /* --- SYNTEZA AUDIO (Web Audio API) --- */
@@ -813,13 +1062,13 @@
 
                 const filter = ctx.createBiquadFilter();
                 filter.type = 'bandpass';
-                filter.frequency.setValueAtTime(300, now);
-                filter.frequency.exponentialRampToValueAtTime(1400, now + 2.0);
-                filter.Q.value = 3.0;
+                filter.frequency.setValueAtTime(250, now);
+                filter.frequency.exponentialRampToValueAtTime(1600, now + 1.8);
+                filter.Q.value = 3.5;
 
                 const gain = ctx.createGain();
                 gain.gain.setValueAtTime(0.01, now);
-                gain.gain.linearRampToValueAtTime(0.35, now + 1.8);
+                gain.gain.linearRampToValueAtTime(0.35, now + 1.5);
                 gain.gain.linearRampToValueAtTime(0.0, now + 2.2);
 
                 noise.connect(filter);
@@ -839,27 +1088,27 @@
                 const ctx = getAudioContext();
                 const now = ctx.currentTime;
 
-                // 1. Sub-bass boom
+                // 1. Potężny sub-basowy grzmot
                 const osc = ctx.createOscillator();
                 const oscGain = ctx.createGain();
                 osc.type = 'sine';
-                osc.frequency.setValueAtTime(120, now);
-                osc.frequency.exponentialRampToValueAtTime(28, now + 1.2);
+                osc.frequency.setValueAtTime(110, now);
+                osc.frequency.exponentialRampToValueAtTime(18, now + 2.2);
 
-                oscGain.gain.setValueAtTime(0.8 * Math.min(intensity, 1.5), now);
-                oscGain.gain.exponentialRampToValueAtTime(0.001, now + 2.0);
+                oscGain.gain.setValueAtTime(1.0 * Math.min(intensity, 1.8), now);
+                oscGain.gain.exponentialRampToValueAtTime(0.001, now + 2.5);
 
                 osc.connect(oscGain);
                 oscGain.connect(ctx.destination);
                 osc.start(now);
-                osc.stop(now + 2.0);
+                osc.stop(now + 2.5);
 
-                // 2. Eksplozja z szumu
-                const bufferSize = ctx.sampleRate * 3.0;
+                // 2. Fala uderzeniowa z szumu
+                const bufferSize = ctx.sampleRate * 3.5;
                 const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
                 const data = buffer.getChannelData(0);
                 for (let i = 0; i < bufferSize; i++) {
-                    data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ctx.sampleRate * 0.7));
+                    data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ctx.sampleRate * 0.8));
                 }
 
                 const noise = ctx.createBufferSource();
@@ -867,48 +1116,25 @@
 
                 const filter = ctx.createBiquadFilter();
                 filter.type = 'lowpass';
-                filter.frequency.setValueAtTime(800, now);
-                filter.frequency.exponentialRampToValueAtTime(120, now + 2.5);
+                filter.frequency.setValueAtTime(950, now);
+                filter.frequency.exponentialRampToValueAtTime(80, now + 3.0);
 
                 const noiseGain = ctx.createGain();
-                noiseGain.gain.setValueAtTime(0.9 * Math.min(intensity, 1.5), now);
-                noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 2.8);
+                noiseGain.gain.setValueAtTime(1.0 * Math.min(intensity, 1.8), now);
+                noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 3.2);
 
                 noise.connect(filter);
                 filter.connect(noiseGain);
                 noiseGain.connect(ctx.destination);
 
                 noise.start(now);
-                noise.stop(now + 2.9);
-
-                // 3. Stukot opadających głazów z opóźnieniem
-                setTimeout(() => playRockScatterSound(), 400);
-                setTimeout(() => playRockScatterSound(), 750);
+                noise.stop(now + 3.3);
             } catch (e) {
                 console.warn('Audio error:', e);
             }
         }
 
-        function playRockScatterSound() {
-            if (!state.soundEnabled) return;
-            try {
-                const ctx = getAudioContext();
-                const now = ctx.currentTime;
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-                osc.type = 'triangle';
-                osc.frequency.setValueAtTime(80 + Math.random() * 50, now);
-                osc.frequency.exponentialRampToValueAtTime(30, now + 0.3);
-                gain.gain.setValueAtTime(0.2, now);
-                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
-                osc.connect(gain);
-                gain.connect(ctx.destination);
-                osc.start(now);
-                osc.stop(now + 0.3);
-            } catch (e) {}
-        }
-
-        /* --- OBLICZENIA FIZYCZNE & METRYKI --- */
+        /* --- OBLICZENIA FIZYCZNE & METRYKI ZNISZCZEŃ --- */
         function calculateMetrics() {
             const radius = state.diameter / 2; // m
             const volume = (4 / 3) * Math.PI * Math.pow(radius, 3); // m3
@@ -920,15 +1146,16 @@
             const energyJoules = 0.5 * massKg * Math.pow(velocityMs, 2);
             const energyMegatons = energyJoules / 4.184e15; // 1 MT TNT = 4.184 * 10^15 J
 
-            // Skalowanie średnicy krateru
+            // Skalowanie średnicy krateru (1 unit = 1 m)
             const angleRad = (state.angle * Math.PI) / 180;
             const sinAngle = Math.max(0.25, Math.sin(angleRad));
             const craterDiameterM = Math.round(18 * Math.pow(energyMegatons, 0.28) * Math.pow(sinAngle, 0.33) * 65);
             const craterDepthM = Math.round(craterDiameterM * 0.18);
 
-            document.getElementById('res-mass').textContent = massTonnes > 1e6 
-                ? (massTonnes / 1e6).toFixed(2) + ' mln t' 
-                : Math.round(massTonnes).toLocaleString('pl-PL') + ' t';
+            // Promienie stref rażenia
+            const blastRadius20psiM = Math.round(1800 * Math.pow(energyMegatons, 0.33));
+            const thermalRadiusM = Math.round(1100 * Math.pow(energyMegatons, 0.40));
+            const shatterRadius1psiM = Math.round(6800 * Math.pow(energyMegatons, 0.33));
 
             if (energyMegatons >= 1000) {
                 document.getElementById('res-energy').textContent = (energyMegatons / 1000).toFixed(1) + ' GT TNT';
@@ -943,40 +1170,130 @@
                 : craterDiameterM + ' m';
             document.getElementById('res-crater-depth').textContent = craterDepthM + ' m';
 
+            document.getElementById('res-blast-r').textContent = blastRadius20psiM >= 1000 
+                ? (blastRadius20psiM / 1000).toFixed(1) + ' km' 
+                : blastRadius20psiM + ' m';
+
             let compareText = '';
-            if (craterDiameterM < 150) {
+            if (craterDiameterM < 250) {
                 compareText = '💡 Odpowiednik: Zbliżony do kraterów w Rezerwacie Meteoryt Morasko (Poznań, Polska).';
-            } else if (craterDiameterM < 2000) {
-                compareText = '💡 Odpowiednik: Bardzo bliski Meteor Crater (Barringer) w Arizonie, USA (1 200 m).';
-            } else if (craterDiameterM < 15000) {
-                compareText = '💡 Odpowiednik: Skala Krateru Nördlinger Ries w Niemczech (wyrzut mołdawitów).';
+            } else if (craterDiameterM < 2500) {
+                compareText = '💡 Odpowiednik: Skala Krateru Barringera w Arizonie (USA) – całkowite zrównanie dzielnicy.';
+            } else if (craterDiameterM < 18000) {
+                compareText = '⚠️ Skala regionalna: Podobny do Krateru Nördlingen (Niemcy) – dewastacja całego obszaru metropolitalnego.';
             } else {
-                compareText = '⚠️ Skala globalna: Gigantyczny impakt zbliżony do krateru Chicxulub (wymarcie dinozaurów).';
+                compareText = '☠️ Skala globalna: Gigantyczny impakt zbliżony do Chicxulub (globalna zima impaktowa i wymarcie).';
             }
             document.getElementById('res-compare').textContent = compareText;
 
-            return { massKg, energyJoules, energyMegatons, craterDiameterM, craterDepthM, sinAngle };
+            return { 
+                massKg, 
+                energyMegatons, 
+                craterDiameterM, 
+                craterDepthM, 
+                blastRadius20psiM, 
+                thermalRadiusM, 
+                shatterRadius1psiM,
+                sinAngle 
+            };
         }
 
-        /* --- FUNKCJA WYSOKOŚCI TERENU --- */
-        function getTerrainElevation(x, z) {
-            const baseH = Math.sin(x * 0.025) * Math.cos(z * 0.025) * 1.5 + Math.sin(x * 0.06 + z * 0.04) * 0.6;
-            if (!state.hasImpacted || craterState.radius3D <= 0) return baseH;
+        /* --- PROCEDURALNA TEKSTURA MAPY MIASTA (CANVAS 2D -> THREE.CANVASTEXTURE) --- */
+        function generateCityMapTexture(cityConfig, areaSizeM) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 2048;
+            canvas.height = 2048;
+            const ctx = canvas.getContext('2d');
 
-            const dx = x - craterState.epicenter.x;
-            const dz = z - craterState.epicenter.z;
-            const dist = Math.sqrt(dx * dx + (dz / craterState.elongation) * (dz / craterState.elongation));
+            const isDesert = cityConfig.desert;
 
-            if (dist < craterState.radius3D * 1.5) {
-                const normDist = dist / craterState.radius3D;
-                if (normDist < 1.0) {
-                    return baseH - craterState.depth3D * (1.0 - Math.pow(normDist, 2));
-                } else if (normDist >= 0.85 && normDist <= 1.4) {
-                    const rimFactor = Math.sin(((normDist - 0.85) / 0.55) * Math.PI);
-                    return baseH + craterState.rimHeight3D * Math.pow(rimFactor, 1.8);
+            // 1. Tło terenu (Zieleń miejska / Ziemia / Pustynia)
+            if (isDesert) {
+                ctx.fillStyle = '#b48a56';
+                ctx.fillRect(0, 0, 2048, 2048);
+                // Plamy piaskowe i skały
+                for (let i = 0; i < 400; i++) {
+                    ctx.fillStyle = Math.random() < 0.5 ? 'rgba(150, 110, 65, 0.15)' : 'rgba(215, 175, 120, 0.15)';
+                    ctx.beginPath();
+                    ctx.arc(Math.random() * 2048, Math.random() * 2048, Math.random() * 120 + 20, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            } else {
+                // Miejski asfalt i zieleń
+                ctx.fillStyle = '#1e293b';
+                ctx.fillRect(0, 0, 2048, 2048);
+
+                // Parki / tereny zielone
+                ctx.fillStyle = '#143828';
+                for (let i = 0; i < 18; i++) {
+                    const px = Math.random() * 2048;
+                    const py = Math.random() * 2048;
+                    const pw = 80 + Math.random() * 240;
+                    const ph = 80 + Math.random() * 200;
+                    ctx.beginPath();
+                    ctx.roundRect ? ctx.roundRect(px, py, pw, ph, 16) : ctx.rect(px, py, pw, ph);
+                    ctx.fill();
+                }
+
+                // Dzielnice / kwartały zabudowy (szare bloki)
+                ctx.fillStyle = '#0f172a';
+                const blockSize = Math.max(30, Math.min(100, 2048 / (areaSizeM / 150)));
+                for (let x = 40; x < 2008; x += blockSize + 18) {
+                    for (let y = 40; y < 2008; y += blockSize + 18) {
+                        if (Math.random() > 0.08) {
+                            ctx.fillRect(x, y, blockSize, blockSize);
+                        }
+                    }
+                }
+
+                // Siatka ulic (lokalne drogi)
+                ctx.strokeStyle = '#334155';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                for (let x = 40; x < 2048; x += blockSize + 18) {
+                    ctx.moveTo(x - 9, 0); ctx.lineTo(x - 9, 2048);
+                }
+                for (let y = 40; y < 2048; y += blockSize + 18) {
+                    ctx.moveTo(0, y - 9); ctx.lineTo(2048, y - 9);
+                }
+                ctx.stroke();
+
+                // Główne aleje / arterie przelotowe (złoto-pomarańczowe linie)
+                ctx.strokeStyle = '#64748b';
+                ctx.lineWidth = 8;
+                ctx.beginPath();
+                ctx.moveTo(0, 1024); ctx.lineTo(2048, 1024);
+                ctx.moveTo(1024, 0); ctx.lineTo(1024, 2048);
+                ctx.moveTo(0, 400); ctx.lineTo(2048, 1600);
+                ctx.stroke();
+
+                // Rzeka / Zbiornik wodny
+                if (cityConfig.riverWidth > 0) {
+                    ctx.strokeStyle = '#0284c7';
+                    ctx.fillStyle = '#0369a1';
+                    const rw = (cityConfig.riverWidth / areaSizeM) * 2048;
+                    ctx.lineWidth = Math.max(14, rw);
+                    ctx.beginPath();
+                    
+                    const angle = cityConfig.riverAngle;
+                    const sin = Math.sin(angle);
+                    const cos = Math.cos(angle);
+
+                    ctx.moveTo(1024 - sin * 1300, 1024 - cos * 1300);
+                    ctx.quadraticCurveTo(
+                        1024 + Math.sin(angle + 1) * 200, 
+                        1024 + Math.cos(angle + 1) * 200, 
+                        1024 + sin * 1300, 
+                        1024 + cos * 1300
+                    );
+                    ctx.stroke();
                 }
             }
-            return baseH;
+
+            const texture = new THREE.CanvasTexture(canvas);
+            texture.wrapS = THREE.ClampToEdgeWrapping;
+            texture.wrapT = THREE.ClampToEdgeWrapping;
+            return texture;
         }
 
         /* --- SCENA THREE.JS --- */
@@ -988,21 +1305,23 @@
         let trailParticles, trailGeometry;
         let shockwaveMesh;
         let flashLight;
+        let hazardRingsGroup;
         let clock = new THREE.Clock();
 
-        // 3D Instanced Debris Meshes
-        const MAX_HEAVY_ROCKS = 650;
-        const MAX_BURNING_ROCKS = 250;
+        // 3D Instanced Buildings (Pudełeczka budynków miasta)
+        const MAX_BUILDINGS = 3500;
+        let buildingMesh;
+        let buildingData = []; // Informacje o pozycji, skali, kącie, stanie zniszczenia każdego budynku
+        let dummyTransform = new THREE.Object3D();
+        let destroyedBuildingCount = 0;
+
+        // 3D Instanced Debris Meshes (Skały i płonący gruz)
+        const MAX_HEAVY_ROCKS = 800;
+        const MAX_BURNING_ROCKS = 300;
         let heavyRockMesh, burningRockMesh;
-        let fineDebrisPoints, fineDebrisGeometry;
         let heavyRockData = [];
         let burningRockData = [];
-        let fineDebrisData = [];
-        let dummyTransform = new THREE.Object3D();
-
-        // Grupa pyłu
-        let dustGroup;
-        let dustParticles = [];
+        let dustGroup, dustParticles = [];
 
         // Zmienne lotu meteorytu
         let flightProgress = 0;
@@ -1010,50 +1329,54 @@
         let startPos = new THREE.Vector3();
         let targetPos = new THREE.Vector3(0, 0, 0);
         let cameraShake = 0;
+        let impactDirectionVector = new THREE.Vector3();
 
         function initThree() {
             const container = document.getElementById('webgl-container');
 
             // 1. Scena
             scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x060c18);
-            scene.fog = new THREE.FogExp2(0x060c18, 0.0035);
+            scene.background = new THREE.Color(0x040813);
+            scene.fog = new THREE.FogExp2(0x040813, 0.000035);
 
-            // 2. Kamera
-            camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.5, 2000);
-            camera.position.set(120, 75, 140);
-
+            // 2. Kamera z logarithmicDepthBuffer do obsługi makro-skali (1m do 50 000m)
+            camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1.0, 300000);
+            
             // 3. Renderer
-            renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+            renderer = new THREE.WebGLRenderer({ 
+                antialias: true, 
+                powerPreference: 'high-performance',
+                logarithmicDepthBuffer: true 
+            });
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
             renderer.shadowMap.enabled = true;
             renderer.shadowMap.type = THREE.PCFSoftShadowMap;
             renderer.toneMapping = THREE.ACESFilmicToneMapping;
-            renderer.toneMappingExposure = 1.1;
+            renderer.toneMappingExposure = 1.15;
             container.appendChild(renderer.domElement);
 
-            // 4. Kontroler orbitalny
+            // 4. Kontroler orbitalny z dużym zakresem
             controls = new THREE.OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
             controls.dampingFactor = 0.05;
-            controls.maxPolarAngle = Math.PI / 2 - 0.02;
-            controls.minDistance = 10;
-            controls.maxDistance = 500;
+            controls.maxPolarAngle = Math.PI / 2 - 0.01;
+            controls.minDistance = 5;
+            controls.maxDistance = 150000;
             controls.target.set(0, 0, 0);
 
             // 5. Oświetlenie
-            const ambientLight = new THREE.AmbientLight(0x384860, 0.7);
+            const ambientLight = new THREE.AmbientLight(0x475569, 0.85);
             scene.add(ambientLight);
 
-            const sunLight = new THREE.DirectionalLight(0xfff3db, 1.8);
-            sunLight.position.set(160, 200, 100);
+            const sunLight = new THREE.DirectionalLight(0xfff5e6, 1.9);
+            sunLight.position.set(4000, 7000, 3500);
             sunLight.castShadow = true;
             sunLight.shadow.mapSize.width = 2048;
             sunLight.shadow.mapSize.height = 2048;
-            sunLight.shadow.camera.near = 10;
-            sunLight.shadow.camera.far = 600;
-            const shadowDist = 180;
+            sunLight.shadow.camera.near = 100;
+            sunLight.shadow.camera.far = 40000;
+            const shadowDist = 8000;
             sunLight.shadow.camera.left = -shadowDist;
             sunLight.shadow.camera.right = shadowDist;
             sunLight.shadow.camera.top = shadowDist;
@@ -1061,15 +1384,15 @@
             scene.add(sunLight);
 
             // Rozbłysk uderzeniowy (PointLight)
-            flashLight = new THREE.PointLight(0xff8822, 0, 300, 1.2);
-            flashLight.position.set(0, 5, 0);
+            flashLight = new THREE.PointLight(0xff7711, 0, 20000, 1.5);
+            flashLight.position.set(0, 50, 0);
             scene.add(flashLight);
 
             // 6. Gwiezdne tło
             createSkyStars();
 
-            // 7. Teren
-            createTerrain();
+            // 7. Zbuduj miasto i teren
+            rebuildCityAndTerrain();
 
             // 8. Model Meteorytu
             createMeteorite();
@@ -1077,10 +1400,15 @@
             // 9. Pierścień Fali Uderzeniowej
             createShockwave();
 
-            // 10. Zaawansowany System 3D Odłamków i Pyłu
+            // 10. Pierścienie stref rażenia (Hazard Rings)
+            createHazardRings();
+
+            // 11. Systemy Odłamków i Pyłu
             createDebrisAndDustSystems();
 
-            // Resize listener
+            // Ustaw początkową kamerę
+            updateCameraForArea();
+
             window.addEventListener('resize', onWindowResize);
 
             calculateMetrics();
@@ -1090,72 +1418,86 @@
         /* --- KOSMICZNE TŁO GWIAZD --- */
         function createSkyStars() {
             const starsGeo = new THREE.BufferGeometry();
-            const count = 1200;
+            const count = 1600;
             const positions = new Float32Array(count * 3);
             for (let i = 0; i < count * 3; i += 3) {
-                const r = 800 + Math.random() * 400;
+                const r = 60000 + Math.random() * 30000;
                 const theta = Math.random() * Math.PI * 2;
                 const phi = Math.acos((Math.random() * 2) - 1);
                 positions[i] = r * Math.sin(phi) * Math.cos(theta);
-                positions[i + 1] = Math.abs(r * Math.cos(phi)) + 50;
+                positions[i + 1] = Math.abs(r * Math.cos(phi)) + 1000;
                 positions[i + 2] = r * Math.sin(phi) * Math.sin(theta);
             }
             starsGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
             const starsMat = new THREE.PointsMaterial({
                 color: 0x93c5fd,
-                size: 2.0,
+                size: 3.5,
                 transparent: true,
-                opacity: 0.8
+                opacity: 0.85
             });
             const starField = new THREE.Points(starsGeo, starsMat);
             scene.add(starField);
         }
 
-        /* --- TEREN & DEFORMACJA WIERZCHOŁKÓW --- */
-        function createTerrain() {
-            const size = 320;
-            const segments = 220;
-            groundGeometry = new THREE.PlaneGeometry(size, size, segments, segments);
+        /* --- BUDOWA MIASTA & TERENU W METRYCZNEJ SKALI (1 UNIT = 1 METR) --- */
+        function rebuildCityAndTerrain() {
+            // Usuń stary teren i budynki jeśli istnieją
+            if (groundMesh) {
+                scene.remove(groundMesh);
+                groundGeometry.dispose();
+                groundMaterial.dispose();
+            }
+            if (buildingMesh) {
+                scene.remove(buildingMesh);
+                buildingMesh.geometry.dispose();
+                buildingMesh.material.dispose();
+            }
+
+            const areaSizeM = state.areaKm * 1000; // np. 6 km = 6 000 m
+            const cityConfig = CITY_PRESETS[state.selectedCity] || CITY_PRESETS.warszawa;
+
+            // A. Teren (PlaneGeometry)
+            const segments = 180;
+            groundGeometry = new THREE.PlaneGeometry(areaSizeM, areaSizeM, segments, segments);
             groundGeometry.rotateX(-Math.PI / 2);
 
             const posAttr = groundGeometry.attributes.position;
             const count = posAttr.count;
             const colors = new Float32Array(count * 3);
-
             origVertices = new Float32Array(count * 3);
             origColors = new Float32Array(count * 3);
 
             for (let i = 0; i < count; i++) {
                 const x = posAttr.getX(i);
                 const z = posAttr.getZ(i);
-                const y = Math.sin(x * 0.025) * Math.cos(z * 0.025) * 1.5 + Math.sin(x * 0.06 + z * 0.04) * 0.6;
+                // Łagodna rzeźba terenu
+                const y = Math.sin(x * 0.001) * Math.cos(z * 0.001) * (areaSizeM * 0.008);
                 posAttr.setY(i, y);
 
                 origVertices[i * 3] = x;
                 origVertices[i * 3 + 1] = y;
                 origVertices[i * 3 + 2] = z;
 
-                const shade = 0.85 + Math.random() * 0.15;
-                const r = 0.38 * shade;
-                const g = 0.32 * shade;
-                const b = 0.24 * shade;
+                const baseCol = cityConfig.desert ? 0.7 : 0.85;
+                colors[i * 3] = baseCol;
+                colors[i * 3 + 1] = baseCol;
+                colors[i * 3 + 2] = baseCol;
 
-                colors[i * 3] = r;
-                colors[i * 3 + 1] = g;
-                colors[i * 3 + 2] = b;
-
-                origColors[i * 3] = r;
-                origColors[i * 3 + 1] = g;
-                origColors[i * 3 + 2] = b;
+                origColors[i * 3] = baseCol;
+                origColors[i * 3 + 1] = baseCol;
+                origColors[i * 3 + 2] = baseCol;
             }
 
             groundGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
             groundGeometry.computeVertexNormals();
 
+            // Tekstura mapy OpenStreetMap na podłożu
+            const mapTexture = generateCityMapTexture(cityConfig, areaSizeM);
             groundMaterial = new THREE.MeshStandardMaterial({
+                map: mapTexture,
                 vertexColors: true,
-                roughness: 0.9,
-                metalness: 0.1,
+                roughness: 0.85,
+                metalness: 0.15,
                 flatShading: false
             });
 
@@ -1163,16 +1505,155 @@
             groundMesh.receiveShadow = true;
             scene.add(groundMesh);
 
-            const gridHelper = new THREE.GridHelper(320, 32, 0x1e293b, 0x0f172a);
-            gridHelper.position.y = -0.2;
-            scene.add(gridHelper);
+            // B. Instanced 3D Box Buildings ("Pudełeczka")
+            create3DCityBuildings(cityConfig, areaSizeM);
+
+            // C. Aktualizacja skali w UI
+            document.getElementById('scale-label').textContent = `${Math.round(areaSizeM / 6)} m`;
+            document.getElementById('val-area').textContent = `${state.areaKm} km`;
+        }
+
+        /* --- GENEROWANIE 3D BUDYNKÓW MIASTA (INSTANCED MESH) --- */
+        function create3DCityBuildings(cityConfig, areaSizeM) {
+            buildingData = [];
+            destroyedBuildingCount = 0;
+
+            const boxGeo = new THREE.BoxGeometry(1, 1, 1);
+            // Przesuń pivot na dół budynku (y = 0 na ziemi)
+            boxGeo.translate(0, 0.5, 0);
+
+            const buildingMat = new THREE.MeshStandardMaterial({
+                roughness: 0.65,
+                metalness: 0.35,
+                flatShading: true
+            });
+
+            buildingMesh = new THREE.InstancedMesh(boxGeo, buildingMat, MAX_BUILDINGS);
+            buildingMesh.castShadow = true;
+            buildingMesh.receiveShadow = true;
+            buildingMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+
+            const isDesert = cityConfig.desert;
+            const centerDensity = cityConfig.centerDensity;
+            const highRiseRatio = cityConfig.highRiseRatio;
+            const maxRadius = areaSizeM * 0.46;
+
+            const tempColor = new THREE.Color();
+
+            for (let i = 0; i < MAX_BUILDINGS; i++) {
+                if (isDesert) {
+                    // Na pustyni generujemy tylko nieliczne małe chatki/instalacje
+                    if (i > 60) {
+                        const hideMatrix = new THREE.Matrix4().makeScale(0, 0, 0);
+                        buildingMesh.setMatrixAt(i, hideMatrix);
+                        continue;
+                    }
+                }
+
+                // Rozmieszczenie w koncentrycznych strefach z centrum wieżowców
+                const angle = Math.random() * Math.PI * 2;
+                // Skupienie ku centrum miasta
+                const distRatio = Math.pow(Math.random(), 1.4);
+                const dist = distRatio * maxRadius;
+
+                let bx = Math.cos(angle) * dist;
+                let bz = Math.sin(angle) * dist;
+
+                // Sprawdź czy budynek nie ląduje w rzece
+                if (cityConfig.riverWidth > 0) {
+                    const rAngle = cityConfig.riverAngle;
+                    const rDist = Math.abs(bx * Math.sin(rAngle) - bz * Math.cos(rAngle));
+                    if (rDist < cityConfig.riverWidth * 0.7) {
+                        // Przesuń poza rzekę
+                        bx += Math.sign(bx) * cityConfig.riverWidth * 0.8;
+                    }
+                }
+
+                // Wymiary budynku zależne od odległości od centrum
+                let width = 15 + Math.random() * 25;
+                let depth = 15 + Math.random() * 25;
+                let height = 10 + Math.random() * 20;
+
+                const isDowntown = (dist < maxRadius * 0.35) && (Math.random() < highRiseRatio);
+                if (isDowntown) {
+                    // Drapacze chmur w centrum
+                    height = 50 + Math.random() * 220 * centerDensity;
+                    width = 25 + Math.random() * 45;
+                    depth = 25 + Math.random() * 45;
+                } else if (dist < maxRadius * 0.65) {
+                    // Średnia zabudowa (kamienice, biurowce 4-10 pięter)
+                    height = 20 + Math.random() * 45;
+                }
+
+                const by = getTerrainElevation(bx, bz);
+
+                // Kolor elewacji (nowoczesne szkło, beton, cegła)
+                if (isDowntown) {
+                    tempColor.setHSL(0.55 + Math.random() * 0.1, 0.4, 0.45 + Math.random() * 0.3);
+                } else {
+                    const grey = 0.4 + Math.random() * 0.35;
+                    tempColor.setRGB(grey, grey * 0.95, grey * 0.9);
+                }
+                buildingMesh.setColorAt(i, tempColor);
+
+                const rotY = cityConfig.gridAligned ? Math.round(angle / (Math.PI / 2)) * (Math.PI / 2) : Math.random() * Math.PI * 2;
+
+                dummyTransform.position.set(bx, by, bz);
+                dummyTransform.rotation.set(0, rotY, 0);
+                dummyTransform.scale.set(width, height, depth);
+                dummyTransform.updateMatrix();
+
+                buildingMesh.setMatrixAt(i, dummyTransform.matrix);
+
+                buildingData.push({
+                    index: i,
+                    origX: bx,
+                    origY: by,
+                    origZ: bz,
+                    width,
+                    height,
+                    depth,
+                    rotY,
+                    origColor: tempColor.clone(),
+                    isDestroyed: false,
+                    isDowntown
+                });
+            }
+
+            if (buildingMesh.instanceColor) buildingMesh.instanceColor.needsUpdate = true;
+            buildingMesh.instanceMatrix.needsUpdate = true;
+            scene.add(buildingMesh);
+
+            updateDestroyedHUD();
+        }
+
+        /* --- WYSOKOŚĆ TERENU DLA DOWOLNEGO PUNKTU (X, Z) --- */
+        function getTerrainElevation(x, z) {
+            const areaSizeM = state.areaKm * 1000;
+            const baseH = Math.sin(x * 0.001) * Math.cos(z * 0.001) * (areaSizeM * 0.008);
+            if (!state.hasImpacted || craterState.radiusM <= 0) return baseH;
+
+            const dx = x - craterState.epicenter.x;
+            const dz = z - craterState.epicenter.z;
+            const dist = Math.sqrt(dx * dx + (dz / craterState.elongation) * (dz / craterState.elongation));
+
+            if (dist < craterState.radiusM * 1.5) {
+                const normDist = dist / craterState.radiusM;
+                if (normDist < 1.0) {
+                    return baseH - craterState.depthM * (1.0 - Math.pow(normDist, 2));
+                } else if (normDist >= 0.85 && normDist <= 1.4) {
+                    const rimFactor = Math.sin(((normDist - 0.85) / 0.55) * Math.PI);
+                    return baseH + craterState.rimHeightM * Math.pow(rimFactor, 1.8);
+                }
+            }
+            return baseH;
         }
 
         /* --- MODEL METEORYTU & ŚLAD OGNIA --- */
         function createMeteorite() {
             meteoriteGroup = new THREE.Group();
 
-            const geo = new THREE.DodecahedronGeometry(2.5, 2);
+            const geo = new THREE.DodecahedronGeometry(1.0, 2);
             const pos = geo.attributes.position;
             for (let i = 0; i < pos.count; i++) {
                 const v = new THREE.Vector3(pos.getX(i), pos.getY(i), pos.getZ(i));
@@ -1182,9 +1663,9 @@
             geo.computeVertexNormals();
 
             const mat = new THREE.MeshStandardMaterial({
-                color: 0x221a15,
-                emissive: 0xff3b00,
-                emissiveIntensity: 0.85,
+                color: 0x1c140d,
+                emissive: 0xff4000,
+                emissiveIntensity: 0.9,
                 roughness: 0.8,
                 metalness: 0.4
             });
@@ -1193,19 +1674,16 @@
             meteoriteMesh.castShadow = true;
             meteoriteGroup.add(meteoriteMesh);
 
-            meteoriteLight = new THREE.PointLight(0xff7700, 2.5, 60);
+            meteoriteLight = new THREE.PointLight(0xff6600, 3.0, 3000);
             meteoriteGroup.add(meteoriteLight);
 
-            const trailCount = 300;
+            const trailCount = 400;
             trailGeometry = new THREE.BufferGeometry();
             const trailPos = new Float32Array(trailCount * 3);
             const trailColors = new Float32Array(trailCount * 3);
 
             for (let i = 0; i < trailCount; i++) {
-                trailPos[i * 3] = 0;
-                trailPos[i * 3 + 1] = 0;
-                trailPos[i * 3 + 2] = 0;
-
+                trailPos[i * 3 + 1] = -5000;
                 trailColors[i * 3] = 1.0;
                 trailColors[i * 3 + 1] = 0.4 + Math.random() * 0.5;
                 trailColors[i * 3 + 2] = 0.05;
@@ -1216,7 +1694,7 @@
 
             const trailMat = new THREE.PointsMaterial({
                 vertexColors: true,
-                size: 3.5,
+                size: 25.0,
                 transparent: true,
                 opacity: 0.85,
                 blending: THREE.AdditiveBlending,
@@ -1226,13 +1704,13 @@
             trailParticles = new THREE.Points(trailGeometry, trailMat);
             scene.add(trailParticles);
 
-            meteoriteGroup.position.set(0, -100, 0);
+            meteoriteGroup.position.set(0, -1000, 0);
             scene.add(meteoriteGroup);
         }
 
-        /* --- FALA UDERZENIOWA (SHOCKWAVE RING) --- */
+        /* --- PIERŚCIEŃ FALI UDERZENIOWEJ --- */
         function createShockwave() {
-            const ringGeo = new THREE.RingGeometry(0.1, 2.5, 64);
+            const ringGeo = new THREE.RingGeometry(1, 40, 64);
             ringGeo.rotateX(-Math.PI / 2);
             const ringMat = new THREE.MeshBasicMaterial({
                 color: 0xfdba74,
@@ -1243,14 +1721,65 @@
                 blending: THREE.AdditiveBlending
             });
             shockwaveMesh = new THREE.Mesh(ringGeo, ringMat);
-            shockwaveMesh.position.y = 0.3;
+            shockwaveMesh.position.y = 5;
             scene.add(shockwaveMesh);
         }
 
-        /* --- REALISTYCZNE 3D ODŁAMKI I PYŁ --- */
+        /* --- MAKRO-PIERŚCIENIE STREF ZAGROŻENIA (HAZARD RINGS) --- */
+        function createHazardRings() {
+            if (hazardRingsGroup) scene.remove(hazardRingsGroup);
+            hazardRingsGroup = new THREE.Group();
+
+            function makeRing(colorHex, radius, name) {
+                const ringGeo = new THREE.RingGeometry(radius * 0.98, radius, 96);
+                ringGeo.rotateX(-Math.PI / 2);
+                const ringMat = new THREE.MeshBasicMaterial({
+                    color: colorHex,
+                    transparent: true,
+                    opacity: 0.65,
+                    side: THREE.DoubleSide,
+                    depthWrite: false
+                });
+                const mesh = new THREE.Mesh(ringGeo, ringMat);
+                mesh.position.y = 3.0;
+                mesh.name = name;
+                return mesh;
+            }
+
+            hazardRingsGroup.add(makeRing(0xef4444, 100, 'craterRing'));
+            hazardRingsGroup.add(makeRing(0xf97316, 300, 'blast20psiRing'));
+            hazardRingsGroup.add(makeRing(0xfbbf24, 600, 'thermalRing'));
+            hazardRingsGroup.add(makeRing(0x38bdf8, 1200, 'shatterRing'));
+
+            hazardRingsGroup.visible = false;
+            scene.add(hazardRingsGroup);
+        }
+
+        function updateHazardRings(metrics) {
+            if (!hazardRingsGroup) return;
+            const craterR = metrics.craterDiameterM / 2;
+            const blastR = metrics.blastRadius20psiM;
+            const thermalR = metrics.thermalRadiusM;
+            const shatterR = metrics.shatterRadius1psiM;
+
+            hazardRingsGroup.children.forEach(mesh => {
+                let r = craterR;
+                if (mesh.name === 'craterRing') r = craterR;
+                if (mesh.name === 'blast20psiRing') r = blastR;
+                if (mesh.name === 'thermalRing') r = thermalR;
+                if (mesh.name === 'shatterRing') r = shatterR;
+
+                mesh.geometry.dispose();
+                mesh.geometry = new THREE.RingGeometry(r * 0.985, r, 96);
+                mesh.geometry.rotateX(-Math.PI / 2);
+            });
+
+            hazardRingsGroup.visible = state.showHazardRings && state.hasImpacted;
+        }
+
+        /* --- INSTANCED DEBRIS & DUST SYSTEMS --- */
         function createDebrisAndDustSystems() {
-            // 1. Geometria kanciastej bryły skalnej z losowymi zniekształceniami (zmniejszona baza)
-            const rockGeo = new THREE.DodecahedronGeometry(0.5, 1);
+            const rockGeo = new THREE.DodecahedronGeometry(1.0, 1);
             const rPos = rockGeo.attributes.position;
             for (let i = 0; i < rPos.count; i++) {
                 const vec = new THREE.Vector3(rPos.getX(i), rPos.getY(i), rPos.getZ(i));
@@ -1261,26 +1790,24 @@
             }
             rockGeo.computeVertexNormals();
 
-            // 2. Meshe Instancjonowane: Ciężkie Skały (Heavy 3D Rocks - 650 instancji)
+            // Ciężkie skały wyrzutu
             const rockMat = new THREE.MeshStandardMaterial({
-                color: 0x5a524c,
+                color: 0x4a443e,
                 roughness: 0.9,
                 metalness: 0.15,
                 flatShading: true
             });
             heavyRockMesh = new THREE.InstancedMesh(rockGeo, rockMat, MAX_HEAVY_ROCKS);
             heavyRockMesh.castShadow = true;
-            heavyRockMesh.receiveShadow = true;
             heavyRockMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
             scene.add(heavyRockMesh);
 
-            // 3. Meshe Instancjonowane: Płonące Odłamki Magmy (Burning 3D Fragments - 250 instancji)
+            // Płonące fragmenty magmy / zniszczonych budynków
             const burningMat = new THREE.MeshStandardMaterial({
                 color: 0x221105,
                 emissive: 0xff4500,
-                emissiveIntensity: 1.6,
+                emissiveIntensity: 1.8,
                 roughness: 0.7,
-                metalness: 0.3,
                 flatShading: true
             });
             burningRockMesh = new THREE.InstancedMesh(rockGeo, burningMat, MAX_BURNING_ROCKS);
@@ -1288,90 +1815,82 @@
             burningRockMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
             scene.add(burningRockMesh);
 
-            // Inicjalnie ukryj instancje
             const hideMatrix = new THREE.Matrix4().makeScale(0, 0, 0);
             for (let i = 0; i < MAX_HEAVY_ROCKS; i++) heavyRockMesh.setMatrixAt(i, hideMatrix);
             for (let i = 0; i < MAX_BURNING_ROCKS; i++) burningRockMesh.setMatrixAt(i, hideMatrix);
             heavyRockMesh.instanceMatrix.needsUpdate = true;
             burningRockMesh.instanceMatrix.needsUpdate = true;
 
-            // 4. Drobny pył i iskry (Fine Ejecta Points - 1200 cząsteczek)
-            const fineCount = 1200;
-            fineDebrisGeometry = new THREE.BufferGeometry();
-            const finePos = new Float32Array(fineCount * 3);
-            const fineCol = new Float32Array(fineCount * 3);
-            for (let i = 0; i < fineCount; i++) {
-                finePos[i * 3 + 1] = -200;
-                fineCol[i * 3] = 1.0;
-                fineCol[i * 3 + 1] = 0.5;
-                fineCol[i * 3 + 2] = 0.1;
-            }
-            fineDebrisGeometry.setAttribute('position', new THREE.BufferAttribute(finePos, 3));
-            fineDebrisGeometry.setAttribute('color', new THREE.BufferAttribute(fineCol, 3));
-
-            const fineMat = new THREE.PointsMaterial({
-                vertexColors: true,
-                size: 2.2,
-                transparent: true,
-                opacity: 0.85,
-                depthWrite: false
-            });
-            fineDebrisPoints = new THREE.Points(fineDebrisGeometry, fineMat);
-            scene.add(fineDebrisPoints);
-
-            // 5. Chmura Pyłu i Dymu (Dust Plume)
             dustGroup = new THREE.Group();
             scene.add(dustGroup);
         }
 
-        /* --- AKTYWACJA WYRZUTU ODŁAMKÓW I PYŁU --- */
-        function triggerRealisticEjecta(epicenter, craterRadius3D, metrics, impactAngleRad, impactDir) {
+        /* --- AKTYWACJA REALISTYCZNYCH ODŁAMKÓW I PYŁU W METRYCZNEJ SKALI --- */
+        function triggerRealisticEjecta(epicenter, craterRadiusM, metrics, impactAngleRad, impactDir) {
             heavyRockData = [];
             burningRockData = [];
-            fineDebrisData = [];
 
-            const energyFactor = Math.min(2.5, Math.max(0.6, Math.pow(metrics.energyMegatons, 0.25)));
+            const energyFactor = Math.min(3.5, Math.max(0.7, Math.pow(metrics.energyMegatons, 0.28)));
+            const scaleBase = Math.max(2.0, craterRadiusM * 0.02);
 
-            // A. INICJALIZACJA CIĘŻKICH SKAŁ (3D HEAVY ROCKS - MNIEJSZE I LICZNIEJSZE)
+            // A. Ciężkie skały i gruz
             for (let i = 0; i < MAX_HEAVY_ROCKS; i++) {
-                // Rozkład kurtyny wyrzutu (odwrócony stożek 20°–75°)
                 const azimuth = Math.random() * Math.PI * 2;
                 const elevation = Math.PI * 0.12 + Math.random() * (Math.PI * 0.38);
-                
-                // Zróżnicowane prędkości lotu (deszcz kamieni)
-                const baseSpeed = (12 + Math.random() * 60) * energyFactor;
+                const baseSpeed = (40 + Math.random() * 220) * energyFactor;
 
                 let vx = Math.cos(azimuth) * Math.cos(elevation) * baseSpeed;
-                let vy = Math.sin(elevation) * baseSpeed * 1.15;
+                let vy = Math.sin(elevation) * baseSpeed * 1.2;
                 let vz = Math.sin(azimuth) * Math.cos(elevation) * baseSpeed;
 
-                // Kierunkowość rozbryzgu przy uderzeniu pod kątem
                 const forwardBias = (1.0 - Math.sin(impactAngleRad)) * 0.75;
                 vx += impactDir.x * baseSpeed * forwardBias;
                 vz += impactDir.z * baseSpeed * forwardBias;
 
-                // Zróżnicowane, drobniejsze rozmiary odłamków (gruz, kamienie i nieliczne większe bryłki)
-                const randType = Math.random();
-                let sizeScale;
-                if (randType < 0.78) {
-                    // Drobny gruz i kamienie (0.15 - 0.45 jednostki)
-                    sizeScale = (0.25 + Math.random() * 0.4) * Math.min(1.5, Math.max(0.6, craterRadius3D * 0.03));
-                } else if (randType < 0.95) {
-                    // Średnie kamienie (0.45 - 0.85 jednostki)
-                    sizeScale = (0.55 + Math.random() * 0.5) * Math.min(1.5, Math.max(0.6, craterRadius3D * 0.03));
-                } else {
-                    // Pojedynczy większy głaz (0.9 - 1.4 jednostki)
-                    sizeScale = (0.95 + Math.random() * 0.6) * Math.min(1.5, Math.max(0.6, craterRadius3D * 0.03));
-                }
-
+                const sizeScale = scaleBase * (0.4 + Math.random() * 1.6);
                 const sx = sizeScale * (0.7 + Math.random() * 0.6);
                 const sy = sizeScale * (0.6 + Math.random() * 0.7);
                 const sz = sizeScale * (0.7 + Math.random() * 0.6);
 
                 heavyRockData.push({
-                    x: epicenter.x + (Math.random() - 0.5) * 3,
-                    y: epicenter.y + 0.4,
-                    z: epicenter.z + (Math.random() - 0.5) * 3,
+                    x: epicenter.x + (Math.random() - 0.5) * 20,
+                    y: epicenter.y + 5,
+                    z: epicenter.z + (Math.random() - 0.5) * 20,
+                    vx, vy, vz,
+                    rotX: Math.random() * Math.PI * 2,
+                    rotY: Math.random() * Math.PI * 2,
+                    rotZ: Math.random() * Math.PI * 2,
+                    rotSpeedX: (Math.random() - 0.5) * 12,
+                    rotSpeedY: (Math.random() - 0.5) * 12,
+                    rotSpeedZ: (Math.random() - 0.5) * 12,
+                    scale: new THREE.Vector3(sx, sy, sz),
+                    radius: Math.max(sx, sy, sz) * 0.5,
+                    bounces: 0,
+                    maxBounces: Math.floor(Math.random() * 3) + 2,
+                    settled: false
+                });
+            }
+
+            // B. Płonące fragmenty magmy
+            for (let i = 0; i < MAX_BURNING_ROCKS; i++) {
+                const azimuth = Math.random() * Math.PI * 2;
+                const elevation = Math.PI * 0.18 + Math.random() * (Math.PI * 0.4);
+                const speed = (60 + Math.random() * 280) * energyFactor;
+
+                let vx = Math.cos(azimuth) * Math.cos(elevation) * speed;
+                let vy = Math.sin(elevation) * speed * 1.3;
+                let vz = Math.sin(azimuth) * Math.cos(elevation) * speed;
+
+                const forwardBias = (1.0 - Math.sin(impactAngleRad)) * 0.65;
+                vx += impactDir.x * speed * forwardBias;
+                vz += impactDir.z * speed * forwardBias;
+
+                const sizeScale = scaleBase * (0.3 + Math.random() * 1.2);
+
+                burningRockData.push({
+                    x: epicenter.x + (Math.random() - 0.5) * 15,
+                    y: epicenter.y + 5,
+                    z: epicenter.z + (Math.random() - 0.5) * 15,
                     vx, vy, vz,
                     rotX: Math.random() * Math.PI * 2,
                     rotY: Math.random() * Math.PI * 2,
@@ -1379,43 +1898,8 @@
                     rotSpeedX: (Math.random() - 0.5) * 18,
                     rotSpeedY: (Math.random() - 0.5) * 18,
                     rotSpeedZ: (Math.random() - 0.5) * 18,
-                    scale: new THREE.Vector3(sx, sy, sz),
-                    radius: Math.max(sx, sy, sz) * 0.45,
-                    bounces: 0,
-                    maxBounces: Math.floor(Math.random() * 3) + 2,
-                    settled: false
-                });
-            }
-
-            // B. INICJALIZACJA PŁONĄCYCH ODŁAMKÓW MAGMY (3D BURNING FRAGMENTS - DROBNE I LICZNE)
-            for (let i = 0; i < MAX_BURNING_ROCKS; i++) {
-                const azimuth = Math.random() * Math.PI * 2;
-                const elevation = Math.PI * 0.18 + Math.random() * (Math.PI * 0.4);
-                const speed = (20 + Math.random() * 70) * energyFactor;
-
-                let vx = Math.cos(azimuth) * Math.cos(elevation) * speed;
-                let vy = Math.sin(elevation) * speed * 1.25;
-                let vz = Math.sin(azimuth) * Math.cos(elevation) * speed;
-
-                const forwardBias = (1.0 - Math.sin(impactAngleRad)) * 0.65;
-                vx += impactDir.x * speed * forwardBias;
-                vz += impactDir.z * speed * forwardBias;
-
-                const sizeScale = (0.2 + Math.random() * 0.45) * Math.min(1.5, Math.max(0.6, craterRadius3D * 0.03));
-
-                burningRockData.push({
-                    x: epicenter.x + (Math.random() - 0.5) * 2.5,
-                    y: epicenter.y + 0.5,
-                    z: epicenter.z + (Math.random() - 0.5) * 2.5,
-                    vx, vy, vz,
-                    rotX: Math.random() * Math.PI * 2,
-                    rotY: Math.random() * Math.PI * 2,
-                    rotZ: Math.random() * Math.PI * 2,
-                    rotSpeedX: (Math.random() - 0.5) * 22,
-                    rotSpeedY: (Math.random() - 0.5) * 22,
-                    rotSpeedZ: (Math.random() - 0.5) * 22,
                     scale: new THREE.Vector3(sizeScale, sizeScale * 0.8, sizeScale),
-                    radius: sizeScale * 0.45,
+                    radius: sizeScale * 0.5,
                     bounces: 0,
                     maxBounces: 3,
                     temperature: 1.0,
@@ -1423,36 +1907,7 @@
                 });
             }
 
-            // C. DROBNA FRAKCJA (FINE EJECTA - 1200 CZĄSTECZEK)
-            const fineCount = 1200;
-            const finePos = fineDebrisGeometry.attributes.position;
-            const fineCol = fineDebrisGeometry.attributes.color;
-
-            for (let i = 0; i < fineCount; i++) {
-                const azimuth = Math.random() * Math.PI * 2;
-                const elevation = Math.PI * 0.12 + Math.random() * (Math.PI * 0.48);
-                const speed = (30 + Math.random() * 95) * energyFactor;
-
-                let vx = Math.cos(azimuth) * Math.cos(elevation) * speed + impactDir.x * speed * 0.5;
-                let vy = Math.sin(elevation) * speed * 1.35;
-                let vz = Math.sin(azimuth) * Math.cos(elevation) * speed + impactDir.z * speed * 0.5;
-
-                fineDebrisData.push({
-                    x: epicenter.x,
-                    y: 0.3,
-                    z: epicenter.z,
-                    vx, vy, vz,
-                    active: true
-                });
-
-                finePos.setXYZ(i, epicenter.x, 0.3, epicenter.z);
-                const isSpark = Math.random() < 0.45;
-                fineCol.setXYZ(i, isSpark ? 1.0 : 0.45, isSpark ? 0.6 : 0.35, isSpark ? 0.1 : 0.2);
-            }
-            finePos.needsUpdate = true;
-            fineCol.needsUpdate = true;
-
-            // D. CHMURA PYŁU I DYMU (DUST PLUME)
+            // C. Chmura Pyłu i Dymu (Dust Plume)
             while (dustGroup.children.length > 0) {
                 const obj = dustGroup.children[0];
                 dustGroup.remove(obj);
@@ -1460,30 +1915,30 @@
             }
             dustParticles = [];
 
-            const dustCount = 850;
+            const dustCount = 1000;
             const dustGeo = new THREE.BufferGeometry();
             const dustPositions = new Float32Array(dustCount * 3);
             const dustColors = new Float32Array(dustCount * 3);
 
             for (let i = 0; i < dustCount; i++) {
                 dustPositions[i * 3] = epicenter.x;
-                dustPositions[i * 3 + 1] = 0.3;
+                dustPositions[i * 3 + 1] = 5;
                 dustPositions[i * 3 + 2] = epicenter.z;
 
                 const angle = Math.random() * Math.PI * 2;
-                const spreadSpeed = (Math.random() * 0.8 + 0.2) * (craterRadius3D * 1.1);
-                const upSpeed = (Math.random() * 0.8 + 0.4) * (craterRadius3D * 1.7);
+                const spreadSpeed = (Math.random() * 0.8 + 0.2) * (craterRadiusM * 0.75);
+                const upSpeed = (Math.random() * 0.8 + 0.4) * (craterRadiusM * 1.2);
 
                 dustParticles.push({
                     vx: Math.cos(angle) * spreadSpeed + impactDir.x * spreadSpeed * 0.4,
                     vy: upSpeed,
                     vz: Math.sin(angle) * spreadSpeed + impactDir.z * spreadSpeed * 0.4,
                     x: epicenter.x,
-                    y: 0.3,
+                    y: 5,
                     z: epicenter.z,
                     life: 1.0,
-                    decay: 0.003 + Math.random() * 0.004,
-                    drag: 0.978
+                    decay: 0.002 + Math.random() * 0.003,
+                    drag: 0.985
                 });
 
                 const grey = 0.45 + Math.random() * 0.35;
@@ -1497,35 +1952,35 @@
 
             const dustMat = new THREE.PointsMaterial({
                 vertexColors: true,
-                size: 7.5,
+                size: Math.max(30.0, craterRadiusM * 0.08),
                 transparent: true,
-                opacity: 0.8,
+                opacity: 0.85,
                 depthWrite: false
             });
             const dustPoints = new THREE.Points(dustGeo, dustMat);
             dustGroup.add(dustPoints);
         }
 
-        /* --- DEFORMACJA KRATERU (CRATER FORMATION) --- */
-        function deformCrater(epicenter, metrics, impactDir) {
+        /* --- DEFORMACJA KRATERU I NISZCZENIE BUDYNKÓW W STREFIE ZERO --- */
+        function deformCraterAndDestroyCity(epicenter, metrics, impactDir) {
             const posAttr = groundGeometry.attributes.position;
             const colAttr = groundGeometry.attributes.color;
             const count = posAttr.count;
 
-            const craterRadius3D = Math.min(85, Math.max(12, metrics.craterDiameterM * 0.04));
-            const craterDepth3D = craterRadius3D * 0.26;
-            const rimHeight3D = craterDepth3D * 0.45;
+            const craterRadiusM = metrics.craterDiameterM / 2;
+            const craterDepthM = metrics.craterDepthM;
+            const rimHeightM = craterDepthM * 0.4;
 
             const angleRad = (state.angle * Math.PI) / 180;
             const elongation = 1.0 + (1.0 - Math.sin(angleRad)) * 0.7;
 
-            // Zapisz parametry krateru do obliczeń wysokości kolizji odłamków
             craterState.epicenter.copy(epicenter);
-            craterState.radius3D = craterRadius3D;
-            craterState.depth3D = craterDepth3D;
-            craterState.rimHeight3D = rimHeight3D;
+            craterState.radiusM = craterRadiusM;
+            craterState.depthM = craterDepthM;
+            craterState.rimHeightM = rimHeightM;
             craterState.elongation = elongation;
 
+            // 1. Deformacja siatki terenu
             for (let i = 0; i < count; i++) {
                 const ox = origVertices[i * 3];
                 const oy = origVertices[i * 3 + 1];
@@ -1535,29 +1990,29 @@
                 const dz = oz - epicenter.z;
                 const dist = Math.sqrt(dx * dx + (dz / elongation) * (dz / elongation));
 
-                if (dist < craterRadius3D * 1.5) {
-                    const normDist = dist / craterRadius3D;
+                if (dist < craterRadiusM * 1.5) {
+                    const normDist = dist / craterRadiusM;
                     let deltaY = 0;
 
                     if (normDist < 1.0) {
                         const bowl = (1.0 - Math.pow(normDist, 2));
-                        deltaY = -craterDepth3D * bowl;
+                        deltaY = -craterDepthM * bowl;
                     } else if (normDist >= 0.85 && normDist <= 1.4) {
                         const rimFactor = Math.sin(((normDist - 0.85) / 0.55) * Math.PI);
-                        deltaY = rimHeight3D * Math.pow(rimFactor, 1.8);
+                        deltaY = rimHeightM * Math.pow(rimFactor, 1.8);
                     }
 
                     posAttr.setY(i, oy + deltaY);
 
-                    const burnFactor = Math.max(0, 1.0 - dist / (craterRadius3D * 1.3));
+                    const burnFactor = Math.max(0, 1.0 - dist / (craterRadiusM * 1.3));
                     const origR = origColors[i * 3];
                     const origG = origColors[i * 3 + 1];
                     const origB = origColors[i * 3 + 2];
 
                     if (normDist < 0.9) {
-                        colAttr.setXYZ(i, origR * 0.25 + 0.08, origG * 0.2 + 0.04, origB * 0.15 + 0.02);
+                        colAttr.setXYZ(i, origR * 0.2 + 0.05, origG * 0.15 + 0.02, origB * 0.1);
                     } else if (normDist < 1.35) {
-                        colAttr.setXYZ(i, origR * 0.6 + 0.25 * burnFactor, origG * 0.5 + 0.15 * burnFactor, origB * 0.4);
+                        colAttr.setXYZ(i, origR * 0.5 + 0.3 * burnFactor, origG * 0.4 + 0.15 * burnFactor, origB * 0.3);
                     }
                 }
             }
@@ -1566,24 +2021,91 @@
             colAttr.needsUpdate = true;
             groundGeometry.computeVertexNormals();
 
-            // Uruchom realistyczne 3D odłamki i pył
-            triggerRealisticEjecta(epicenter, craterRadius3D, metrics, angleRad, impactDir);
+            // 2. FIZYKA ZNISZCZEŃ BUDYNKÓW MIASTA
+            destroyedBuildingCount = 0;
+            const blast20psi = metrics.blastRadius20psiM;
+            const charredColor = new THREE.Color(0x140e0a);
 
-            flashLight.intensity = Math.min(8.0, 3.0 + metrics.energyMegatons * 0.2);
+            for (let i = 0; i < buildingData.length; i++) {
+                const b = buildingData[i];
+                const dx = b.origX - epicenter.x;
+                const dz = b.origZ - epicenter.z;
+                const dist = Math.sqrt(dx * dx + dz * dz);
+
+                if (dist < craterRadiusM) {
+                    // Strefa Odparowania i Zagłębienia w kraterze (100% zniszczenia)
+                    b.isDestroyed = true;
+                    destroyedBuildingCount++;
+                    
+                    // Zrównaj z ziemią / spłaszcz do 0
+                    dummyTransform.position.set(b.origX, getTerrainElevation(b.origX, b.origZ) - 2, b.origZ);
+                    dummyTransform.rotation.set(0, b.rotY, 0);
+                    dummyTransform.scale.set(b.width * 1.2, 0.1, b.depth * 1.2);
+                    dummyTransform.updateMatrix();
+                    buildingMesh.setMatrixAt(i, dummyTransform.matrix);
+                    buildingMesh.setColorAt(i, charredColor);
+                } else if (dist < blast20psi) {
+                    // Strefa Fali Uderzeniowej (20 psi - przewrócenie i spłaszczenie)
+                    b.isDestroyed = true;
+                    destroyedBuildingCount++;
+
+                    const damageRatio = 1.0 - (dist - craterRadiusM) / (blast20psi - craterRadiusM);
+                    const tiltAngle = damageRatio * 0.8;
+                    const tiltDir = Math.atan2(dz, dx);
+
+                    const groundH = getTerrainElevation(b.origX, b.origZ);
+                    const newHeight = Math.max(2, b.height * (1.0 - damageRatio * 0.85));
+
+                    dummyTransform.position.set(b.origX, groundH, b.origZ);
+                    dummyTransform.rotation.set(
+                        Math.sin(tiltDir) * tiltAngle,
+                        b.rotY,
+                        -Math.cos(tiltDir) * tiltAngle
+                    );
+                    dummyTransform.scale.set(b.width, newHeight, b.depth);
+                    dummyTransform.updateMatrix();
+                    buildingMesh.setMatrixAt(i, dummyTransform.matrix);
+
+                    const scorch = new THREE.Color().copy(b.origColor).lerp(charredColor, damageRatio * 0.8);
+                    buildingMesh.setColorAt(i, scorch);
+                } else if (dist < metrics.thermalRadiusM) {
+                    // Strefa Termiczna (osmolić elewacje)
+                    const scorch = new THREE.Color().copy(b.origColor).lerp(charredColor, 0.4);
+                    buildingMesh.setColorAt(i, scorch);
+                }
+            }
+
+            if (buildingMesh.instanceColor) buildingMesh.instanceColor.needsUpdate = true;
+            buildingMesh.instanceMatrix.needsUpdate = true;
+            updateDestroyedHUD();
+
+            // 3. Wyrzut realistycznych odłamków 3D
+            triggerRealisticEjecta(epicenter, craterRadiusM, metrics, angleRad, impactDir);
+
+            // 4. Efekty świetlne i fala uderzeniowa
+            flashLight.intensity = Math.min(10.0, 3.0 + metrics.energyMegatons * 0.15);
             shockwaveMesh.scale.set(0.1, 0.1, 0.1);
-            shockwaveMesh.material.opacity = 0.9;
-            cameraShake = Math.min(2.5, 0.8 + (metrics.energyMegatons * 0.05));
+            shockwaveMesh.material.opacity = 0.95;
+            cameraShake = Math.min(3.0, 0.9 + (metrics.energyMegatons * 0.04));
 
-            playExplosionSound(Math.min(2.0, 0.8 + metrics.energyMegatons * 0.1));
+            playExplosionSound(Math.min(2.2, 0.9 + metrics.energyMegatons * 0.08));
+
+            updateHazardRings(metrics);
 
             state.hasImpacted = true;
             state.isFlying = false;
-
             document.getElementById('flight-status').style.display = 'none';
         }
 
-        /* --- RESETOWANIE TERENU --- */
-        function resetTerrain() {
+        function updateDestroyedHUD() {
+            const total = buildingData.length;
+            const pct = total > 0 ? Math.round((destroyedBuildingCount / total) * 100) : 0;
+            document.getElementById('res-destroyed-count').textContent = 
+                `${destroyedBuildingCount.toLocaleString('pl-PL')} / ${total.toLocaleString('pl-PL')} (${pct}%)`;
+        }
+
+        /* --- RESETOWANIE MIASTA I TERENU --- */
+        function resetCityAndTerrain() {
             const posAttr = groundGeometry.attributes.position;
             const colAttr = groundGeometry.attributes.color;
             const count = posAttr.count;
@@ -1597,6 +2119,23 @@
             colAttr.needsUpdate = true;
             groundGeometry.computeVertexNormals();
 
+            // Przywróć budynki
+            for (let i = 0; i < buildingData.length; i++) {
+                const b = buildingData[i];
+                b.isDestroyed = false;
+                dummyTransform.position.set(b.origX, b.origY, b.origZ);
+                dummyTransform.rotation.set(0, b.rotY, 0);
+                dummyTransform.scale.set(b.width, b.height, b.depth);
+                dummyTransform.updateMatrix();
+                buildingMesh.setMatrixAt(i, dummyTransform.matrix);
+                buildingMesh.setColorAt(i, b.origColor);
+            }
+            if (buildingMesh.instanceColor) buildingMesh.instanceColor.needsUpdate = true;
+            buildingMesh.instanceMatrix.needsUpdate = true;
+
+            destroyedBuildingCount = 0;
+            updateDestroyedHUD();
+
             // Schowaj odłamki 3D
             const hideMatrix = new THREE.Matrix4().makeScale(0, 0, 0);
             for (let i = 0; i < MAX_HEAVY_ROCKS; i++) heavyRockMesh.setMatrixAt(i, hideMatrix);
@@ -1606,37 +2145,29 @@
 
             heavyRockData = [];
             burningRockData = [];
-            fineDebrisData = [];
-
-            // Schowaj drobne cząsteczki
-            if (fineDebrisGeometry) {
-                const finePos = fineDebrisGeometry.attributes.position;
-                for (let i = 0; i < finePos.count; i++) finePos.setY(i, -200);
-                fineDebrisGeometry.attributes.position.needsUpdate = true;
-            }
 
             while (dustGroup.children.length > 0) dustGroup.remove(dustGroup.children[0]);
             dustParticles = [];
 
-            craterState.radius3D = 0;
-            meteoriteGroup.position.set(0, -100, 0);
+            craterState.radiusM = 0;
+            meteoriteGroup.position.set(0, -1000, 0);
             shockwaveMesh.material.opacity = 0;
             flashLight.intensity = 0;
+            if (hazardRingsGroup) hazardRingsGroup.visible = false;
 
             state.isFlying = false;
             state.hasImpacted = false;
             document.getElementById('flight-status').style.display = 'none';
         }
 
-        /* --- WYSTRZAŁ I ANIMACJA LOTU --- */
-        let impactDirectionVector = new THREE.Vector3();
-
+        /* --- WYSTRZAŁ METEORYTU --- */
         function launchMeteorite(instant = false) {
-            resetTerrain();
+            resetCityAndTerrain();
             const metrics = calculateMetrics();
 
+            const areaSizeM = state.areaKm * 1000;
             const angleRad = (state.angle * Math.PI) / 180;
-            const startAltitude = 160;
+            const startAltitude = areaSizeM * 0.85;
             const groundDist = startAltitude / Math.tan(angleRad);
 
             startPos.set(-groundDist, startAltitude, -groundDist * 0.35);
@@ -1644,22 +2175,24 @@
 
             impactDirectionVector.copy(targetPos).sub(startPos).normalize();
 
-            const visualScale = Math.max(0.6, Math.min(3.5, state.diameter * 0.04));
+            // Skaluj model meteorytu do jego rzeczywistej średnicy w metrach
+            const visualScale = state.diameter;
             meteoriteMesh.scale.set(visualScale, visualScale, visualScale);
 
             if (instant) {
-                deformCrater(targetPos, metrics, impactDirectionVector);
+                deformCraterAndDestroyCity(targetPos, metrics, impactDirectionVector);
                 return;
             }
 
             meteoriteGroup.position.copy(startPos);
             flightProgress = 0;
-            flightDuration = Math.max(1.0, 3.5 - (state.speed / 72) * 2.0);
+            flightDuration = Math.max(1.2, 3.6 - (state.speed / 72) * 2.0);
             state.isFlying = true;
 
             const statusBox = document.getElementById('flight-status');
             statusBox.style.display = 'flex';
-            document.getElementById('status-text').textContent = `Meteoryt ${state.diameter}m pędzi z prędkością ${state.speed} km/s pod kątem ${state.angle}°...`;
+            document.getElementById('status-text').textContent = 
+                `Meteoryt ${state.diameter}m pędzi na ${state.cityName} (${state.speed} km/s, kąt ${state.angle}°)...`;
 
             playEntrySound();
         }
@@ -1671,7 +2204,7 @@
             requestAnimationFrame(animate);
 
             const delta = clock.getDelta() * state.timeScale;
-            const gravity = 32.0;
+            const gravity = 98.0; // Przyspieszenie grawitacyjne dopasowane do skali metrycznej
 
             // 1. Obsługa lotu meteorytu
             if (state.isFlying) {
@@ -1681,8 +2214,8 @@
                     flightProgress = 1.0;
                     meteoriteGroup.position.copy(targetPos);
                     const metrics = calculateMetrics();
-                    deformCrater(targetPos, metrics, impactDirectionVector);
-                    meteoriteGroup.position.set(0, -100, 0);
+                    deformCraterAndDestroyCity(targetPos, metrics, impactDirectionVector);
+                    meteoriteGroup.position.set(0, -1000, 0);
                 } else {
                     meteoriteGroup.position.lerpVectors(startPos, targetPos, flightProgress);
                     meteoriteMesh.rotation.x += 0.05;
@@ -1691,26 +2224,28 @@
                     if (trailParticles && trailGeometry) {
                         const trailPosAttr = trailGeometry.attributes.position;
                         const currentPos = meteoriteGroup.position;
+                        const spreadDist = state.diameter * 0.4;
 
-                        for (let k = 0; k < 5; k++) {
+                        for (let k = 0; k < 6; k++) {
                             const idx = (trailIndex + k) % (trailPosAttr.count);
-                            const spread = (Math.random() - 0.5) * 2.5;
+                            const spread = (Math.random() - 0.5) * spreadDist;
                             trailPosAttr.setXYZ(
                                 idx,
-                                currentPos.x + spread - impactDirectionVector.x * (k * 2.5),
-                                currentPos.y + spread - impactDirectionVector.y * (k * 2.5),
-                                currentPos.z + spread - impactDirectionVector.z * (k * 2.5)
+                                currentPos.x + spread - impactDirectionVector.x * (k * spreadDist),
+                                currentPos.y + spread - impactDirectionVector.y * (k * spreadDist),
+                                currentPos.z + spread - impactDirectionVector.z * (k * spreadDist)
                             );
                         }
-                        trailIndex = (trailIndex + 5) % trailPosAttr.count;
+                        trailIndex = (trailIndex + 6) % trailPosAttr.count;
                         trailPosAttr.needsUpdate = true;
                     }
 
                     if (state.camMode === 'follow') {
+                        const camOffset = state.diameter * 6.0;
                         camera.position.set(
-                            meteoriteGroup.position.x + 35,
-                            meteoriteGroup.position.y + 25,
-                            meteoriteGroup.position.z + 45
+                            meteoriteGroup.position.x + camOffset,
+                            meteoriteGroup.position.y + camOffset * 0.7,
+                            meteoriteGroup.position.z + camOffset * 1.2
                         );
                         controls.target.copy(meteoriteGroup.position);
                     }
@@ -1719,7 +2254,7 @@
                 if (trailGeometry) {
                     const trailPosAttr = trailGeometry.attributes.position;
                     for (let i = 0; i < trailPosAttr.count; i++) {
-                        trailPosAttr.setY(i, -200);
+                        trailPosAttr.setY(i, -5000);
                     }
                     trailPosAttr.needsUpdate = true;
                 }
@@ -1727,19 +2262,20 @@
 
             // 2. Zanikanie błysku
             if (flashLight.intensity > 0) {
-                flashLight.intensity -= delta * 6.5;
+                flashLight.intensity -= delta * 5.0;
                 if (flashLight.intensity < 0) flashLight.intensity = 0;
             }
 
             // 3. Ekspansja i zanikanie fali uderzeniowej
             if (shockwaveMesh.material.opacity > 0) {
-                shockwaveMesh.scale.x += delta * 75;
-                shockwaveMesh.scale.y += delta * 75;
-                shockwaveMesh.material.opacity -= delta * 0.75;
+                const waveSpeed = (state.areaKm * 1000) * 0.6;
+                shockwaveMesh.scale.x += delta * (waveSpeed * 0.06);
+                shockwaveMesh.scale.y += delta * (waveSpeed * 0.06);
+                shockwaveMesh.material.opacity -= delta * 0.55;
                 if (shockwaveMesh.material.opacity < 0) shockwaveMesh.material.opacity = 0;
             }
 
-            // 4. FIZYKA 3D CIĘŻKICH SKAŁ (HEAVY 3D ROCKS)
+            // 4. FIZYKA 3D CIĘŻKICH SKAŁ W METRYCZNEJ SKALI
             if (heavyRockData.length > 0) {
                 let anyRockUpdated = false;
                 for (let i = 0; i < heavyRockData.length; i++) {
@@ -1756,40 +2292,30 @@
                     r.rotY += r.rotSpeedY * delta;
                     r.rotZ += r.rotSpeedZ * delta;
 
-                    // Kolizja z ukształtowaną powierzchnią terenu
                     const groundY = getTerrainElevation(r.x, r.z) + r.radius * 0.6;
                     if (r.y <= groundY) {
                         r.y = groundY;
-                        if (r.bounces < r.maxBounces && Math.abs(r.vy) > 3.0) {
-                            r.vy = -r.vy * 0.38;
+                        if (r.bounces < r.maxBounces && Math.abs(r.vy) > 10.0) {
+                            r.vy = -r.vy * 0.35;
                             r.vx *= 0.65;
                             r.vz *= 0.65;
-                            r.rotSpeedX *= 0.5;
-                            r.rotSpeedY *= 0.5;
-                            r.rotSpeedZ *= 0.5;
                             r.bounces++;
                         } else {
-                            // Osadzenie na stałe w terenie
                             r.settled = true;
-                            r.vy = 0;
-                            r.vx = 0;
-                            r.vz = 0;
+                            r.vy = 0; r.vx = 0; r.vz = 0;
                         }
                     }
 
-                    // Zastosuj macierz transformacji do InstancedMesh
                     dummyTransform.position.set(r.x, r.y, r.z);
                     dummyTransform.rotation.set(r.rotX, r.rotY, r.rotZ);
                     dummyTransform.scale.copy(r.scale);
                     dummyTransform.updateMatrix();
                     heavyRockMesh.setMatrixAt(i, dummyTransform.matrix);
                 }
-                if (anyRockUpdated) {
-                    heavyRockMesh.instanceMatrix.needsUpdate = true;
-                }
+                if (anyRockUpdated) heavyRockMesh.instanceMatrix.needsUpdate = true;
             }
 
-            // 5. FIZYKA 3D PŁONĄCYCH ODŁAMKÓW (BURNING 3D FRAGMENTS)
+            // 5. FIZYKA 3D PŁONĄCYCH ODŁAMKÓW MAGMY
             if (burningRockData.length > 0) {
                 let anyBurningUpdated = false;
                 for (let i = 0; i < burningRockData.length; i++) {
@@ -1810,23 +2336,20 @@
                         const groundY = getTerrainElevation(r.x, r.z) + r.radius * 0.6;
                         if (r.y <= groundY) {
                             r.y = groundY;
-                            if (r.bounces < r.maxBounces && Math.abs(r.vy) > 3.0) {
-                                r.vy = -r.vy * 0.32;
+                            if (r.bounces < r.maxBounces && Math.abs(r.vy) > 10.0) {
+                                r.vy = -r.vy * 0.3;
                                 r.vx *= 0.6;
                                 r.vz *= 0.6;
                                 r.bounces++;
                             } else {
                                 r.settled = true;
-                                r.vy = 0;
-                                r.vx = 0;
-                                r.vz = 0;
+                                r.vy = 0; r.vx = 0; r.vz = 0;
                             }
                         }
                     }
 
-                    // Stygnięcie żaru
                     if (r.temperature > 0) {
-                        r.temperature -= delta * 0.18;
+                        r.temperature -= delta * 0.15;
                         if (r.temperature < 0) r.temperature = 0;
                     }
 
@@ -1836,34 +2359,10 @@
                     dummyTransform.updateMatrix();
                     burningRockMesh.setMatrixAt(i, dummyTransform.matrix);
                 }
-                if (anyBurningUpdated) {
-                    burningRockMesh.instanceMatrix.needsUpdate = true;
-                }
+                if (anyBurningUpdated) burningRockMesh.instanceMatrix.needsUpdate = true;
             }
 
-            // 6. FIZYKA DROBNEJ FRAKCJI (FINE DEBRIS)
-            if (fineDebrisData.length > 0) {
-                const finePos = fineDebrisGeometry.attributes.position;
-                for (let i = 0; i < fineDebrisData.length; i++) {
-                    const p = fineDebrisData[i];
-                    if (!p.active) continue;
-
-                    p.vy -= gravity * delta;
-                    p.x += p.vx * delta;
-                    p.y += p.vy * delta;
-                    p.z += p.vz * delta;
-
-                    const groundY = getTerrainElevation(p.x, p.z);
-                    if (p.y <= groundY + 0.1) {
-                        p.y = groundY + 0.1;
-                        p.active = false;
-                    }
-                    finePos.setXYZ(i, p.x, p.y, p.z);
-                }
-                fineDebrisGeometry.attributes.position.needsUpdate = true;
-            }
-
-            // 7. FIZYKA PYŁU I DYMU (DUST PLUME)
+            // 6. FIZYKA PYŁU I DYMU
             if (dustParticles.length > 0 && dustGroup.children.length > 0) {
                 const points = dustGroup.children[0];
                 const posAttr = points.geometry.attributes.position;
@@ -1874,29 +2373,29 @@
 
                     p.vx *= p.drag;
                     p.vz *= p.drag;
-                    p.vy = (p.vy - 4.5 * delta) * p.drag;
+                    p.vy = (p.vy - 15.0 * delta) * p.drag;
 
                     p.x += p.vx * delta;
                     p.y += p.vy * delta;
                     p.z += p.vz * delta;
 
                     const groundY = getTerrainElevation(p.x, p.z);
-                    if (p.y < groundY + 0.2) p.y = groundY + 0.2;
+                    if (p.y < groundY + 5) p.y = groundY + 5;
 
                     p.life -= p.decay * (delta * 60);
-
                     posAttr.setXYZ(i, p.x, p.y, p.z);
                 }
                 posAttr.needsUpdate = true;
-                points.material.opacity = Math.max(0, points.material.opacity - delta * 0.05);
+                points.material.opacity = Math.max(0, points.material.opacity - delta * 0.04);
             }
 
-            // 8. Camera Shake
+            // 7. Wstrząsy kamery (Camera Shake)
             if (cameraShake > 0) {
-                camera.position.x += (Math.random() - 0.5) * cameraShake * 2.5;
-                camera.position.y += (Math.random() - 0.5) * cameraShake * 2.5;
-                camera.position.z += (Math.random() - 0.5) * cameraShake * 2.5;
-                cameraShake -= delta * 2.0;
+                const shakeMagnitude = cameraShake * (state.areaKm * 15);
+                camera.position.x += (Math.random() - 0.5) * shakeMagnitude;
+                camera.position.y += (Math.random() - 0.5) * shakeMagnitude;
+                camera.position.z += (Math.random() - 0.5) * shakeMagnitude;
+                cameraShake -= delta * 1.8;
                 if (cameraShake < 0) cameraShake = 0;
             }
 
@@ -1904,21 +2403,31 @@
             renderer.render(scene, camera);
         }
 
-        /* --- PRESETY KAMER --- */
+        /* --- PRESETY KAMER DOPASOWANE DO SKALI OBSZARU --- */
+        function updateCameraForArea() {
+            setCameraPreset(state.camMode);
+        }
+
         function setCameraPreset(mode) {
             state.camMode = mode;
             document.querySelectorAll('[data-cam]').forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.cam === mode);
             });
 
+            const areaM = state.areaKm * 1000;
+
             if (mode === 'orbit') {
-                camera.position.set(120, 75, 140);
+                camera.position.set(areaM * 0.5, areaM * 0.35, areaM * 0.65);
                 controls.target.set(0, 0, 0);
-            } else if (mode === 'ground') {
-                camera.position.set(0, 6, 110);
-                controls.target.set(0, 8, 0);
+            } else if (mode === 'sat') {
+                // Widok satelitarny z orbity (40 km nad miastem)
+                camera.position.set(0, Math.max(25000, areaM * 1.5), 100);
+                controls.target.set(0, 0, 0);
+            } else if (mode === 'street') {
+                camera.position.set(0, 45, areaM * 0.25);
+                controls.target.set(0, 60, 0);
             } else if (mode === 'top') {
-                camera.position.set(0, 220, 0.1);
+                camera.position.set(0, areaM * 1.1, 10);
                 controls.target.set(0, 0, 0);
             }
         }
@@ -1929,11 +2438,90 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
         }
 
-        /* --- OBSŁUGA UI I ZDARZEŃ --- */
+        /* --- WYSZUKIWANIE MIASTA (OPENSTREETMAP NOMINATIM GEOCODING) --- */
+        async function searchCityOSM(query) {
+            if (!query || query.trim() === '') return;
+            const searchBtn = document.getElementById('btn-city-search');
+            searchBtn.textContent = '⏳...';
+
+            try {
+                const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`);
+                const data = await res.json();
+                if (data && data.length > 0) {
+                    const place = data[0];
+                    const cityName = place.display_name.split(',')[0];
+                    state.cityName = cityName;
+
+                    // Utwórz dynamiczny profil miasta bazując na geolokalizacji
+                    const lat = parseFloat(place.lat);
+                    const lon = parseFloat(place.lon);
+                    
+                    CITY_PRESETS['custom'] = {
+                        name: cityName,
+                        riverAngle: Math.abs(lat % 3.14),
+                        riverWidth: 200,
+                        centerDensity: 1.0,
+                        highRiseRatio: 0.4,
+                        desert: (lat > 15 && lat < 32 && lon > 10 && lon < 50)
+                    };
+                    state.selectedCity = 'custom';
+
+                    // Zaktualizuj select
+                    const select = document.getElementById('select-city');
+                    let customOpt = select.querySelector('option[value="custom"]');
+                    if (!customOpt) {
+                        customOpt = document.createElement('option');
+                        customOpt.value = 'custom';
+                        select.appendChild(customOpt);
+                    }
+                    customOpt.textContent = `📍 ${cityName}`;
+                    select.value = 'custom';
+
+                    rebuildCityAndTerrain();
+                    updateCameraForArea();
+                } else {
+                    alert(`Nie znaleziono miasta: "${query}". Sprawdź pisownię.`);
+                }
+            } catch (err) {
+                console.warn('OSM Geocoding fallback:', err);
+                alert('Wyszukiwanie online chwilowo niedostępne. Wybierz miasto z listy presetów.');
+            } finally {
+                searchBtn.textContent = 'Szukaj';
+            }
+        }
+
+        /* --- OBSŁUGA INTERFEJSU UŻYTKOWNIKA --- */
         document.addEventListener('DOMContentLoaded', () => {
             initThree();
 
-            // Suwaki parametrów
+            // 1. Wybór miasta z listy presetów
+            const selectCity = document.getElementById('select-city');
+            selectCity.addEventListener('change', (e) => {
+                state.selectedCity = e.target.value;
+                state.cityName = CITY_PRESETS[state.selectedCity].name;
+                rebuildCityAndTerrain();
+                updateCameraForArea();
+            });
+
+            // Wyszukiwanie miasta
+            const btnSearch = document.getElementById('btn-city-search');
+            const inSearch = document.getElementById('input-city-search');
+            btnSearch.addEventListener('click', () => searchCityOSM(inSearch.value));
+            inSearch.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') searchCityOSM(inSearch.value);
+            });
+
+            // 2. Wielkość obszaru symulacji (1 - 30 km)
+            const inArea = document.getElementById('input-area');
+            const valArea = document.getElementById('val-area');
+            inArea.addEventListener('input', (e) => {
+                state.areaKm = parseInt(e.target.value);
+                valArea.textContent = state.areaKm + ' km';
+                rebuildCityAndTerrain();
+                updateCameraForArea();
+            });
+
+            // 3. Suwaki parametrów meteorytu
             const inSpeed = document.getElementById('input-speed');
             const valSpeed = document.getElementById('val-speed');
             inSpeed.addEventListener('input', (e) => {
@@ -1958,7 +2546,7 @@
                 calculateMetrics();
             });
 
-            // Wybór typu meteorytu
+            // 4. Wybór składu meteorytu
             document.querySelectorAll('.type-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
@@ -1969,17 +2557,26 @@
                 });
             });
 
-            // Przyciski akcji
+            // 5. Toggle stref zagrożenia
+            const toggleRings = document.getElementById('toggle-hazard-rings');
+            toggleRings.addEventListener('change', (e) => {
+                state.showHazardRings = e.target.checked;
+                if (hazardRingsGroup) {
+                    hazardRingsGroup.visible = state.showHazardRings && state.hasImpacted;
+                }
+            });
+
+            // 6. Przyciski akcji
             document.getElementById('btn-launch').addEventListener('click', () => launchMeteorite(false));
             document.getElementById('btn-instant').addEventListener('click', () => launchMeteorite(true));
-            document.getElementById('btn-reset').addEventListener('click', resetTerrain);
+            document.getElementById('btn-reset').addEventListener('click', resetCityAndTerrain);
 
-            // Presety kamer
+            // 7. Presety kamer
             document.querySelectorAll('[data-cam]').forEach(btn => {
                 btn.addEventListener('click', () => setCameraPreset(btn.dataset.cam));
             });
 
-            // Kontrola tempa czasu
+            // 8. Kontrola tempa czasu
             document.querySelectorAll('[data-speed]').forEach(btn => {
                 btn.addEventListener('click', () => {
                     document.querySelectorAll('[data-speed]').forEach(b => b.classList.remove('active'));
@@ -1988,7 +2585,7 @@
                 });
             });
 
-            // Przełącznik dźwięku
+            // 9. Dźwięk
             const btnMute = document.getElementById('btn-mute');
             btnMute.addEventListener('click', () => {
                 state.soundEnabled = !state.soundEnabled;
@@ -1996,7 +2593,7 @@
                 btnMute.classList.toggle('active', state.soundEnabled);
             });
 
-            // Modal Edukacyjny
+            // 10. Modal Edukacyjny
             const modal = document.getElementById('edu-modal');
             document.getElementById('btn-open-edu').addEventListener('click', () => modal.classList.add('open'));
             document.getElementById('btn-close-modal').addEventListener('click', () => modal.classList.remove('open'));
