@@ -600,7 +600,7 @@
       <!-- Pływające menu narzędziowe -->
       <div class="floating-toolbar">
         <button class="tool-btn" onclick="rotateSelected()" title="Obróć zaznaczony symbol (Klawisz R)">🔄 Obróć (R)</button>
-        <button class="tool-btn" onclick="deleteSelected()" title="Usuń zaznaczony symbol / kabel (Klawisz Delete / Backspace)">🗑️ Usuń (Del)</button>
+        <button class="tool-btn" onclick="deleteSelected()" title="Usuń zaznaczony element lub przewód">🗑️ Usuń</button>
         <div style="width: 1px; height: 18px; background: var(--border-color); margin: 0 4px;"></div>
         <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">PROWADZENIE:</span>
         <button class="tool-btn active" id="btnWireDirect">Kąty Proste 90&deg;</button>
@@ -608,7 +608,7 @@
 
       <!-- Podpowiedź sterowania -->
       <div class="hint-bar">
-        <span>Łączenie: <strong>LPM</strong> na piny | Zaznacz / Przesuń: <strong>LPM</strong> | Obrót: <strong>R</strong> | Usuń: <strong>PPM lub Delete</strong></span>
+        <span>Łączenie: <strong>LPM</strong> na piny | Zaznacz / Przesuń: <strong>LPM</strong> | Obrót: <strong>R</strong> | Usuwanie: przycisk <strong>„Usuń”</strong></span>
       </div>
 
       <!-- Toast Powiadomień -->
@@ -896,12 +896,10 @@
 
       canvas.addEventListener('contextmenu', (e) => e.preventDefault());
 
-      // Klawiatura: Obrót (R), Usuwanie (Delete/Backspace), Anulowanie (Esc)
+      // Klawiatura: Obrót (R), Anulowanie połączenia / Odznaczenie (Esc)
       window.addEventListener('keydown', (e) => {
         if (e.key === 'r' || e.key === 'R') {
           rotateSelected();
-        } else if (e.key === 'Delete' || e.key === 'Backspace') {
-          deleteSelected();
         } else if (e.key === 'Escape') {
           cancelWireConnection();
           deselectAll();
@@ -1685,8 +1683,9 @@
       document.getElementById('selectedElemType').textContent = 'PRZEWÓD';
       document.getElementById('propsContainer').innerHTML = `
         <div style="text-align: center; color: var(--accent-blue);">
-          <span>Przewód połączeniowy</span>
-          <p style="font-size: 0.72rem; color: var(--text-muted); margin-top: 6px;">Naciśnij Delete lub Backspace, aby usunąć.</p>
+          <div style="font-weight: 700; color: #fff; margin-bottom: 6px;">Przewód połączeniowy</div>
+          <p style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 10px;">Zaznaczono przewód w obwodzie.</p>
+          <button class="tool-btn" style="width: 100%; background: #dc2626; color:#fff; font-weight:700; padding: 6px;" onclick="deleteSelected()">🗑️ Usuń przewód</button>
         </div>
       `;
     }
