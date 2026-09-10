@@ -782,7 +782,7 @@
         // Jeśli kursor został przesunięty (obracanie lub przesuwanie widoku 3D), ignorujemy jako kliknięcie
         const dx = e.clientX - pointerDownPos.x;
         const dy = e.clientY - pointerDownPos.y;
-        if (Math.hypot(dx, dy) > 8) return;
+        if (Math.hypot(dx, dy) > 16) return;
 
         const rect = renderer.domElement.getBoundingClientRect();
         mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
@@ -926,11 +926,11 @@
       const mLine2 = new THREE.Mesh(new THREE.BoxGeometry(17, 0.05, 0.08), new THREE.MeshBasicMaterial({ color: 0x3b82f6 }));
       mLine2.position.set(0, 0.31, -3.8); bGroup.add(mLine2);
 
-      // Otwory stykowe (Piny Breadboardu) z powiększonym hitboxem
+      // Otwory stykowe (Piny Breadboardu) z powiększonym hitboxem aktywnym dla Raycastera
       const pinGeo = new THREE.CylinderGeometry(0.09, 0.09, 0.06, 8);
       const pinMat = new THREE.MeshBasicMaterial({ color: 0x1e293b });
-      const hitGeo = new THREE.BoxGeometry(0.48, 0.3, 0.48);
-      const hitMat = new THREE.MeshBasicMaterial({ visible: false });
+      const hitGeo = new THREE.BoxGeometry(0.52, 0.4, 0.52);
+      const hitMat = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false });
 
       for (let x = -8; x <= 8; x += 0.55) {
         for (let z = -2.5; z <= 2.5; z += 0.55) {
@@ -1280,10 +1280,10 @@
       capMesh.position.y = 0.22;
       pinGroup.add(capMesh);
 
-      // Duży, niewidzialny hitbox (promień 0.38)
+      // Duży hitbox aktywny dla Raycastera (niewidoczny na ekranie, transparent: true, opacity: 0)
       const hitMesh = new THREE.Mesh(
-        new THREE.SphereGeometry(0.38, 8, 8),
-        new THREE.MeshBasicMaterial({ visible: false })
+        new THREE.SphereGeometry(0.42, 12, 12),
+        new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false })
       );
       hitMesh.position.y = 0.1;
       pinGroup.add(hitMesh);
@@ -1370,21 +1370,24 @@
         return;
       }
 
+      scene.updateMatrixWorld(true);
       const posA = new THREE.Vector3();
       appState.connectingPin.getWorldPosition(posA);
+      posA.y += 0.1;
 
+      const dist = posA.distanceTo(targetPos);
       const mid = new THREE.Vector3().addVectors(posA, targetPos).multiplyScalar(0.5);
-      mid.y += Math.max(0.6, posA.distanceTo(targetPos) * 0.25);
+      mid.y += Math.max(0.6, dist * 0.22);
 
       const curve = new THREE.CatmullRomCurve3D([posA, mid, targetPos]);
-      const wireGeo = new THREE.TubeGeometry(curve, 16, 0.035, 6, false);
+      const wireGeo = new THREE.TubeGeometry(curve, 20, 0.065, 8, false);
 
       if (!previewWireMesh) {
         const wireMat = new THREE.MeshStandardMaterial({
           color: appState.selectedWireColor,
           roughness: 0.3,
           emissive: 0x38bdf8,
-          emissiveIntensity: 0.4
+          emissiveIntensity: 0.5
         });
         previewWireMesh = new THREE.Mesh(wireGeo, wireMat);
         scene.add(previewWireMesh);
@@ -1396,17 +1399,27 @@
     }
 
     function createWire(pinA, pinB, colorHex) {
+      scene.updateMatrixWorld(true);
+
       const posA = new THREE.Vector3();
       const posB = new THREE.Vector3();
       pinA.getWorldPosition(posA);
       pinB.getWorldPosition(posB);
 
+      posA.y += 0.1;
+      posB.y += 0.1;
+
+      const dist = posA.distanceTo(posB);
       const mid = new THREE.Vector3().addVectors(posA, posB).multiplyScalar(0.5);
-      mid.y += Math.max(0.8, posA.distanceTo(posB) * 0.25);
+      mid.y += Math.max(0.6, dist * 0.22);
 
       const curve = new THREE.CatmullRomCurve3D([posA, mid, posB]);
-      const wireGeo = new THREE.TubeGeometry(curve, 20, 0.04, 8, false);
-      const wireMat = new THREE.MeshStandardMaterial({ color: colorHex, roughness: 0.4 });
+      const wireGeo = new THREE.TubeGeometry(curve, 24, 0.075, 8, false);
+      const wireMat = new THREE.MeshStandardMaterial({ 
+        color: colorHex, 
+        roughness: 0.3, 
+        metalness: 0.1 
+      });
       const wireMesh = new THREE.Mesh(wireGeo, wireMat);
 
       const wireObj = { mesh: wireMesh, pinA, pinB, curve, colorHex };
