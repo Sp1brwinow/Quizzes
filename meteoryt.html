@@ -1,0 +1,2010 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Symulacja 3D: Uderzenie Meteorytu & Krater – HACK CLUB</title>
+
+    <!-- Google Analytics Tag -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZP827DTZJ5"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-ZP827DTZJ5');
+    </script>
+
+    <!-- Three.js & OrbitControls via CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+    <style>
+        :root {
+            --bg-dark: #070d18;
+            --panel-bg: rgba(15, 23, 42, 0.88);
+            --panel-border: rgba(56, 189, 248, 0.3);
+            --primary: #38bdf8;
+            --accent-orange: #f97316;
+            --accent-red: #ef4444;
+            --accent-yellow: #fbbf24;
+            --accent-green: #10b981;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        /* 3D Canvas */
+        #webgl-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* Górny pasek nawigacyjny */
+        .top-bar {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            right: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .top-bar>* {
+            pointer-events: auto;
+        }
+
+        .nav-btn {
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            color: #7dd3fc;
+            text-decoration: none;
+            padding: 9px 18px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.92rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.25s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .nav-btn:hover {
+            color: #ffffff;
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
+            transform: translateY(-2px);
+            background: rgba(30, 41, 59, 0.95);
+        }
+
+        .title-badge {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.85) 100%);
+            border: 1px solid rgba(249, 115, 22, 0.45);
+            padding: 8px 20px;
+            border-radius: 999px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 25px rgba(249, 115, 22, 0.2);
+        }
+
+        .title-badge h1 {
+            font-size: 1.1rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 0%, #fbbf24 50%, #f97316 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0;
+            letter-spacing: 0.3px;
+        }
+
+        .btn-edu {
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid rgba(16, 185, 129, 0.5);
+            color: #6ee7b7;
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.88rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-edu:hover {
+            background: rgba(16, 185, 129, 0.35);
+            color: #ffffff;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+            transform: translateY(-1px);
+        }
+
+        /* Główny panel sterowania (Sidebar) */
+        .controls-panel {
+            position: absolute;
+            top: 80px;
+            left: 16px;
+            width: 360px;
+            max-height: calc(100vh - 100px);
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 20px;
+            padding: 20px;
+            z-index: 10;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7), 0 0 25px rgba(56, 189, 248, 0.15);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(56, 189, 248, 0.4) transparent;
+        }
+
+        .controls-panel::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .controls-panel::-webkit-scrollbar-thumb {
+            background: rgba(56, 189, 248, 0.4);
+            border-radius: 3px;
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 10px;
+        }
+
+        .panel-header h2 {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #38bdf8;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .param-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .param-row {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .param-label-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.88rem;
+            color: #cbd5e1;
+        }
+
+        .param-name {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 600;
+        }
+
+        .param-val {
+            font-weight: 700;
+            color: #38bdf8;
+            font-family: 'Consolas', 'Courier New', monospace;
+            background: rgba(56, 189, 248, 0.12);
+            padding: 2px 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.15);
+            outline: none;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #38bdf8;
+            cursor: pointer;
+            box-shadow: 0 0 10px #38bdf8;
+            transition: transform 0.15s, background 0.15s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.25);
+            background: #7dd3fc;
+        }
+
+        /* Wybór typu meteorytu */
+        .type-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+        }
+
+        .type-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #94a3b8;
+            padding: 8px 4px;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .type-btn.active {
+            background: rgba(249, 115, 22, 0.2);
+            border-color: #f97316;
+            color: #fdba74;
+            box-shadow: 0 0 12px rgba(249, 115, 22, 0.3);
+        }
+
+        /* Skrzynka obliczonych wskaźników fizycznych */
+        .metrics-card {
+            background: rgba(10, 16, 30, 0.85);
+            border: 1px solid rgba(251, 191, 36, 0.35);
+            border-radius: 14px;
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .metrics-title {
+            font-size: 0.82rem;
+            font-weight: 800;
+            color: #fbbf24;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .metric-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.84rem;
+        }
+
+        .metric-label {
+            color: #94a3b8;
+        }
+
+        .metric-value {
+            font-weight: 700;
+            color: #f8fafc;
+            font-family: 'Consolas', monospace;
+        }
+
+        .metric-compare {
+            font-size: 0.78rem;
+            color: #f59e0b;
+            background: rgba(245, 158, 11, 0.1);
+            padding: 6px 10px;
+            border-radius: 8px;
+            border-left: 3px solid #f59e0b;
+            line-height: 1.4;
+            margin-top: 2px;
+        }
+
+        /* Główne przyciski akcji */
+        .actions-box {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .btn-launch {
+            background: linear-gradient(135deg, #ea580c 0%, #dc2626 100%);
+            border: none;
+            color: #ffffff;
+            padding: 13px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 800;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.25s;
+            box-shadow: 0 4px 20px rgba(220, 38, 38, 0.4);
+            letter-spacing: 0.3px;
+        }
+
+        .btn-launch:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(220, 38, 38, 0.6);
+            filter: brightness(1.1);
+        }
+
+        .btn-launch:active {
+            transform: translateY(1px);
+        }
+
+        .secondary-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .btn-sub {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #e2e8f0;
+            padding: 9px;
+            border-radius: 10px;
+            font-size: 0.84rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .btn-sub:hover {
+            background: rgba(255, 255, 255, 0.16);
+            color: #ffffff;
+        }
+
+        /* Pasek dolny: Kontrola Kamery i Czasu */
+        .bottom-hud {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 999px;
+            padding: 8px 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            z-index: 10;
+            backdrop-filter: blur(14px);
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.6);
+        }
+
+        .hud-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .hud-label {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .hud-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #cbd5e1;
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .hud-btn:hover {
+            background: rgba(56, 189, 248, 0.2);
+            color: #ffffff;
+            border-color: #38bdf8;
+        }
+
+        .hud-btn.active {
+            background: #38bdf8;
+            color: #04121d;
+            border-color: #38bdf8;
+            box-shadow: 0 0 12px #38bdf8;
+        }
+
+        /* Modal Edukacyjny */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 100;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(8px);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background: linear-gradient(145deg, #0b1528 0%, #0f233d 100%);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            border-radius: 24px;
+            max-width: 680px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 32px;
+            color: #f1f5f9;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9), 0 0 40px rgba(56, 189, 248, 0.2);
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: #ffffff;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover {
+            background: #ef4444;
+            transform: rotate(90deg);
+        }
+
+        .modal-title {
+            font-size: 1.6rem;
+            font-weight: 900;
+            color: #38bdf8;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-body {
+            line-height: 1.65;
+            font-size: 0.96rem;
+            color: #cbd5e1;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .edu-card {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            padding: 16px;
+        }
+
+        .edu-card h3 {
+            color: #fbbf24;
+            font-size: 1.05rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .edu-card p {
+            margin-bottom: 6px;
+        }
+
+        /* Status lotu (HUD na środku) */
+        .flight-status {
+            position: absolute;
+            top: 90px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(15, 23, 42, 0.75);
+            border: 1px solid rgba(249, 115, 22, 0.4);
+            border-radius: 999px;
+            padding: 8px 24px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #fdba74;
+            z-index: 5;
+            pointer-events: none;
+            display: none;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 0 20px rgba(249, 115, 22, 0.3);
+            backdrop-filter: blur(8px);
+        }
+
+        @media (max-width: 768px) {
+            .controls-panel {
+                width: calc(100vw - 32px);
+                max-height: 48vh;
+                top: auto;
+                bottom: 80px;
+            }
+
+            .bottom-hud {
+                bottom: 12px;
+                padding: 6px 14px;
+                gap: 10px;
+                width: calc(100vw - 32px);
+                justify-content: space-around;
+            }
+
+            .title-badge h1 {
+                font-size: 0.92rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- 3D WebGL Canvas -->
+    <div id="webgl-container"></div>
+
+    <!-- Pasek górny -->
+    <header class="top-bar">
+        <a href="pomocnicze.html" class="nav-btn">← Powrót do Geografii</a>
+        <div class="title-badge">
+            <span>☄️</span>
+            <h1>Symulacja Uderzenia Meteorytu</h1>
+        </div>
+        <button class="btn-edu" id="btn-open-edu">📖 O zjawisku</button>
+    </header>
+
+    <!-- Status animacji -->
+    <div class="flight-status" id="flight-status">
+        <span>🔥</span> <span id="status-text">Meteoryt wchodzi w atmosferę...</span>
+    </div>
+
+    <!-- Panel Sterowania Symulacją (3. Sterowanie symulacją) -->
+    <aside class="controls-panel">
+        <div class="panel-header">
+            <h2>⚙️ Sterowanie Symulacją</h2>
+            <button id="btn-mute" class="hud-btn" title="Włącz / Wycisz dźwięk">🔊 Dźwięk</button>
+        </div>
+
+        <div class="param-group">
+            <!-- Prędkość -->
+            <div class="param-row">
+                <div class="param-label-box">
+                    <span class="param-name">⚡ Prędkość wejścia (v):</span>
+                    <span class="param-val" id="val-speed">25 km/s</span>
+                </div>
+                <input type="range" id="input-speed" min="11" max="72" value="25" step="1">
+            </div>
+
+            <!-- Średnica / Masa -->
+            <div class="param-row">
+                <div class="param-label-box">
+                    <span class="param-name">📏 Średnica meteorytu (d):</span>
+                    <span class="param-val" id="val-size">45 m</span>
+                </div>
+                <input type="range" id="input-size" min="5" max="200" value="45" step="1">
+            </div>
+
+            <!-- Kąt uderzenia -->
+            <div class="param-row">
+                <div class="param-label-box">
+                    <span class="param-name">📐 Kąt uderzenia (θ):</span>
+                    <span class="param-val" id="val-angle">45°</span>
+                </div>
+                <input type="range" id="input-angle" min="15" max="90" value="45" step="1">
+            </div>
+
+            <!-- Typ meteorytu -->
+            <div class="param-row">
+                <div class="param-label-box">
+                    <span class="param-name">🪨 Skład impaktora:</span>
+                </div>
+                <div class="type-selector">
+                    <button class="type-btn" data-density="1000" data-name="Kometarny">❄️ Lód / Kometa</button>
+                    <button class="type-btn active" data-density="2700" data-name="Kamienny">🪨 Kamienny</button>
+                    <button class="type-btn" data-density="7800" data-name="Żelazny">🔩 Żelazny</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Wyliczone wskaźniki fizyczne -->
+        <div class="metrics-card">
+            <div class="metrics-title">📊 Fizyka & Geologia Impaktu</div>
+            <div class="metric-item">
+                <span class="metric-label">Szacowana masa:</span>
+                <span class="metric-value" id="res-mass">128 800 t</span>
+            </div>
+            <div class="metric-item">
+                <span class="metric-label">Energia kinetyczna (Ek):</span>
+                <span class="metric-value" id="res-energy">9.6 MT TNT</span>
+            </div>
+            <div class="metric-item">
+                <span class="metric-label">Średnica krateru:</span>
+                <span class="metric-value" id="res-crater-d">1 180 m</span>
+            </div>
+            <div class="metric-item">
+                <span class="metric-label">Głębokość krateru:</span>
+                <span class="metric-value" id="res-crater-depth">195 m</span>
+            </div>
+            <div class="metric-compare" id="res-compare">
+                💡 Odpowiednik: Zbliżony do Krateru Barringera w Arizonie (USA).
+            </div>
+        </div>
+
+        <!-- Przyciski akcji -->
+        <div class="actions-box">
+            <button class="btn-launch" id="btn-launch">
+                <span>🚀</span> Wystrzel Meteoryt
+            </button>
+            <div class="secondary-actions">
+                <button class="btn-sub" id="btn-instant">💥 Błyskawiczny krater</button>
+                <button class="btn-sub" id="btn-reset">🔄 Zresetuj teren</button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Dolny pasek HUD (Kamery i Slow-Mo) -->
+    <div class="bottom-hud">
+        <div class="hud-group">
+            <span class="hud-label">Kamera:</span>
+            <button class="hud-btn active" data-cam="orbit">🌐 Orbitalna</button>
+            <button class="hud-btn" data-cam="follow">🎬 Śledzenie</button>
+            <button class="hud-btn" data-cam="ground">👁️ Z ziemi</button>
+            <button class="hud-btn" data-cam="top">🛰️ Z góry</button>
+        </div>
+        <div class="hud-group">
+            <span class="hud-label">Tempo:</span>
+            <button class="hud-btn active" data-speed="1.0">1.0×</button>
+            <button class="hud-btn" data-speed="0.5">0.5×</button>
+            <button class="hud-btn" data-speed="0.25">0.25×</button>
+        </div>
+    </div>
+
+    <!-- Modal Edukacyjny (Geografia i Geologia) -->
+    <div class="modal-overlay" id="edu-modal">
+        <div class="modal-content">
+            <button class="modal-close" id="btn-close-modal">✕</button>
+            <h2 class="modal-title">🌍 Jak powstaje krater uderzeniowy?</h2>
+            <div class="modal-body">
+                <p>
+                    Uderzenia ciał kosmicznych w Ziemię to jedno z najbardziej gwałtownych zjawisk w geologii i geomorfologii.
+                    Podczas zderzenia ogromna <strong>energia kinetyczna (Ek = ½mv²)</strong> w ułamku sekundy zamienia się w falę uderzeniową, ciepło, odparowanie skał oraz wyrzut materiału.
+                </p>
+
+                <div class="edu-card">
+                    <h3>1. Faza kompresji i fali uderzeniowej</h3>
+                    <p>Meteoryt wbija się w grunt z prędkością kilkudziesięciu km/s. Ciśnienie przekracza miliony atmosfer, topiąc i odparowując impaktor oraz skały podłoża.</p>
+                </div>
+
+                <div class="edu-card">
+                    <h3>2. Faza ekscawacji (Wyrzutu i Pyłu)</h3>
+                    <p>Fala uderzeniowa rozchodzi się we wszystkich kierunkach, wyrzucając miliony ton rozdrobnionej skały w powietrze (tzw. <em>ejecta</em>). Drobny pył tworzy wznoszący się grzyb pyłowy, a cięższe odłamki opadają wokół krawędzi.</p>
+                </div>
+
+                <div class="edu-card">
+                    <h3>3. Faza modyfikacji i wał krateru</h3>
+                    <p>Ziemia wokół krawędzi zostaje spiętrzona i odwrócona, tworząc charakterystyczny <strong>wyniesiony wał krateru (crater rim)</strong>. Ściany osuwają się ku środkowi, formując misowate zagłębienie.</p>
+                </div>
+
+                <div class="edu-card">
+                    <h3>🇵🇱 Kratery na Ziemi i w Polsce:</h3>
+                    <p>• <strong>Rezerwat Meteoryt Morasko (Poznań, Polska)</strong> – zespół 7 kraterów powstałych ok. 5000 lat temu w wyniku uderzenia żelaznego meteorytu.</p>
+                    <p>• <strong>Meteor Crater (Barringer, USA)</strong> – doskonale zachowany krater o średnicy 1200 m i głębokości 170 m.</p>
+                    <p>• <strong>Chicxulub (Meksyk)</strong> – gigantyczny krater o średnicy 180 km, którego uderzenie 66 mln lat temu doprowadziło do wymarcia dinozaurów.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Skrypt Symulacji Three.js -->
+    <script>
+        /* --- GLOBALNE PARAMETRY & STAN --- */
+        const state = {
+            speed: 25,          // km/s
+            diameter: 45,       // m
+            angle: 45,          // stopnie
+            density: 2700,      // kg/m3 (kamienny)
+            meteoriteType: 'Kamienny',
+            timeScale: 1.0,
+            camMode: 'orbit',
+            soundEnabled: true,
+            isFlying: false,
+            hasImpacted: false
+        };
+
+        // Geometria i dane krateru (do kolizji brył z ukształtowanym terenem)
+        const craterState = {
+            epicenter: new THREE.Vector3(0, 0, 0),
+            radius3D: 0,
+            depth3D: 0,
+            rimHeight3D: 0,
+            elongation: 1.0
+        };
+
+        /* --- SYNTEZA AUDIO (Web Audio API) --- */
+        let audioCtx = null;
+        function getAudioContext() {
+            if (!audioCtx) {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                audioCtx = new AudioContext();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            return audioCtx;
+        }
+
+        function playEntrySound() {
+            if (!state.soundEnabled) return;
+            try {
+                const ctx = getAudioContext();
+                const now = ctx.currentTime;
+                
+                const bufferSize = ctx.sampleRate * 2.5;
+                const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    data[i] = Math.random() * 2 - 1;
+                }
+
+                const noise = ctx.createBufferSource();
+                noise.buffer = buffer;
+
+                const filter = ctx.createBiquadFilter();
+                filter.type = 'bandpass';
+                filter.frequency.setValueAtTime(300, now);
+                filter.frequency.exponentialRampToValueAtTime(1400, now + 2.0);
+                filter.Q.value = 3.0;
+
+                const gain = ctx.createGain();
+                gain.gain.setValueAtTime(0.01, now);
+                gain.gain.linearRampToValueAtTime(0.35, now + 1.8);
+                gain.gain.linearRampToValueAtTime(0.0, now + 2.2);
+
+                noise.connect(filter);
+                filter.connect(gain);
+                gain.connect(ctx.destination);
+
+                noise.start(now);
+                noise.stop(now + 2.3);
+            } catch (e) {
+                console.warn('Audio error:', e);
+            }
+        }
+
+        function playExplosionSound(intensity = 1.0) {
+            if (!state.soundEnabled) return;
+            try {
+                const ctx = getAudioContext();
+                const now = ctx.currentTime;
+
+                // 1. Sub-bass boom
+                const osc = ctx.createOscillator();
+                const oscGain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(120, now);
+                osc.frequency.exponentialRampToValueAtTime(28, now + 1.2);
+
+                oscGain.gain.setValueAtTime(0.8 * Math.min(intensity, 1.5), now);
+                oscGain.gain.exponentialRampToValueAtTime(0.001, now + 2.0);
+
+                osc.connect(oscGain);
+                oscGain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + 2.0);
+
+                // 2. Eksplozja z szumu
+                const bufferSize = ctx.sampleRate * 3.0;
+                const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ctx.sampleRate * 0.7));
+                }
+
+                const noise = ctx.createBufferSource();
+                noise.buffer = buffer;
+
+                const filter = ctx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(800, now);
+                filter.frequency.exponentialRampToValueAtTime(120, now + 2.5);
+
+                const noiseGain = ctx.createGain();
+                noiseGain.gain.setValueAtTime(0.9 * Math.min(intensity, 1.5), now);
+                noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 2.8);
+
+                noise.connect(filter);
+                filter.connect(noiseGain);
+                noiseGain.connect(ctx.destination);
+
+                noise.start(now);
+                noise.stop(now + 2.9);
+
+                // 3. Stukot opadających głazów z opóźnieniem
+                setTimeout(() => playRockScatterSound(), 400);
+                setTimeout(() => playRockScatterSound(), 750);
+            } catch (e) {
+                console.warn('Audio error:', e);
+            }
+        }
+
+        function playRockScatterSound() {
+            if (!state.soundEnabled) return;
+            try {
+                const ctx = getAudioContext();
+                const now = ctx.currentTime;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(80 + Math.random() * 50, now);
+                osc.frequency.exponentialRampToValueAtTime(30, now + 0.3);
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.3);
+            } catch (e) {}
+        }
+
+        /* --- OBLICZENIA FIZYCZNE & METRYKI --- */
+        function calculateMetrics() {
+            const radius = state.diameter / 2; // m
+            const volume = (4 / 3) * Math.PI * Math.pow(radius, 3); // m3
+            const massKg = volume * state.density; // kg
+            const massTonnes = massKg / 1000;
+            const velocityMs = state.speed * 1000; // m/s
+
+            // Energia kinetyczna: 1/2 * m * v^2 [Dżule]
+            const energyJoules = 0.5 * massKg * Math.pow(velocityMs, 2);
+            const energyMegatons = energyJoules / 4.184e15; // 1 MT TNT = 4.184 * 10^15 J
+
+            // Skalowanie średnicy krateru
+            const angleRad = (state.angle * Math.PI) / 180;
+            const sinAngle = Math.max(0.25, Math.sin(angleRad));
+            const craterDiameterM = Math.round(18 * Math.pow(energyMegatons, 0.28) * Math.pow(sinAngle, 0.33) * 65);
+            const craterDepthM = Math.round(craterDiameterM * 0.18);
+
+            document.getElementById('res-mass').textContent = massTonnes > 1e6 
+                ? (massTonnes / 1e6).toFixed(2) + ' mln t' 
+                : Math.round(massTonnes).toLocaleString('pl-PL') + ' t';
+
+            if (energyMegatons >= 1000) {
+                document.getElementById('res-energy').textContent = (energyMegatons / 1000).toFixed(1) + ' GT TNT';
+            } else if (energyMegatons >= 1) {
+                document.getElementById('res-energy').textContent = energyMegatons.toFixed(1) + ' MT TNT';
+            } else {
+                document.getElementById('res-energy').textContent = (energyMegatons * 1000).toFixed(0) + ' kT TNT';
+            }
+
+            document.getElementById('res-crater-d').textContent = craterDiameterM >= 1000 
+                ? (craterDiameterM / 1000).toFixed(2) + ' km' 
+                : craterDiameterM + ' m';
+            document.getElementById('res-crater-depth').textContent = craterDepthM + ' m';
+
+            let compareText = '';
+            if (craterDiameterM < 150) {
+                compareText = '💡 Odpowiednik: Zbliżony do kraterów w Rezerwacie Meteoryt Morasko (Poznań, Polska).';
+            } else if (craterDiameterM < 2000) {
+                compareText = '💡 Odpowiednik: Bardzo bliski Meteor Crater (Barringer) w Arizonie, USA (1 200 m).';
+            } else if (craterDiameterM < 15000) {
+                compareText = '💡 Odpowiednik: Skala Krateru Nördlinger Ries w Niemczech (wyrzut mołdawitów).';
+            } else {
+                compareText = '⚠️ Skala globalna: Gigantyczny impakt zbliżony do krateru Chicxulub (wymarcie dinozaurów).';
+            }
+            document.getElementById('res-compare').textContent = compareText;
+
+            return { massKg, energyJoules, energyMegatons, craterDiameterM, craterDepthM, sinAngle };
+        }
+
+        /* --- FUNKCJA WYSOKOŚCI TERENU --- */
+        function getTerrainElevation(x, z) {
+            const baseH = Math.sin(x * 0.025) * Math.cos(z * 0.025) * 1.5 + Math.sin(x * 0.06 + z * 0.04) * 0.6;
+            if (!state.hasImpacted || craterState.radius3D <= 0) return baseH;
+
+            const dx = x - craterState.epicenter.x;
+            const dz = z - craterState.epicenter.z;
+            const dist = Math.sqrt(dx * dx + (dz / craterState.elongation) * (dz / craterState.elongation));
+
+            if (dist < craterState.radius3D * 1.5) {
+                const normDist = dist / craterState.radius3D;
+                if (normDist < 1.0) {
+                    return baseH - craterState.depth3D * (1.0 - Math.pow(normDist, 2));
+                } else if (normDist >= 0.85 && normDist <= 1.4) {
+                    const rimFactor = Math.sin(((normDist - 0.85) / 0.55) * Math.PI);
+                    return baseH + craterState.rimHeight3D * Math.pow(rimFactor, 1.8);
+                }
+            }
+            return baseH;
+        }
+
+        /* --- SCENA THREE.JS --- */
+        let scene, camera, renderer, controls;
+        let groundMesh, groundGeometry, groundMaterial;
+        let origVertices = [];
+        let origColors = [];
+        let meteoriteGroup, meteoriteMesh, meteoriteLight;
+        let trailParticles, trailGeometry;
+        let shockwaveMesh;
+        let flashLight;
+        let clock = new THREE.Clock();
+
+        // 3D Instanced Debris Meshes
+        const MAX_HEAVY_ROCKS = 650;
+        const MAX_BURNING_ROCKS = 250;
+        let heavyRockMesh, burningRockMesh;
+        let fineDebrisPoints, fineDebrisGeometry;
+        let heavyRockData = [];
+        let burningRockData = [];
+        let fineDebrisData = [];
+        let dummyTransform = new THREE.Object3D();
+
+        // Grupa pyłu
+        let dustGroup;
+        let dustParticles = [];
+
+        // Zmienne lotu meteorytu
+        let flightProgress = 0;
+        let flightDuration = 2.0;
+        let startPos = new THREE.Vector3();
+        let targetPos = new THREE.Vector3(0, 0, 0);
+        let cameraShake = 0;
+
+        function initThree() {
+            const container = document.getElementById('webgl-container');
+
+            // 1. Scena
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x060c18);
+            scene.fog = new THREE.FogExp2(0x060c18, 0.0035);
+
+            // 2. Kamera
+            camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.5, 2000);
+            camera.position.set(120, 75, 140);
+
+            // 3. Renderer
+            renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            renderer.toneMappingExposure = 1.1;
+            container.appendChild(renderer.domElement);
+
+            // 4. Kontroler orbitalny
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.maxPolarAngle = Math.PI / 2 - 0.02;
+            controls.minDistance = 10;
+            controls.maxDistance = 500;
+            controls.target.set(0, 0, 0);
+
+            // 5. Oświetlenie
+            const ambientLight = new THREE.AmbientLight(0x384860, 0.7);
+            scene.add(ambientLight);
+
+            const sunLight = new THREE.DirectionalLight(0xfff3db, 1.8);
+            sunLight.position.set(160, 200, 100);
+            sunLight.castShadow = true;
+            sunLight.shadow.mapSize.width = 2048;
+            sunLight.shadow.mapSize.height = 2048;
+            sunLight.shadow.camera.near = 10;
+            sunLight.shadow.camera.far = 600;
+            const shadowDist = 180;
+            sunLight.shadow.camera.left = -shadowDist;
+            sunLight.shadow.camera.right = shadowDist;
+            sunLight.shadow.camera.top = shadowDist;
+            sunLight.shadow.camera.bottom = -shadowDist;
+            scene.add(sunLight);
+
+            // Rozbłysk uderzeniowy (PointLight)
+            flashLight = new THREE.PointLight(0xff8822, 0, 300, 1.2);
+            flashLight.position.set(0, 5, 0);
+            scene.add(flashLight);
+
+            // 6. Gwiezdne tło
+            createSkyStars();
+
+            // 7. Teren
+            createTerrain();
+
+            // 8. Model Meteorytu
+            createMeteorite();
+
+            // 9. Pierścień Fali Uderzeniowej
+            createShockwave();
+
+            // 10. Zaawansowany System 3D Odłamków i Pyłu
+            createDebrisAndDustSystems();
+
+            // Resize listener
+            window.addEventListener('resize', onWindowResize);
+
+            calculateMetrics();
+            animate();
+        }
+
+        /* --- KOSMICZNE TŁO GWIAZD --- */
+        function createSkyStars() {
+            const starsGeo = new THREE.BufferGeometry();
+            const count = 1200;
+            const positions = new Float32Array(count * 3);
+            for (let i = 0; i < count * 3; i += 3) {
+                const r = 800 + Math.random() * 400;
+                const theta = Math.random() * Math.PI * 2;
+                const phi = Math.acos((Math.random() * 2) - 1);
+                positions[i] = r * Math.sin(phi) * Math.cos(theta);
+                positions[i + 1] = Math.abs(r * Math.cos(phi)) + 50;
+                positions[i + 2] = r * Math.sin(phi) * Math.sin(theta);
+            }
+            starsGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            const starsMat = new THREE.PointsMaterial({
+                color: 0x93c5fd,
+                size: 2.0,
+                transparent: true,
+                opacity: 0.8
+            });
+            const starField = new THREE.Points(starsGeo, starsMat);
+            scene.add(starField);
+        }
+
+        /* --- TEREN & DEFORMACJA WIERZCHOŁKÓW --- */
+        function createTerrain() {
+            const size = 320;
+            const segments = 220;
+            groundGeometry = new THREE.PlaneGeometry(size, size, segments, segments);
+            groundGeometry.rotateX(-Math.PI / 2);
+
+            const posAttr = groundGeometry.attributes.position;
+            const count = posAttr.count;
+            const colors = new Float32Array(count * 3);
+
+            origVertices = new Float32Array(count * 3);
+            origColors = new Float32Array(count * 3);
+
+            for (let i = 0; i < count; i++) {
+                const x = posAttr.getX(i);
+                const z = posAttr.getZ(i);
+                const y = Math.sin(x * 0.025) * Math.cos(z * 0.025) * 1.5 + Math.sin(x * 0.06 + z * 0.04) * 0.6;
+                posAttr.setY(i, y);
+
+                origVertices[i * 3] = x;
+                origVertices[i * 3 + 1] = y;
+                origVertices[i * 3 + 2] = z;
+
+                const shade = 0.85 + Math.random() * 0.15;
+                const r = 0.38 * shade;
+                const g = 0.32 * shade;
+                const b = 0.24 * shade;
+
+                colors[i * 3] = r;
+                colors[i * 3 + 1] = g;
+                colors[i * 3 + 2] = b;
+
+                origColors[i * 3] = r;
+                origColors[i * 3 + 1] = g;
+                origColors[i * 3 + 2] = b;
+            }
+
+            groundGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+            groundGeometry.computeVertexNormals();
+
+            groundMaterial = new THREE.MeshStandardMaterial({
+                vertexColors: true,
+                roughness: 0.9,
+                metalness: 0.1,
+                flatShading: false
+            });
+
+            groundMesh = new THREE.Mesh(groundGeometry, groundMaterial);
+            groundMesh.receiveShadow = true;
+            scene.add(groundMesh);
+
+            const gridHelper = new THREE.GridHelper(320, 32, 0x1e293b, 0x0f172a);
+            gridHelper.position.y = -0.2;
+            scene.add(gridHelper);
+        }
+
+        /* --- MODEL METEORYTU & ŚLAD OGNIA --- */
+        function createMeteorite() {
+            meteoriteGroup = new THREE.Group();
+
+            const geo = new THREE.DodecahedronGeometry(2.5, 2);
+            const pos = geo.attributes.position;
+            for (let i = 0; i < pos.count; i++) {
+                const v = new THREE.Vector3(pos.getX(i), pos.getY(i), pos.getZ(i));
+                v.multiplyScalar(1 + (Math.random() - 0.5) * 0.35);
+                pos.setXYZ(i, v.x, v.y, v.z);
+            }
+            geo.computeVertexNormals();
+
+            const mat = new THREE.MeshStandardMaterial({
+                color: 0x221a15,
+                emissive: 0xff3b00,
+                emissiveIntensity: 0.85,
+                roughness: 0.8,
+                metalness: 0.4
+            });
+
+            meteoriteMesh = new THREE.Mesh(geo, mat);
+            meteoriteMesh.castShadow = true;
+            meteoriteGroup.add(meteoriteMesh);
+
+            meteoriteLight = new THREE.PointLight(0xff7700, 2.5, 60);
+            meteoriteGroup.add(meteoriteLight);
+
+            const trailCount = 300;
+            trailGeometry = new THREE.BufferGeometry();
+            const trailPos = new Float32Array(trailCount * 3);
+            const trailColors = new Float32Array(trailCount * 3);
+
+            for (let i = 0; i < trailCount; i++) {
+                trailPos[i * 3] = 0;
+                trailPos[i * 3 + 1] = 0;
+                trailPos[i * 3 + 2] = 0;
+
+                trailColors[i * 3] = 1.0;
+                trailColors[i * 3 + 1] = 0.4 + Math.random() * 0.5;
+                trailColors[i * 3 + 2] = 0.05;
+            }
+
+            trailGeometry.setAttribute('position', new THREE.BufferAttribute(trailPos, 3));
+            trailGeometry.setAttribute('color', new THREE.BufferAttribute(trailColors, 3));
+
+            const trailMat = new THREE.PointsMaterial({
+                vertexColors: true,
+                size: 3.5,
+                transparent: true,
+                opacity: 0.85,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
+            });
+
+            trailParticles = new THREE.Points(trailGeometry, trailMat);
+            scene.add(trailParticles);
+
+            meteoriteGroup.position.set(0, -100, 0);
+            scene.add(meteoriteGroup);
+        }
+
+        /* --- FALA UDERZENIOWA (SHOCKWAVE RING) --- */
+        function createShockwave() {
+            const ringGeo = new THREE.RingGeometry(0.1, 2.5, 64);
+            ringGeo.rotateX(-Math.PI / 2);
+            const ringMat = new THREE.MeshBasicMaterial({
+                color: 0xfdba74,
+                transparent: true,
+                opacity: 0,
+                side: THREE.DoubleSide,
+                depthWrite: false,
+                blending: THREE.AdditiveBlending
+            });
+            shockwaveMesh = new THREE.Mesh(ringGeo, ringMat);
+            shockwaveMesh.position.y = 0.3;
+            scene.add(shockwaveMesh);
+        }
+
+        /* --- REALISTYCZNE 3D ODŁAMKI I PYŁ --- */
+        function createDebrisAndDustSystems() {
+            // 1. Geometria kanciastej bryły skalnej z losowymi zniekształceniami (zmniejszona baza)
+            const rockGeo = new THREE.DodecahedronGeometry(0.5, 1);
+            const rPos = rockGeo.attributes.position;
+            for (let i = 0; i < rPos.count; i++) {
+                const vec = new THREE.Vector3(rPos.getX(i), rPos.getY(i), rPos.getZ(i));
+                vec.x *= 1.0 + (Math.random() - 0.5) * 0.45;
+                vec.y *= 1.0 + (Math.random() - 0.5) * 0.45;
+                vec.z *= 1.0 + (Math.random() - 0.5) * 0.45;
+                rPos.setXYZ(i, vec.x, vec.y, vec.z);
+            }
+            rockGeo.computeVertexNormals();
+
+            // 2. Meshe Instancjonowane: Ciężkie Skały (Heavy 3D Rocks - 650 instancji)
+            const rockMat = new THREE.MeshStandardMaterial({
+                color: 0x5a524c,
+                roughness: 0.9,
+                metalness: 0.15,
+                flatShading: true
+            });
+            heavyRockMesh = new THREE.InstancedMesh(rockGeo, rockMat, MAX_HEAVY_ROCKS);
+            heavyRockMesh.castShadow = true;
+            heavyRockMesh.receiveShadow = true;
+            heavyRockMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+            scene.add(heavyRockMesh);
+
+            // 3. Meshe Instancjonowane: Płonące Odłamki Magmy (Burning 3D Fragments - 250 instancji)
+            const burningMat = new THREE.MeshStandardMaterial({
+                color: 0x221105,
+                emissive: 0xff4500,
+                emissiveIntensity: 1.6,
+                roughness: 0.7,
+                metalness: 0.3,
+                flatShading: true
+            });
+            burningRockMesh = new THREE.InstancedMesh(rockGeo, burningMat, MAX_BURNING_ROCKS);
+            burningRockMesh.castShadow = true;
+            burningRockMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+            scene.add(burningRockMesh);
+
+            // Inicjalnie ukryj instancje
+            const hideMatrix = new THREE.Matrix4().makeScale(0, 0, 0);
+            for (let i = 0; i < MAX_HEAVY_ROCKS; i++) heavyRockMesh.setMatrixAt(i, hideMatrix);
+            for (let i = 0; i < MAX_BURNING_ROCKS; i++) burningRockMesh.setMatrixAt(i, hideMatrix);
+            heavyRockMesh.instanceMatrix.needsUpdate = true;
+            burningRockMesh.instanceMatrix.needsUpdate = true;
+
+            // 4. Drobny pył i iskry (Fine Ejecta Points - 1200 cząsteczek)
+            const fineCount = 1200;
+            fineDebrisGeometry = new THREE.BufferGeometry();
+            const finePos = new Float32Array(fineCount * 3);
+            const fineCol = new Float32Array(fineCount * 3);
+            for (let i = 0; i < fineCount; i++) {
+                finePos[i * 3 + 1] = -200;
+                fineCol[i * 3] = 1.0;
+                fineCol[i * 3 + 1] = 0.5;
+                fineCol[i * 3 + 2] = 0.1;
+            }
+            fineDebrisGeometry.setAttribute('position', new THREE.BufferAttribute(finePos, 3));
+            fineDebrisGeometry.setAttribute('color', new THREE.BufferAttribute(fineCol, 3));
+
+            const fineMat = new THREE.PointsMaterial({
+                vertexColors: true,
+                size: 2.2,
+                transparent: true,
+                opacity: 0.85,
+                depthWrite: false
+            });
+            fineDebrisPoints = new THREE.Points(fineDebrisGeometry, fineMat);
+            scene.add(fineDebrisPoints);
+
+            // 5. Chmura Pyłu i Dymu (Dust Plume)
+            dustGroup = new THREE.Group();
+            scene.add(dustGroup);
+        }
+
+        /* --- AKTYWACJA WYRZUTU ODŁAMKÓW I PYŁU --- */
+        function triggerRealisticEjecta(epicenter, craterRadius3D, metrics, impactAngleRad, impactDir) {
+            heavyRockData = [];
+            burningRockData = [];
+            fineDebrisData = [];
+
+            const energyFactor = Math.min(2.5, Math.max(0.6, Math.pow(metrics.energyMegatons, 0.25)));
+
+            // A. INICJALIZACJA CIĘŻKICH SKAŁ (3D HEAVY ROCKS - MNIEJSZE I LICZNIEJSZE)
+            for (let i = 0; i < MAX_HEAVY_ROCKS; i++) {
+                // Rozkład kurtyny wyrzutu (odwrócony stożek 20°–75°)
+                const azimuth = Math.random() * Math.PI * 2;
+                const elevation = Math.PI * 0.12 + Math.random() * (Math.PI * 0.38);
+                
+                // Zróżnicowane prędkości lotu (deszcz kamieni)
+                const baseSpeed = (12 + Math.random() * 60) * energyFactor;
+
+                let vx = Math.cos(azimuth) * Math.cos(elevation) * baseSpeed;
+                let vy = Math.sin(elevation) * baseSpeed * 1.15;
+                let vz = Math.sin(azimuth) * Math.cos(elevation) * baseSpeed;
+
+                // Kierunkowość rozbryzgu przy uderzeniu pod kątem
+                const forwardBias = (1.0 - Math.sin(impactAngleRad)) * 0.75;
+                vx += impactDir.x * baseSpeed * forwardBias;
+                vz += impactDir.z * baseSpeed * forwardBias;
+
+                // Zróżnicowane, drobniejsze rozmiary odłamków (gruz, kamienie i nieliczne większe bryłki)
+                const randType = Math.random();
+                let sizeScale;
+                if (randType < 0.78) {
+                    // Drobny gruz i kamienie (0.15 - 0.45 jednostki)
+                    sizeScale = (0.25 + Math.random() * 0.4) * Math.min(1.5, Math.max(0.6, craterRadius3D * 0.03));
+                } else if (randType < 0.95) {
+                    // Średnie kamienie (0.45 - 0.85 jednostki)
+                    sizeScale = (0.55 + Math.random() * 0.5) * Math.min(1.5, Math.max(0.6, craterRadius3D * 0.03));
+                } else {
+                    // Pojedynczy większy głaz (0.9 - 1.4 jednostki)
+                    sizeScale = (0.95 + Math.random() * 0.6) * Math.min(1.5, Math.max(0.6, craterRadius3D * 0.03));
+                }
+
+                const sx = sizeScale * (0.7 + Math.random() * 0.6);
+                const sy = sizeScale * (0.6 + Math.random() * 0.7);
+                const sz = sizeScale * (0.7 + Math.random() * 0.6);
+
+                heavyRockData.push({
+                    x: epicenter.x + (Math.random() - 0.5) * 3,
+                    y: epicenter.y + 0.4,
+                    z: epicenter.z + (Math.random() - 0.5) * 3,
+                    vx, vy, vz,
+                    rotX: Math.random() * Math.PI * 2,
+                    rotY: Math.random() * Math.PI * 2,
+                    rotZ: Math.random() * Math.PI * 2,
+                    rotSpeedX: (Math.random() - 0.5) * 18,
+                    rotSpeedY: (Math.random() - 0.5) * 18,
+                    rotSpeedZ: (Math.random() - 0.5) * 18,
+                    scale: new THREE.Vector3(sx, sy, sz),
+                    radius: Math.max(sx, sy, sz) * 0.45,
+                    bounces: 0,
+                    maxBounces: Math.floor(Math.random() * 3) + 2,
+                    settled: false
+                });
+            }
+
+            // B. INICJALIZACJA PŁONĄCYCH ODŁAMKÓW MAGMY (3D BURNING FRAGMENTS - DROBNE I LICZNE)
+            for (let i = 0; i < MAX_BURNING_ROCKS; i++) {
+                const azimuth = Math.random() * Math.PI * 2;
+                const elevation = Math.PI * 0.18 + Math.random() * (Math.PI * 0.4);
+                const speed = (20 + Math.random() * 70) * energyFactor;
+
+                let vx = Math.cos(azimuth) * Math.cos(elevation) * speed;
+                let vy = Math.sin(elevation) * speed * 1.25;
+                let vz = Math.sin(azimuth) * Math.cos(elevation) * speed;
+
+                const forwardBias = (1.0 - Math.sin(impactAngleRad)) * 0.65;
+                vx += impactDir.x * speed * forwardBias;
+                vz += impactDir.z * speed * forwardBias;
+
+                const sizeScale = (0.2 + Math.random() * 0.45) * Math.min(1.5, Math.max(0.6, craterRadius3D * 0.03));
+
+                burningRockData.push({
+                    x: epicenter.x + (Math.random() - 0.5) * 2.5,
+                    y: epicenter.y + 0.5,
+                    z: epicenter.z + (Math.random() - 0.5) * 2.5,
+                    vx, vy, vz,
+                    rotX: Math.random() * Math.PI * 2,
+                    rotY: Math.random() * Math.PI * 2,
+                    rotZ: Math.random() * Math.PI * 2,
+                    rotSpeedX: (Math.random() - 0.5) * 22,
+                    rotSpeedY: (Math.random() - 0.5) * 22,
+                    rotSpeedZ: (Math.random() - 0.5) * 22,
+                    scale: new THREE.Vector3(sizeScale, sizeScale * 0.8, sizeScale),
+                    radius: sizeScale * 0.45,
+                    bounces: 0,
+                    maxBounces: 3,
+                    temperature: 1.0,
+                    settled: false
+                });
+            }
+
+            // C. DROBNA FRAKCJA (FINE EJECTA - 1200 CZĄSTECZEK)
+            const fineCount = 1200;
+            const finePos = fineDebrisGeometry.attributes.position;
+            const fineCol = fineDebrisGeometry.attributes.color;
+
+            for (let i = 0; i < fineCount; i++) {
+                const azimuth = Math.random() * Math.PI * 2;
+                const elevation = Math.PI * 0.12 + Math.random() * (Math.PI * 0.48);
+                const speed = (30 + Math.random() * 95) * energyFactor;
+
+                let vx = Math.cos(azimuth) * Math.cos(elevation) * speed + impactDir.x * speed * 0.5;
+                let vy = Math.sin(elevation) * speed * 1.35;
+                let vz = Math.sin(azimuth) * Math.cos(elevation) * speed + impactDir.z * speed * 0.5;
+
+                fineDebrisData.push({
+                    x: epicenter.x,
+                    y: 0.3,
+                    z: epicenter.z,
+                    vx, vy, vz,
+                    active: true
+                });
+
+                finePos.setXYZ(i, epicenter.x, 0.3, epicenter.z);
+                const isSpark = Math.random() < 0.45;
+                fineCol.setXYZ(i, isSpark ? 1.0 : 0.45, isSpark ? 0.6 : 0.35, isSpark ? 0.1 : 0.2);
+            }
+            finePos.needsUpdate = true;
+            fineCol.needsUpdate = true;
+
+            // D. CHMURA PYŁU I DYMU (DUST PLUME)
+            while (dustGroup.children.length > 0) {
+                const obj = dustGroup.children[0];
+                dustGroup.remove(obj);
+                if (obj.geometry) obj.geometry.dispose();
+            }
+            dustParticles = [];
+
+            const dustCount = 850;
+            const dustGeo = new THREE.BufferGeometry();
+            const dustPositions = new Float32Array(dustCount * 3);
+            const dustColors = new Float32Array(dustCount * 3);
+
+            for (let i = 0; i < dustCount; i++) {
+                dustPositions[i * 3] = epicenter.x;
+                dustPositions[i * 3 + 1] = 0.3;
+                dustPositions[i * 3 + 2] = epicenter.z;
+
+                const angle = Math.random() * Math.PI * 2;
+                const spreadSpeed = (Math.random() * 0.8 + 0.2) * (craterRadius3D * 1.1);
+                const upSpeed = (Math.random() * 0.8 + 0.4) * (craterRadius3D * 1.7);
+
+                dustParticles.push({
+                    vx: Math.cos(angle) * spreadSpeed + impactDir.x * spreadSpeed * 0.4,
+                    vy: upSpeed,
+                    vz: Math.sin(angle) * spreadSpeed + impactDir.z * spreadSpeed * 0.4,
+                    x: epicenter.x,
+                    y: 0.3,
+                    z: epicenter.z,
+                    life: 1.0,
+                    decay: 0.003 + Math.random() * 0.004,
+                    drag: 0.978
+                });
+
+                const grey = 0.45 + Math.random() * 0.35;
+                dustColors[i * 3] = grey + 0.12;
+                dustColors[i * 3 + 1] = grey + 0.04;
+                dustColors[i * 3 + 2] = grey - 0.05;
+            }
+
+            dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPositions, 3));
+            dustGeo.setAttribute('color', new THREE.BufferAttribute(dustColors, 3));
+
+            const dustMat = new THREE.PointsMaterial({
+                vertexColors: true,
+                size: 7.5,
+                transparent: true,
+                opacity: 0.8,
+                depthWrite: false
+            });
+            const dustPoints = new THREE.Points(dustGeo, dustMat);
+            dustGroup.add(dustPoints);
+        }
+
+        /* --- DEFORMACJA KRATERU (CRATER FORMATION) --- */
+        function deformCrater(epicenter, metrics, impactDir) {
+            const posAttr = groundGeometry.attributes.position;
+            const colAttr = groundGeometry.attributes.color;
+            const count = posAttr.count;
+
+            const craterRadius3D = Math.min(85, Math.max(12, metrics.craterDiameterM * 0.04));
+            const craterDepth3D = craterRadius3D * 0.26;
+            const rimHeight3D = craterDepth3D * 0.45;
+
+            const angleRad = (state.angle * Math.PI) / 180;
+            const elongation = 1.0 + (1.0 - Math.sin(angleRad)) * 0.7;
+
+            // Zapisz parametry krateru do obliczeń wysokości kolizji odłamków
+            craterState.epicenter.copy(epicenter);
+            craterState.radius3D = craterRadius3D;
+            craterState.depth3D = craterDepth3D;
+            craterState.rimHeight3D = rimHeight3D;
+            craterState.elongation = elongation;
+
+            for (let i = 0; i < count; i++) {
+                const ox = origVertices[i * 3];
+                const oy = origVertices[i * 3 + 1];
+                const oz = origVertices[i * 3 + 2];
+
+                const dx = ox - epicenter.x;
+                const dz = oz - epicenter.z;
+                const dist = Math.sqrt(dx * dx + (dz / elongation) * (dz / elongation));
+
+                if (dist < craterRadius3D * 1.5) {
+                    const normDist = dist / craterRadius3D;
+                    let deltaY = 0;
+
+                    if (normDist < 1.0) {
+                        const bowl = (1.0 - Math.pow(normDist, 2));
+                        deltaY = -craterDepth3D * bowl;
+                    } else if (normDist >= 0.85 && normDist <= 1.4) {
+                        const rimFactor = Math.sin(((normDist - 0.85) / 0.55) * Math.PI);
+                        deltaY = rimHeight3D * Math.pow(rimFactor, 1.8);
+                    }
+
+                    posAttr.setY(i, oy + deltaY);
+
+                    const burnFactor = Math.max(0, 1.0 - dist / (craterRadius3D * 1.3));
+                    const origR = origColors[i * 3];
+                    const origG = origColors[i * 3 + 1];
+                    const origB = origColors[i * 3 + 2];
+
+                    if (normDist < 0.9) {
+                        colAttr.setXYZ(i, origR * 0.25 + 0.08, origG * 0.2 + 0.04, origB * 0.15 + 0.02);
+                    } else if (normDist < 1.35) {
+                        colAttr.setXYZ(i, origR * 0.6 + 0.25 * burnFactor, origG * 0.5 + 0.15 * burnFactor, origB * 0.4);
+                    }
+                }
+            }
+
+            posAttr.needsUpdate = true;
+            colAttr.needsUpdate = true;
+            groundGeometry.computeVertexNormals();
+
+            // Uruchom realistyczne 3D odłamki i pył
+            triggerRealisticEjecta(epicenter, craterRadius3D, metrics, angleRad, impactDir);
+
+            flashLight.intensity = Math.min(8.0, 3.0 + metrics.energyMegatons * 0.2);
+            shockwaveMesh.scale.set(0.1, 0.1, 0.1);
+            shockwaveMesh.material.opacity = 0.9;
+            cameraShake = Math.min(2.5, 0.8 + (metrics.energyMegatons * 0.05));
+
+            playExplosionSound(Math.min(2.0, 0.8 + metrics.energyMegatons * 0.1));
+
+            state.hasImpacted = true;
+            state.isFlying = false;
+
+            document.getElementById('flight-status').style.display = 'none';
+        }
+
+        /* --- RESETOWANIE TERENU --- */
+        function resetTerrain() {
+            const posAttr = groundGeometry.attributes.position;
+            const colAttr = groundGeometry.attributes.color;
+            const count = posAttr.count;
+
+            for (let i = 0; i < count; i++) {
+                posAttr.setY(i, origVertices[i * 3 + 1]);
+                colAttr.setXYZ(i, origColors[i * 3], origColors[i * 3 + 1], origColors[i * 3 + 2]);
+            }
+
+            posAttr.needsUpdate = true;
+            colAttr.needsUpdate = true;
+            groundGeometry.computeVertexNormals();
+
+            // Schowaj odłamki 3D
+            const hideMatrix = new THREE.Matrix4().makeScale(0, 0, 0);
+            for (let i = 0; i < MAX_HEAVY_ROCKS; i++) heavyRockMesh.setMatrixAt(i, hideMatrix);
+            for (let i = 0; i < MAX_BURNING_ROCKS; i++) burningRockMesh.setMatrixAt(i, hideMatrix);
+            heavyRockMesh.instanceMatrix.needsUpdate = true;
+            burningRockMesh.instanceMatrix.needsUpdate = true;
+
+            heavyRockData = [];
+            burningRockData = [];
+            fineDebrisData = [];
+
+            // Schowaj drobne cząsteczki
+            if (fineDebrisGeometry) {
+                const finePos = fineDebrisGeometry.attributes.position;
+                for (let i = 0; i < finePos.count; i++) finePos.setY(i, -200);
+                fineDebrisGeometry.attributes.position.needsUpdate = true;
+            }
+
+            while (dustGroup.children.length > 0) dustGroup.remove(dustGroup.children[0]);
+            dustParticles = [];
+
+            craterState.radius3D = 0;
+            meteoriteGroup.position.set(0, -100, 0);
+            shockwaveMesh.material.opacity = 0;
+            flashLight.intensity = 0;
+
+            state.isFlying = false;
+            state.hasImpacted = false;
+            document.getElementById('flight-status').style.display = 'none';
+        }
+
+        /* --- WYSTRZAŁ I ANIMACJA LOTU --- */
+        let impactDirectionVector = new THREE.Vector3();
+
+        function launchMeteorite(instant = false) {
+            resetTerrain();
+            const metrics = calculateMetrics();
+
+            const angleRad = (state.angle * Math.PI) / 180;
+            const startAltitude = 160;
+            const groundDist = startAltitude / Math.tan(angleRad);
+
+            startPos.set(-groundDist, startAltitude, -groundDist * 0.35);
+            targetPos.set(0, 0, 0);
+
+            impactDirectionVector.copy(targetPos).sub(startPos).normalize();
+
+            const visualScale = Math.max(0.6, Math.min(3.5, state.diameter * 0.04));
+            meteoriteMesh.scale.set(visualScale, visualScale, visualScale);
+
+            if (instant) {
+                deformCrater(targetPos, metrics, impactDirectionVector);
+                return;
+            }
+
+            meteoriteGroup.position.copy(startPos);
+            flightProgress = 0;
+            flightDuration = Math.max(1.0, 3.5 - (state.speed / 72) * 2.0);
+            state.isFlying = true;
+
+            const statusBox = document.getElementById('flight-status');
+            statusBox.style.display = 'flex';
+            document.getElementById('status-text').textContent = `Meteoryt ${state.diameter}m pędzi z prędkością ${state.speed} km/s pod kątem ${state.angle}°...`;
+
+            playEntrySound();
+        }
+
+        /* --- PĘTLA ANIMACJI & RENDEROWANIA --- */
+        let trailIndex = 0;
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const delta = clock.getDelta() * state.timeScale;
+            const gravity = 32.0;
+
+            // 1. Obsługa lotu meteorytu
+            if (state.isFlying) {
+                flightProgress += delta / flightDuration;
+
+                if (flightProgress >= 1.0) {
+                    flightProgress = 1.0;
+                    meteoriteGroup.position.copy(targetPos);
+                    const metrics = calculateMetrics();
+                    deformCrater(targetPos, metrics, impactDirectionVector);
+                    meteoriteGroup.position.set(0, -100, 0);
+                } else {
+                    meteoriteGroup.position.lerpVectors(startPos, targetPos, flightProgress);
+                    meteoriteMesh.rotation.x += 0.05;
+                    meteoriteMesh.rotation.y += 0.08;
+
+                    if (trailParticles && trailGeometry) {
+                        const trailPosAttr = trailGeometry.attributes.position;
+                        const currentPos = meteoriteGroup.position;
+
+                        for (let k = 0; k < 5; k++) {
+                            const idx = (trailIndex + k) % (trailPosAttr.count);
+                            const spread = (Math.random() - 0.5) * 2.5;
+                            trailPosAttr.setXYZ(
+                                idx,
+                                currentPos.x + spread - impactDirectionVector.x * (k * 2.5),
+                                currentPos.y + spread - impactDirectionVector.y * (k * 2.5),
+                                currentPos.z + spread - impactDirectionVector.z * (k * 2.5)
+                            );
+                        }
+                        trailIndex = (trailIndex + 5) % trailPosAttr.count;
+                        trailPosAttr.needsUpdate = true;
+                    }
+
+                    if (state.camMode === 'follow') {
+                        camera.position.set(
+                            meteoriteGroup.position.x + 35,
+                            meteoriteGroup.position.y + 25,
+                            meteoriteGroup.position.z + 45
+                        );
+                        controls.target.copy(meteoriteGroup.position);
+                    }
+                }
+            } else {
+                if (trailGeometry) {
+                    const trailPosAttr = trailGeometry.attributes.position;
+                    for (let i = 0; i < trailPosAttr.count; i++) {
+                        trailPosAttr.setY(i, -200);
+                    }
+                    trailPosAttr.needsUpdate = true;
+                }
+            }
+
+            // 2. Zanikanie błysku
+            if (flashLight.intensity > 0) {
+                flashLight.intensity -= delta * 6.5;
+                if (flashLight.intensity < 0) flashLight.intensity = 0;
+            }
+
+            // 3. Ekspansja i zanikanie fali uderzeniowej
+            if (shockwaveMesh.material.opacity > 0) {
+                shockwaveMesh.scale.x += delta * 75;
+                shockwaveMesh.scale.y += delta * 75;
+                shockwaveMesh.material.opacity -= delta * 0.75;
+                if (shockwaveMesh.material.opacity < 0) shockwaveMesh.material.opacity = 0;
+            }
+
+            // 4. FIZYKA 3D CIĘŻKICH SKAŁ (HEAVY 3D ROCKS)
+            if (heavyRockData.length > 0) {
+                let anyRockUpdated = false;
+                for (let i = 0; i < heavyRockData.length; i++) {
+                    const r = heavyRockData[i];
+                    if (r.settled) continue;
+
+                    anyRockUpdated = true;
+                    r.vy -= gravity * delta;
+                    r.x += r.vx * delta;
+                    r.y += r.vy * delta;
+                    r.z += r.vz * delta;
+
+                    r.rotX += r.rotSpeedX * delta;
+                    r.rotY += r.rotSpeedY * delta;
+                    r.rotZ += r.rotSpeedZ * delta;
+
+                    // Kolizja z ukształtowaną powierzchnią terenu
+                    const groundY = getTerrainElevation(r.x, r.z) + r.radius * 0.6;
+                    if (r.y <= groundY) {
+                        r.y = groundY;
+                        if (r.bounces < r.maxBounces && Math.abs(r.vy) > 3.0) {
+                            r.vy = -r.vy * 0.38;
+                            r.vx *= 0.65;
+                            r.vz *= 0.65;
+                            r.rotSpeedX *= 0.5;
+                            r.rotSpeedY *= 0.5;
+                            r.rotSpeedZ *= 0.5;
+                            r.bounces++;
+                        } else {
+                            // Osadzenie na stałe w terenie
+                            r.settled = true;
+                            r.vy = 0;
+                            r.vx = 0;
+                            r.vz = 0;
+                        }
+                    }
+
+                    // Zastosuj macierz transformacji do InstancedMesh
+                    dummyTransform.position.set(r.x, r.y, r.z);
+                    dummyTransform.rotation.set(r.rotX, r.rotY, r.rotZ);
+                    dummyTransform.scale.copy(r.scale);
+                    dummyTransform.updateMatrix();
+                    heavyRockMesh.setMatrixAt(i, dummyTransform.matrix);
+                }
+                if (anyRockUpdated) {
+                    heavyRockMesh.instanceMatrix.needsUpdate = true;
+                }
+            }
+
+            // 5. FIZYKA 3D PŁONĄCYCH ODŁAMKÓW (BURNING 3D FRAGMENTS)
+            if (burningRockData.length > 0) {
+                let anyBurningUpdated = false;
+                for (let i = 0; i < burningRockData.length; i++) {
+                    const r = burningRockData[i];
+                    if (r.settled && r.temperature <= 0.05) continue;
+
+                    anyBurningUpdated = true;
+                    if (!r.settled) {
+                        r.vy -= gravity * delta;
+                        r.x += r.vx * delta;
+                        r.y += r.vy * delta;
+                        r.z += r.vz * delta;
+
+                        r.rotX += r.rotSpeedX * delta;
+                        r.rotY += r.rotSpeedY * delta;
+                        r.rotZ += r.rotSpeedZ * delta;
+
+                        const groundY = getTerrainElevation(r.x, r.z) + r.radius * 0.6;
+                        if (r.y <= groundY) {
+                            r.y = groundY;
+                            if (r.bounces < r.maxBounces && Math.abs(r.vy) > 3.0) {
+                                r.vy = -r.vy * 0.32;
+                                r.vx *= 0.6;
+                                r.vz *= 0.6;
+                                r.bounces++;
+                            } else {
+                                r.settled = true;
+                                r.vy = 0;
+                                r.vx = 0;
+                                r.vz = 0;
+                            }
+                        }
+                    }
+
+                    // Stygnięcie żaru
+                    if (r.temperature > 0) {
+                        r.temperature -= delta * 0.18;
+                        if (r.temperature < 0) r.temperature = 0;
+                    }
+
+                    dummyTransform.position.set(r.x, r.y, r.z);
+                    dummyTransform.rotation.set(r.rotX, r.rotY, r.rotZ);
+                    dummyTransform.scale.copy(r.scale);
+                    dummyTransform.updateMatrix();
+                    burningRockMesh.setMatrixAt(i, dummyTransform.matrix);
+                }
+                if (anyBurningUpdated) {
+                    burningRockMesh.instanceMatrix.needsUpdate = true;
+                }
+            }
+
+            // 6. FIZYKA DROBNEJ FRAKCJI (FINE DEBRIS)
+            if (fineDebrisData.length > 0) {
+                const finePos = fineDebrisGeometry.attributes.position;
+                for (let i = 0; i < fineDebrisData.length; i++) {
+                    const p = fineDebrisData[i];
+                    if (!p.active) continue;
+
+                    p.vy -= gravity * delta;
+                    p.x += p.vx * delta;
+                    p.y += p.vy * delta;
+                    p.z += p.vz * delta;
+
+                    const groundY = getTerrainElevation(p.x, p.z);
+                    if (p.y <= groundY + 0.1) {
+                        p.y = groundY + 0.1;
+                        p.active = false;
+                    }
+                    finePos.setXYZ(i, p.x, p.y, p.z);
+                }
+                fineDebrisGeometry.attributes.position.needsUpdate = true;
+            }
+
+            // 7. FIZYKA PYŁU I DYMU (DUST PLUME)
+            if (dustParticles.length > 0 && dustGroup.children.length > 0) {
+                const points = dustGroup.children[0];
+                const posAttr = points.geometry.attributes.position;
+
+                for (let i = 0; i < dustParticles.length; i++) {
+                    const p = dustParticles[i];
+                    if (p.life <= 0) continue;
+
+                    p.vx *= p.drag;
+                    p.vz *= p.drag;
+                    p.vy = (p.vy - 4.5 * delta) * p.drag;
+
+                    p.x += p.vx * delta;
+                    p.y += p.vy * delta;
+                    p.z += p.vz * delta;
+
+                    const groundY = getTerrainElevation(p.x, p.z);
+                    if (p.y < groundY + 0.2) p.y = groundY + 0.2;
+
+                    p.life -= p.decay * (delta * 60);
+
+                    posAttr.setXYZ(i, p.x, p.y, p.z);
+                }
+                posAttr.needsUpdate = true;
+                points.material.opacity = Math.max(0, points.material.opacity - delta * 0.05);
+            }
+
+            // 8. Camera Shake
+            if (cameraShake > 0) {
+                camera.position.x += (Math.random() - 0.5) * cameraShake * 2.5;
+                camera.position.y += (Math.random() - 0.5) * cameraShake * 2.5;
+                camera.position.z += (Math.random() - 0.5) * cameraShake * 2.5;
+                cameraShake -= delta * 2.0;
+                if (cameraShake < 0) cameraShake = 0;
+            }
+
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        /* --- PRESETY KAMER --- */
+        function setCameraPreset(mode) {
+            state.camMode = mode;
+            document.querySelectorAll('[data-cam]').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.cam === mode);
+            });
+
+            if (mode === 'orbit') {
+                camera.position.set(120, 75, 140);
+                controls.target.set(0, 0, 0);
+            } else if (mode === 'ground') {
+                camera.position.set(0, 6, 110);
+                controls.target.set(0, 8, 0);
+            } else if (mode === 'top') {
+                camera.position.set(0, 220, 0.1);
+                controls.target.set(0, 0, 0);
+            }
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        /* --- OBSŁUGA UI I ZDARZEŃ --- */
+        document.addEventListener('DOMContentLoaded', () => {
+            initThree();
+
+            // Suwaki parametrów
+            const inSpeed = document.getElementById('input-speed');
+            const valSpeed = document.getElementById('val-speed');
+            inSpeed.addEventListener('input', (e) => {
+                state.speed = parseInt(e.target.value);
+                valSpeed.textContent = state.speed + ' km/s';
+                calculateMetrics();
+            });
+
+            const inSize = document.getElementById('input-size');
+            const valSize = document.getElementById('val-size');
+            inSize.addEventListener('input', (e) => {
+                state.diameter = parseInt(e.target.value);
+                valSize.textContent = state.diameter + ' m';
+                calculateMetrics();
+            });
+
+            const inAngle = document.getElementById('input-angle');
+            const valAngle = document.getElementById('val-angle');
+            inAngle.addEventListener('input', (e) => {
+                state.angle = parseInt(e.target.value);
+                valAngle.textContent = state.angle + '°';
+                calculateMetrics();
+            });
+
+            // Wybór typu meteorytu
+            document.querySelectorAll('.type-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    state.density = parseInt(btn.dataset.density);
+                    state.meteoriteType = btn.dataset.name;
+                    calculateMetrics();
+                });
+            });
+
+            // Przyciski akcji
+            document.getElementById('btn-launch').addEventListener('click', () => launchMeteorite(false));
+            document.getElementById('btn-instant').addEventListener('click', () => launchMeteorite(true));
+            document.getElementById('btn-reset').addEventListener('click', resetTerrain);
+
+            // Presety kamer
+            document.querySelectorAll('[data-cam]').forEach(btn => {
+                btn.addEventListener('click', () => setCameraPreset(btn.dataset.cam));
+            });
+
+            // Kontrola tempa czasu
+            document.querySelectorAll('[data-speed]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('[data-speed]').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    state.timeScale = parseFloat(btn.dataset.speed);
+                });
+            });
+
+            // Przełącznik dźwięku
+            const btnMute = document.getElementById('btn-mute');
+            btnMute.addEventListener('click', () => {
+                state.soundEnabled = !state.soundEnabled;
+                btnMute.textContent = state.soundEnabled ? '🔊 Dźwięk' : '🔇 Wyciszony';
+                btnMute.classList.toggle('active', state.soundEnabled);
+            });
+
+            // Modal Edukacyjny
+            const modal = document.getElementById('edu-modal');
+            document.getElementById('btn-open-edu').addEventListener('click', () => modal.classList.add('open'));
+            document.getElementById('btn-close-modal').addEventListener('click', () => modal.classList.remove('open'));
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) modal.classList.remove('open');
+            });
+        });
+    </script>
+</body>
+
+</html>
