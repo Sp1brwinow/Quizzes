@@ -711,6 +711,16 @@
 
   <!-- SILNIK SYMULATORA 2D, SOLVER MNA & WEB AUDIO -->
   <script>
+    // --- RZECZYWISTE MODELE FIZYCZNE DIOD LED (Vf, Rs, Imax, Barwa) ---
+    const LED_MODELS = {
+      red: { name: '🔴 Czerwona (AlInGaP 630nm)', vf: 1.95, rs: 15, imax: 35, color: '#ef4444', glow: '#ef4444' },
+      green: { name: '🟢 Zielona (InGaN 525nm)', vf: 2.25, rs: 18, imax: 35, color: '#22c55e', glow: '#4ade80' },
+      blue: { name: '🔵 Niebieska (InGaN 470nm)', vf: 3.10, rs: 20, imax: 35, color: '#3b82f6', glow: '#60a5fa' },
+      yellow: { name: '🟡 Żółta (AlInGaP 590nm)', vf: 2.10, rs: 15, imax: 35, color: '#eab308', glow: '#facc15' },
+      white: { name: '⚪ Biała (InGaN 6000K)', vf: 3.20, rs: 20, imax: 35, color: '#f8fafc', glow: '#ffffff' },
+      ir: { name: '🟣 Podczerwona IR (GaAs 940nm)', vf: 1.35, rs: 10, imax: 50, color: '#a855f7', glow: '#c084fc' }
+    };
+
     // --- STAN SYMULATORA ---
     const circuitState = {
       elements: [],
@@ -1133,41 +1143,67 @@
           ctx.stroke();
           break;
 
-        case 'led': // Dioda LED (Świecąca z fotonami)
+        case 'led': // Rzeczywista Dioda LED (Wielokolorowa z modelem fizycznym i ostrzeżeniem przed spaleniem)
           ctx.beginPath();
           ctx.moveTo(-30, 0); ctx.lineTo(-12, 0);
           ctx.moveTo(12, 0); ctx.lineTo(30, 0);
           ctx.stroke();
 
-          const isGlowing = circuitState.current > 2.0;
+          const ledModelKey = elem.ledModel || 'red';
+          const model = LED_MODELS[ledModelKey] || LED_MODELS.red;
+          const isBurned = elem.isBurned === true;
+          const isGlowing = !isBurned && (circuitState.current > 0.5);
+          const glowIntensity = isGlowing ? Math.min(1.0, circuitState.current / 20.0) : 0;
+
+          // Trójkąt złącza p-n
           ctx.beginPath();
           ctx.moveTo(-12, -12); ctx.lineTo(-12, 12); ctx.lineTo(12, 0); ctx.closePath();
-          ctx.fillStyle = isGlowing ? '#ef4444' : '#1e293b';
+          if (isBurned) {
+            ctx.fillStyle = '#334155';
+          } else {
+            ctx.fillStyle = isGlowing ? model.color : '#1e293b';
+          }
           ctx.fill();
           ctx.stroke();
 
+          // Kreska katody
           ctx.beginPath();
           ctx.moveTo(12, -12); ctx.lineTo(12, 12);
           ctx.stroke();
 
-          // Strzałki emisji światła
-          ctx.strokeStyle = isGlowing ? '#facc15' : '#94a3b8';
-          ctx.beginPath();
-          ctx.moveTo(-4, -14); ctx.lineTo(6, -24);
-          ctx.moveTo(6, -14); ctx.lineTo(16, -24);
-          ctx.stroke();
-          // Groty strzałek
-          ctx.beginPath();
-          ctx.moveTo(2, -24); ctx.lineTo(6, -24); ctx.lineTo(6, -20);
-          ctx.moveTo(12, -24); ctx.lineTo(16, -24); ctx.lineTo(16, -20);
-          ctx.stroke();
-
-          if (isGlowing) {
-            ctx.shadowColor = '#ef4444';
-            ctx.shadowBlur = 12;
+          // Strzałki emisji fotonów
+          if (!isBurned) {
+            ctx.strokeStyle = isGlowing ? model.glow : '#64748b';
+            ctx.beginPath();
+            ctx.moveTo(-4, -14); ctx.lineTo(6, -24);
+            ctx.moveTo(6, -14); ctx.lineTo(16, -24);
             ctx.stroke();
-            ctx.shadowBlur = 0;
+            // Groty strzałek
+            ctx.beginPath();
+            ctx.moveTo(2, -24); ctx.lineTo(6, -24); ctx.lineTo(6, -20);
+            ctx.moveTo(12, -24); ctx.lineTo(16, -24); ctx.lineTo(16, -20);
+            ctx.stroke();
+
+            if (isGlowing) {
+              ctx.shadowColor = model.glow;
+              ctx.shadowBlur = 8 + glowIntensity * 16;
+              ctx.stroke();
+              ctx.shadowBlur = 0;
+            }
+          } else {
+            // Efekt spalonej diody
+            ctx.strokeStyle = '#ef4444';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(-8, -8); ctx.lineTo(8, 8);
+            ctx.moveTo(8, -8); ctx.lineTo(-8, 8);
+            ctx.stroke();
           }
+
+          // Etykieta modelu i napięcia
+          ctx.font = 'bold 9px sans-serif';
+          ctx.fillStyle = isBurned ? '#ef4444' : '#facc15';
+          ctx.fillText(isBurned ? '💥 SPALONA!' : `${elem.vf !== undefined ? elem.vf : model.vf}V`, -10, -15);
           break;
 
         case 'npn': // Tranzystor BJT NPN (C, B, E ze strzałką)
@@ -1488,10 +1524,17 @@
           break;
         case 'led':
           elem.name = 'Dioda LED';
+          elem.ledModel = 'red';
+          elem.vf = 1.95;
+          elem.rs = 15;
+          elem.imax = 35;
+          elem.isBurned = false;
           elem.pins = [{ id: 'a', x: -30, y: 0, label: 'Anoda (+)' }, { id: 'k', x: 30, y: 0, label: 'Katoda (-)' }];
           break;
         case 'diode':
-          elem.name = 'Dioda 1N4007';
+          elem.name = 'Dioda 1N4007 (Krzemowa)';
+          elem.vf = 0.70;
+          elem.rs = 1.5;
           elem.pins = [{ id: 'a', x: -30, y: 0, label: 'Anoda (+)' }, { id: 'k', x: 30, y: 0, label: 'Katoda (-)' }];
           break;
         case 'npn':
@@ -1741,6 +1784,70 @@
             💡 <b>Zasada pomiaru:</b> Amperomierz wpinamy <b>szeregowo</b> (rozcinając gałąź obwodu). Rezystancja wewnętrzna R<sub>A</sub> &rarr; 0.
           </div>
         `;
+      } else if (elem.type === 'led') {
+        const currentModel = elem.ledModel || 'red';
+        const model = LED_MODELS[currentModel] || LED_MODELS.red;
+        const vfVal = elem.vf !== undefined ? elem.vf : model.vf;
+        const rsVal = elem.rs !== undefined ? elem.rs : model.rs;
+        const isBurned = elem.isBurned === true;
+        const iVal = isBurned ? 0 : circuitState.current;
+        const uVal = isBurned ? 0 : (iVal > 0 ? (vfVal + (iVal/1000) * rsVal) : 0);
+
+        html += `
+          <div class="prop-row">
+            <span>Model / Barwa:</span>
+            <select class="prop-input" style="width: 140px; text-align: left;" onchange="changeLedModel(this.value)">
+              <option value="red" ${currentModel === 'red' ? 'selected' : ''}>🔴 Czerwona (1.95V)</option>
+              <option value="green" ${currentModel === 'green' ? 'selected' : ''}>🟢 Zielona (2.25V)</option>
+              <option value="blue" ${currentModel === 'blue' ? 'selected' : ''}>🔵 Niebieska (3.10V)</option>
+              <option value="yellow" ${currentModel === 'yellow' ? 'selected' : ''}>🟡 Żółta (2.10V)</option>
+              <option value="white" ${currentModel === 'white' ? 'selected' : ''}>⚪ Biała (3.20V)</option>
+              <option value="ir" ${currentModel === 'ir' ? 'selected' : ''}>🟣 Podczerwień IR (1.35V)</option>
+            </select>
+          </div>
+          <div class="prop-row">
+            <span>Napięcie progowe V<sub>f</sub>:</span>
+            <input type="number" class="prop-input" value="${vfVal}" step="0.05" onchange="updateElemProp('vf', parseFloat(this.value))">
+          </div>
+          <div class="prop-row">
+            <span>Opór szeregowy R<sub>s</sub> (&Omega;):</span>
+            <input type="number" class="prop-input" value="${rsVal}" step="1" onchange="updateElemProp('rs', parseFloat(this.value))">
+          </div>
+          <div class="prop-row">
+            <span>Spadek napięcia U<sub>D</sub>:</span>
+            <span style="color: var(--accent-green); font-weight: 800; font-family: monospace;">${uVal.toFixed(2)} V</span>
+          </div>
+          <div class="prop-row">
+            <span>Prąd przewodzenia I<sub>D</sub>:</span>
+            <span style="color: ${iVal > 35 ? 'var(--accent-red)' : 'var(--accent-yellow)'}; font-weight: 800; font-family: monospace;">${iVal.toFixed(1)} mA</span>
+          </div>
+        `;
+
+        if (isBurned) {
+          html += `
+            <div style="background: rgba(239, 68, 68, 0.15); border: 1px solid var(--accent-red); padding: 8px; border-radius: 6px; margin-top: 6px;">
+              <div style="color: var(--accent-red); font-weight: 700; font-size: 0.8rem;">💥 DIODA SPALONA!</div>
+              <div style="color: var(--text-muted); font-size: 0.7rem; margin: 4px 0;">Prąd przekroczył I<sub>max</sub> (brak rezystora ograniczającego prąd).</div>
+              <button class="tool-btn" style="width: 100%; background: var(--accent-blue); color: #000; font-weight: 700; margin-top: 4px;" onclick="replaceBurnedLed()">🔄 Wymień diodę na nową</button>
+            </div>
+          `;
+        } else {
+          html += `
+            <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 6px; background: rgba(56, 189, 248, 0.08); padding: 6px; border-radius: 4px; border: 1px dashed var(--accent-blue);">
+              💡 <b>Rzeczywisty model:</b> U<sub>D</sub> = V<sub>f</sub> + I<sub>D</sub> &bull; R<sub>s</sub>. Pamiętaj o rezystorze szeregowym R, aby nie spalić diody!
+            </div>
+          `;
+        }
+      } else if (elem.type === 'diode') {
+        html += `
+          <div class="prop-row">
+            <span>Napięcie przewodzenia V<sub>f</sub>:</span>
+            <input type="number" class="prop-input" value="${elem.vf || 0.70}" step="0.05" onchange="updateElemProp('vf', parseFloat(this.value))">
+          </div>
+          <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 6px; background: rgba(56, 189, 248, 0.08); padding: 6px; border-radius: 4px; border: 1px dashed var(--accent-blue);">
+            💡 Dioda prostownicza krzemowa 1N4007 (V<sub>f</sub> &approx; 0,7V).
+          </div>
+        `;
       }
 
       html += `
@@ -1757,6 +1864,29 @@
       if (circuitState.selectedElement && !isNaN(val)) {
         circuitState.selectedElement[prop] = val;
         showToast(`Zaktualizowano: ${prop} = ${val}`);
+      }
+    }
+
+    function changeLedModel(modelKey) {
+      if (circuitState.selectedElement && circuitState.selectedElement.type === 'led') {
+        const model = LED_MODELS[modelKey];
+        if (model) {
+          circuitState.selectedElement.ledModel = modelKey;
+          circuitState.selectedElement.vf = model.vf;
+          circuitState.selectedElement.rs = model.rs;
+          circuitState.selectedElement.imax = model.imax;
+          circuitState.selectedElement.isBurned = false;
+          updatePropsPanel(circuitState.selectedElement);
+          showToast(`Zmieniono model LED: ${model.name} (Vf = ${model.vf}V)`);
+        }
+      }
+    }
+
+    function replaceBurnedLed() {
+      if (circuitState.selectedElement && circuitState.selectedElement.type === 'led') {
+        circuitState.selectedElement.isBurned = false;
+        updatePropsPanel(circuitState.selectedElement);
+        showToast('🔄 Wymieniono diodę LED na nową!');
       }
     }
 
@@ -1840,22 +1970,48 @@
       let circuitCurrent = 0;
       let totalResistance = 0;
       let totalDiodeDrop = 0;
+      let hasBurned = false;
 
       if (posNetRoot !== null && negNetRoot !== null && posNetRoot !== negNetRoot && !isSwitchOpen) {
         circuitState.elements.forEach(e => {
           if (e.type === 'resistor') totalResistance += (e.resistance || 1000);
           else if (e.type === 'potentiometer') totalResistance += ((e.resistance || 10) * 1000);
           else if (e.type === 'speaker') totalResistance += 8;
-          else if (e.type === 'led' || e.type === 'diode') totalDiodeDrop += 2.0;
+          else if (e.type === 'led') {
+            if (e.isBurned) hasBurned = true;
+            const model = LED_MODELS[e.ledModel || 'red'] || LED_MODELS.red;
+            const vf = e.vf !== undefined ? e.vf : model.vf;
+            const rs = e.rs !== undefined ? e.rs : model.rs;
+            totalDiodeDrop += vf;
+            totalResistance += rs;
+          } else if (e.type === 'diode') {
+            totalDiodeDrop += (e.vf || 0.70);
+            totalResistance += (e.rs || 1.5);
+          }
         });
 
-        if (totalResistance === 0) totalResistance = 450;
+        if (!hasBurned) {
+          if (totalResistance === 0) totalResistance = 1;
 
-        const vNet = Math.max(0, vSource - totalDiodeDrop);
-        circuitCurrent = (vNet / totalResistance) * 1000; // mA
+          const vNet = Math.max(0, vSource - totalDiodeDrop);
+          circuitCurrent = (vNet / totalResistance) * 1000; // mA
 
-        if (circuitState.wires.length >= 2 && circuitCurrent > 0) {
-          isClosedCircuit = true;
+          if (circuitState.wires.length >= 2 && circuitCurrent > 0) {
+            isClosedCircuit = true;
+          }
+
+          // Sprawdzanie czy dioda LED nie ulega przeciążeniu / spaleniu z braku rezystora
+          circuitState.elements.forEach(e => {
+            if (e.type === 'led' && !e.isBurned) {
+              const imax = e.imax || 35;
+              if (circuitCurrent > imax * 1.3) {
+                e.isBurned = true;
+                isClosedCircuit = false;
+                circuitCurrent = 0;
+                showToast(`💥 Dioda LED uległa spaleniu! Prąd ${((vNet/totalResistance)*1000).toFixed(1)} mA przekroczył Imax (${imax} mA) - brak rezystora R!`);
+              }
+            }
+          });
         }
       }
 
@@ -1883,13 +2039,30 @@
             } else if (n2 === negNetRoot && !netPotential.has(n1)) {
               netPotential.set(n1, vDrop);
             }
-          } else if (elem.type === 'led' || elem.type === 'diode') {
+          } else if (elem.type === 'led') {
+            const model = LED_MODELS[elem.ledModel || 'red'] || LED_MODELS.red;
+            const vf = elem.vf !== undefined ? elem.vf : model.vf;
+            const rs = elem.rs !== undefined ? elem.rs : model.rs;
+            const vDrop = vf + (circuitCurrent / 1000) * rs;
+
             const na = findRoot(getNet(elem.id, 'a'));
             const nk = findRoot(getNet(elem.id, 'k'));
             if (nk === negNetRoot && !netPotential.has(na)) {
-              netPotential.set(na, 2.0);
+              netPotential.set(na, vDrop);
             } else if (na === posNetRoot && !netPotential.has(nk)) {
-              netPotential.set(nk, Math.max(0, vSource - 2.0));
+              netPotential.set(nk, Math.max(0, vSource - vDrop));
+            }
+          } else if (elem.type === 'diode') {
+            const vf = elem.vf || 0.70;
+            const rs = elem.rs || 1.5;
+            const vDrop = vf + (circuitCurrent / 1000) * rs;
+
+            const na = findRoot(getNet(elem.id, 'a'));
+            const nk = findRoot(getNet(elem.id, 'k'));
+            if (nk === negNetRoot && !netPotential.has(na)) {
+              netPotential.set(na, vDrop);
+            } else if (na === posNetRoot && !netPotential.has(nk)) {
+              netPotential.set(nk, Math.max(0, vSource - vDrop));
             }
           }
         });
@@ -2258,10 +2431,17 @@
           break;
         case 'led':
           elem.name = 'Dioda LED';
+          elem.ledModel = props.ledModel || 'red';
+          elem.vf = props.vf !== undefined ? props.vf : (LED_MODELS[elem.ledModel]?.vf || 1.95);
+          elem.rs = props.rs !== undefined ? props.rs : (LED_MODELS[elem.ledModel]?.rs || 15);
+          elem.imax = props.imax || 35;
+          elem.isBurned = false;
           elem.pins = [{ id: 'a', x: -30, y: 0, label: 'Anoda (+)' }, { id: 'k', x: 30, y: 0, label: 'Katoda (-)' }];
           break;
         case 'diode':
-          elem.name = 'Dioda 1N4007';
+          elem.name = 'Dioda 1N4007 (Krzemowa)';
+          elem.vf = props.vf !== undefined ? props.vf : 0.70;
+          elem.rs = props.rs !== undefined ? props.rs : 1.5;
           elem.pins = [{ id: 'a', x: -30, y: 0, label: 'Anoda (+)' }, { id: 'k', x: 30, y: 0, label: 'Katoda (-)' }];
           break;
         case 'npn':
