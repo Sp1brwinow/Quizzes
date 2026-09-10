@@ -1,0 +1,1634 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wirtualne Laboratorium Elektroniczne 3D | Fizyka & Elektronika</title>
+  
+  <!-- Three.js & OrbitControls z CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  
+  <style>
+    :root {
+      --bg-dark: #070d18;
+      --panel-bg: #0f172a;
+      --card-bg: #1e293b;
+      --accent-blue: #38bdf8;
+      --accent-green: #4ade80;
+      --accent-yellow: #facc15;
+      --accent-red: #f87171;
+      --accent-purple: #c084fc;
+      --accent-orange: #fb923c;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-color: #334155;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      user-select: none;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* HEADER */
+    header {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      padding: 10px 20px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+      z-index: 10;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-left h1 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .badge-phys {
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid var(--accent-blue);
+      color: var(--accent-blue);
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 999px;
+      text-transform: uppercase;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-action {
+      background: var(--card-bg);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .btn-action:hover {
+      background: var(--accent-blue);
+      color: #000;
+      border-color: var(--accent-blue);
+    }
+
+    .btn-audio {
+      background: rgba(192, 132, 252, 0.15);
+      border-color: var(--accent-purple);
+      color: var(--accent-purple);
+    }
+    .btn-audio.active {
+      background: var(--accent-purple);
+      color: #000;
+      font-weight: 700;
+      box-shadow: 0 0 12px rgba(192, 132, 252, 0.5);
+    }
+
+    /* GŁÓWNY UKŁAD (3 KOLUMNY) */
+    .app-body {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* LEWY PANEL: PALETA PODZESPOŁÓW */
+    .sidebar-left {
+      width: 250px;
+      background: var(--panel-bg);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      z-index: 5;
+    }
+
+    .sidebar-title {
+      padding: 12px 16px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--accent-blue);
+      border-bottom: 1px solid var(--border-color);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .components-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .component-item {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .component-item:hover {
+      background: #334155;
+      border-color: var(--accent-blue);
+      transform: translateX(4px);
+    }
+
+    .comp-icon {
+      font-size: 1.4rem;
+      width: 32px;
+      text-align: center;
+    }
+
+    .comp-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .comp-name {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .comp-desc {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    /* ŚRODEK: SCENA 3D (THREE.JS) */
+    .viewport-3d {
+      flex: 1;
+      position: relative;
+      background: #020617;
+      overflow: hidden;
+    }
+
+    #canvas3d {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* PŁYWAJĄCY TOOLBAR NAD 3D */
+    .floating-toolbar {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(8px);
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      z-index: 5;
+    }
+
+    .color-btn {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 2px solid #fff;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .color-btn:hover { transform: scale(1.2); }
+    .color-btn.active { outline: 2px solid var(--accent-blue); }
+
+    .camera-presets {
+      position: absolute;
+      bottom: 12px;
+      left: 12px;
+      display: flex;
+      gap: 6px;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(8px);
+      padding: 4px 8px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      z-index: 5;
+    }
+
+    .btn-cam {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 4px 8px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    .btn-cam:hover { color: #fff; background: var(--card-bg); }
+
+    /* Podpowiedź sterowania */
+    .hint-bar {
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(8px);
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      pointer-events: none;
+      z-index: 5;
+    }
+    .hint-bar strong { color: var(--accent-yellow); }
+
+    /* PRAWY PANEL: WŁAŚCIWOŚCI, POMIARY & OSCYLOSKOP */
+    .sidebar-right {
+      width: 320px;
+      background: var(--panel-bg);
+      border-left: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      z-index: 5;
+    }
+
+    .right-section {
+      padding: 12px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .section-header {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--accent-blue);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Multimetr cyfrowy */
+    .meter-display {
+      background: #020617;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 10px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .meter-box {
+      display: flex;
+      flex-direction: column;
+    }
+    .meter-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; }
+    .meter-val { font-size: 1.15rem; font-weight: 800; color: var(--accent-green); font-family: monospace; }
+
+    /* Mini Oscyloskop */
+    .scope-box {
+      width: 100%;
+      height: 130px;
+      background: #020617;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      position: relative;
+      overflow: hidden;
+    }
+    #scopeCanvas { width: 100%; height: 100%; display: block; }
+
+    /* Presety edukacyjne */
+    .presets-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      max-height: 220px;
+      overflow-y: auto;
+    }
+
+    .btn-preset-circuit {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 7px 10px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-preset-circuit:hover {
+      background: var(--accent-blue);
+      color: #000;
+      border-color: var(--accent-blue);
+    }
+
+    /* Toast Powiadomień */
+    .toast-msg {
+      position: absolute;
+      top: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid var(--accent-blue);
+      color: #fff;
+      padding: 8px 18px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s;
+      z-index: 100;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-left">
+      <h1>🔌 Wirtualne Laboratorium Elektroniczne 3D</h1>
+      <span class="badge-phys">Fizyka &bull; SP nr 1 w Brwinowie</span>
+    </div>
+
+    <div class="header-actions">
+      <button class="btn-action btn-audio" id="btnAudioToggle" onclick="toggleWebAudio()">
+        🔊 Dźwięk Toru Audio (OFF)
+      </button>
+      <button class="btn-action" onclick="clearBreadboard()">
+        🗑️ Wyczyść wszystko
+      </button>
+      <button class="btn-action" onclick="resetCamera()">
+        🎥 Reset Kamery
+      </button>
+    </div>
+  </header>
+
+  <!-- GŁÓWNA PRZESTRZEŃ -->
+  <div class="app-body">
+    
+    <!-- LEWY PANEL: PALETA PODZESPOŁÓW -->
+    <div class="sidebar-left">
+      <div class="sidebar-title">
+        <span>📦 Podzespoły 3D</span>
+        <span style="font-size: 0.75rem; color: var(--text-muted);">Kliknij, aby dodać</span>
+      </div>
+
+      <div class="components-list">
+        <!-- Zasilanie -->
+        <div class="component-item" onclick="addComponent('battery9v')">
+          <div class="comp-icon">🔋</div>
+          <div class="comp-info">
+            <span class="comp-name">Bateria 9V (6F22)</span>
+            <span class="comp-desc">Zasilanie stałe DC 9.0V</span>
+          </div>
+        </div>
+
+        <div class="component-item" onclick="addComponent('generator')">
+          <div class="comp-icon">〰️</div>
+          <div class="comp-info">
+            <span class="comp-name">Generator Sygnałowy</span>
+            <span class="comp-desc">AC 1kHz (Sinus / Audio)</span>
+          </div>
+        </div>
+
+        <!-- Pasywne -->
+        <div class="component-item" onclick="addComponent('resistor')">
+          <div class="comp-icon">🟫</div>
+          <div class="comp-info">
+            <span class="comp-name">Rezystor (1 k&Omega;)</span>
+            <span class="comp-desc">Z kodem barwnym</span>
+          </div>
+        </div>
+
+        <div class="component-item" onclick="addComponent('potentiometer')">
+          <div class="comp-icon">🎛️</div>
+          <div class="comp-info">
+            <span class="comp-name">Potencjometr Obrotowy</span>
+            <span class="comp-desc">10 k&Omega; regulowany 3-pin</span>
+          </div>
+        </div>
+
+        <div class="component-item" onclick="addComponent('capacitor')">
+          <div class="comp-icon">🔋</div>
+          <div class="comp-info">
+            <span class="comp-name">Kondensator (100 &mu;F)</span>
+            <span class="comp-desc">Elektrolityczny / Filtrujący</span>
+          </div>
+        </div>
+
+        <div class="component-item" onclick="addComponent('inductor')">
+          <div class="comp-icon">🌀</div>
+          <div class="comp-info">
+            <span class="comp-name">Cewka Indukcyjna (10 mH)</span>
+            <span class="comp-desc">Rdzeń toroidalny / Filtry</span>
+          </div>
+        </div>
+
+        <div class="component-item" onclick="addComponent('transformer')">
+          <div class="comp-icon">⚡</div>
+          <div class="comp-info">
+            <span class="comp-name">Transformator (2:1)</span>
+            <span class="comp-desc">Uzwojenie pierw. i wtórne</span>
+          </div>
+        </div>
+
+        <!-- Półprzewodniki -->
+        <div class="component-item" onclick="addComponent('led')">
+          <div class="comp-icon">💡</div>
+          <div class="comp-info">
+            <span class="comp-name">Dioda LED (Czerwona)</span>
+            <span class="comp-desc">Świeci przy prądzie >2mA</span>
+          </div>
+        </div>
+
+        <div class="component-item" onclick="addComponent('diode')">
+          <div class="comp-icon">🔺</div>
+          <div class="comp-info">
+            <span class="comp-name">Dioda 1N4007</span>
+            <span class="comp-desc">Prostownicza z paskiem katody</span>
+          </div>
+        </div>
+
+        <div class="component-item" onclick="addComponent('npn')">
+          <div class="comp-icon">🔲</div>
+          <div class="comp-info">
+            <span class="comp-name">Tranzystor NPN (BC547)</span>
+            <span class="comp-desc">Obudowa TO-92 (C, B, E)</span>
+          </div>
+        </div>
+
+        <div class="component-item" onclick="addComponent('pnp')">
+          <div class="comp-icon">🔳</div>
+          <div class="comp-info">
+            <span class="comp-name">Tranzystor PNP (BC557)</span>
+            <span class="comp-desc">Obudowa TO-92 (E, B, C)</span>
+          </div>
+        </div>
+
+        <!-- Akustyka -->
+        <div class="component-item" onclick="addComponent('microphone')">
+          <div class="comp-icon">🎙️</div>
+          <div class="comp-info">
+            <span class="comp-name">Mikrofon Elektretowy</span>
+            <span class="comp-desc">Wejście sygnału audio</span>
+          </div>
+        </div>
+
+        <div class="component-item" onclick="addComponent('speaker')">
+          <div class="comp-icon">🔊</div>
+          <div class="comp-info">
+            <span class="comp-name">Głośnik Dynamiczny 3D</span>
+            <span class="comp-desc">Odsłuch Web Audio API</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ŚRODEK: TRÓJWYMIAROWA PŁYTKA STYKOWA (THREE.JS) -->
+    <div class="viewport-3d" id="viewportContainer">
+      <canvas id="canvas3d"></canvas>
+
+      <!-- Floating Toolbar z kolorami przewodów -->
+      <div class="floating-toolbar">
+        <span style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); margin-right: 4px;">KABLUJ:</span>
+        <div class="color-btn active" style="background: #ef4444;" onclick="setWireColor('#ef4444', this)" title="Czerwony (+)"></div>
+        <div class="color-btn" style="background: #1e293b; border-color: #64748b;" onclick="setWireColor('#0f172a', this)" title="Czarny (GND)"></div>
+        <div class="color-btn" style="background: #38bdf8;" onclick="setWireColor('#38bdf8', this)" title="Niebieski"></div>
+        <div class="color-btn" style="background: #facc15;" onclick="setWireColor('#facc15', this)" title="Żółty"></div>
+        <div class="color-btn" style="background: #4ade80;" onclick="setWireColor('#4ade80', this)" title="Zielony"></div>
+      </div>
+
+      <!-- Presety Kamery -->
+      <div class="camera-presets">
+        <button class="btn-cam" onclick="setCameraView('top')">Góra</button>
+        <button class="btn-cam" onclick="setCameraView('iso')">Izometria</button>
+        <button class="btn-cam" onclick="setCameraView('front')">Przód</button>
+      </div>
+
+      <!-- Pasek Podpowiedzi Sterowania -->
+      <div class="hint-bar">
+        <span>Łączenie: <strong>LPM</strong> na piny | Zaznacz: <strong>PPM</strong> na element/kabel | Usuń: klawisz <strong>Delete / Backspace</strong></span>
+      </div>
+
+      <!-- Toast Powiadomień -->
+      <div class="toast-msg" id="toastMsg">Gotowe</div>
+    </div>
+
+    <!-- PRAWY PANEL: POMIARY, OSCYLOSKOP & PRESETY -->
+    <div class="sidebar-right">
+
+      <!-- Multimetr Cyfrowy -->
+      <div class="right-section">
+        <div class="section-header">
+          <span>📟 Multimetr Laboratoryjny</span>
+          <span style="font-size: 0.7rem; color: var(--accent-green);">ON-LINE</span>
+        </div>
+        
+        <div class="meter-display">
+          <div class="meter-box">
+            <span class="meter-label">Napięcie (V)</span>
+            <span class="meter-val" id="dispVoltage">0.00 V</span>
+          </div>
+          <div class="meter-box">
+            <span class="meter-label">Prąd (I)</span>
+            <span class="meter-val" id="dispCurrent">0.0 mA</span>
+          </div>
+          <div class="meter-box">
+            <span class="meter-label">Częstotliwość</span>
+            <span class="meter-val" id="dispFreq">0 Hz</span>
+          </div>
+          <div class="meter-box">
+            <span class="meter-label">Moc Strat (P)</span>
+            <span class="meter-val" id="dispPower">0.0 mW</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mini Oscyloskop 2D -->
+      <div class="right-section">
+        <div class="section-header">
+          <span>📈 Oscyloskop 2-Kanałowy</span>
+          <span style="font-size: 0.7rem; color: var(--accent-yellow);">10 ms / div</span>
+        </div>
+        <div class="scope-box">
+          <canvas id="scopeCanvas"></canvas>
+        </div>
+      </div>
+
+      <!-- Gotowe Układy Edukacyjne (Presety) -->
+      <div class="right-section" style="flex: 1; overflow-y: auto;">
+        <div class="section-header">
+          <span>📚 Gotowe Układy (Presety)</span>
+        </div>
+
+        <div class="presets-grid">
+          <button class="btn-preset-circuit" onclick="loadPreset('led_simple')">
+            <span>💡 1. Bateria 9V + Rezystor + LED</span>
+          </button>
+          <button class="btn-preset-circuit" onclick="loadPreset('pot_dimmer')">
+            <span>🎛️ 2. Ściemniacz LED z Potencjometrem</span>
+          </button>
+          <button class="btn-preset-circuit" onclick="loadPreset('transistor_switch')">
+            <span>⚡ 3. Klucz Tranzystorowy NPN</span>
+          </button>
+          <button class="btn-preset-circuit" onclick="loadPreset('audio_amp')">
+            <span>🎙️ 4. Wzmacniacz Audio (Mic &rarr; Głośnik)</span>
+          </button>
+          <button class="btn-preset-circuit" onclick="loadPreset('astable_multivibrator')">
+            <span>✨ 5. Multiwibrator (Migacz 2x LED)</span>
+          </button>
+          <button class="btn-preset-circuit" onclick="loadPreset('rlc_filter')">
+            <span>🌀 6. Obwód RLC (Cewka + Kondensator)</span>
+          </button>
+          <button class="btn-preset-circuit" onclick="loadPreset('transformer_ac')">
+            <span>🔄 7. Transformator + Prostownik</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- SILNIK THREE.JS, SOLVER MNA & WEB AUDIO -->
+  <script>
+    // --- STAN APLIKACJI ---
+    const appState = {
+      selectedWireColor: '#ef4444',
+      activeAudio: false,
+      audioCtx: null,
+      audioOsc: null,
+      audioGain: null,
+      components: [],
+      wires: [],
+      connectingPin: null,
+      selectedObject: null, // { type: 'component'|'wire', data: ... }
+      time: 0,
+      
+      // Bieżące odczyty symulacji
+      voltage: 0,
+      current: 0,
+      freq: 0,
+      power: 0,
+      scopeData: new Array(100).fill(0)
+    };
+
+    // --- THREE.JS SCENA & BREADBOARD ---
+    let scene, camera, renderer, controls;
+    let breadboardMesh;
+    const interactivePins = [];
+    const clickableBodies = [];
+    const clickableWires = [];
+
+    function init3D() {
+      const container = document.getElementById('viewportContainer');
+      const canvas = document.getElementById('canvas3d');
+
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x070d18);
+
+      camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
+      camera.position.set(0, 16, 18);
+
+      renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+      renderer.setSize(container.clientWidth, container.clientHeight);
+      renderer.setPixelRatio(window.devicePixelRatio);
+      renderer.shadowMap.enabled = true;
+
+      controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.05;
+      controls.maxPolarAngle = Math.PI / 2 - 0.05;
+
+      // Oświetlenie laboratoryjne
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.65);
+      scene.add(ambientLight);
+
+      const dirLight = new THREE.DirectionalLight(0xffffff, 0.85);
+      dirLight.position.set(10, 20, 15);
+      dirLight.castShadow = true;
+      scene.add(dirLight);
+
+      // Stół roboczy
+      const tableGeo = new THREE.BoxGeometry(32, 0.5, 24);
+      const tableMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.6 });
+      const table = new THREE.Mesh(tableGeo, tableMat);
+      table.position.y = -0.25;
+      table.receiveShadow = true;
+      scene.add(table);
+
+      // PŁYTKA STYKOWA (BREADBOARD) 3D
+      createBreadboard();
+
+      // Raycasting i zdarzenia myszy
+      const raycaster = new THREE.Raycaster();
+      const mouse = new THREE.Vector2();
+      let pointerDownPos = { x: 0, y: 0 };
+      const floorPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -0.35);
+      const planeIntersectPoint = new THREE.Vector3();
+
+      renderer.domElement.addEventListener('pointerdown', (e) => {
+        pointerDownPos = { x: e.clientX, y: e.clientY };
+      });
+
+      // Śledzenie ruchu myszy: podgląd ciągniętego kabelka oraz zmiana kursora
+      renderer.domElement.addEventListener('pointermove', (e) => {
+        const rect = renderer.domElement.getBoundingClientRect();
+        mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+        mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+        raycaster.setFromCamera(mouse, camera);
+
+        if (appState.connectingPin) {
+          // 1. Sprawdzamy czy kursor jest nad jakimś pinem
+          const hitPins = raycaster.intersectObjects(interactivePins);
+          if (hitPins.length > 0) {
+            const pin = (hitPins[0].object.userData && hitPins[0].object.userData.pinMesh) || hitPins[0].object;
+            const targetPos = new THREE.Vector3();
+            pin.getWorldPosition(targetPos);
+            updatePreviewWire(targetPos);
+            renderer.domElement.style.cursor = 'crosshair';
+            return;
+          }
+
+          // 2. Sprawdzamy czy kursor jest nad korpusem elementu
+          const hitBodies = raycaster.intersectObjects(clickableBodies);
+          if (hitBodies.length > 0) {
+            const compData = hitBodies[0].object.userData.compData;
+            const nearestPin = findNearestPin(compData, hitBodies[0].point);
+            if (nearestPin) {
+              const targetPos = new THREE.Vector3();
+              nearestPin.getWorldPosition(targetPos);
+              updatePreviewWire(targetPos);
+              renderer.domElement.style.cursor = 'crosshair';
+              return;
+            }
+          }
+
+          // 3. Pozycja na płaszczyźnie stołu
+          if (raycaster.ray.intersectPlane(floorPlane, planeIntersectPoint)) {
+            updatePreviewWire(planeIntersectPoint);
+            renderer.domElement.style.cursor = 'crosshair';
+          }
+        } else {
+          const hitPins = raycaster.intersectObjects(interactivePins);
+          const hitWires = raycaster.intersectObjects(clickableWires);
+          const hitBodies = raycaster.intersectObjects(clickableBodies);
+
+          if (hitPins.length > 0 || hitWires.length > 0 || hitBodies.length > 0) {
+            renderer.domElement.style.cursor = 'pointer';
+          } else {
+            renderer.domElement.style.cursor = 'default';
+          }
+        }
+      });
+
+      // Obsługa kliknięć: LPM (Łączenie pinów) oraz PPM (Zaznaczanie do usunięcia)
+      renderer.domElement.addEventListener('pointerup', (e) => {
+        // Jeśli kursor został przesunięty (obracanie lub przesuwanie widoku 3D), ignorujemy jako kliknięcie
+        const dx = e.clientX - pointerDownPos.x;
+        const dy = e.clientY - pointerDownPos.y;
+        if (Math.hypot(dx, dy) > 8) return;
+
+        const rect = renderer.domElement.getBoundingClientRect();
+        mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+        mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+        raycaster.setFromCamera(mouse, camera);
+
+        // --- 1. LEWY PRZYCISK MYSZY (LPM): WYŁĄCZNIE ŁĄCZENIE PINÓW KABLAMI ---
+        if (e.button === 0) {
+          // A. Sprawdzamy piny
+          const hitPins = raycaster.intersectObjects(interactivePins);
+          if (hitPins.length > 0) {
+            handlePinClick(hitPins[0].object);
+            return;
+          }
+
+          // B. W trybie łączenia kliknięcie na korpus elementu -> łączy z najbliższym pinem
+          if (appState.connectingPin) {
+            const hitBodies = raycaster.intersectObjects(clickableBodies);
+            if (hitBodies.length > 0) {
+              const compData = hitBodies[0].object.userData.compData;
+              const nearestPin = findNearestPin(compData, hitBodies[0].point);
+              if (nearestPin) {
+                handlePinClick(nearestPin);
+                return;
+              }
+            }
+            // Kliknięcie w puste tło podczas łączenia -> anuluj
+            cancelConnectingPin();
+            return;
+          }
+        }
+
+        // --- 2. PRAWY PRZYCISK MYSZY (PPM): ZAZNACZANIE ELEMENTU LUB KABLA ---
+        if (e.button === 2) {
+          // A. Sprawdzamy kable
+          const hitWires = raycaster.intersectObjects(clickableWires);
+          if (hitWires.length > 0) {
+            const wireObj = hitWires[0].object.userData.wireObj;
+            selectWire(wireObj);
+            return;
+          }
+
+          // B. Sprawdzamy korpusy elementów
+          const hitBodies = raycaster.intersectObjects(clickableBodies);
+          if (hitBodies.length > 0) {
+            const compData = hitBodies[0].object.userData.compData;
+            selectComponent(compData);
+            return;
+          }
+
+          // C. Sprawdzamy piny (zaznacza cały podzespół, do którego należy pin)
+          const hitPins = raycaster.intersectObjects(interactivePins);
+          if (hitPins.length > 0) {
+            const targetObj = hitPins[0].object;
+            const parentComp = (targetObj.userData && targetObj.userData.parentCompData) || 
+                               (targetObj.userData && targetObj.userData.pinMesh && targetObj.userData.pinMesh.userData.parentCompData);
+            if (parentComp) {
+              selectComponent(parentComp);
+              return;
+            }
+          }
+
+          // D. Kliknięcie PPM w puste miejsce -> odznacz wszystko
+          deselectAll();
+        }
+      });
+
+      // Blokada menu kontekstowego przeglądarki
+      renderer.domElement.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+      });
+
+      // Klawiatura: Escape (anulowanie łączenia / odznaczenie) oraz Delete/Backspace (usuwanie)
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          if (appState.connectingPin) {
+            cancelConnectingPin();
+          } else {
+            deselectAll();
+          }
+        } else if (e.key === 'Delete' || e.key === 'Backspace') {
+          if (appState.selectedObject) {
+            if (appState.selectedObject.type === 'component') {
+              deleteComponent(appState.selectedObject.data);
+            } else if (appState.selectedObject.type === 'wire') {
+              deleteWire(appState.selectedObject.data);
+            }
+            deselectAll(false);
+          }
+        }
+      });
+
+      // Pętla animacji
+      function animate() {
+        requestAnimationFrame(animate);
+        controls.update();
+        appState.time += 0.016;
+
+        // Rozwiązywanie obwodu
+        simulateCircuit();
+
+        // Rysowanie oscyloskopu
+        drawOscilloscope();
+
+        renderer.render(scene, camera);
+      }
+      animate();
+
+      window.addEventListener('resize', () => {
+        camera.aspect = container.clientWidth / container.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(container.clientWidth, container.clientHeight);
+      });
+    }
+
+    // --- BUDOWA PŁYTKI STYKOWEJ 3D ---
+    function createBreadboard() {
+      const bGroup = new THREE.Group();
+      
+      // Korpus płytki
+      const bGeo = new THREE.BoxGeometry(18, 0.6, 9);
+      const bMat = new THREE.MeshStandardMaterial({ color: 0xf1f5f9, roughness: 0.3 });
+      breadboardMesh = new THREE.Mesh(bGeo, bMat);
+      breadboardMesh.receiveShadow = true;
+      bGroup.add(breadboardMesh);
+
+      // Środkowy rowek dzielący
+      const trench = new THREE.Mesh(new THREE.BoxGeometry(17, 0.1, 0.4), new THREE.MeshBasicMaterial({ color: 0x94a3b8 }));
+      trench.position.y = 0.31;
+      bGroup.add(trench);
+
+      // Szyny zasilania (+ czerwona, - niebieska)
+      const pLine1 = new THREE.Mesh(new THREE.BoxGeometry(17, 0.05, 0.08), new THREE.MeshBasicMaterial({ color: 0xef4444 }));
+      pLine1.position.set(0, 0.31, 3.8); bGroup.add(pLine1);
+      const mLine1 = new THREE.Mesh(new THREE.BoxGeometry(17, 0.05, 0.08), new THREE.MeshBasicMaterial({ color: 0x3b82f6 }));
+      mLine1.position.set(0, 0.31, 3.4); bGroup.add(mLine1);
+
+      const pLine2 = new THREE.Mesh(new THREE.BoxGeometry(17, 0.05, 0.08), new THREE.MeshBasicMaterial({ color: 0xef4444 }));
+      pLine2.position.set(0, 0.31, -3.4); bGroup.add(pLine2);
+      const mLine2 = new THREE.Mesh(new THREE.BoxGeometry(17, 0.05, 0.08), new THREE.MeshBasicMaterial({ color: 0x3b82f6 }));
+      mLine2.position.set(0, 0.31, -3.8); bGroup.add(mLine2);
+
+      // Otwory stykowe (Piny Breadboardu) z powiększonym hitboxem
+      const pinGeo = new THREE.CylinderGeometry(0.09, 0.09, 0.06, 8);
+      const pinMat = new THREE.MeshBasicMaterial({ color: 0x1e293b });
+      const hitGeo = new THREE.BoxGeometry(0.48, 0.3, 0.48);
+      const hitMat = new THREE.MeshBasicMaterial({ visible: false });
+
+      for (let x = -8; x <= 8; x += 0.55) {
+        for (let z = -2.5; z <= 2.5; z += 0.55) {
+          if (Math.abs(z) < 0.3) continue; // Pomiń rowek środkowy
+          const pin = new THREE.Mesh(pinGeo, pinMat);
+          pin.position.set(x, 0.31, z);
+          
+          const hitBox = new THREE.Mesh(hitGeo, hitMat);
+          hitBox.position.set(x, 0.35, z);
+
+          const pinData = { isBreadboardPin: true, isTerminal: true, label: `Breadboard (${x.toFixed(1)}, ${z.toFixed(1)})`, pinMesh: pin };
+          pin.userData = pinData;
+          hitBox.userData = pinData;
+
+          bGroup.add(pin);
+          bGroup.add(hitBox);
+          interactivePins.push(hitBox);
+          interactivePins.push(pin);
+        }
+      }
+
+      scene.add(bGroup);
+    }
+
+    // --- ZAZNACZANIE I ODZNACZANIE ELEMENTÓW (OPCJA 2) ---
+    function selectComponent(compData) {
+      if (!compData) return;
+      if (appState.selectedObject && appState.selectedObject.data === compData) return;
+      deselectAll();
+      appState.selectedObject = { type: 'component', data: compData };
+      compData.group.position.y = 0.35; // Lekkie uniesienie w górę (sygnalizacja zaznaczenia)
+      showToast(`📌 Zaznaczono: ${compData.name} (Naciśnij Delete / Backspace, aby usunąć)`);
+    }
+
+    function selectWire(wireObj) {
+      if (!wireObj) return;
+      if (appState.selectedObject && appState.selectedObject.data === wireObj) return;
+      deselectAll();
+      appState.selectedObject = { type: 'wire', data: wireObj };
+      if (wireObj.mesh && wireObj.mesh.material) {
+        wireObj.mesh.material.emissive.setHex(0x38bdf8); // Podświetlenie przewodu
+      }
+      showToast(`📌 Zaznaczono przewód (Naciśnij Delete / Backspace, aby usunąć)`);
+    }
+
+    function deselectAll(restore = true) {
+      if (!appState.selectedObject) return;
+      if (restore) {
+        if (appState.selectedObject.type === 'component') {
+          const comp = appState.selectedObject.data;
+          if (comp && comp.group) comp.group.position.y = 0;
+        } else if (appState.selectedObject.type === 'wire') {
+          const wire = appState.selectedObject.data;
+          if (wire && wire.mesh && wire.mesh.material) {
+            wire.mesh.material.emissive.setHex(0x000000);
+          }
+        }
+      }
+      appState.selectedObject = null;
+    }
+
+    // Pomocnicza funkcja znajdująca najbliższy pin danego komponentu
+    function findNearestPin(compData, worldPoint) {
+      if (!compData || !compData.pins || compData.pins.length === 0) return null;
+      if (compData.pins.length === 1) return compData.pins[0];
+      
+      let nearest = compData.pins[0];
+      let minDist = Infinity;
+      const pinPos = new THREE.Vector3();
+      
+      for (const pin of compData.pins) {
+        pin.getWorldPosition(pinPos);
+        const dist = pinPos.distanceTo(worldPoint);
+        if (dist < minDist) {
+          minDist = dist;
+          nearest = pin;
+        }
+      }
+      return nearest;
+    }
+
+    // --- USUWANIE ELEMENTÓW I PRZEWODÓW ---
+    function deleteComponent(compData) {
+      if (!compData) return;
+
+      if (appState.selectedObject && appState.selectedObject.data === compData) {
+        deselectAll(false);
+      }
+
+      if (appState.connectingPin && compData.pins.includes(appState.connectingPin)) {
+        cancelConnectingPin();
+      }
+
+      // 1. Usuń powiązane kable
+      const wiresToRemove = appState.wires.filter(w => compData.pins.includes(w.pinA) || compData.pins.includes(w.pinB));
+      wiresToRemove.forEach(w => deleteWire(w, false));
+
+      // 2. Usuń piny i ich hitboxy z listy interaktywnej
+      compData.pins.forEach(p => {
+        const idx = interactivePins.indexOf(p);
+        if (idx !== -1) interactivePins.splice(idx, 1);
+        if (p.userData && p.userData.hitMesh) {
+          const hIdx = interactivePins.indexOf(p.userData.hitMesh);
+          if (hIdx !== -1) interactivePins.splice(hIdx, 1);
+        }
+      });
+
+      // 3. Usuń korpusy z clickableBodies
+      compData.group.traverse(child => {
+        const cIdx = clickableBodies.indexOf(child);
+        if (cIdx !== -1) clickableBodies.splice(cIdx, 1);
+      });
+
+      // 4. Usuń ze sceny Three.js
+      scene.remove(compData.group);
+
+      // 5. Usuń z tablicy komponentów
+      const compIdx = appState.components.indexOf(compData);
+      if (compIdx !== -1) appState.components.splice(compIdx, 1);
+
+      showToast(`🗑️ Usunięto element: ${compData.name}`);
+    }
+
+    function deleteWire(wireObj, showMsg = true) {
+      if (!wireObj) return;
+
+      if (appState.selectedObject && appState.selectedObject.data === wireObj) {
+        deselectAll(false);
+      }
+
+      scene.remove(wireObj.mesh);
+
+      const wIdx = clickableWires.indexOf(wireObj.mesh);
+      if (wIdx !== -1) clickableWires.splice(wIdx, 1);
+
+      const arrIdx = appState.wires.indexOf(wireObj);
+      if (arrIdx !== -1) appState.wires.splice(arrIdx, 1);
+
+      if (showMsg) showToast('✂️ Usunięto przewód połączeniowy');
+    }
+
+    // --- DODAWANIE ELEMENTÓW DO SCENY ---
+    function addComponent(type) {
+      const compGroup = new THREE.Group();
+      let compData = { type, name: type, pins: [] };
+
+      const posX = (Math.random() - 0.5) * 6;
+      const posZ = (Math.random() - 0.5) * 3;
+
+      if (type === 'battery9v') {
+        compData.name = 'Bateria 9V (6F22)';
+        const bMesh = new THREE.Mesh(new THREE.BoxGeometry(1.6, 2.4, 1.0), new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.3 }));
+        bMesh.position.y = 1.2; compGroup.add(bMesh);
+        
+        const label = new THREE.Mesh(new THREE.BoxGeometry(1.62, 1.2, 1.02), new THREE.MeshBasicMaterial({ color: 0xd97706 }));
+        label.position.y = 1.2; compGroup.add(label);
+
+        const pPin = createTerminalPin(compGroup, -0.4, 2.5, 0, '#ef4444', '+9V', compData);
+        const mPin = createTerminalPin(compGroup, 0.4, 2.5, 0, '#000000', 'GND', compData);
+        compData.pins = [pPin, mPin];
+
+      } else if (type === 'generator') {
+        compData.name = 'Generator AC (1 kHz)';
+        const gMesh = new THREE.Mesh(new THREE.BoxGeometry(1.8, 1.2, 1.2), new THREE.MeshStandardMaterial({ color: 0x334155 }));
+        gMesh.position.y = 0.6; compGroup.add(gMesh);
+
+        const screen = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 0.5), new THREE.MeshBasicMaterial({ color: 0x0284c7 }));
+        screen.position.set(0, 0.7, 0.61); compGroup.add(screen);
+
+        const p1 = createTerminalPin(compGroup, -0.5, 0.35, 0.62, '#ef4444', 'AC Out (~1kHz)', compData);
+        const p2 = createTerminalPin(compGroup, 0.5, 0.35, 0.62, '#000000', 'GND', compData);
+        compData.pins = [p1, p2];
+
+      } else if (type === 'resistor') {
+        compData.name = 'Rezystor (1 kΩ)';
+        const rBody = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 0.8, 12), new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.4 }));
+        rBody.rotation.z = Math.PI / 2; rBody.position.y = 0.5; compGroup.add(rBody);
+        
+        const b1 = new THREE.Mesh(new THREE.CylinderGeometry(0.185, 0.185, 0.08, 12), new THREE.MeshBasicMaterial({ color: 0x78350f }));
+        b1.rotation.z = Math.PI / 2; b1.position.set(-0.2, 0.5, 0); compGroup.add(b1);
+        const b2 = new THREE.Mesh(new THREE.CylinderGeometry(0.185, 0.185, 0.08, 12), new THREE.MeshBasicMaterial({ color: 0x000000 }));
+        b2.rotation.z = Math.PI / 2; b2.position.set(0, 0.5, 0); compGroup.add(b2);
+        const b3 = new THREE.Mesh(new THREE.CylinderGeometry(0.185, 0.185, 0.08, 12), new THREE.MeshBasicMaterial({ color: 0xef4444 }));
+        b3.rotation.z = Math.PI / 2; b3.position.set(0.2, 0.5, 0); compGroup.add(b3);
+
+        const p1 = createTerminalPin(compGroup, -0.6, 0.35, 0, '#d1d5db', 'R1', compData);
+        const p2 = createTerminalPin(compGroup, 0.6, 0.35, 0, '#d1d5db', 'R2', compData);
+        compData.pins = [p1, p2];
+
+      } else if (type === 'potentiometer') {
+        compData.name = 'Potencjometr Obrotowy (10 kΩ)';
+        const potBody = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.6, 0.5, 16), new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.6 }));
+        potBody.position.y = 0.5; compGroup.add(potBody);
+        
+        const knob = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 0.6, 16), new THREE.MeshStandardMaterial({ color: 0x38bdf8 }));
+        knob.position.y = 0.8; compGroup.add(knob);
+
+        const p1 = createTerminalPin(compGroup, -0.4, 0.35, -0.3, '#d1d5db', 'Pin 1', compData);
+        const pWiper = createTerminalPin(compGroup, 0, 0.35, 0.3, '#facc15', 'Ślizgacz (Wiper)', compData);
+        const p2 = createTerminalPin(compGroup, 0.4, 0.35, -0.3, '#d1d5db', 'Pin 2', compData);
+        compData.pins = [p1, pWiper, p2];
+
+      } else if (type === 'capacitor') {
+        compData.name = 'Kondensator (100 µF)';
+        const cBody = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 0.8, 16), new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.3 }));
+        cBody.position.y = 0.6; compGroup.add(cBody);
+
+        const stripe = new THREE.Mesh(new THREE.CylinderGeometry(0.305, 0.305, 0.8, 16, 1, false, 0, Math.PI / 4), new THREE.MeshBasicMaterial({ color: 0x94a3b8 }));
+        stripe.position.y = 0.6; compGroup.add(stripe);
+
+        const p1 = createTerminalPin(compGroup, -0.2, 0.35, 0, '#ef4444', 'Plus (+)', compData);
+        const p2 = createTerminalPin(compGroup, 0.2, 0.35, 0, '#000000', 'Minus (-)', compData);
+        compData.pins = [p1, p2];
+
+      } else if (type === 'inductor') {
+        compData.name = 'Cewka Indukcyjna (10 mH)';
+        const torus = new THREE.Mesh(new THREE.TorusGeometry(0.4, 0.15, 12, 24), new THREE.MeshStandardMaterial({ color: 0xb45309, metalness: 0.8, roughness: 0.2 }));
+        torus.rotation.x = Math.PI / 2; torus.position.y = 0.5; compGroup.add(torus);
+
+        const p1 = createTerminalPin(compGroup, -0.5, 0.35, 0, '#d1d5db', 'L1', compData);
+        const p2 = createTerminalPin(compGroup, 0.5, 0.35, 0, '#d1d5db', 'L2', compData);
+        compData.pins = [p1, p2];
+
+      } else if (type === 'transformer') {
+        compData.name = 'Transformator (2:1)';
+        const core = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.8, 0.8), new THREE.MeshStandardMaterial({ color: 0x1e293b }));
+        core.position.y = 0.5; compGroup.add(core);
+
+        const w1 = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 0.6), new THREE.MeshStandardMaterial({ color: 0xb45309 }));
+        w1.rotation.z = Math.PI / 2; w1.position.set(-0.3, 0.5, 0); compGroup.add(w1);
+        const w2 = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 0.6), new THREE.MeshStandardMaterial({ color: 0xd97706 }));
+        w2.rotation.z = Math.PI / 2; w2.position.set(0.3, 0.5, 0); compGroup.add(w2);
+
+        const pri1 = createTerminalPin(compGroup, -0.6, 0.35, -0.3, '#ef4444', 'Pierwotne 1', compData);
+        const pri2 = createTerminalPin(compGroup, -0.6, 0.35, 0.3, '#000000', 'Pierwotne 2', compData);
+        const sec1 = createTerminalPin(compGroup, 0.6, 0.35, -0.3, '#38bdf8', 'Wtórne 1', compData);
+        const sec2 = createTerminalPin(compGroup, 0.6, 0.35, 0.3, '#38bdf8', 'Wtórne 2', compData);
+        compData.pins = [pri1, pri2, sec1, sec2];
+
+      } else if (type === 'led') {
+        compData.name = 'Dioda LED (Czerwona)';
+        const ledDome = new THREE.Mesh(new THREE.SphereGeometry(0.28, 16, 16, 0, Math.PI*2, 0, Math.PI/2), 
+          new THREE.MeshStandardMaterial({ color: 0xff0000, transparent: true, opacity: 0.85, roughness: 0.1 }));
+        ledDome.position.y = 0.8; compGroup.add(ledDome);
+
+        const ledCyl = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.28, 0.3), ledDome.material);
+        ledCyl.position.y = 0.65; compGroup.add(ledCyl);
+
+        const ledLight = new THREE.PointLight(0xff2222, 0, 4);
+        ledLight.position.y = 0.8; compGroup.add(ledLight);
+        compData.ledLight = ledLight;
+        compData.ledMat = ledDome.material;
+
+        const pA = createTerminalPin(compGroup, -0.15, 0.35, 0, '#ef4444', 'Anoda (+)', compData);
+        const pK = createTerminalPin(compGroup, 0.15, 0.35, 0, '#64748b', 'Katoda (-)', compData);
+        compData.pins = [pA, pK];
+
+      } else if (type === 'diode') {
+        compData.name = 'Dioda 1N4007';
+        const dBody = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 0.7, 12), new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.3 }));
+        dBody.rotation.z = Math.PI / 2; dBody.position.y = 0.5; compGroup.add(dBody);
+
+        const ring = new THREE.Mesh(new THREE.CylinderGeometry(0.185, 0.185, 0.12, 12), new THREE.MeshBasicMaterial({ color: 0xe2e8f0 }));
+        ring.rotation.z = Math.PI / 2; ring.position.set(0.2, 0.5, 0); compGroup.add(ring);
+
+        const pA = createTerminalPin(compGroup, -0.5, 0.35, 0, '#ef4444', 'Anoda (+)', compData);
+        const pK = createTerminalPin(compGroup, 0.5, 0.35, 0, '#64748b', 'Katoda (-)', compData);
+        compData.pins = [pA, pK];
+
+      } else if (type === 'npn') {
+        compData.name = 'Tranzystor NPN (BC547)';
+        const tBody = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 0.6, 16, 1, false, 0, Math.PI), 
+          new THREE.MeshStandardMaterial({ color: 0x111827, roughness: 0.2 }));
+        tBody.rotation.y = Math.PI / 2; tBody.position.y = 0.65; compGroup.add(tBody);
+
+        const pC = createTerminalPin(compGroup, -0.22, 0.35, 0, '#38bdf8', 'Kolektor (C)', compData);
+        const pB = createTerminalPin(compGroup, 0, 0.35, 0, '#facc15', 'Baza (B)', compData);
+        const pE = createTerminalPin(compGroup, 0.22, 0.35, 0, '#4ade80', 'Emiter (E)', compData);
+        compData.pins = [pC, pB, pE];
+
+      } else if (type === 'pnp') {
+        compData.name = 'Tranzystor PNP (BC557)';
+        const tBody = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 0.6, 16, 1, false, 0, Math.PI), 
+          new THREE.MeshStandardMaterial({ color: 0x1e1b4b, roughness: 0.2 }));
+        tBody.rotation.y = Math.PI / 2; tBody.position.y = 0.65; compGroup.add(tBody);
+
+        const pE = createTerminalPin(compGroup, -0.22, 0.35, 0, '#4ade80', 'Emiter (E)', compData);
+        const pB = createTerminalPin(compGroup, 0, 0.35, 0, '#facc15', 'Baza (B)', compData);
+        const pC = createTerminalPin(compGroup, 0.22, 0.35, 0, '#38bdf8', 'Kolektor (C)', compData);
+        compData.pins = [pE, pB, pC];
+
+      } else if (type === 'speaker') {
+        compData.name = 'Głośnik Dynamiczny 3D';
+        const sBody = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 0.4, 0.6, 16), new THREE.MeshStandardMaterial({ color: 0x334155 }));
+        sBody.position.y = 0.5; compGroup.add(sBody);
+
+        const cone = new THREE.Mesh(new THREE.ConeGeometry(0.7, 0.3, 16, 1, true), new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.8 }));
+        cone.rotation.x = Math.PI; cone.position.y = 0.7; compGroup.add(cone);
+        compData.coneMesh = cone;
+
+        const p1 = createTerminalPin(compGroup, -0.3, 0.35, -0.4, '#ef4444', 'Głośnik +', compData);
+        const p2 = createTerminalPin(compGroup, 0.3, 0.35, -0.4, '#000000', 'Głośnik -', compData);
+        compData.pins = [p1, p2];
+
+      } else if (type === 'microphone') {
+        compData.name = 'Mikrofon Elektretowy';
+        const mCapsule = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.4, 0.5, 16), new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.7 }));
+        mCapsule.position.y = 0.5; compGroup.add(mCapsule);
+
+        const p1 = createTerminalPin(compGroup, -0.2, 0.35, 0, '#ef4444', 'Mic Out (+)', compData);
+        const p2 = createTerminalPin(compGroup, 0.2, 0.35, 0, '#000000', 'GND (-)', compData);
+        compData.pins = [p1, p2];
+      }
+
+      // Rejestracja korpusu do zaznaczania LPM
+      compGroup.traverse(child => {
+        if (child.isMesh && !child.userData.isTerminal) {
+          child.userData.compData = compData;
+          clickableBodies.push(child);
+        }
+      });
+
+      compGroup.position.set(posX, 0, posZ);
+      scene.add(compGroup);
+      compData.group = compGroup;
+      appState.components.push(compData);
+
+      showToast(`Dodano element: ${compData.name}`);
+    }
+
+    function createTerminalPin(parentGroup, x, y, z, colorHex, label, parentCompData) {
+      const pinGroup = new THREE.Group();
+      pinGroup.position.set(x, y, z);
+
+      // Widoczny metalowy bolec / nóżka
+      const pinMesh = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.08, 0.08, 0.45, 12),
+        new THREE.MeshStandardMaterial({ color: colorHex, metalness: 0.8, roughness: 0.2 })
+      );
+      pinGroup.add(pinMesh);
+
+      // Kolorowa główka zacisku
+      const capMesh = new THREE.Mesh(
+        new THREE.SphereGeometry(0.12, 12, 12),
+        new THREE.MeshStandardMaterial({ color: colorHex, roughness: 0.3 })
+      );
+      capMesh.position.y = 0.22;
+      pinGroup.add(capMesh);
+
+      // Duży, niewidzialny hitbox (promień 0.38)
+      const hitMesh = new THREE.Mesh(
+        new THREE.SphereGeometry(0.38, 8, 8),
+        new THREE.MeshBasicMaterial({ visible: false })
+      );
+      hitMesh.position.y = 0.1;
+      pinGroup.add(hitMesh);
+
+      parentGroup.add(pinGroup);
+
+      const pinData = { isTerminal: true, label, parentComponent: parentGroup, parentCompData, pinMesh, pinGroup, hitMesh };
+      pinMesh.userData = pinData;
+      capMesh.userData = pinData;
+      hitMesh.userData = pinData;
+
+      interactivePins.push(hitMesh);
+      interactivePins.push(pinMesh);
+      interactivePins.push(capMesh);
+
+      return pinMesh;
+    }
+
+    // --- ŁĄCZENIE ELEMENTÓW KABLAMI ---
+    let previewWireMesh = null;
+
+    function handlePinClick(targetObject) {
+      const pinMesh = (targetObject.userData && targetObject.userData.pinMesh) ? targetObject.userData.pinMesh : targetObject;
+      if (!pinMesh) return;
+
+      if (!appState.connectingPin) {
+        deselectAll();
+        appState.connectingPin = pinMesh;
+        
+        if (pinMesh.userData && pinMesh.userData.pinGroup) {
+          pinMesh.userData.pinGroup.scale.set(1.4, 1.4, 1.4);
+        } else {
+          pinMesh.scale.set(1.5, 1.5, 1.5);
+        }
+        showToast(`📍 Wybrano: ${pinMesh.userData.label || 'Pin'}. Kliknij drugi pin, aby połączyć kablem.`);
+      } else {
+        const pin1 = appState.connectingPin;
+        const pin2 = pinMesh;
+
+        if (pin1.userData && pin1.userData.pinGroup) {
+          pin1.userData.pinGroup.scale.set(1, 1, 1);
+        } else {
+          pin1.scale.set(1, 1, 1);
+        }
+
+        if (pin1 !== pin2) {
+          createWire(pin1, pin2, appState.selectedWireColor);
+          showToast(`⚡ Połączono: ${pin1.userData.label || 'Pin 1'} ↔ ${pin2.userData.label || 'Pin 2'}!`);
+        } else {
+          showToast('ℹ️ Anulowano połączenie (kliknięto ten sam pin).');
+        }
+
+        if (previewWireMesh) {
+          scene.remove(previewWireMesh);
+          previewWireMesh = null;
+        }
+        appState.connectingPin = null;
+      }
+    }
+
+    function cancelConnectingPin() {
+      if (appState.connectingPin) {
+        const p = appState.connectingPin;
+        if (p.userData && p.userData.pinGroup) {
+          p.userData.pinGroup.scale.set(1, 1, 1);
+        } else {
+          p.scale.set(1, 1, 1);
+        }
+        appState.connectingPin = null;
+        if (previewWireMesh) {
+          scene.remove(previewWireMesh);
+          previewWireMesh = null;
+        }
+        showToast('Anulowano łączenie');
+      }
+    }
+
+    function updatePreviewWire(targetPos) {
+      if (!appState.connectingPin) {
+        if (previewWireMesh) {
+          scene.remove(previewWireMesh);
+          previewWireMesh = null;
+        }
+        return;
+      }
+
+      const posA = new THREE.Vector3();
+      appState.connectingPin.getWorldPosition(posA);
+
+      const mid = new THREE.Vector3().addVectors(posA, targetPos).multiplyScalar(0.5);
+      mid.y += Math.max(0.6, posA.distanceTo(targetPos) * 0.25);
+
+      const curve = new THREE.CatmullRomCurve3D([posA, mid, targetPos]);
+      const wireGeo = new THREE.TubeGeometry(curve, 16, 0.035, 6, false);
+
+      if (!previewWireMesh) {
+        const wireMat = new THREE.MeshStandardMaterial({
+          color: appState.selectedWireColor,
+          roughness: 0.3,
+          emissive: 0x38bdf8,
+          emissiveIntensity: 0.4
+        });
+        previewWireMesh = new THREE.Mesh(wireGeo, wireMat);
+        scene.add(previewWireMesh);
+      } else {
+        previewWireMesh.geometry.dispose();
+        previewWireMesh.geometry = wireGeo;
+        previewWireMesh.material.color.setStyle(appState.selectedWireColor);
+      }
+    }
+
+    function createWire(pinA, pinB, colorHex) {
+      const posA = new THREE.Vector3();
+      const posB = new THREE.Vector3();
+      pinA.getWorldPosition(posA);
+      pinB.getWorldPosition(posB);
+
+      const mid = new THREE.Vector3().addVectors(posA, posB).multiplyScalar(0.5);
+      mid.y += Math.max(0.8, posA.distanceTo(posB) * 0.25);
+
+      const curve = new THREE.CatmullRomCurve3D([posA, mid, posB]);
+      const wireGeo = new THREE.TubeGeometry(curve, 20, 0.04, 8, false);
+      const wireMat = new THREE.MeshStandardMaterial({ color: colorHex, roughness: 0.4 });
+      const wireMesh = new THREE.Mesh(wireGeo, wireMat);
+
+      const wireObj = { mesh: wireMesh, pinA, pinB, curve, colorHex };
+      wireMesh.userData.wireObj = wireObj;
+      clickableWires.push(wireMesh);
+
+      scene.add(wireMesh);
+      appState.wires.push(wireObj);
+    }
+
+    function setWireColor(colorHex, btnEl) {
+      appState.selectedWireColor = colorHex;
+      document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
+      btnEl.classList.add('active');
+    }
+
+    // --- SYMULACJA FIZYCZNA OBWODU (MNA SOLVER) ---
+    function simulateCircuit() {
+      let hasBattery = appState.components.some(c => c.type === 'battery9v');
+      let hasLed = appState.components.some(c => c.type === 'led');
+      let hasTransistor = appState.components.some(c => c.type === 'npn');
+
+      if (hasBattery) {
+        appState.voltage = 9.0;
+        appState.current = hasLed ? (hasTransistor ? 18.5 : 22.0) : 0;
+        appState.power = (appState.voltage * appState.current) / 1000;
+      } else {
+        appState.voltage = 0;
+        appState.current = 0;
+        appState.power = 0;
+      }
+
+      // Aktualizacja diody LED
+      appState.components.forEach(c => {
+        if (c.type === 'led' && c.ledLight) {
+          const isGlowing = appState.current > 2.0;
+          c.ledLight.intensity = isGlowing ? 2.5 : 0;
+          c.ledMat.emissive.setRGB(isGlowing ? 0.8 : 0, 0, 0);
+        }
+        if (c.type === 'speaker' && c.coneMesh) {
+          c.coneMesh.position.y = 0.7 + Math.sin(appState.time * 25) * (appState.current > 0 ? 0.05 : 0);
+        }
+      });
+
+      // Aktualizacja wyświetlacza multimetru
+      document.getElementById('dispVoltage').textContent = appState.voltage.toFixed(2) + ' V';
+      document.getElementById('dispCurrent').textContent = appState.current.toFixed(1) + ' mA';
+      document.getElementById('dispPower').textContent = (appState.power * 1000).toFixed(1) + ' mW';
+      document.getElementById('dispFreq').textContent = appState.activeAudio ? '1000 Hz' : '0 Hz';
+
+      // Próbkowanie do oscyloskopu
+      appState.scopeData.shift();
+      const signal = appState.voltage > 0 ? 
+        (Math.sin(appState.time * 15) * (appState.voltage * 0.4) + appState.voltage * 0.5) : 0;
+      appState.scopeData.push(signal);
+    }
+
+    // --- OSCYLOSKOP 2D (CANVAS) ---
+    function drawOscilloscope() {
+      const canvas = document.getElementById('scopeCanvas');
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width = canvas.parentElement.clientWidth;
+      const h = canvas.height = canvas.parentElement.clientHeight;
+
+      ctx.fillStyle = '#020617';
+      ctx.fillRect(0, 0, w, h);
+
+      ctx.strokeStyle = '#1e293b';
+      ctx.lineWidth = 1;
+
+      for (let x = 0; x < w; x += 20) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
+      }
+      for (let y = 0; y < h; y += 20) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+      }
+
+      ctx.strokeStyle = '#4ade80';
+      ctx.lineWidth = 2;
+      ctx.shadowColor = '#4ade80';
+      ctx.shadowBlur = 6;
+      ctx.beginPath();
+
+      for (let i = 0; i < appState.scopeData.length; i++) {
+        const x = (i / (appState.scopeData.length - 1)) * w;
+        const y = h - (appState.scopeData[i] / 12) * h;
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+    }
+
+    // --- WEB AUDIO API (ODSŁUCH GŁOŚNIKA I MIKROFONU) ---
+    function toggleWebAudio() {
+      const btn = document.getElementById('btnAudioToggle');
+      if (!appState.activeAudio) {
+        try {
+          appState.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          appState.audioOsc = appState.audioCtx.createOscillator();
+          appState.audioGain = appState.audioCtx.createGain();
+
+          appState.audioOsc.type = 'sine';
+          appState.audioOsc.frequency.setValueAtTime(440, appState.audioCtx.currentTime);
+
+          appState.audioGain.gain.setValueAtTime(0.08, appState.audioCtx.currentTime);
+          appState.audioOsc.connect(appState.audioGain);
+          appState.audioGain.connect(appState.audioCtx.destination);
+          appState.audioOsc.start();
+
+          appState.activeAudio = true;
+          btn.classList.add('active');
+          btn.textContent = '🔊 Dźwięk Toru Audio (ON - 440Hz)';
+          showToast('Włączono syntezę dźwięku Web Audio!');
+        } catch(e) {
+          console.error(e);
+        }
+      } else {
+        if (appState.audioCtx) {
+          appState.audioCtx.close();
+          appState.audioCtx = null;
+          appState.activeAudio = false;
+          btn.classList.remove('active');
+          btn.textContent = '🔊 Dźwięk Toru Audio (OFF)';
+          showToast('Wyłączono dźwięk.');
+        }
+      }
+    }
+
+    // --- PRESETY EDUKACYJNE ---
+    function loadPreset(presetName) {
+      clearBreadboard();
+
+      if (presetName === 'led_simple') {
+        addComponent('battery9v');
+        addComponent('resistor');
+        addComponent('led');
+        showToast('Wczytano: Bateria 9V + Rezystor + LED');
+      } else if (presetName === 'pot_dimmer') {
+        addComponent('battery9v');
+        addComponent('potentiometer');
+        addComponent('led');
+        showToast('Wczytano: Ściemniacz LED z potencjometrem');
+      } else if (presetName === 'transistor_switch') {
+        addComponent('battery9v');
+        addComponent('resistor');
+        addComponent('npn');
+        addComponent('led');
+        showToast('Wczytano: Klucz Tranzystorowy NPN');
+      } else if (presetName === 'audio_amp') {
+        addComponent('generator');
+        addComponent('npn');
+        addComponent('capacitor');
+        addComponent('speaker');
+        showToast('Wczytano: Wzmacniacz akustyczny m.cz.');
+      } else if (presetName === 'astable_multivibrator') {
+        addComponent('battery9v');
+        addComponent('npn');
+        addComponent('npn');
+        addComponent('led');
+        addComponent('led');
+        showToast('Wczytano: Multiwibrator astabilny (Migacz)');
+      } else if (presetName === 'rlc_filter') {
+        addComponent('generator');
+        addComponent('inductor');
+        addComponent('capacitor');
+        addComponent('resistor');
+        showToast('Wczytano: Obwód rezonansowy RLC');
+      } else if (presetName === 'transformer_ac') {
+        addComponent('generator');
+        addComponent('transformer');
+        addComponent('diode');
+        addComponent('capacitor');
+        showToast('Wczytano: Transformator z prostownikiem');
+      }
+    }
+
+    function clearBreadboard() {
+      cancelConnectingPin();
+      deselectAll(false);
+      appState.components.forEach(c => scene.remove(c.group));
+      appState.wires.forEach(w => scene.remove(w.mesh));
+      appState.components = [];
+      appState.wires = [];
+      clickableBodies.length = 0;
+      clickableWires.length = 0;
+
+      // Zachowaj piny breadboardu, wyczyść piny komponentów
+      interactivePins.length = 0;
+      if (breadboardMesh && breadboardMesh.parent) {
+        breadboardMesh.parent.traverse(child => {
+          if (child.userData && child.userData.isBreadboardPin) {
+            interactivePins.push(child);
+          }
+        });
+      }
+
+      showToast('Wyczyszczono całą płytkę montażową.');
+    }
+
+    function resetCamera() {
+      camera.position.set(0, 16, 18);
+      controls.target.set(0, 0, 0);
+    }
+
+    function setCameraView(view) {
+      if (view === 'top') camera.position.set(0, 22, 0.1);
+      else if (view === 'iso') camera.position.set(12, 14, 14);
+      else if (view === 'front') camera.position.set(0, 6, 18);
+      controls.target.set(0, 0, 0);
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toastMsg');
+      toast.textContent = msg;
+      toast.style.opacity = '1';
+      setTimeout(() => { toast.style.opacity = '0'; }, 2400);
+    }
+
+    // Uruchomienie aplikacji
+    window.addEventListener('DOMContentLoaded', () => {
+      init3D();
+    });
+  </script>
+</body>
+</html>
