@@ -411,8 +411,24 @@
         </div>
 
         <!-- Sekcja 3: Zastosowania w CGI, Grach i Przyrodzie -->
-        <h2 class="section-title">🎮 CGI, Gry i Natura Fraktalna</h2>
+        <h2 class="section-title">🎮 CGI, Gry i Efekty Specjalne</h2>
         <div class="links-grid">
+            <!-- Hub Efektów Specjalnych -->
+            <a href="efekty_specjalne.html" class="link-card color-cyan" style="grid-column: 1 / -1; background: rgba(0, 242, 254, 0.08); border-color: rgba(0, 242, 254, 0.5);">
+                <div>
+                    <div class="card-header">
+                        <span class="card-icon">⚡</span>
+                        <div class="card-name">Centrum Efektów Specjalnych & Symulacji 3D (Hub)</div>
+                    </div>
+                    <p class="card-desc">
+                        Dedykowana podstrona ze wszystkimi symulacjami: porównanie oceanów 3D w Three.js i Babylon.js, generator cząsteczek CGI, krople wody w raymarchingu oraz proceduralne krajobrazy z erozją.
+                    </p>
+                </div>
+                <div class="card-action">
+                    <span>Otwórz Hub Efektów Specjalnych</span>
+                    <span>→</span>
+                </div>
+            </a>
             <!-- Nowa karta: fBm, Diamond-Square i Erozja Hydrauliczna -->
             <a href="fraktale/fbm_diamond_square_erozja.html" class="link-card color-gold">
                 <div>
@@ -520,14 +536,31 @@
                 <div>
                     <div class="card-header">
                         <span class="card-icon">🌊</span>
-                        <div class="card-name">Realistyczny Ocean 3D (Babylon.js & Gerstner)</div>
+                        <div class="card-name">Realistyczny Ocean 3D (Babylon.js)</div>
                     </div>
                     <p class="card-desc">
-                        Fotorealistyczne fale oceanu w czasie rzeczywistym: wielowarstwowe fale Gerstnera, Subsurface Scattering (SSS), piana morska, proceduralne niebo oraz fizyka pływalności boi.
+                        Fotorealistyczne fale oceanu w czasie rzeczywistym: 8 harmonicznych fal Gerstnera, Subsurface Scattering (SSS), piana morska, statek żaglowy i fizyka wyporności.
                     </p>
                 </div>
                 <div class="card-action">
-                    <span>Uruchom symulację</span>
+                    <span>Uruchom Babylon.js</span>
+                    <span>→</span>
+                </div>
+            </a>
+
+            <!-- Fotorealistyczny Ocean 3D (Three.js & pmndrs/postprocessing) -->
+            <a href="fraktale/ocean_threejs.html" class="link-card color-purple">
+                <div>
+                    <div class="card-header">
+                        <span class="card-icon">⚡</span>
+                        <div class="card-name">Fotorealistyczny Ocean 3D (Three.js + pmndrs)</div>
+                    </div>
+                    <p class="card-desc">
+                        Zaawansowany pipeline Three.js z kinowym post-processingiem (Selective Bloom, ACES Filmic Tone Mapping, aberracja, piana Voronoi, SSS i statek).
+                    </p>
+                </div>
+                <div class="card-action">
+                    <span>Uruchom Three.js</span>
                     <span>→</span>
                 </div>
             </a>

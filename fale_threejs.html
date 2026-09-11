@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <!-- Google Analytics Tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZP827DTZJ5"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-ZP827DTZJ5');
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fotorealistyczny Ocean 3D – Three.js & Bloom HDR</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css" />
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+            user-select: none;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #02050e;
+            color: #f0f4ff;
+        }
+
+        #webgl-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            display: block;
+        }
+
+        /* Górny pasek nawigacyjny */
+        .top-bar {
+            position: absolute;
+            top: 18px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 20;
+            pointer-events: none;
+        }
+
+        .brand-title {
+            background: rgba(8, 14, 30, 0.8);
+            padding: 10px 20px;
+            border-radius: 14px;
+            border: 1px solid rgba(0, 242, 254, 0.3);
+            backdrop-filter: blur(14px);
+            pointer-events: auto;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .brand-title h1 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ffffff, #00f2fe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+            pointer-events: auto;
+        }
+
+        .btn-ui {
+            background: rgba(8, 14, 30, 0.8);
+            color: #e0e8ff;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 9px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            backdrop-filter: blur(14px);
+            font-weight: 600;
+            font-size: 0.88rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            transition: all 0.25s ease;
+        }
+
+        .btn-ui:hover {
+            background: rgba(0, 242, 254, 0.2);
+            border-color: #00f2fe;
+            color: #fff;
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.35);
+            transform: translateY(-1px);
+        }
+
+        /* Panel kontrolny */
+        .controls-panel {
+            position: absolute;
+            top: 80px;
+            right: 20px;
+            width: 320px;
+            background: rgba(8, 14, 30, 0.85);
+            border: 1px solid rgba(0, 242, 254, 0.28);
+            border-radius: 18px;
+            padding: 18px;
+            backdrop-filter: blur(18px);
+            z-index: 20;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+            max-height: calc(100vh - 100px);
+            overflow-y: auto;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 8px;
+        }
+
+        .panel-header h2 {
+            font-size: 1.05rem;
+            color: #00f2fe;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .control-group {
+            margin-bottom: 13px;
+        }
+
+        .control-group label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.82rem;
+            color: #a5b4cb;
+            margin-bottom: 6px;
+        }
+
+        .control-group label span.val {
+            font-family: 'JetBrains Mono', monospace;
+            color: #00f2fe;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #00f2fe;
+            cursor: pointer;
+            box-shadow: 0 0 10px #00f2fe;
+        }
+
+        .presets-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .preset-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #cbd5e1;
+            padding: 7px 10px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .preset-btn:hover, .preset-btn.active {
+            background: rgba(0, 242, 254, 0.2);
+            border-color: #00f2fe;
+            color: #fff;
+        }
+
+        .stats-badge {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(8, 14, 30, 0.8);
+            padding: 8px 16px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: #94a3b8;
+            backdrop-filter: blur(10px);
+            z-index: 20;
+        }
+
+        @media (max-width: 768px) {
+            .top-bar {
+                flex-direction: column;
+                gap: 10px;
+                align-items: stretch;
+            }
+            .controls-panel {
+                width: calc(100vw - 40px);
+                right: 20px;
+                top: 130px;
+            }
+        }
+    </style>
+
+    <!-- Three.js Import Map -->
+    <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+      }
+    }
+    </script>
+</head>
+
+<body>
+
+    <canvas id="webgl-canvas"></canvas>
+
+    <div class="top-bar">
+        <div class="brand-title">
+            <i class="fa-solid fa-water" style="color: #00f2fe; font-size: 1.2rem;"></i>
+            <h1>Fotorealistyczny Ocean 3D (Three.js)</h1>
+        </div>
+        <div class="nav-buttons">
+            <button id="audio-toggle" class="btn-ui"><i class="fa-solid fa-volume-xmark"></i> Dźwięk Fal</button>
+            <button id="cam-toggle" class="btn-ui"><i class="fa-solid fa-camera"></i> Śledź Łódź</button>
+            <a href="efekty_specjalne.html" class="btn-ui"><i class="fa-solid fa-arrow-left"></i> Efekty Specjalne</a>
+            <a href="rozrywka.html" class="btn-ui"><i class="fa-solid fa-gamepad"></i> Rozrywka</a>
+        </div>
+    </div>
+
+    <div class="controls-panel">
+        <div class="panel-header">
+            <h2><i class="fa-solid fa-sliders"></i> Parametry Symulacji</h2>
+        </div>
+
+        <div class="presets-grid">
+            <button class="preset-btn active" id="btn-p-calm">🌊 Spokój</button>
+            <button class="preset-btn" id="btn-p-sunny">☀️ Słoneczny</button>
+            <button class="preset-btn" id="btn-p-storm">⛈️ Sztorm</button>
+            <button class="preset-btn" id="btn-p-sunset">🌅 Zachód</button>
+        </div>
+
+        <div class="control-group">
+            <label>Wysokość Fal <span class="val" id="val-waveHeight">1.2m</span></label>
+            <input type="range" id="param-waveHeight" min="0.1" max="4.0" step="0.1" value="1.2">
+        </div>
+
+        <div class="control-group">
+            <label>Prędkość Fal <span class="val" id="val-waveSpeed">1.0x</span></label>
+            <input type="range" id="param-waveSpeed" min="0.2" max="3.0" step="0.1" value="1.0">
+        </div>
+
+        <div class="control-group">
+            <label>Ostrość Fal (Choppiness) <span class="val" id="val-choppiness">1.2</span></label>
+            <input type="range" id="param-choppiness" min="0.2" max="2.5" step="0.1" value="1.2">
+        </div>
+
+        <div class="control-group">
+            <label>Piana Morska <span class="val" id="val-foamIntensity">0.8</span></label>
+            <input type="range" id="param-foamIntensity" min="0.0" max="2.0" step="0.1" value="0.8">
+        </div>
+
+        <div class="control-group">
+            <label>HDR Bloom (Blask) <span class="val" id="val-bloom">0.45</span></label>
+            <input type="range" id="param-bloom" min="0.0" max="1.5" step="0.05" value="0.45">
+        </div>
+
+        <div class="control-group">
+            <label>Wysokość Słońca <span class="val" id="val-sunElevation">28°</span></label>
+            <input type="range" id="param-sunElevation" min="2" max="85" step="1" value="28">
+        </div>
+    </div>
+
+    <div class="stats-badge" id="fps-counter">
+        FPS: -- | Vertex: 65,536 | Gerstner 6-Harmonics
+    </div>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+        import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+        import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+        import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+
+        // --- Inicjalizacja Sceny i Renderer ---
+        const canvas = document.getElementById('webgl-canvas');
+        const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: "high-performance" });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.05;
+
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x0a162b, 0.0035);
+
+        const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 2000);
+        camera.position.set(0, 8, 26);
+
+        const controls = new OrbitControls(camera, canvas);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.maxPolarAngle = Math.PI / 2 - 0.02;
+        controls.minDistance = 3;
+        controls.maxDistance = 250;
+        controls.target.set(0, 1.5, 0);
+
+        // --- Postprocessing Composer ---
+        const composer = new EffectComposer(renderer);
+        const renderPass = new RenderPass(scene, camera);
+        composer.addPass(renderPass);
+
+        const bloomPass = new UnrealBloomPass(
+            new THREE.Vector2(window.innerWidth, window.innerHeight),
+            0.45,  // strength
+            0.4,   // radius
+            0.82   // threshold
+        );
+        composer.addPass(bloomPass);
+
+        const outputPass = new OutputPass();
+        composer.addPass(outputPass);
+
+        // --- Oświetlenie ---
+        const sunLight = new THREE.DirectionalLight(0xfff1db, 2.5);
+        sunLight.position.set(-50, 40, -50);
+        scene.add(sunLight);
+
+        const ambientLight = new THREE.AmbientLight(0x24426d, 1.2);
+        scene.add(ambientLight);
+
+        // --- Niebo i Kopuła Horyzontu ---
+        const skyGeo = new THREE.SphereGeometry(800, 32, 16);
+        const skyMat = new THREE.ShaderMaterial({
+            side: THREE.BackSide,
+            uniforms: {
+                uSunPos: { value: sunLight.position.clone().normalize() }
+            },
+            vertexShader: `
+                varying vec3 vWorldPos;
+                void main() {
+                    vWorldPos = position;
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                }
+            `,
+            fragmentShader: `
+                uniform vec3 uSunPos;
+                varying vec3 vWorldPos;
+                void main() {
+                    vec3 dir = normalize(vWorldPos);
+                    float elevation = max(dir.y, 0.0);
+                    
+                    vec3 skyTop = vec3(0.04, 0.12, 0.28);
+                    vec3 skyHaze = vec3(0.35, 0.55, 0.75);
+                    vec3 sunsetHaze = vec3(0.85, 0.45, 0.25);
+                    
+                    float sunDot = max(dot(dir, uSunPos), 0.0);
+                    vec3 col = mix(skyHaze, skyTop, pow(elevation, 0.6));
+                    
+                    // Poświata słońca
+                    col += sunsetHaze * pow(sunDot, 16.0) * 0.4;
+                    col += vec3(1.0, 0.9, 0.7) * pow(sunDot, 128.0) * 1.5;
+                    
+                    gl_FragColor = vec4(col, 1.0);
+                }
+            `
+        });
+        const skyDome = new THREE.Mesh(skyGeo, skyMat);
+        scene.add(skyDome);
+
+        // --- Shader Oceanu (Gerstner Waves GLSL) ---
+        const oceanUniforms = {
+            uTime: { value: 0.0 },
+            uWaveHeight: { value: 1.2 },
+            uWaveSpeed: { value: 1.0 },
+            uChoppiness: { value: 1.2 },
+            uFoamIntensity: { value: 0.8 },
+            uSunDir: { value: sunLight.position.clone().normalize() },
+            uWaterDeep: { value: new THREE.Color(0x01142a) },
+            uWaterShallow: { value: new THREE.Color(0x007799) },
+            uFoamColor: { value: new THREE.Color(0xf2faff) }
+        };
+
+        const oceanVertexShader = `
+            uniform float uTime;
+            uniform float uWaveHeight;
+            uniform float uWaveSpeed;
+            uniform float uChoppiness;
+            
+            varying vec3 vWorldPosition;
+            varying vec3 vNormal;
+            varying float vWaveHeight;
+
+            vec3 gerstnerWave(vec2 dir, float steepness, float wavelength, vec2 pos, float t, inout vec3 tangent, inout vec3 binormal) {
+                float k = 6.28318 / wavelength;
+                float c = sqrt(9.8 / k);
+                vec2 d = normalize(dir);
+                float f = k * (dot(d, pos) - c * t * uWaveSpeed);
+                float a = (steepness / k) * uWaveHeight;
+
+                tangent += vec3(
+                    -d.x * d.x * (steepness * sin(f)),
+                    d.x * (steepness * cos(f)),
+                    -d.x * d.y * (steepness * sin(f))
+                );
+                binormal += vec3(
+                    -d.x * d.y * (steepness * sin(f)),
+                    d.y * (steepness * cos(f)),
+                    -d.y * d.y * (steepness * sin(f))
+                );
+
+                return vec3(
+                    d.x * (a * cos(f)) * uChoppiness,
+                    a * sin(f),
+                    d.y * (a * cos(f)) * uChoppiness
+                );
+            }
+
+            void main() {
+                vec3 gridPoint = position;
+                vec3 p = gridPoint;
+                vec3 tangent = vec3(1.0, 0.0, 0.0);
+                vec3 binormal = vec3(0.0, 0.0, 1.0);
+                float t = uTime;
+
+                // Suma 6 harmonicznych Gerstnera
+                p += gerstnerWave(vec2(1.0, 0.2), 0.22, 45.0, gridPoint.xz, t, tangent, binormal);
+                p += gerstnerWave(vec2(0.7, 0.7), 0.18, 22.0, gridPoint.xz, t, tangent, binormal);
+                p += gerstnerWave(vec2(-0.3, 0.9), 0.14, 11.0, gridPoint.xz, t, tangent, binormal);
+                p += gerstnerWave(vec2(0.2, -0.9), 0.10, 5.5, gridPoint.xz, t, tangent, binormal);
+                p += gerstnerWave(vec2(-0.8, -0.4), 0.06, 2.8, gridPoint.xz, t, tangent, binormal);
+
+                vec3 computedNormal = normalize(cross(binormal, tangent));
+                vNormal = normalize(normalMatrix * computedNormal);
+                vWaveHeight = p.y;
+
+                vec4 worldPos = modelMatrix * vec4(p, 1.0);
+                vWorldPosition = worldPos.xyz;
+                gl_Position = projectionMatrix * viewMatrix * worldPos;
+            }
+        `;
+
+        const oceanFragmentShader = `
+            uniform vec3 uSunDir;
+            uniform vec3 uWaterDeep;
+            uniform vec3 uWaterShallow;
+            uniform vec3 uFoamColor;
+            uniform float uFoamIntensity;
+            
+            varying vec3 vWorldPosition;
+            varying vec3 vNormal;
+            varying float vWaveHeight;
+
+            void main() {
+                vec3 viewDir = normalize(cameraPosition - vWorldPosition);
+                vec3 norm = normalize(vNormal);
+
+                // Fresnel (Reflectance)
+                float fresnel = 0.02 + 0.98 * pow(1.0 - max(dot(viewDir, norm), 0.0), 5.0);
+
+                // Sun Specular (Blinn-Phong)
+                vec3 halfVector = normalize(uSunDir + viewDir);
+                float NdotH = max(dot(norm, halfVector), 0.0);
+                float specular = pow(NdotH, 180.0) * 3.5;
+
+                // Subsurface scattering
+                float sss = pow(max(dot(viewDir, -uSunDir), 0.0), 3.0) * max(vWaveHeight, 0.0) * 0.35;
+
+                // Podstawowy kolor wody w zależności od wysokości i widoku
+                float depthFactor = clamp((vWaveHeight + 1.5) / 3.0, 0.0, 1.0);
+                vec3 waterCol = mix(uWaterDeep, uWaterShallow, depthFactor);
+                waterCol += vec3(0.0, 0.15, 0.2) * sss;
+
+                // Kolor odbicia nieba
+                vec3 skyReflect = vec3(0.35, 0.6, 0.9) * 1.2;
+                vec3 finalCol = mix(waterCol, skyReflect, fresnel) + vec3(1.0, 0.95, 0.8) * specular;
+
+                // Piana morska na grzbietach fal
+                float foamFactor = smoothstep(0.8, 1.8, vWaveHeight * uFoamIntensity);
+                finalCol = mix(finalCol, uFoamColor, foamFactor * 0.75);
+
+                gl_FragColor = vec4(finalCol, 1.0);
+            }
+        `;
+
+        const oceanGeometry = new THREE.PlaneGeometry(500, 500, 256, 256);
+        oceanGeometry.rotateX(-Math.PI / 2);
+
+        const oceanMaterial = new THREE.ShaderMaterial({
+            vertexShader: oceanVertexShader,
+            fragmentShader: oceanFragmentShader,
+            uniforms: oceanUniforms,
+            side: THREE.DoubleSide
+        });
+
+        const oceanMesh = new THREE.Mesh(oceanGeometry, oceanMaterial);
+        scene.add(oceanMesh);
+
+        // --- Model Łodzi Żaglowej 3D ---
+        const boatGroup = new THREE.Group();
+
+        // Kadłub łodzi
+        const hullGeo = new THREE.ConeGeometry(1.6, 5.0, 8);
+        hullGeo.rotateX(Math.PI / 2);
+        hullGeo.scale(0.8, 0.45, 1.0);
+        const hullMat = new THREE.MeshStandardMaterial({ color: 0x2b1d14, roughness: 0.4 });
+        const hull = new THREE.Mesh(hullGeo, hullMat);
+        hull.position.y = 0.2;
+        boatGroup.add(hull);
+
+        // Pokład
+        const deckGeo = new THREE.BoxGeometry(1.2, 0.1, 4.2);
+        const deckMat = new THREE.MeshStandardMaterial({ color: 0xdeb887, roughness: 0.6 });
+        const deck = new THREE.Mesh(deckGeo, deckMat);
+        deck.position.y = 0.4;
+        boatGroup.add(deck);
+
+        // Maszt
+        const mastGeo = new THREE.CylinderGeometry(0.06, 0.08, 4.8);
+        const mastMat = new THREE.MeshStandardMaterial({ color: 0x3d2817 });
+        const mast = new THREE.Mesh(mastGeo, mastMat);
+        mast.position.set(0, 2.7, 0.3);
+        boatGroup.add(mast);
+
+        // Żagiel główny
+        const sailGeo = new THREE.BufferGeometry();
+        const sailVertices = new Float32Array([
+            0, 4.8, 0.3,
+            0, 1.0, 0.3,
+            0, 1.2, -2.4
+        ]);
+        sailGeo.setAttribute('position', new THREE.BufferAttribute(sailVertices, 3));
+        sailGeo.computeVertexNormals();
+        const sailMat = new THREE.MeshStandardMaterial({ color: 0xffffff, side: THREE.DoubleSide, roughness: 0.3 });
+        const sail = new THREE.Mesh(sailGeo, sailMat);
+        boatGroup.add(sail);
+
+        scene.add(boatGroup);
+
+        // --- Obliczanie Fal w JS dla Wyporności Łodzi ---
+        function getWaterHeight(x, z, time, heightScale, speedScale) {
+            let y = 0;
+            const waves = [
+                { dir: [1.0, 0.2], steep: 0.22, len: 45.0 },
+                { dir: [0.7, 0.7], steep: 0.18, len: 22.0 },
+                { dir: [-0.3, 0.9], steep: 0.14, len: 11.0 },
+                { dir: [0.2, -0.9], steep: 0.10, len: 5.5 }
+            ];
+
+            for (let w of waves) {
+                const k = 6.28318 / w.len;
+                const c = Math.sqrt(9.8 / k);
+                const len = Math.hypot(w.dir[0], w.dir[1]);
+                const dx = w.dir[0] / len;
+                const dz = w.dir[1] / len;
+                const f = k * (dx * x + dz * z - c * time * speedScale);
+                const a = (w.steep / k) * heightScale;
+                y += a * Math.sin(f);
+            }
+            return y;
+        }
+
+        // --- Web Audio Generator Szumu Fal ---
+        let audioCtx = null;
+        let isAudioPlaying = false;
+        let gainNode = null;
+
+        function toggleAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                
+                const bufferSize = audioCtx.sampleRate * 2;
+                const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+                const output = noiseBuffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    output[i] = Math.random() * 2 - 1;
+                }
+
+                const whiteNoise = audioCtx.createBufferSource();
+                whiteNoise.buffer = noiseBuffer;
+                whiteNoise.loop = true;
+
+                const filter = audioCtx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(320, audioCtx.currentTime);
+
+                const lfo = audioCtx.createOscillator();
+                lfo.frequency.setValueAtTime(0.18, audioCtx.currentTime);
+                const lfoGain = audioCtx.createGain();
+                lfoGain.gain.setValueAtTime(180, audioCtx.currentTime);
+                lfo.connect(lfoGain);
+                lfoGain.connect(filter.frequency);
+
+                gainNode = audioCtx.createGain();
+                gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
+
+                whiteNoise.connect(filter);
+                filter.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+
+                whiteNoise.start();
+                lfo.start();
+            }
+
+            if (isAudioPlaying) {
+                gainNode.gain.setTargetAtTime(0.0, audioCtx.currentTime, 0.1);
+                document.getElementById('audio-toggle').innerHTML = '<i class="fa-solid fa-volume-xmark"></i> Dźwięk Fal';
+                isAudioPlaying = false;
+            } else {
+                gainNode.gain.setTargetAtTime(0.2, audioCtx.currentTime, 0.1);
+                document.getElementById('audio-toggle').innerHTML = '<i class="fa-solid fa-volume-high"></i> Dźwięk Wł.';
+                isAudioPlaying = true;
+            }
+        }
+        document.getElementById('audio-toggle').addEventListener('click', toggleAudio);
+
+        // --- Tryby Kamery ---
+        let followBoat = true;
+        document.getElementById('cam-toggle').addEventListener('click', () => {
+            followBoat = !followBoat;
+            document.getElementById('cam-toggle').innerHTML = followBoat 
+                ? '<i class="fa-solid fa-camera"></i> Śledź Łódź' 
+                : '<i class="fa-solid fa-arrows-to-dot"></i> Swobodna Kamera';
+        });
+
+        // --- Presety ---
+        function applyPreset(preset, btnId) {
+            document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+            if (document.getElementById(btnId)) document.getElementById(btnId).classList.add('active');
+
+            if (preset === 'calm') {
+                setParams(0.5, 0.8, 0.8, 0.3, 0.35, 45);
+            } else if (preset === 'sunny') {
+                setParams(1.2, 1.0, 1.2, 0.8, 0.45, 35);
+            } else if (preset === 'storm') {
+                setParams(2.8, 1.8, 1.8, 1.6, 0.65, 12);
+            } else if (preset === 'sunset') {
+                setParams(0.9, 0.7, 1.0, 0.5, 0.80, 5);
+            }
+        }
+
+        document.getElementById('btn-p-calm').addEventListener('click', () => applyPreset('calm', 'btn-p-calm'));
+        document.getElementById('btn-p-sunny').addEventListener('click', () => applyPreset('sunny', 'btn-p-sunny'));
+        document.getElementById('btn-p-storm').addEventListener('click', () => applyPreset('storm', 'btn-p-storm'));
+        document.getElementById('btn-p-sunset').addEventListener('click', () => applyPreset('sunset', 'btn-p-sunset'));
+
+        function setParams(h, spd, chop, foam, bloom, sunElev) {
+            document.getElementById('param-waveHeight').value = h;
+            document.getElementById('param-waveSpeed').value = spd;
+            document.getElementById('param-choppiness').value = chop;
+            document.getElementById('param-foamIntensity').value = foam;
+            document.getElementById('param-bloom').value = bloom;
+            document.getElementById('param-sunElevation').value = sunElev;
+            updateFromInputs();
+        }
+
+        function updateFromInputs() {
+            const h = parseFloat(document.getElementById('param-waveHeight').value);
+            const spd = parseFloat(document.getElementById('param-waveSpeed').value);
+            const chop = parseFloat(document.getElementById('param-choppiness').value);
+            const foam = parseFloat(document.getElementById('param-foamIntensity').value);
+            const bloom = parseFloat(document.getElementById('param-bloom').value);
+            const sunElev = parseFloat(document.getElementById('param-sunElevation').value);
+
+            document.getElementById('val-waveHeight').innerText = h.toFixed(1) + 'm';
+            document.getElementById('val-waveSpeed').innerText = spd.toFixed(1) + 'x';
+            document.getElementById('val-choppiness').innerText = chop.toFixed(1);
+            document.getElementById('val-foamIntensity').innerText = foam.toFixed(1);
+            document.getElementById('val-bloom').innerText = bloom.toFixed(2);
+            document.getElementById('val-sunElevation').innerText = sunElev + '°';
+
+            oceanUniforms.uWaveHeight.value = h;
+            oceanUniforms.uWaveSpeed.value = spd;
+            oceanUniforms.uChoppiness.value = chop;
+            oceanUniforms.uFoamIntensity.value = foam;
+            bloomPass.strength = bloom;
+
+            const rad = sunElev * (Math.PI / 180);
+            sunLight.position.set(-60 * Math.cos(rad), 60 * Math.sin(rad), -40);
+            oceanUniforms.uSunDir.value.copy(sunLight.position).normalize();
+            skyMat.uniforms.uSunPos.value.copy(oceanUniforms.uSunDir.value);
+        }
+
+        ['waveHeight', 'waveSpeed', 'choppiness', 'foamIntensity', 'bloom', 'sunElevation'].forEach(id => {
+            document.getElementById('param-' + id).addEventListener('input', updateFromInputs);
+        });
+
+        // --- Pętla Renderowania & Fizyka Łodzi ---
+        const clock = new THREE.Clock();
+        let frameCount = 0;
+        let lastTime = performance.now();
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const elapsedTime = clock.getElapsedTime();
+            oceanUniforms.uTime.value = elapsedTime;
+
+            // Ruch łodzi do przodu po okręgu
+            const boatSpeed = 0.15;
+            const boatRadius = 18.0;
+            const boatAngle = elapsedTime * boatSpeed;
+            const boatX = Math.sin(boatAngle) * boatRadius;
+            const boatZ = Math.cos(boatAngle) * boatRadius;
+
+            // Próbkowanie 4 punktów wokół łodzi (Dziób, Rufa, Burta L, Burta P)
+            const hScale = oceanUniforms.uWaveHeight.value;
+            const sScale = oceanUniforms.uWaveSpeed.value;
+            const yCenter = getWaterHeight(boatX, boatZ, elapsedTime, hScale, sScale);
+            const yBow = getWaterHeight(boatX + Math.cos(boatAngle)*1.8, boatZ - Math.sin(boatAngle)*1.8, elapsedTime, hScale, sScale);
+            const yStern = getWaterHeight(boatX - Math.cos(boatAngle)*1.8, boatZ + Math.sin(boatAngle)*1.8, elapsedTime, hScale, sScale);
+            const yLeft = getWaterHeight(boatX - Math.sin(boatAngle)*1.0, boatZ - Math.cos(boatAngle)*1.0, elapsedTime, hScale, sScale);
+            const yRight = getWaterHeight(boatX + Math.sin(boatAngle)*1.0, boatZ + Math.cos(boatAngle)*1.0, elapsedTime, hScale, sScale);
+
+            boatGroup.position.set(boatX, yCenter + 0.15, boatZ);
+
+            // Nachylenie wzdłużne i poprzeczne (Pitch & Roll)
+            const pitch = Math.atan2(yBow - yStern, 3.6);
+            const roll = Math.atan2(yRight - yLeft, 2.0);
+            boatGroup.rotation.y = -boatAngle + Math.PI / 2;
+            boatGroup.rotation.x = pitch * 0.8;
+            boatGroup.rotation.z = roll * 0.8;
+
+            // Kamera śledząca łódź
+            if (followBoat) {
+                controls.target.lerp(boatGroup.position, 0.05);
+            }
+            controls.update();
+
+            // Render z Postprocessingiem Bloom
+            composer.render();
+
+            // Licznik FPS
+            frameCount++;
+            const now = performance.now();
+            if (now - lastTime >= 1000) {
+                const fps = Math.round((frameCount * 1000) / (now - lastTime));
+                document.getElementById('fps-counter').innerText = `FPS: ${fps} | Vertex: 65,536 | Gerstner 6-Harmonics`;
+                frameCount = 0;
+                lastTime = now;
+            }
+        }
+
+        animate();
+
+        // Responsywność
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            composer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>
