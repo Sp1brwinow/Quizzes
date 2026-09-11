@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <!-- Google Analytics Tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZP827DTZJ5"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-ZP827DTZJ5');
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Realistyczny Ocean 3D – Babylon.js & Fale Gerstnera (Jakość AAA)</title>
+    <link rel="stylesheet" href="../style.css" />
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        html, body {
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            background-color: #020813;
+            color: #f1f5f9;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        #renderCanvas {
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+            display: block;
+            outline: none;
+        }
+
+        /* Górna belka nawigacyjna */
+        .top-bar {
+            position: absolute;
+            top: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(7, 21, 43, 0.85);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            border-radius: 16px;
+            padding: 10px 22px;
+            display: flex;
+            gap: 14px;
+            align-items: center;
+            backdrop-filter: blur(14px);
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.6), 0 0 20px rgba(56, 189, 248, 0.2);
+            z-index: 20;
+            max-width: 95vw;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .title-badge {
+            font-weight: 800;
+            font-size: 1.05rem;
+            color: #38bdf8;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-btn {
+            background: rgba(14, 30, 56, 0.8);
+            border: 1px solid rgba(125, 211, 252, 0.4);
+            color: #7dd3fc;
+            text-decoration: none;
+            padding: 7px 15px;
+            border-radius: 9px;
+            font-weight: 600;
+            font-size: 0.88rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.25s ease;
+        }
+
+        .nav-btn:hover {
+            color: #ffffff;
+            border-color: #38bdf8;
+            background: rgba(20, 45, 85, 0.95);
+            box-shadow: 0 0 14px rgba(56, 189, 248, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .btn-ui {
+            background: #0f2744;
+            color: #f8fafc;
+            border: 1px solid rgba(56, 189, 248, 0.5);
+            padding: 7px 14px;
+            border-radius: 9px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.88rem;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-ui:hover {
+            background: #0284c7;
+            border-color: #38bdf8;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.5);
+        }
+
+        .btn-ui.active {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            border-color: #7dd3fc;
+            color: #ffffff;
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.6);
+        }
+
+        /* Panel kontrolny z opcjami symulacji */
+        .controls-card {
+            position: absolute;
+            top: 80px;
+            right: 20px;
+            background: rgba(7, 21, 43, 0.88);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            border-radius: 18px;
+            padding: 18px 20px;
+            width: 320px;
+            max-width: calc(100vw - 40px);
+            backdrop-filter: blur(16px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7);
+            z-index: 20;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s;
+        }
+
+        .controls-card.hidden {
+            transform: translateX(360px);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .controls-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+            border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+            padding-bottom: 8px;
+        }
+
+        .controls-header h3 {
+            font-size: 1.05rem;
+            color: #38bdf8;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toggle-card-btn {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 1.2rem;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .toggle-card-btn:hover {
+            color: #fff;
+        }
+
+        .control-row {
+            margin-bottom: 12px;
+        }
+
+        .control-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-bottom: 4px;
+        }
+
+        .control-label span.val {
+            color: #38bdf8;
+            font-weight: bold;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: #38bdf8;
+            cursor: pointer;
+            height: 5px;
+            background: #1e293b;
+            border-radius: 4px;
+        }
+
+        .presets-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 14px;
+            margin-bottom: 10px;
+        }
+
+        .preset-btn {
+            background: rgba(15, 35, 65, 0.8);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            color: #e2e8f0;
+            padding: 8px 10px;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .preset-btn:hover {
+            background: #0284c7;
+            color: #fff;
+            border-color: #38bdf8;
+        }
+
+        .preset-btn.active {
+            background: #0369a1;
+            border-color: #38bdf8;
+            color: #fff;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+        }
+
+        /* Przycisk otwierania panelu gdy jest schowany */
+        .open-panel-btn {
+            position: absolute;
+            top: 80px;
+            right: 20px;
+            background: rgba(7, 21, 43, 0.9);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            color: #38bdf8;
+            padding: 9px 14px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.88rem;
+            display: none;
+            backdrop-filter: blur(10px);
+            z-index: 15;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .open-panel-btn.visible {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Dolny pasek podpowiedzi */
+        .bottom-hint {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(7, 21, 43, 0.75);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            padding: 6px 18px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            color: #94a3b8;
+            backdrop-filter: blur(10px);
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        @media (max-width: 768px) {
+            .top-bar {
+                top: 8px;
+                padding: 8px 12px;
+                gap: 8px;
+            }
+            .title-badge {
+                font-size: 0.92rem;
+            }
+            .controls-card {
+                top: 70px;
+                right: 10px;
+                width: calc(100vw - 20px);
+            }
+            .bottom-hint {
+                display: none;
+            }
+        }
+    </style>
+
+    <!-- Babylon.js CDN (Silnik, Materiały, Shadery) -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/materialsLibrary/babylonjs.materials.min.js"></script>
+</head>
+
+<body>
+
+    <!-- Górna belka nawigacji -->
+    <div class="top-bar">
+        <div class="title-badge">🌊 Realistyczny Ocean 3D (Babylon.js)</div>
+        <a href="../rozrywka.html" class="nav-btn">← Strefa Rozrywki</a>
+        <a href="../index.html" class="nav-btn">🏠 Główna</a>
+        <button type="button" class="btn-ui" id="audio-toggle" onclick="toggleOceanAudio()">🔊 Szum Oceanu</button>
+        <button type="button" class="btn-ui" id="camera-toggle" onclick="toggleCameraView()">🎥 Zmień Kamerę</button>
+    </div>
+
+    <!-- Przycisk przywrócenia panelu -->
+    <button type="button" class="open-panel-btn" id="open-panel" onclick="togglePanel(true)">⚙️ Ustawienia Oceanu</button>
+
+    <!-- Panel Kontrolny Opcji -->
+    <div class="controls-card" id="controls-panel">
+        <div class="controls-header">
+            <h3>⚙️ Fizyka i Oświetlenie</h3>
+            <button type="button" class="toggle-card-btn" onclick="togglePanel(false)">✕</button>
+        </div>
+
+        <div class="control-row">
+            <div class="control-label">
+                <span>Wysokość fal (Amplituda)</span>
+                <span class="val" id="val-height">2.6 m</span>
+            </div>
+            <input type="range" id="param-height" min="0.3" max="6.5" step="0.1" value="2.6">
+        </div>
+
+        <div class="control-row">
+            <div class="control-label">
+                <span>Prędkość wiatru</span>
+                <span class="val" id="val-speed">1.2x</span>
+            </div>
+            <input type="range" id="param-speed" min="0.2" max="3.5" step="0.1" value="1.2">
+        </div>
+
+        <div class="control-row">
+            <div class="control-label">
+                <span>Stromość fal & Piana (Choppiness)</span>
+                <span class="val" id="val-steep">0.85</span>
+            </div>
+            <input type="range" id="param-steep" min="0.1" max="1.5" step="0.05" value="0.85">
+        </div>
+
+        <div class="control-row">
+            <div class="control-label">
+                <span>Prześwietlenie słoneczne (SSS)</span>
+                <span class="val" id="val-sss">1.6</span>
+            </div>
+            <input type="range" id="param-sss" min="0.2" max="3.0" step="0.1" value="1.6">
+        </div>
+
+        <!-- Presety Środowiskowe -->
+        <div style="font-size: 0.85rem; color: #94a3b8; margin-top: 10px;">Scenerie atmosferyczne:</div>
+        <div class="presets-grid">
+            <button type="button" class="preset-btn active" id="preset-day" onclick="setAtmosphere('day')">☀️ Słoneczny Dzień</button>
+            <button type="button" class="preset-btn" id="preset-sunset" onclick="setAtmosphere('sunset')">🌅 Zachód Słońca</button>
+            <button type="button" class="preset-btn" id="preset-storm" onclick="setAtmosphere('storm')">⛈️ Sztorm Morski</button>
+            <button type="button" class="preset-btn" id="preset-tropical" onclick="setAtmosphere('tropical')">🏝️ Karaibska Laguna</button>
+        </div>
+    </div>
+
+    <!-- Canvas dla silnika 3D -->
+    <canvas id="renderCanvas"></canvas>
+
+    <div class="bottom-hint">
+        💡 <em>Użyj lewego przycisku myszy, aby obracać widok, kółka myszy, aby przybliżać/oddalać.</em>
+    </div>
+
+    <script>
+        // ===================================================================
+        // ZAAWANSOWANA SYMULACJA OCEANICZNA W BABYLON.JS (JAKOŚĆ AAA)
+        // Matematyka fal Gerstnera + Subsurface Scattering + Piana + Optyka PBR
+        // ===================================================================
+        const canvas = document.getElementById("renderCanvas");
+        const engine = new BABYLON.Engine(canvas, true, {
+            preserveDrawingBuffer: true,
+            stencil: true,
+            powerPreference: "high-performance"
+        });
+
+        // Parametry symulacji fal
+        const oceanParams = {
+            time: 0,
+            waveHeight: 2.6,
+            speed: 1.2,
+            steepness: 0.85,
+            sssIntensity: 1.6,
+            currentPreset: 'day',
+            cameraMode: 0 // 0: orbit, 1: low water level, 2: top-down
+        };
+
+        // Zestaw 4 nakładających się harmonicznych fal Gerstnera
+        const waveHarmonics = [
+            { L: 52.0, A: 0.45, S: 1.0, D: new BABYLON.Vector2(1.0, 0.25) },
+            { L: 28.0, A: 0.28, S: 1.3, D: new BABYLON.Vector2(0.7, 0.7) },
+            { L: 14.0, A: 0.16, S: 1.9, D: new BABYLON.Vector2(-0.4, 0.9) },
+            { L: 6.5,  A: 0.08, S: 2.6, D: new BABYLON.Vector2(0.3, -0.95) }
+        ];
+
+        let scene, camera, skyMaterial, oceanShader, sunLight, floatingBuoy;
+
+        const createOceanScene = function () {
+            scene = new BABYLON.Scene(engine);
+            scene.clearColor = new BABYLON.Color4(0.01, 0.05, 0.12, 1.0);
+
+            // 1. Kamera Orbitująca
+            camera = new BABYLON.ArcRotateCamera("ArcCamera", -Math.PI / 2.3, Math.PI / 2.7, 75, new BABYLON.Vector3(0, 3.5, 0), scene);
+            camera.attachControl(canvas, true);
+            camera.lowerRadiusLimit = 4;
+            camera.upperRadiusLimit = 350;
+            camera.upperBetaLimit = Math.PI / 2 - 0.01; // Nie schodzimy pod powierzchnię
+            camera.wheelPrecision = 15;
+            camera.pinchPrecision = 15;
+
+            // 2. Światła sceny
+            sunLight = new BABYLON.DirectionalLight("SunLight", new BABYLON.Vector3(-0.6, -0.45, -0.65), scene);
+            sunLight.intensity = 2.4;
+
+            const hemiLight = new BABYLON.HemisphericLight("HemiLight", new BABYLON.Vector3(0, 1, 0), scene);
+            hemiLight.intensity = 0.65;
+            hemiLight.groundColor = new BABYLON.Color3(0.02, 0.08, 0.15);
+
+            // 3. Proceduralne Niebo Atmosferyczne (SkyMaterial)
+            skyMaterial = new BABYLON.SkyMaterial("SkyMat", scene);
+            skyMaterial.backFaceCulling = false;
+            skyMaterial.turbidity = 2.2;
+            skyMaterial.luminance = 1.0;
+            skyMaterial.inclination = 0.46; // Kąt słońca
+            skyMaterial.azimuth = 0.25;
+
+            const skybox = BABYLON.MeshBuilder.CreateBox("SkyBox", { size: 1800.0 }, scene);
+            skybox.material = skyMaterial;
+
+            // 4. Zaawansowany Shader Oceanu (GLSL z Gerstner Waves & SSS)
+            BABYLON.Effect.ShadersStore["oceanVertexShader"] = `
+                precision highp float;
+
+                attribute vec3 position;
+                attribute vec3 normal;
+                attribute vec2 uv;
+
+                uniform mat4 world;
+                uniform mat4 worldViewProjection;
+                uniform float time;
+                uniform float waveHeight;
+                uniform float steepness;
+
+                varying vec3 vWorldPosition;
+                varying vec3 vNormal;
+                varying vec2 vUV;
+                varying float vCrest;
+
+                vec3 gerstnerWave(vec3 pos, float L, float A, float S, vec2 D, inout vec3 n, inout float crest) {
+                    float k = 2.0 * 3.14159265 / L;
+                    float c = sqrt(9.81 / k);
+                    vec2 d = normalize(D);
+                    float f = k * (dot(d, pos.xz) - c * S * time);
+                    float q = steepness / (k * A * 4.0 + 0.0001);
+
+                    // Deformacja wierzchołka w 3 osiach
+                    float dx = q * A * d.x * cos(f);
+                    float dy = A * sin(f);
+                    float dz = q * A * d.y * cos(f);
+
+                    // Aktualizacja wektora normalnego powierzchni
+                    float wa = k * A;
+                    n.x -= d.x * wa * cos(f);
+                    n.y -= q * wa * sin(f);
+                    n.z -= d.y * wa * cos(f);
+
+                    crest += dy;
+                    return vec3(dx, dy, dz);
+                }
+
+                void main(void) {
+                    vUV = uv;
+                    vec3 displacedPos = position;
+                    vec3 waveNormal = vec3(0.0, 1.0, 0.0);
+                    float crestAccum = 0.0;
+
+                    // 4 harmoniczne fal Gerstnera
+                    displacedPos += gerstnerWave(position, 52.0, waveHeight * 0.45, 1.0, vec2(1.0, 0.25), waveNormal, crestAccum);
+                    displacedPos += gerstnerWave(position, 28.0, waveHeight * 0.28, 1.3, vec2(0.7, 0.7), waveNormal, crestAccum);
+                    displacedPos += gerstnerWave(position, 14.0, waveHeight * 0.16, 1.9, vec2(-0.4, 0.9), waveNormal, crestAccum);
+                    displacedPos += gerstnerWave(position, 6.5,  waveHeight * 0.08, 2.6, vec2(0.3, -0.95), waveNormal, crestAccum);
+
+                    vWorldPosition = (world * vec4(displacedPos, 1.0)).xyz;
+                    vNormal = normalize((world * vec4(waveNormal, 0.0)).xyz);
+                    vCrest = crestAccum;
+
+                    gl_Position = worldViewProjection * vec4(displacedPos, 1.0);
+                }
+            `;
+
+            BABYLON.Effect.ShadersStore["oceanFragmentShader"] = `
+                precision highp float;
+
+                varying vec3 vWorldPosition;
+                varying vec3 vNormal;
+                varying vec2 vUV;
+                varying float vCrest;
+
+                uniform vec3 cameraPosition;
+                uniform vec3 sunDirection;
+                uniform vec3 deepColor;
+                uniform vec3 shallowColor;
+                uniform vec3 sssColor;
+                uniform vec3 skyReflectColor;
+                uniform vec3 foamColor;
+                uniform float waveHeight;
+                uniform float sssIntensity;
+
+                void main(void) {
+                    vec3 viewDir = normalize(cameraPosition - vWorldPosition);
+                    vec3 lightDir = normalize(-sunDirection);
+                    vec3 normal = normalize(vNormal);
+
+                    // 1. Optyka Fresnela (Schlick)
+                    float fresnel = dot(viewDir, normal);
+                    fresnel = clamp(1.0 - fresnel, 0.0, 1.0);
+                    float fresnelFactor = pow(fresnel, 3.8);
+
+                    // 2. Subsurface Scattering (prześwietlenie słońca przez grzbiet fali)
+                    float sssFactor = max(0.0, dot(viewDir, -lightDir)) * max(0.0, (vCrest + waveHeight * 0.3) / (waveHeight * 1.3));
+                    sssFactor = pow(sssFactor, 2.2) * sssIntensity;
+
+                    // 3. Specular blik słoneczny (lśnienie tafli)
+                    vec3 halfVector = normalize(lightDir + viewDir);
+                    float spec = pow(max(dot(normal, halfVector), 0.0), 320.0) * 4.2;
+
+                    // 4. Gradient głębi wody (Dark Abyss -> Shallow Cyan)
+                    float depthFactor = clamp((vCrest / (waveHeight + 0.001)) * 0.5 + 0.5, 0.0, 1.0);
+                    vec3 waterBase = mix(deepColor, shallowColor, depthFactor);
+                    waterBase += sssColor * sssFactor * 1.4;
+
+                    // Połączenie koloru wody z odbiciem nieba
+                    vec3 finalColor = mix(waterBase, skyReflectColor, fresnelFactor * 0.88);
+
+                    // 5. Dynamiczna piana na szczytach i stromiznach
+                    float foamThreshold = waveHeight * 0.48;
+                    if (vCrest > foamThreshold) {
+                        float foamFactor = smoothstep(foamThreshold, waveHeight * 0.95, vCrest);
+                        finalColor = mix(finalColor, foamColor, foamFactor * 0.9);
+                    }
+
+                    // Dodanie ostrego bliku słońca
+                    finalColor += vec3(1.0, 0.96, 0.85) * spec;
+
+                    gl_FragColor = vec4(finalColor, 1.0);
+                }
+            `;
+
+            // Materiał Shaderowy
+            oceanShader = new BABYLON.ShaderMaterial("OceanShader", scene, {
+                vertex: "ocean",
+                fragment: "ocean",
+            }, {
+                attributes: ["position", "normal", "uv"],
+                uniforms: [
+                    "world", "worldViewProjection", "cameraPosition",
+                    "time", "waveHeight", "steepness", "sssIntensity",
+                    "sunDirection", "deepColor", "shallowColor", "sssColor",
+                    "skyReflectColor", "foamColor"
+                ]
+            });
+
+            // Kolory bazowe oceanu
+            oceanShader.setColor3("deepColor", new BABYLON.Color3(0.002, 0.045, 0.12));    // Głębia oceanu
+            oceanShader.setColor3("shallowColor", new BABYLON.Color3(0.0, 0.42, 0.52));    // Płytka woda
+            oceanShader.setColor3("sssColor", new BABYLON.Color3(0.05, 0.85, 0.72));       // Turkusowy blask SSS
+            oceanShader.setColor3("skyReflectColor", new BABYLON.Color3(0.45, 0.7, 0.95)); // Odbicie nieba
+            oceanShader.setColor3("foamColor", new BABYLON.Color3(0.96, 0.98, 1.0));       // Biała piana
+
+            // 5. Siatka Oceanu (Wysoka gęstość 200x200 wierzchołków)
+            const oceanMesh = BABYLON.MeshBuilder.CreateGround("OceanMesh", {
+                width: 700,
+                height: 700,
+                subdivisions: 200
+            }, scene);
+            oceanMesh.material = oceanShader;
+
+            // 6. Pływający obiekt z fizyką wyporności fal (Boja nawigacyjna)
+            createFloatingBuoy();
+
+            // Pętla aktualizacji klatek
+            scene.registerBeforeRender(function () {
+                oceanParams.time += 0.015 * oceanParams.speed;
+
+                oceanShader.setFloat("time", oceanParams.time);
+                oceanShader.setFloat("waveHeight", oceanParams.waveHeight);
+                oceanShader.setFloat("steepness", oceanParams.steepness);
+                oceanShader.setFloat("sssIntensity", oceanParams.sssIntensity);
+                oceanShader.setVector3("cameraPosition", camera.position);
+                oceanShader.setVector3("sunDirection", sunLight.direction);
+
+                // Aktualizacja pozycji i przechyłu pływającej boi
+                updateBuoyPhysics();
+            });
+
+            return scene;
+        };
+
+        // ===================================================================
+        // FIZYKA PŁYWALNOŚCI NA CPU (Buoyancy)
+        // Oblicza rzeczywistą wysokość i kąt fali pod boją w czasie rzeczywistym
+        // ===================================================================
+        function calculateWaveHeightCPU(x, z, time) {
+            let dyTotal = 0;
+            const H = oceanParams.waveHeight;
+            const S = oceanParams.speed;
+
+            for (let i = 0; i < waveHarmonics.length; i++) {
+                const w = waveHarmonics[i];
+                const k = 2.0 * Math.PI / w.L;
+                const c = Math.sqrt(9.81 / k);
+                const dotVal = w.D.x * x + w.D.y * z;
+                const f = k * (dotVal - c * w.S * time);
+                dyTotal += (H * w.A) * Math.sin(f);
+            }
+            return dyTotal;
+        }
+
+        function createFloatingBuoy() {
+            // Boja nawigacyjna
+            floatingBuoy = new BABYLON.TransformNode("BuoyRoot", scene);
+            floatingBuoy.position = new BABYLON.Vector3(0, 0, 0);
+
+            // Korpus boi (stożek/walec)
+            const body = BABYLON.MeshBuilder.CreateCylinder("BuoyBody", {
+                diameterTop: 1.4,
+                diameterBottom: 2.2,
+                height: 2.6,
+                tessellation: 20
+            }, scene);
+            body.parent = floatingBuoy;
+            body.position.y = 1.0;
+
+            const buoyMat = new BABYLON.StandardMaterial("BuoyMat", scene);
+            buoyMat.diffuseColor = new BABYLON.Color3(0.95, 0.25, 0.1); // Czerwona boja morska
+            buoyMat.specularColor = new BABYLON.Color3(0.4, 0.4, 0.4);
+            body.material = buoyMat;
+
+            // Maszt ze światłem ostrzegawczym
+            const mast = BABYLON.MeshBuilder.CreateCylinder("BuoyMast", {
+                diameter: 0.15,
+                height: 2.8
+            }, scene);
+            mast.parent = floatingBuoy;
+            mast.position.y = 3.0;
+
+            const mastMat = new BABYLON.StandardMaterial("MastMat", scene);
+            mastMat.diffuseColor = new BABYLON.Color3(0.9, 0.9, 0.2);
+            mast.material = mastMat;
+
+            // Lampa ostrzegawcza
+            const lightBeacon = BABYLON.MeshBuilder.CreateSphere("BuoyBeacon", { diameter: 0.6 }, scene);
+            lightBeacon.parent = floatingBuoy;
+            lightBeacon.position.y = 4.4;
+
+            const beaconMat = new BABYLON.StandardMaterial("BeaconMat", scene);
+            beaconMat.emissiveColor = new BABYLON.Color3(1.0, 0.8, 0.1);
+            lightBeacon.material = beaconMat;
+        }
+
+        function updateBuoyPhysics() {
+            if (!floatingBuoy) return;
+
+            const bx = floatingBuoy.position.x;
+            const bz = floatingBuoy.position.z;
+            const t = oceanParams.time;
+
+            // Próbkowanie 4 punktów wokół boi do przechyłu kadłuba
+            const delta = 1.2;
+            const yCenter = calculateWaveHeightCPU(bx, bz, t);
+            const yNorth = calculateWaveHeightCPU(bx, bz + delta, t);
+            const ySouth = calculateWaveHeightCPU(bx, bz - delta, t);
+            const yEast  = calculateWaveHeightCPU(bx + delta, bz, t);
+            const yWest  = calculateWaveHeightCPU(bx - delta, bz, t);
+
+            // Płynna interpolacja pozycji Y (wyporność)
+            floatingBuoy.position.y += (yCenter - floatingBuoy.position.y) * 0.25;
+
+            // Obliczenie kątów pochylenia (Pitch & Roll)
+            const pitch = Math.atan2(ySouth - yNorth, delta * 2);
+            const roll  = Math.atan2(yWest - yEast, delta * 2);
+
+            floatingBuoy.rotation.x += (pitch - floatingBuoy.rotation.x) * 0.2;
+            floatingBuoy.rotation.z += (roll - floatingBuoy.rotation.z) * 0.2;
+        }
+
+        // ===================================================================
+        // PRESETY ŚRODOWISKOWE (Atmospheric Presets)
+        // ===================================================================
+        function setAtmosphere(type) {
+            oceanParams.currentPreset = type;
+            ['day', 'sunset', 'storm', 'tropical'].forEach(p => {
+                const btn = document.getElementById('preset-' + p);
+                if (btn) btn.classList.remove('active');
+            });
+            const activeBtn = document.getElementById('preset-' + type);
+            if (activeBtn) activeBtn.classList.add('active');
+
+            if (type === 'day') {
+                oceanParams.waveHeight = 2.6;
+                oceanParams.speed = 1.2;
+                oceanParams.steepness = 0.85;
+                oceanParams.sssIntensity = 1.6;
+
+                skyMaterial.turbidity = 2.2;
+                skyMaterial.luminance = 1.0;
+                skyMaterial.inclination = 0.46;
+                skyMaterial.azimuth = 0.25;
+
+                sunLight.direction = new BABYLON.Vector3(-0.6, -0.45, -0.65);
+                sunLight.intensity = 2.4;
+
+                oceanShader.setColor3("deepColor", new BABYLON.Color3(0.002, 0.045, 0.12));
+                oceanShader.setColor3("shallowColor", new BABYLON.Color3(0.0, 0.42, 0.52));
+                oceanShader.setColor3("sssColor", new BABYLON.Color3(0.05, 0.85, 0.72));
+                oceanShader.setColor3("skyReflectColor", new BABYLON.Color3(0.45, 0.7, 0.95));
+
+            } else if (type === 'sunset') {
+                oceanParams.waveHeight = 3.2;
+                oceanParams.speed = 1.0;
+                oceanParams.steepness = 0.9;
+                oceanParams.sssIntensity = 2.2;
+
+                skyMaterial.turbidity = 7.5;
+                skyMaterial.luminance = 0.65;
+                skyMaterial.inclination = 0.03; // Słońce na horyzoncie
+                skyMaterial.azimuth = 0.35;
+
+                sunLight.direction = new BABYLON.Vector3(-0.85, -0.08, -0.45);
+                sunLight.intensity = 2.8;
+
+                oceanShader.setColor3("deepColor", new BABYLON.Color3(0.06, 0.02, 0.07));
+                oceanShader.setColor3("shallowColor", new BABYLON.Color3(0.65, 0.22, 0.15));
+                oceanShader.setColor3("sssColor", new BABYLON.Color3(1.0, 0.45, 0.1));
+                oceanShader.setColor3("skyReflectColor", new BABYLON.Color3(0.9, 0.45, 0.2));
+
+            } else if (type === 'storm') {
+                oceanParams.waveHeight = 5.8;
+                oceanParams.speed = 2.4;
+                oceanParams.steepness = 1.35;
+                oceanParams.sssIntensity = 0.7;
+
+                skyMaterial.turbidity = 24.0;
+                skyMaterial.luminance = 0.2;
+                skyMaterial.inclination = 0.28;
+                skyMaterial.azimuth = 0.1;
+
+                sunLight.direction = new BABYLON.Vector3(-0.3, -0.85, -0.3);
+                sunLight.intensity = 1.0;
+
+                oceanShader.setColor3("deepColor", new BABYLON.Color3(0.001, 0.015, 0.03));
+                oceanShader.setColor3("shallowColor", new BABYLON.Color3(0.05, 0.14, 0.18));
+                oceanShader.setColor3("sssColor", new BABYLON.Color3(0.1, 0.35, 0.4));
+                oceanShader.setColor3("skyReflectColor", new BABYLON.Color3(0.2, 0.3, 0.4));
+
+            } else if (type === 'tropical') {
+                oceanParams.waveHeight = 0.8;
+                oceanParams.speed = 0.6;
+                oceanParams.steepness = 0.45;
+                oceanParams.sssIntensity = 2.0;
+
+                skyMaterial.turbidity = 1.2;
+                skyMaterial.luminance = 1.1;
+                skyMaterial.inclination = 0.49;
+                skyMaterial.azimuth = 0.2;
+
+                sunLight.direction = new BABYLON.Vector3(-0.2, -0.92, -0.2);
+                sunLight.intensity = 2.6;
+
+                oceanShader.setColor3("deepColor", new BABYLON.Color3(0.0, 0.18, 0.3));
+                oceanShader.setColor3("shallowColor", new BABYLON.Color3(0.0, 0.8, 0.85));
+                oceanShader.setColor3("sssColor", new BABYLON.Color3(0.2, 0.95, 0.85));
+                oceanShader.setColor3("skyReflectColor", new BABYLON.Color3(0.5, 0.8, 1.0));
+            }
+
+            // Synchronizacja kontrolek UI
+            updateUIControls();
+        }
+
+        function updateUIControls() {
+            document.getElementById("param-height").value = oceanParams.waveHeight;
+            document.getElementById("val-height").textContent = oceanParams.waveHeight.toFixed(1) + " m";
+
+            document.getElementById("param-speed").value = oceanParams.speed;
+            document.getElementById("val-speed").textContent = oceanParams.speed.toFixed(1) + "x";
+
+            document.getElementById("param-steep").value = oceanParams.steepness;
+            document.getElementById("val-steep").textContent = oceanParams.steepness.toFixed(2);
+
+            document.getElementById("param-sss").value = oceanParams.sssIntensity;
+            document.getElementById("val-sss").textContent = oceanParams.sssIntensity.toFixed(1);
+        }
+
+        // ===================================================================
+        // OBSŁUGA UI I SUWAKÓW
+        // ===================================================================
+        document.getElementById("param-height").addEventListener("input", (e) => {
+            oceanParams.waveHeight = parseFloat(e.target.value);
+            document.getElementById("val-height").textContent = oceanParams.waveHeight.toFixed(1) + " m";
+        });
+
+        document.getElementById("param-speed").addEventListener("input", (e) => {
+            oceanParams.speed = parseFloat(e.target.value);
+            document.getElementById("val-speed").textContent = oceanParams.speed.toFixed(1) + "x";
+        });
+
+        document.getElementById("param-steep").addEventListener("input", (e) => {
+            oceanParams.steepness = parseFloat(e.target.value);
+            document.getElementById("val-steep").textContent = oceanParams.steepness.toFixed(2);
+        });
+
+        document.getElementById("param-sss").addEventListener("input", (e) => {
+            oceanParams.sssIntensity = parseFloat(e.target.value);
+            document.getElementById("val-sss").textContent = oceanParams.sssIntensity.toFixed(1);
+        });
+
+        function togglePanel(open) {
+            const panel = document.getElementById("controls-panel");
+            const openBtn = document.getElementById("open-panel");
+            if (open) {
+                panel.classList.remove("hidden");
+                openBtn.classList.remove("visible");
+            } else {
+                panel.classList.add("hidden");
+                openBtn.classList.add("visible");
+            }
+        }
+
+        function toggleCameraView() {
+            oceanParams.cameraMode = (oceanParams.cameraMode + 1) % 3;
+            if (oceanParams.cameraMode === 0) {
+                // Standardowy orbit
+                camera.radius = 75;
+                camera.beta = Math.PI / 2.7;
+                camera.alpha = -Math.PI / 2.3;
+            } else if (oceanParams.cameraMode === 1) {
+                // Blisko poziomu wody (perspektywa marynarza)
+                camera.radius = 18;
+                camera.beta = Math.PI / 2.1;
+                camera.alpha = -Math.PI / 3;
+            } else {
+                // Widok z góry
+                camera.radius = 120;
+                camera.beta = 0.35;
+            }
+        }
+
+        // ===================================================================
+        // PROCEDURALNY DŹWIĘK SZUMU OCEANICZNEGO (Web Audio API)
+        // ===================================================================
+        class OceanAudioSynthesizer {
+            constructor() {
+                this.ctx = null;
+                this.isPlaying = false;
+                this.gainNode = null;
+                this.filterNode = null;
+                this.lfoTimer = null;
+            }
+
+            init() {
+                if (this.ctx) return;
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                this.ctx = new AudioCtx();
+
+                this.gainNode = this.ctx.createGain();
+                this.gainNode.gain.setValueAtTime(0.001, this.ctx.currentTime);
+
+                // Filtr modulujący przypływy i odpływy fal
+                this.filterNode = this.ctx.createBiquadFilter();
+                this.filterNode.type = 'lowpass';
+                this.filterNode.frequency.setValueAtTime(320, this.ctx.currentTime);
+                this.filterNode.Q.setValueAtTime(2.5, this.ctx.currentTime);
+
+                this.filterNode.connect(this.gainNode);
+                this.gainNode.connect(this.ctx.destination);
+
+                // Generowanie różowego szumu wiatru i fal
+                const bufferSize = this.ctx.sampleRate * 5;
+                const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+                const data = buffer.getChannelData(0);
+                let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+
+                for (let i = 0; i < bufferSize; i++) {
+                    const white = Math.random() * 2 - 1;
+                    b0 = 0.99886 * b0 + white * 0.0555179;
+                    b1 = 0.99332 * b1 + white * 0.0750759;
+                    b2 = 0.96900 * b2 + white * 0.1538520;
+                    b3 = 0.86650 * b3 + white * 0.3104856;
+                    b4 = 0.55000 * b4 + white * 0.5329522;
+                    b5 = -0.7616 * b5 - white * 0.0168980;
+                    data[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.08;
+                    b6 = white * 0.115926;
+                }
+
+                const noise = this.ctx.createBufferSource();
+                noise.buffer = buffer;
+                noise.loop = true;
+                noise.connect(this.filterNode);
+                noise.start();
+            }
+
+            start() {
+                this.init();
+                if (this.ctx.state === 'suspended') this.ctx.resume();
+                this.isPlaying = true;
+                this.gainNode.gain.cancelScheduledValues(this.ctx.currentTime);
+                this.gainNode.gain.exponentialRampToValueAtTime(0.28, this.ctx.currentTime + 1.2);
+
+                // Modulacja filtra w rytmie uderzeń fal
+                const waveLFO = () => {
+                    if (!this.isPlaying) return;
+                    const now = this.ctx.currentTime;
+                    const period = 3.5 / oceanParams.speed;
+                    this.filterNode.frequency.cancelScheduledValues(now);
+                    this.filterNode.frequency.setValueAtTime(250, now);
+                    this.filterNode.frequency.exponentialRampToValueAtTime(750 + oceanParams.waveHeight * 80, now + period * 0.45);
+                    this.filterNode.frequency.exponentialRampToValueAtTime(250, now + period);
+                    this.lfoTimer = setTimeout(waveLFO, period * 1000);
+                };
+                waveLFO();
+            }
+
+            stop() {
+                if (!this.isPlaying || !this.ctx) return;
+                this.isPlaying = false;
+                if (this.lfoTimer) clearTimeout(this.lfoTimer);
+                this.gainNode.gain.cancelScheduledValues(this.ctx.currentTime);
+                this.gainNode.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.6);
+            }
+
+            toggle() {
+                if (this.isPlaying) {
+                    this.stop();
+                    return false;
+                } else {
+                    this.start();
+                    return true;
+                }
+            }
+        }
+
+        const oceanAudio = new OceanAudioSynthesizer();
+
+        function toggleOceanAudio() {
+            const isPlaying = oceanAudio.toggle();
+            const btn = document.getElementById("audio-toggle");
+            btn.innerText = isPlaying ? "🔇 Wycisz Szum" : "🔊 Szum Oceanu";
+            btn.classList.toggle("active", isPlaying);
+        }
+
+        // ===================================================================
+        // INICJALIZACJA SCENY
+        // ===================================================================
+        scene = createOceanScene();
+        engine.runRenderLoop(() => scene.render());
+        window.addEventListener("resize", () => engine.resize());
+    </script>
+</body>
+
+</html>
