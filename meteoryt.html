@@ -328,21 +328,51 @@
             box-shadow: 0 0 8px rgba(56, 189, 248, 0.3);
         }
 
-        .search-btn {
-            background: rgba(56, 189, 248, 0.2);
-            border: 1px solid rgba(56, 189, 248, 0.4);
-            color: #7dd3fc;
-            padding: 6px 10px;
-            border-radius: 8px;
-            font-size: 0.82rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
         .search-btn:hover {
             background: #38bdf8;
             color: #04121d;
+        }
+
+        /* Karta Informacyjna o Skali Miasta */
+        .city-info-card {
+            background: rgba(15, 23, 42, 0.75);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            border-radius: 10px;
+            padding: 9px 11px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            font-size: 0.8rem;
+        }
+
+        .city-info-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 800;
+            color: #7dd3fc;
+        }
+
+        .city-info-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+
+        .city-badge {
+            background: rgba(56, 189, 248, 0.12);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            color: #bae6fd;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.72rem;
+            font-weight: 600;
+        }
+
+        .city-desc-text {
+            color: #94a3b8;
+            font-size: 0.74rem;
+            line-height: 1.35;
         }
 
         /* Wybór typu meteorytu */
@@ -811,19 +841,34 @@
             <div class="section-title">🏙️ Wybór Miasta (OpenStreetMap)</div>
             <div class="city-controls">
                 <select id="select-city" class="city-select">
-                    <option value="warszawa">🇵🇱 Warszawa (Centrum, PKiN / Wisła)</option>
-                    <option value="krakow">🇵🇱 Kraków (Stare Miasto / Wisła)</option>
-                    <option value="morasko">🇵🇱 Poznań (Rezerwat Meteoryt Morasko)</option>
-                    <option value="trojmiasto">🇵🇱 Gdańsk / Trójmiasto (Zatoka)</option>
-                    <option value="nowyjork">🇺🇸 Nowy Jork (Manhattan / Hudson)</option>
-                    <option value="londyn">🇬🇧 Londyn (City / Tamiza)</option>
-                    <option value="paryz">🇫🇷 Paryż (Centrum / Sekwana)</option>
-                    <option value="tokio">🇯🇵 Tokio (Shinjuku / Zatoka)</option>
-                    <option value="arizona">🏜️ Pustynia Arizona (Krater Barringera)</option>
+                    <option value="warszawa">🇵🇱 Warszawa (Aglomeracja ~12 km)</option>
+                    <option value="tokio">🇯🇵 Tokio (Megalopolis ~40 km)</option>
+                    <option value="nowyjork">🇺🇸 Nowy Jork (Manhattan ~28 km)</option>
+                    <option value="londyn">🇬🇧 Londyn (Aglomeracja ~30 km)</option>
+                    <option value="paryz">🇫🇷 Paryż (Metropolia ~18 km)</option>
+                    <option value="krakow">🇵🇱 Kraków (Aglomeracja ~9 km)</option>
+                    <option value="trojmiasto">🇵🇱 Gdańsk / Trójmiasto (~24 km)</option>
+                    <option value="morasko">🇵🇱 Poznań (Rezerwat Morasko ~3 km)</option>
+                    <option value="arizona">🏜️ Pustynia Arizona (Teren 0 km)</option>
                 </select>
                 <div class="search-box">
                     <input type="text" id="input-city-search" class="search-input" placeholder="Wpisz dowolne miasto...">
                     <button id="btn-city-search" class="search-btn">Szukaj</button>
+                </div>
+                <!-- Karta Informacyjna o Skali Miasta -->
+                <div class="city-info-card" id="city-info-card">
+                    <div class="city-info-header">
+                        <span id="city-info-title">🇵🇱 Warszawa</span>
+                        <span class="city-badge" id="city-info-type">Metropolia</span>
+                    </div>
+                    <div class="city-info-badges">
+                        <span class="city-badge" id="city-info-size">📏 Zabudowa: ~12 km</span>
+                        <span class="city-badge" id="city-info-pop">👥 2.5 mln</span>
+                        <span class="city-badge" id="city-info-towers">🏢 Wieżowce: 310 m</span>
+                    </div>
+                    <div class="city-desc-text" id="city-info-desc">
+                        Średnia europejska metropolia z wyraźnym centrum wieżowców (PKiN, Varso) otoczona przedmieściami i zielenią.
+                    </div>
                 </div>
             </div>
 
@@ -1018,17 +1063,175 @@
             elongation: 1.0
         };
 
-        // Dane predefiniowanych miast
+        // Dane predefiniowanych miast z rzeczywistymi wymiarami aglomeracji i wieżowców
         const CITY_PRESETS = {
-            warszawa: { name: 'Warszawa', riverAngle: 0.35, riverWidth: 260, centerDensity: 1.0, highRiseRatio: 0.35, desert: false },
-            krakow: { name: 'Kraków', riverAngle: 1.1, riverWidth: 180, centerDensity: 0.85, highRiseRatio: 0.2, desert: false },
-            morasko: { name: 'Poznań (Morasko)', riverAngle: 0.2, riverWidth: 120, centerDensity: 0.4, highRiseRatio: 0.1, desert: false },
-            trojmiasto: { name: 'Gdańsk / Trójmiasto', riverAngle: 1.8, riverWidth: 800, centerDensity: 0.75, highRiseRatio: 0.25, isBay: true, desert: false },
-            nowyjork: { name: 'Nowy Jork (Manhattan)', riverAngle: 0.5, riverWidth: 450, centerDensity: 1.4, highRiseRatio: 0.7, gridAligned: true, desert: false },
-            londyn: { name: 'Londyn', riverAngle: 0.85, riverWidth: 320, centerDensity: 0.95, highRiseRatio: 0.4, desert: false },
-            paryz: { name: 'Paryż', riverAngle: 0.6, riverWidth: 240, centerDensity: 0.9, highRiseRatio: 0.3, desert: false },
-            tokio: { name: 'Tokio', riverAngle: 1.4, riverWidth: 500, centerDensity: 1.3, highRiseRatio: 0.6, desert: false },
-            arizona: { name: 'Pustynia Arizona', riverAngle: 0, riverWidth: 0, centerDensity: 0.02, highRiseRatio: 0.0, desert: true }
+            warszawa: {
+                name: 'Warszawa',
+                type: 'Aglomeracja',
+                urbanDiameterKm: 12,
+                realUrbanRadiusM: 6000,
+                centerRadiusM: 1600,
+                defaultAreaKm: 12,
+                population: '2.5 mln',
+                buildingCount: 2800,
+                riverAngle: 0.35,
+                riverWidth: 280,
+                highRiseRatio: 0.35,
+                maxSkyscraperHeight: 310, // Varso Tower (310m), PKiN (237m), Spire (220m)
+                centerDensity: 1.0,
+                gridAligned: false,
+                desert: false,
+                description: 'Średnia europejska aglomeracja (~12 km) z wyraźnym centrum wieżowców (PKiN, Varso) otoczona przedmieściami i zielenią.'
+            },
+            tokio: {
+                name: 'Tokio',
+                type: 'Megalopolis',
+                urbanDiameterKm: 40,
+                realUrbanRadiusM: 22000,
+                centerRadiusM: 8000,
+                defaultAreaKm: 25,
+                population: '37.4 mln',
+                buildingCount: 3500,
+                riverAngle: 1.4,
+                riverWidth: 500,
+                highRiseRatio: 0.65,
+                maxSkyscraperHeight: 330, // Toranomon Hills (330m), Shinjuku, Shibuya
+                centerDensity: 1.6,
+                gridAligned: false,
+                desert: false,
+                multiCenter: true,
+                description: 'Gigantyczna megalopolis (~40 km) – nieprzerwana gęsta zabudowa z wieloma centrami wieżowców (Shinjuku, Shibuya, Minato).'
+            },
+            nowyjork: {
+                name: 'Nowy Jork (Manhattan)',
+                type: 'Megalopolis',
+                urbanDiameterKm: 28,
+                realUrbanRadiusM: 14000,
+                centerRadiusM: 4000,
+                defaultAreaKm: 18,
+                population: '20.1 mln',
+                buildingCount: 3500,
+                riverAngle: 0.5,
+                riverWidth: 600,
+                highRiseRatio: 0.75,
+                maxSkyscraperHeight: 450, // One World Trade (541m), Empire State, 432 Park
+                centerDensity: 1.8,
+                gridAligned: true,
+                desert: false,
+                description: 'Gęsty kanion megawieżowców na Manhattanie (~28 km) z regularną siatką ulic i szeroką rzeką Hudson.'
+            },
+            londyn: {
+                name: 'Londyn',
+                type: 'Metropolia',
+                urbanDiameterKm: 30,
+                realUrbanRadiusM: 15000,
+                centerRadiusM: 5000,
+                defaultAreaKm: 20,
+                population: '14.2 mln',
+                buildingCount: 3400,
+                riverAngle: 0.85,
+                riverWidth: 350,
+                highRiseRatio: 0.4,
+                maxSkyscraperHeight: 310, // The Shard (310m), City of London, Canary Wharf
+                centerDensity: 1.1,
+                gridAligned: false,
+                desert: false,
+                multiCenter: true,
+                description: 'Wielka rozległa aglomeracja (~30 km) z historycznym układem i dwoma klastrami wieżowców (The City & Canary Wharf).'
+            },
+            paryz: {
+                name: 'Paryż',
+                type: 'Metropolia',
+                urbanDiameterKm: 18,
+                realUrbanRadiusM: 9000,
+                centerRadiusM: 3000,
+                defaultAreaKm: 14,
+                population: '12.4 mln',
+                buildingCount: 3200,
+                riverAngle: 0.6,
+                riverWidth: 260,
+                highRiseRatio: 0.25,
+                maxSkyscraperHeight: 230, // Tour Montparnasse (210m), La Défense (231m)
+                centerDensity: 1.2,
+                gridAligned: false,
+                desert: false,
+                description: 'Gęsta zwarta zabudowa kamieniczna (~18 km) wzdłuż Sekwany z wieżowcami La Défense na zachodzie.'
+            },
+            krakow: {
+                name: 'Kraków',
+                type: 'Miasto zwarte',
+                urbanDiameterKm: 9,
+                realUrbanRadiusM: 4500,
+                centerRadiusM: 1200,
+                defaultAreaKm: 8,
+                population: '1.0 mln',
+                buildingCount: 2200,
+                riverAngle: 1.1,
+                riverWidth: 180,
+                highRiseRatio: 0.12,
+                maxSkyscraperHeight: 105, // Unity Tower (102.5m), K1 (88m)
+                centerDensity: 0.85,
+                gridAligned: false,
+                desert: false,
+                description: 'Kompaktowa zabytkowa aglomeracja (~9 km) o niskiej zabudowie, otoczona wzgórzami, Błoniami i zielenią.'
+            },
+            trojmiasto: {
+                name: 'Gdańsk / Trójmiasto',
+                type: 'Pasmo nadmorskie',
+                urbanDiameterKm: 24,
+                realUrbanRadiusM: 12000,
+                isLinearStrip: true,
+                centerRadiusM: 3000,
+                defaultAreaKm: 16,
+                population: '1.1 mln',
+                buildingCount: 2600,
+                riverAngle: 1.8,
+                riverWidth: 800,
+                highRiseRatio: 0.2,
+                maxSkyscraperHeight: 180, // Olivia Star (180m), Sea Towers (141m)
+                centerDensity: 0.8,
+                gridAligned: false,
+                isBay: true,
+                desert: false,
+                description: 'Nadmorskie pasmo miast (Gdańsk-Sopot-Gdynia) ciągnące się na długości 24 km wzdłuż Zatoki Gdańskiej.'
+            },
+            morasko: {
+                name: 'Poznań (Morasko)',
+                type: 'Rezerwat & Przedmieścia',
+                urbanDiameterKm: 3,
+                realUrbanRadiusM: 1500,
+                centerRadiusM: 500,
+                defaultAreaKm: 4,
+                population: 'Rezerwat / Peryferia',
+                buildingCount: 550,
+                riverAngle: 0.2,
+                riverWidth: 90,
+                highRiseRatio: 0.0,
+                maxSkyscraperHeight: 16, // Małe domy jednorodzinne, leśniczówka
+                centerDensity: 0.35,
+                gridAligned: false,
+                desert: false,
+                isNatureReserve: true,
+                description: 'Obszar leśno-morenowy Rezerwatu Meteoryt Morasko (~3 km) z nielicznymi podmiejskimi domami.'
+            },
+            arizona: {
+                name: 'Pustynia Arizona (Krater Barringera)',
+                type: 'Pustynia',
+                urbanDiameterKm: 0.3,
+                realUrbanRadiusM: 180,
+                centerRadiusM: 100,
+                defaultAreaKm: 4,
+                population: '0 (Pustkowie)',
+                buildingCount: 35,
+                riverAngle: 0,
+                riverWidth: 0,
+                highRiseRatio: 0.0,
+                maxSkyscraperHeight: 8,
+                centerDensity: 0.04,
+                gridAligned: false,
+                desert: true,
+                description: 'Całkowicie bezludny, surowy płaskowyż w Arizonie wokół krateru Barringera z małym muzeum/stacją.'
+            }
         };
 
         /* --- SYNTEZA AUDIO (Web Audio API) --- */
@@ -1205,86 +1408,235 @@
             canvas.height = 2048;
             const ctx = canvas.getContext('2d');
 
-            const isDesert = cityConfig.desert;
+            const isDesert = !!cityConfig.desert;
+            const urbanRadiusM = cityConfig.realUrbanRadiusM || 6000;
+            // Promień miasta w pikselach tekstury 2048x2048
+            const urbanRadiusPx = Math.min(1024, (urbanRadiusM / areaSizeM) * 1024);
+            const centerPx = 1024;
 
-            // 1. Tło terenu (Zieleń miejska / Ziemia / Pustynia)
+            // 1. TŁO TERENU (Otaczający krajobraz / wieś / pola / pustynia)
             if (isDesert) {
+                // Surowy piasek i skały płaskowyżu
                 ctx.fillStyle = '#b48a56';
                 ctx.fillRect(0, 0, 2048, 2048);
-                // Plamy piaskowe i skały
-                for (let i = 0; i < 400; i++) {
-                    ctx.fillStyle = Math.random() < 0.5 ? 'rgba(150, 110, 65, 0.15)' : 'rgba(215, 175, 120, 0.15)';
+
+                // Warstwy piaskowe i żwirowe
+                for (let i = 0; i < 450; i++) {
+                    ctx.fillStyle = Math.random() < 0.5 ? 'rgba(150, 110, 65, 0.18)' : 'rgba(215, 175, 120, 0.18)';
                     ctx.beginPath();
-                    ctx.arc(Math.random() * 2048, Math.random() * 2048, Math.random() * 120 + 20, 0, Math.PI * 2);
+                    ctx.arc(Math.random() * 2048, Math.random() * 2048, Math.random() * 100 + 20, 0, Math.PI * 2);
                     ctx.fill();
+                }
+
+                // Kaniony / szczeliny geologiczne
+                ctx.strokeStyle = 'rgba(100, 70, 40, 0.35)';
+                ctx.lineWidth = 4;
+                for (let j = 0; j < 6; j++) {
+                    ctx.beginPath();
+                    let sx = Math.random() * 2048;
+                    let sy = Math.random() * 2048;
+                    ctx.moveTo(sx, sy);
+                    for (let s = 0; s < 5; s++) {
+                        sx += (Math.random() - 0.5) * 300;
+                        sy += (Math.random() - 0.5) * 300;
+                        ctx.lineTo(sx, sy);
+                    }
+                    ctx.stroke();
                 }
             } else {
-                // Miejski asfalt i zieleń
-                ctx.fillStyle = '#1e293b';
+                // Połacie pól uprawnych i lasów otaczających aglomerację
+                ctx.fillStyle = '#18331f';
                 ctx.fillRect(0, 0, 2048, 2048);
 
-                // Parki / tereny zielone
-                ctx.fillStyle = '#143828';
-                for (let i = 0; i < 18; i++) {
-                    const px = Math.random() * 2048;
-                    const py = Math.random() * 2048;
-                    const pw = 80 + Math.random() * 240;
-                    const ph = 80 + Math.random() * 200;
-                    ctx.beginPath();
-                    ctx.roundRect ? ctx.roundRect(px, py, pw, ph, 16) : ctx.rect(px, py, pw, ph);
-                    ctx.fill();
-                }
-
-                // Dzielnice / kwartały zabudowy (szare bloki)
-                ctx.fillStyle = '#0f172a';
-                const blockSize = Math.max(30, Math.min(100, 2048 / (areaSizeM / 150)));
-                for (let x = 40; x < 2008; x += blockSize + 18) {
-                    for (let y = 40; y < 2008; y += blockSize + 18) {
-                        if (Math.random() > 0.08) {
-                            ctx.fillRect(x, y, blockSize, blockSize);
-                        }
+                // Mozaika pól uprawnych (odcienie oliwkowej zieleni i gleby)
+                const fieldColors = ['#1d3d25', '#24482c', '#1a3821', '#2c4a2c', '#152e1b', '#2e4428'];
+                for (let fx = 0; fx < 2048; fx += 140) {
+                    for (let fy = 0; fy < 2048; fy += 140) {
+                        ctx.fillStyle = fieldColors[Math.floor(Math.random() * fieldColors.length)];
+                        ctx.fillRect(fx + 2, fy + 2, 136, 136);
                     }
                 }
 
-                // Siatka ulic (lokalne drogi)
-                ctx.strokeStyle = '#334155';
+                // Kompleksy leśne / puszcze
+                ctx.fillStyle = '#0e2415';
+                for (let i = 0; i < 35; i++) {
+                    const lx = Math.random() * 2048;
+                    const ly = Math.random() * 2048;
+                    const lr = 60 + Math.random() * 180;
+                    ctx.beginPath();
+                    ctx.arc(lx, ly, lr, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+
+                // Jeśli to rezerwat przyrody (Morasko) - pokryj prawie całość lasem
+                if (cityConfig.isNatureReserve) {
+                    ctx.fillStyle = 'rgba(10, 32, 18, 0.7)';
+                    ctx.fillRect(0, 0, 2048, 2048);
+                }
+
+                // Drogi wiejskie i lokalne
+                ctx.strokeStyle = 'rgba(70, 90, 75, 0.4)';
                 ctx.lineWidth = 3;
                 ctx.beginPath();
-                for (let x = 40; x < 2048; x += blockSize + 18) {
-                    ctx.moveTo(x - 9, 0); ctx.lineTo(x - 9, 2048);
-                }
-                for (let y = 40; y < 2048; y += blockSize + 18) {
-                    ctx.moveTo(0, y - 9); ctx.lineTo(2048, y - 9);
+                for (let r = 0; r < 8; r++) {
+                    ctx.moveTo(Math.random() * 2048, 0);
+                    ctx.bezierCurveTo(Math.random() * 2048, 700, Math.random() * 2048, 1400, Math.random() * 2048, 2048);
                 }
                 ctx.stroke();
 
-                // Główne aleje / arterie przelotowe (złoto-pomarańczowe linie)
+                // 2. STREFA MIEJSKA (Plama urbanistyczna o rzeczywistym promieniu)
+                if (urbanRadiusPx > 15) {
+                    ctx.save();
+                    
+                    // Podkład asfaltowo-betonowy aglomeracji z miękkim przejściem
+                    const urbanGrad = ctx.createRadialGradient(centerPx, centerPx, urbanRadiusPx * 0.4, centerPx, centerPx, urbanRadiusPx);
+                    urbanGrad.addColorStop(0, '#1e293b');
+                    urbanGrad.addColorStop(0.75, '#1e293b');
+                    urbanGrad.addColorStop(0.95, '#1a2434');
+                    urbanGrad.addColorStop(1.0, 'rgba(30, 41, 59, 0)');
+
+                    ctx.fillStyle = urbanGrad;
+                    ctx.beginPath();
+                    if (cityConfig.isLinearStrip) {
+                        // Trójmiasto - pasmo wzdłuż wybrzeża
+                        ctx.ellipse(centerPx, centerPx, urbanRadiusPx * 0.45, urbanRadiusPx * 1.0, 0.1, 0, Math.PI * 2);
+                    } else {
+                        ctx.arc(centerPx, centerPx, urbanRadiusPx, 0, Math.PI * 2);
+                    }
+                    ctx.fill();
+
+                    // Maskowanie siatki ulic do obszaru miejskiego
+                    ctx.beginPath();
+                    if (cityConfig.isLinearStrip) {
+                        ctx.ellipse(centerPx, centerPx, urbanRadiusPx * 0.42, urbanRadiusPx * 0.98, 0.1, 0, Math.PI * 2);
+                    } else {
+                        ctx.arc(centerPx, centerPx, urbanRadiusPx * 0.98, 0, Math.PI * 2);
+                    }
+                    ctx.clip();
+
+                    // Parki miejskie
+                    ctx.fillStyle = '#143828';
+                    const parkCount = Math.max(3, Math.round((urbanRadiusPx / 1024) * 20));
+                    for (let p = 0; p < parkCount; p++) {
+                        const pa = Math.random() * Math.PI * 2;
+                        const pd = Math.random() * urbanRadiusPx * 0.8;
+                        const px = centerPx + Math.cos(pa) * pd;
+                        const py = centerPx + Math.sin(pa) * pd;
+                        const pw = 40 + Math.random() * 120;
+                        const ph = 40 + Math.random() * 100;
+                        ctx.beginPath();
+                        ctx.roundRect ? ctx.roundRect(px, py, pw, ph, 12) : ctx.rect(px, py, pw, ph);
+                        ctx.fill();
+                    }
+
+                    // Kwartały zabudowy miejskiej (szare bloki)
+                    ctx.fillStyle = '#0f172a';
+                    const blockSize = Math.max(16, Math.min(70, Math.round(2048 / (areaSizeM / 100))));
+                    const gridStep = blockSize + 10;
+                    
+                    const minX = Math.max(0, Math.floor(centerPx - urbanRadiusPx));
+                    const maxX = Math.min(2048, Math.ceil(centerPx + urbanRadiusPx));
+                    const minY = Math.max(0, Math.floor(centerPx - urbanRadiusPx));
+                    const maxY = Math.min(2048, Math.ceil(centerPx + urbanRadiusPx));
+
+                    for (let x = minX; x < maxX; x += gridStep) {
+                        for (let y = minY; y < maxY; y += gridStep) {
+                            const d = Math.hypot(x - centerPx, y - centerPx);
+                            if (d < urbanRadiusPx * 0.95 && Math.random() > 0.08) {
+                                ctx.fillRect(x, y, blockSize, blockSize);
+                            }
+                        }
+                    }
+
+                    // Siatka ulic wewnątrz miasta
+                    ctx.strokeStyle = '#334155';
+                    ctx.lineWidth = 2.5;
+                    ctx.beginPath();
+                    for (let x = minX; x < maxX; x += gridStep) {
+                        ctx.moveTo(x - 5, minY); ctx.lineTo(x - 5, maxY);
+                    }
+                    for (let y = minY; y < maxY; y += gridStep) {
+                        ctx.moveTo(minX, y - 5); ctx.lineTo(maxX, y - 5);
+                    }
+                    ctx.stroke();
+
+                    // Węzły wielocentryczne (np. Tokio: Shinjuku, Shibuya, Minato)
+                    if (cityConfig.multiCenter) {
+                        const subCenters = [
+                            { dx: -0.35, dy: -0.15 },
+                            { dx: -0.3, dy: 0.3 },
+                            { dx: 0.2, dy: 0.25 },
+                            { dx: 0.3, dy: -0.25 }
+                        ];
+                        ctx.fillStyle = '#1e293b';
+                        for (const sc of subCenters) {
+                            const scx = centerPx + sc.dx * urbanRadiusPx;
+                            const scy = centerPx + sc.dy * urbanRadiusPx;
+                            ctx.beginPath();
+                            ctx.arc(scx, scy, urbanRadiusPx * 0.22, 0, Math.PI * 2);
+                            ctx.fill();
+                        }
+                    }
+
+                    ctx.restore();
+                }
+
+                // 3. GŁÓWNE ARTERIE & AUTOSTRADY WYCHODZĄCE Z MIASTA
                 ctx.strokeStyle = '#64748b';
-                ctx.lineWidth = 8;
+                ctx.lineWidth = 7;
                 ctx.beginPath();
-                ctx.moveTo(0, 1024); ctx.lineTo(2048, 1024);
-                ctx.moveTo(1024, 0); ctx.lineTo(1024, 2048);
-                ctx.moveTo(0, 400); ctx.lineTo(2048, 1600);
+                ctx.moveTo(0, centerPx); ctx.lineTo(2048, centerPx);
+                ctx.moveTo(centerPx, 0); ctx.lineTo(centerPx, 2048);
+                ctx.moveTo(0, 350); ctx.lineTo(2048, 1700);
+                ctx.moveTo(350, 2048); ctx.lineTo(1700, 0);
                 ctx.stroke();
 
-                // Rzeka / Zbiornik wodny
+                // Obwodnica miejska
+                if (urbanRadiusPx > 80) {
+                    ctx.strokeStyle = '#475569';
+                    ctx.lineWidth = 5;
+                    ctx.beginPath();
+                    ctx.arc(centerPx, centerPx, urbanRadiusPx * 0.9, 0, Math.PI * 2);
+                    ctx.stroke();
+                }
+
+                // 4. ZATOKA MORSKA (jeśli np. Trójmiasto)
+                if (cityConfig.isBay) {
+                    ctx.fillStyle = '#0369a1';
+                    ctx.beginPath();
+                    ctx.moveTo(1400, 0);
+                    ctx.quadraticCurveTo(1250, 1024, 1500, 2048);
+                    ctx.lineTo(2048, 2048);
+                    ctx.lineTo(2048, 0);
+                    ctx.closePath();
+                    ctx.fill();
+
+                    // Brzeg
+                    ctx.strokeStyle = '#38bdf8';
+                    ctx.lineWidth = 6;
+                    ctx.beginPath();
+                    ctx.moveTo(1400, 0);
+                    ctx.quadraticCurveTo(1250, 1024, 1500, 2048);
+                    ctx.stroke();
+                }
+
+                // 5. RZEKA (np. Wisła, Sekwana, Tamiza, Hudson)
                 if (cityConfig.riverWidth > 0) {
                     ctx.strokeStyle = '#0284c7';
-                    ctx.fillStyle = '#0369a1';
-                    const rw = (cityConfig.riverWidth / areaSizeM) * 2048;
-                    ctx.lineWidth = Math.max(14, rw);
+                    const rw = Math.max(12, (cityConfig.riverWidth / areaSizeM) * 2048);
+                    ctx.lineWidth = rw;
                     ctx.beginPath();
                     
                     const angle = cityConfig.riverAngle;
                     const sin = Math.sin(angle);
                     const cos = Math.cos(angle);
 
-                    ctx.moveTo(1024 - sin * 1300, 1024 - cos * 1300);
+                    ctx.moveTo(centerPx - sin * 1400, centerPx - cos * 1400);
                     ctx.quadraticCurveTo(
-                        1024 + Math.sin(angle + 1) * 200, 
-                        1024 + Math.cos(angle + 1) * 200, 
-                        1024 + sin * 1300, 
-                        1024 + cos * 1300
+                        centerPx + Math.sin(angle + 0.8) * 220, 
+                        centerPx + Math.cos(angle + 0.8) * 220, 
+                        centerPx + sin * 1400, 
+                        centerPx + cos * 1400
                     );
                     ctx.stroke();
                 }
@@ -1297,7 +1649,7 @@
         }
 
         /* --- SCENA THREE.JS --- */
-        let scene, camera, renderer, controls;
+        let scene, camera, renderer, controls, sunLight;
         let groundMesh, groundGeometry, groundMaterial;
         let origVertices = [];
         let origColors = [];
@@ -1337,7 +1689,7 @@
             // 1. Scena
             scene = new THREE.Scene();
             scene.background = new THREE.Color(0x040813);
-            scene.fog = new THREE.FogExp2(0x040813, 0.000035);
+            scene.fog = new THREE.FogExp2(0x040813, 0.000008);
 
             // 2. Kamera z logarithmicDepthBuffer do obsługi makro-skali (1m do 50 000m)
             camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1.0, 300000);
@@ -1369,7 +1721,7 @@
             const ambientLight = new THREE.AmbientLight(0x475569, 0.85);
             scene.add(ambientLight);
 
-            const sunLight = new THREE.DirectionalLight(0xfff5e6, 1.9);
+            sunLight = new THREE.DirectionalLight(0xfff5e6, 1.9);
             sunLight.position.set(4000, 7000, 3500);
             sunLight.castShadow = true;
             sunLight.shadow.mapSize.width = 2048;
@@ -1456,6 +1808,23 @@
             const areaSizeM = state.areaKm * 1000; // np. 6 km = 6 000 m
             const cityConfig = CITY_PRESETS[state.selectedCity] || CITY_PRESETS.warszawa;
 
+            // Dostosuj mgłę i oświetlenie do rozmiaru terenu
+            if (scene && scene.fog) {
+                scene.fog.density = Math.min(0.000012, 0.15 / areaSizeM);
+            }
+            if (sunLight) {
+                sunLight.position.set(areaSizeM * 0.45, areaSizeM * 0.75, areaSizeM * 0.35);
+                sunLight.shadow.camera.far = areaSizeM * 3.0;
+                const shadowDist = areaSizeM * 0.7;
+                sunLight.shadow.camera.left = -shadowDist;
+                sunLight.shadow.camera.right = shadowDist;
+                sunLight.shadow.camera.top = shadowDist;
+                sunLight.shadow.camera.bottom = -shadowDist;
+                if (sunLight.shadow.camera.updateProjectionMatrix) {
+                    sunLight.shadow.camera.updateProjectionMatrix();
+                }
+            }
+
             // A. Teren (PlaneGeometry)
             const segments = 180;
             groundGeometry = new THREE.PlaneGeometry(areaSizeM, areaSizeM, segments, segments);
@@ -1533,70 +1902,162 @@
             buildingMesh.receiveShadow = true;
             buildingMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
 
-            const isDesert = cityConfig.desert;
-            const centerDensity = cityConfig.centerDensity;
-            const highRiseRatio = cityConfig.highRiseRatio;
-            const maxRadius = areaSizeM * 0.46;
+            const isDesert = !!cityConfig.desert;
+            const isNatureReserve = !!cityConfig.isNatureReserve;
+            const isLinearStrip = !!cityConfig.isLinearStrip;
+            const multiCenter = !!cityConfig.multiCenter;
+            const centerDensity = cityConfig.centerDensity || 1.0;
+            const highRiseRatio = cityConfig.highRiseRatio || 0.3;
+            const maxBuildingHeight = cityConfig.maxSkyscraperHeight || 150;
+            const realUrbanRadiusM = cityConfig.realUrbanRadiusM || 6000;
+            const centerRadiusM = cityConfig.centerRadiusM || (realUrbanRadiusM * 0.3);
+            const targetBuildingCount = Math.min(MAX_BUILDINGS, cityConfig.buildingCount || 2800);
 
+            const halfAreaM = areaSizeM * 0.48; // Granica widocznego obszaru
             const tempColor = new THREE.Color();
+            const hideMatrix = new THREE.Matrix4().makeScale(0, 0, 0);
+
+            // Subcentra dla megalopolis (np. Tokio / Londyn)
+            const subCenters = [
+                { x: 0, z: 0, r: centerRadiusM },
+                { x: -realUrbanRadiusM * 0.45, z: -realUrbanRadiusM * 0.2, r: centerRadiusM * 0.75 },
+                { x: -realUrbanRadiusM * 0.4, z: realUrbanRadiusM * 0.35, r: centerRadiusM * 0.7 },
+                { x: realUrbanRadiusM * 0.3, z: realUrbanRadiusM * 0.3, r: centerRadiusM * 0.65 },
+                { x: realUrbanRadiusM * 0.35, z: -realUrbanRadiusM * 0.35, r: centerRadiusM * 0.6 }
+            ];
 
             for (let i = 0; i < MAX_BUILDINGS; i++) {
+                // Jeśli przekraczamy limit budynków dla danego miasta (np. Morasko = 550, Arizona = 35)
+                if (i >= targetBuildingCount) {
+                    buildingMesh.setMatrixAt(i, hideMatrix);
+                    continue;
+                }
+
+                let bx = 0, bz = 0;
+                let isDowntown = false;
+
                 if (isDesert) {
-                    // Na pustyni generujemy tylko nieliczne małe chatki/instalacje
-                    if (i > 60) {
-                        const hideMatrix = new THREE.Matrix4().makeScale(0, 0, 0);
-                        buildingMesh.setMatrixAt(i, hideMatrix);
-                        continue;
+                    // Tylko nieliczne niskie stacje badawcze i budynki turystyczne
+                    const d = Math.random() * Math.min(160, realUrbanRadiusM);
+                    const a = Math.random() * Math.PI * 2;
+                    bx = Math.cos(a) * d;
+                    bz = Math.sin(a) * d;
+                } else if (isNatureReserve) {
+                    // Rezerwat leśny Morasko - budynki tylko na obrzeżach rezerwatu
+                    const d = 650 + Math.random() * (realUrbanRadiusM - 650);
+                    const a = Math.random() * Math.PI * 2;
+                    bx = Math.cos(a) * d;
+                    bz = Math.sin(a) * d;
+                } else if (isLinearStrip) {
+                    // Trójmiasto - pasmo miast wzdłuż osi Z
+                    bz = (Math.random() - 0.5) * realUrbanRadiusM * 1.9;
+                    bx = (Math.random() - 0.5) * (realUrbanRadiusM * 0.4) - 400;
+                    if (Math.abs(bz) < centerRadiusM && Math.random() < highRiseRatio) {
+                        isDowntown = true;
+                    }
+                } else if (multiCenter) {
+                    // Megalopolis (np. Tokio / Londyn) z wieloma węzłami wieżowców
+                    if (Math.random() < 0.65) {
+                        const hub = subCenters[Math.floor(Math.random() * subCenters.length)];
+                        const d = Math.pow(Math.random(), 1.2) * hub.r * 1.4;
+                        const a = Math.random() * Math.PI * 2;
+                        bx = hub.x + Math.cos(a) * d;
+                        bz = hub.z + Math.sin(a) * d;
+                        if (d < hub.r && Math.random() < highRiseRatio) {
+                            isDowntown = true;
+                        }
+                    } else {
+                        const d = Math.pow(Math.random(), 1.2) * realUrbanRadiusM;
+                        const a = Math.random() * Math.PI * 2;
+                        bx = Math.cos(a) * d;
+                        bz = Math.sin(a) * d;
+                    }
+                } else {
+                    // Regularna aglomeracja z 1 głównym centrum (np. Warszawa, Kraków, Paryż)
+                    const distRatio = Math.pow(Math.random(), 1.25);
+                    const dist = distRatio * realUrbanRadiusM;
+                    const angle = Math.random() * Math.PI * 2;
+                    bx = Math.cos(angle) * dist;
+                    bz = Math.sin(angle) * dist;
+
+                    if (dist < centerRadiusM && Math.random() < highRiseRatio) {
+                        isDowntown = true;
                     }
                 }
 
-                // Rozmieszczenie w koncentrycznych strefach z centrum wieżowców
-                const angle = Math.random() * Math.PI * 2;
-                // Skupienie ku centrum miasta
-                const distRatio = Math.pow(Math.random(), 1.4);
-                const dist = distRatio * maxRadius;
-
-                let bx = Math.cos(angle) * dist;
-                let bz = Math.sin(angle) * dist;
-
-                // Sprawdź czy budynek nie ląduje w rzece
-                if (cityConfig.riverWidth > 0) {
+                // Omijanie koryta rzeki
+                if (cityConfig.riverWidth > 0 && !isDesert) {
                     const rAngle = cityConfig.riverAngle;
                     const rDist = Math.abs(bx * Math.sin(rAngle) - bz * Math.cos(rAngle));
-                    if (rDist < cityConfig.riverWidth * 0.7) {
-                        // Przesuń poza rzekę
-                        bx += Math.sign(bx) * cityConfig.riverWidth * 0.8;
+                    if (rDist < cityConfig.riverWidth * 0.65) {
+                        bx += Math.sign(bx || 1) * cityConfig.riverWidth * 0.75;
                     }
                 }
 
-                // Wymiary budynku zależne od odległości od centrum
-                let width = 15 + Math.random() * 25;
-                let depth = 15 + Math.random() * 25;
-                let height = 10 + Math.random() * 20;
+                // Sprawdź czy budynek mieści się w bieżącym kadrze symulacji (bok kwadratu)
+                const isOutOfBounds = (Math.abs(bx) > halfAreaM || Math.abs(bz) > halfAreaM);
+                if (isOutOfBounds) {
+                    buildingMesh.setMatrixAt(i, hideMatrix);
+                    buildingData.push({
+                        index: i,
+                        origX: bx,
+                        origY: 0,
+                        origZ: bz,
+                        width: 0,
+                        height: 0,
+                        depth: 0,
+                        rotY: 0,
+                        origColor: tempColor.clone(),
+                        isDestroyed: false,
+                        isCulled: true,
+                        isDowntown: false
+                    });
+                    continue;
+                }
 
-                const isDowntown = (dist < maxRadius * 0.35) && (Math.random() < highRiseRatio);
-                if (isDowntown) {
+                // Wymiary budynku proporcjonalne do typu strefy i maksymalnej wysokości
+                let width = 14 + Math.random() * 22;
+                let depth = 14 + Math.random() * 22;
+                let height = 8 + Math.random() * 16;
+
+                if (isDesert) {
+                    height = 4 + Math.random() * 5;
+                    width = 12 + Math.random() * 16;
+                    depth = 12 + Math.random() * 16;
+                } else if (isNatureReserve) {
+                    height = 6 + Math.random() * 9;
+                    width = 10 + Math.random() * 14;
+                    depth = 10 + Math.random() * 14;
+                } else if (isDowntown) {
                     // Drapacze chmur w centrum
-                    height = 50 + Math.random() * 220 * centerDensity;
-                    width = 25 + Math.random() * 45;
-                    depth = 25 + Math.random() * 45;
-                } else if (dist < maxRadius * 0.65) {
-                    // Średnia zabudowa (kamienice, biurowce 4-10 pięter)
-                    height = 20 + Math.random() * 45;
+                    const hFactor = 0.4 + 0.6 * Math.random();
+                    height = Math.max(45, hFactor * maxBuildingHeight * centerDensity);
+                    width = 24 + Math.random() * 38;
+                    depth = 24 + Math.random() * 38;
+                } else {
+                    const dCenter = Math.hypot(bx, bz);
+                    if (dCenter < realUrbanRadiusM * 0.5) {
+                        // Średnia zabudowa (kamienice, biurowce 4-10 pięter)
+                        height = 16 + Math.random() * 34;
+                    }
                 }
 
                 const by = getTerrainElevation(bx, bz);
 
                 // Kolor elewacji (nowoczesne szkło, beton, cegła)
                 if (isDowntown) {
-                    tempColor.setHSL(0.55 + Math.random() * 0.1, 0.4, 0.45 + Math.random() * 0.3);
+                    tempColor.setHSL(0.55 + Math.random() * 0.1, 0.45, 0.45 + Math.random() * 0.35);
+                } else if (isDesert) {
+                    tempColor.setRGB(0.7 + Math.random() * 0.15, 0.6 + Math.random() * 0.1, 0.45 + Math.random() * 0.1);
                 } else {
-                    const grey = 0.4 + Math.random() * 0.35;
+                    const grey = 0.38 + Math.random() * 0.35;
                     tempColor.setRGB(grey, grey * 0.95, grey * 0.9);
                 }
                 buildingMesh.setColorAt(i, tempColor);
 
-                const rotY = cityConfig.gridAligned ? Math.round(angle / (Math.PI / 2)) * (Math.PI / 2) : Math.random() * Math.PI * 2;
+                const rotY = cityConfig.gridAligned 
+                    ? Math.round((Math.random() * 4)) * (Math.PI / 2) 
+                    : Math.random() * Math.PI * 2;
 
                 dummyTransform.position.set(bx, by, bz);
                 dummyTransform.rotation.set(0, rotY, 0);
@@ -1616,6 +2077,7 @@
                     rotY,
                     origColor: tempColor.clone(),
                     isDestroyed: false,
+                    isCulled: false,
                     isDowntown
                 });
             }
@@ -2028,6 +2490,8 @@
 
             for (let i = 0; i < buildingData.length; i++) {
                 const b = buildingData[i];
+                if (b.isCulled) continue;
+
                 const dx = b.origX - epicenter.x;
                 const dz = b.origZ - epicenter.z;
                 const dist = Math.sqrt(dx * dx + dz * dz);
@@ -2042,8 +2506,8 @@
                     dummyTransform.rotation.set(0, b.rotY, 0);
                     dummyTransform.scale.set(b.width * 1.2, 0.1, b.depth * 1.2);
                     dummyTransform.updateMatrix();
-                    buildingMesh.setMatrixAt(i, dummyTransform.matrix);
-                    buildingMesh.setColorAt(i, charredColor);
+                    buildingMesh.setMatrixAt(b.index, dummyTransform.matrix);
+                    buildingMesh.setColorAt(b.index, charredColor);
                 } else if (dist < blast20psi) {
                     // Strefa Fali Uderzeniowej (20 psi - przewrócenie i spłaszczenie)
                     b.isDestroyed = true;
@@ -2064,14 +2528,14 @@
                     );
                     dummyTransform.scale.set(b.width, newHeight, b.depth);
                     dummyTransform.updateMatrix();
-                    buildingMesh.setMatrixAt(i, dummyTransform.matrix);
+                    buildingMesh.setMatrixAt(b.index, dummyTransform.matrix);
 
                     const scorch = new THREE.Color().copy(b.origColor).lerp(charredColor, damageRatio * 0.8);
-                    buildingMesh.setColorAt(i, scorch);
+                    buildingMesh.setColorAt(b.index, scorch);
                 } else if (dist < metrics.thermalRadiusM) {
                     // Strefa Termiczna (osmolić elewacje)
                     const scorch = new THREE.Color().copy(b.origColor).lerp(charredColor, 0.4);
-                    buildingMesh.setColorAt(i, scorch);
+                    buildingMesh.setColorAt(b.index, scorch);
                 }
             }
 
@@ -2098,10 +2562,15 @@
         }
 
         function updateDestroyedHUD() {
-            const total = buildingData.length;
-            const pct = total > 0 ? Math.round((destroyedBuildingCount / total) * 100) : 0;
-            document.getElementById('res-destroyed-count').textContent = 
-                `${destroyedBuildingCount.toLocaleString('pl-PL')} / ${total.toLocaleString('pl-PL')} (${pct}%)`;
+            const activeBuildings = buildingData.filter(b => !b.isCulled);
+            const total = activeBuildings.length;
+            const destroyed = activeBuildings.filter(b => b.isDestroyed).length;
+            destroyedBuildingCount = destroyed;
+            const pct = total > 0 ? Math.round((destroyed / total) * 100) : 0;
+            const hudEl = document.getElementById('res-destroyed-count');
+            if (hudEl) {
+                hudEl.textContent = `${destroyed.toLocaleString('pl-PL')} / ${total.toLocaleString('pl-PL')} (${pct}%)`;
+            }
         }
 
         /* --- RESETOWANIE MIASTA I TERENU --- */
@@ -2120,15 +2589,20 @@
             groundGeometry.computeVertexNormals();
 
             // Przywróć budynki
+            const hideMatrix = new THREE.Matrix4().makeScale(0, 0, 0);
             for (let i = 0; i < buildingData.length; i++) {
                 const b = buildingData[i];
                 b.isDestroyed = false;
-                dummyTransform.position.set(b.origX, b.origY, b.origZ);
-                dummyTransform.rotation.set(0, b.rotY, 0);
-                dummyTransform.scale.set(b.width, b.height, b.depth);
-                dummyTransform.updateMatrix();
-                buildingMesh.setMatrixAt(i, dummyTransform.matrix);
-                buildingMesh.setColorAt(i, b.origColor);
+                if (b.isCulled) {
+                    buildingMesh.setMatrixAt(b.index, hideMatrix);
+                } else {
+                    dummyTransform.position.set(b.origX, b.origY, b.origZ);
+                    dummyTransform.rotation.set(0, b.rotY, 0);
+                    dummyTransform.scale.set(b.width, b.height, b.depth);
+                    dummyTransform.updateMatrix();
+                    buildingMesh.setMatrixAt(b.index, dummyTransform.matrix);
+                }
+                buildingMesh.setColorAt(b.index, b.origColor);
             }
             if (buildingMesh.instanceColor) buildingMesh.instanceColor.needsUpdate = true;
             buildingMesh.instanceMatrix.needsUpdate = true;
@@ -2137,7 +2611,6 @@
             updateDestroyedHUD();
 
             // Schowaj odłamki 3D
-            const hideMatrix = new THREE.Matrix4().makeScale(0, 0, 0);
             for (let i = 0; i < MAX_HEAVY_ROCKS; i++) heavyRockMesh.setMatrixAt(i, hideMatrix);
             for (let i = 0; i < MAX_BURNING_ROCKS; i++) burningRockMesh.setMatrixAt(i, hideMatrix);
             heavyRockMesh.instanceMatrix.needsUpdate = true;
@@ -2438,6 +2911,24 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
         }
 
+        /* --- KARTA INFORMACYJNA O SKALI MIASTA --- */
+        function updateCityInfoUI(cityConfig) {
+            if (!cityConfig) return;
+            const titleEl = document.getElementById('city-info-title');
+            const typeEl = document.getElementById('city-info-type');
+            const sizeEl = document.getElementById('city-info-size');
+            const popEl = document.getElementById('city-info-pop');
+            const towersEl = document.getElementById('city-info-towers');
+            const descEl = document.getElementById('city-info-desc');
+
+            if (titleEl) titleEl.textContent = cityConfig.name || state.cityName;
+            if (typeEl) typeEl.textContent = cityConfig.type || 'Metropolia';
+            if (sizeEl) sizeEl.textContent = `📏 Zabudowa: ~${cityConfig.urbanDiameterKm} km`;
+            if (popEl) popEl.textContent = `👥 ${cityConfig.population || 'brak danych'}`;
+            if (towersEl) towersEl.textContent = `🏢 Wieżowce: do ${cityConfig.maxSkyscraperHeight} m`;
+            if (descEl) descEl.textContent = cityConfig.description || 'Obszar miejski.';
+        }
+
         /* --- WYSZUKIWANIE MIASTA (OPENSTREETMAP NOMINATIM GEOCODING) --- */
         async function searchCityOSM(query) {
             if (!query || query.trim() === '') return;
@@ -2455,14 +2946,25 @@
                     // Utwórz dynamiczny profil miasta bazując na geolokalizacji
                     const lat = parseFloat(place.lat);
                     const lon = parseFloat(place.lon);
+                    const isDesert = (lat > 15 && lat < 32 && lon > 10 && lon < 50);
                     
                     CITY_PRESETS['custom'] = {
                         name: cityName,
+                        type: 'Wyszukane Miasto (OSM)',
+                        urbanDiameterKm: isDesert ? 4 : 14,
+                        realUrbanRadiusM: isDesert ? 2000 : 7000,
+                        centerRadiusM: 2000,
+                        defaultAreaKm: 12,
+                        population: 'Aglomeracja',
+                        buildingCount: isDesert ? 150 : 2800,
                         riverAngle: Math.abs(lat % 3.14),
-                        riverWidth: 200,
+                        riverWidth: 180,
+                        highRiseRatio: 0.35,
+                        maxSkyscraperHeight: 180,
                         centerDensity: 1.0,
-                        highRiseRatio: 0.4,
-                        desert: (lat > 15 && lat < 32 && lon > 10 && lon < 50)
+                        gridAligned: false,
+                        desert: isDesert,
+                        description: `Miasto pobrane z bazy OpenStreetMap dla współrzędnych (${lat.toFixed(2)}°, ${lon.toFixed(2)}°).`
                     };
                     state.selectedCity = 'custom';
 
@@ -2477,6 +2979,7 @@
                     customOpt.textContent = `📍 ${cityName}`;
                     select.value = 'custom';
 
+                    updateCityInfoUI(CITY_PRESETS['custom']);
                     rebuildCityAndTerrain();
                     updateCameraForArea();
                 } else {
@@ -2496,12 +2999,28 @@
 
             // 1. Wybór miasta z listy presetów
             const selectCity = document.getElementById('select-city');
+            const inArea = document.getElementById('input-area');
+            const valArea = document.getElementById('val-area');
+
             selectCity.addEventListener('change', (e) => {
                 state.selectedCity = e.target.value;
-                state.cityName = CITY_PRESETS[state.selectedCity].name;
+                const config = CITY_PRESETS[state.selectedCity] || CITY_PRESETS.warszawa;
+                state.cityName = config.name;
+
+                // Sugerowany domyślny obszar widoku dla danego typu miasta
+                if (config.defaultAreaKm) {
+                    state.areaKm = config.defaultAreaKm;
+                    if (inArea) inArea.value = state.areaKm;
+                    if (valArea) valArea.textContent = state.areaKm + ' km';
+                }
+
+                updateCityInfoUI(config);
                 rebuildCityAndTerrain();
                 updateCameraForArea();
             });
+
+            // Inicjalizacja karty info dla domyślnego miasta
+            updateCityInfoUI(CITY_PRESETS[state.selectedCity] || CITY_PRESETS.warszawa);
 
             // Wyszukiwanie miasta
             const btnSearch = document.getElementById('btn-city-search');
@@ -2512,8 +3031,6 @@
             });
 
             // 2. Wielkość obszaru symulacji (1 - 30 km)
-            const inArea = document.getElementById('input-area');
-            const valArea = document.getElementById('val-area');
             inArea.addEventListener('input', (e) => {
                 state.areaKm = parseInt(e.target.value);
                 valArea.textContent = state.areaKm + ' km';
