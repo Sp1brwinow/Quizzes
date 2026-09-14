@@ -952,6 +952,7 @@
       showElectrons: true,
       currentFlowMode: 'conventional', // 'conventional' (+ -> -) lub 'electrons' (- -> +)
       pinPotentials: new Map(),
+      wireCurrents: new Map(),
       electronOffset: 0,
       time: 0,
       activeAudio: false,
@@ -2159,27 +2160,16 @@
         const pts = getWirePoints(wire);
         if (pts.length < 2) return;
 
-        const v1 = circuitState.pinPotentials.get(`${wire.fromElem.id}:${wire.fromPin.id}`) || 0;
-        const v2 = circuitState.pinPotentials.get(`${wire.toElem.id}:${wire.toPin.id}`) || 0;
+        const Iw = circuitState.wireCurrents ? (circuitState.wireCurrents.get(wire) || 0) : 0;
+        if (Math.abs(Iw) < 0.005) return; // Brak prądu w tej gałęzi
 
-        let forward = true;
-        if (Math.abs(v1 - v2) > 0.05) {
-          forward = (v1 > v2);
-        } else {
-          // Gdy potencjały są równe (ten sam węzeł):
-          if (wire.fromElem.type === 'battery' && wire.fromPin.id === 'p') forward = true;
-          else if (wire.toElem.type === 'battery' && wire.toPin.id === 'p') forward = false;
-          else if (wire.fromElem.type === 'battery' && wire.fromPin.id === 'm') forward = false;
-          else if (wire.toElem.type === 'battery' && wire.toPin.id === 'm') forward = true;
-          else if (wire.fromElem.type === 'led' && wire.fromPin.id === 'k') forward = true;
-          else if (wire.toElem.type === 'led' && wire.toPin.id === 'k') forward = false;
-        }
-
+        let forward = (Iw > 0);
         if (circuitState.currentFlowMode === 'electrons') {
           forward = !forward;
         }
 
         const orderedPts = forward ? pts : [...pts].reverse();
+        const speedFactor = Math.min(2.5, Math.max(0.4, Math.pow(Math.abs(Iw), 0.3)));
 
         for (let i = 0; i < orderedPts.length - 1; i++) {
           const pA = orderedPts[i];
@@ -2187,7 +2177,8 @@
           const len = Math.hypot(pB.x - pA.x, pB.y - pA.y);
           if (len < 1) continue;
           const step = 18;
-          for (let d = (circuitState.electronOffset % step); d < len; d += step) {
+          const offset = (circuitState.electronOffset * speedFactor) % step;
+          for (let d = offset; d < len; d += step) {
             const t = d / len;
             const ex = pA.x + (pB.x - pA.x) * t;
             const ey = pA.y + (pB.y - pA.y) * t;
@@ -2620,230 +2611,408 @@
       }
     }
 
-    // --- SYMULACJA FIZYCZNA OBWODU (SOLVER MNA / ANALIZA WĘZŁOWA) ---
+    // --- SYMULACJA FIZYCZNA OBWODU (SOLVER MNA / ANALIZA WĘZŁOWA Z METODĄ NEWTONA-RAPHSONA) ---
     function simulateCircuit() {
-      // 1. Identyfikacja węzłów i DSU (Disjoint Set Union)
-      const pinNet = new Map();
-      let nextNetId = 0;
-
-      function getNet(elemId, pinId) {
-        const key = `${elemId}:${pinId}`;
-        if (!pinNet.has(key)) {
-          pinNet.set(key, nextNetId++);
-        }
-        return pinNet.get(key);
-      }
-
-      circuitState.elements.forEach(elem => {
-        elem.pins.forEach(p => getNet(elem.id, p.id));
-      });
-
-      const parent = Array.from({ length: nextNetId }, (_, i) => i);
-
-      function findRoot(id) {
-        while (parent[id] !== id) {
-          parent[id] = parent[parent[id]];
-          id = parent[id];
-        }
-        return id;
-      }
-
-      function unionNets(id1, id2) {
-        const r1 = findRoot(id1);
-        const r2 = findRoot(id2);
-        if (r1 !== r2) parent[r1] = r2;
-      }
-
-      // Połącz przewody (wires)
-      circuitState.wires.forEach(w => {
-        const n1 = getNet(w.fromElem.id, w.fromPin.id);
-        const n2 = getNet(w.toElem.id, w.toPin.id);
-        unionNets(n1, n2);
-      });
-
-      // Połącz zwarcia (zamknięty switch, amperomierz)
-      circuitState.elements.forEach(elem => {
-        if (elem.type === 'switch' && elem.closed) {
-          unionNets(getNet(elem.id, elem.pins[0].id), getNet(elem.id, elem.pins[1].id));
-        } else if (elem.type === 'ammeter') {
-          unionNets(getNet(elem.id, elem.pins[0].id), getNet(elem.id, elem.pins[1].id));
-        }
-      });
-
-      for (let i = 0; i < nextNetId; i++) {
-        parent[i] = findRoot(i);
-      }
-
-      const netPotential = new Map();
-      circuitState.pinPotentials.clear();
-
-      const battery = circuitState.elements.find(e => e.type === 'battery');
-      const generator = circuitState.elements.find(e => e.type === 'generator');
-      const hasSwitch = circuitState.elements.find(e => e.type === 'switch');
-      const isSwitchOpen = hasSwitch && !hasSwitch.closed;
-
-      let vSource = 0;
-      let posNetRoot = null;
-      let negNetRoot = null;
-
-      if (battery) {
-        vSource = battery.voltage || 9.0;
-        posNetRoot = findRoot(getNet(battery.id, 'p'));
-        negNetRoot = findRoot(getNet(battery.id, 'm'));
-      } else if (generator) {
-        vSource = generator.voltage || 5.0;
-        posNetRoot = findRoot(getNet(generator.id, 'p'));
-        negNetRoot = findRoot(getNet(generator.id, 'm'));
-      }
-
-      let isClosedCircuit = false;
-      let circuitCurrent = 0;
-      let totalResistance = 0;
-      let totalDiodeDrop = 0;
-      let hasBurned = false;
-
-      if (posNetRoot !== null && negNetRoot !== null && posNetRoot !== negNetRoot && !isSwitchOpen) {
-        circuitState.elements.forEach(e => {
-          if (e.type === 'resistor') totalResistance += (e.resistance || 1000);
-          else if (e.type === 'potentiometer') totalResistance += ((e.resistance || 10) * 1000);
-          else if (e.type === 'speaker') totalResistance += 8;
-          else if (e.type === 'led') {
-            if (e.isBurned) hasBurned = true;
-            const model = LED_MODELS[e.ledModel || 'red'] || LED_MODELS.red;
-            const vf = e.vf !== undefined ? e.vf : model.vf;
-            const rs = e.rs !== undefined ? e.rs : model.rs;
-            totalDiodeDrop += vf;
-            totalResistance += rs;
-          } else if (e.type === 'diode') {
-            totalDiodeDrop += (e.vf || 0.70);
-            totalResistance += (e.rs || 1.5);
-          }
-        });
-
-        if (!hasBurned) {
-          if (totalResistance === 0) totalResistance = 1;
-
-          const vNet = Math.max(0, vSource - totalDiodeDrop);
-          circuitCurrent = (vNet / totalResistance) * 1000; // mA
-
-          if (circuitState.wires.length >= 2 && circuitCurrent > 0) {
-            isClosedCircuit = true;
-          }
-
-          // Sprawdzanie czy dioda LED nie ulega przeciążeniu / spaleniu z braku rezystora
-          circuitState.elements.forEach(e => {
-            if (e.type === 'led' && !e.isBurned) {
-              const imax = e.imax || 35;
-              if (circuitCurrent > imax * 1.3) {
-                e.isBurned = true;
-                isClosedCircuit = false;
-                circuitCurrent = 0;
-                showToast(`💥 Dioda LED uległa spaleniu! Prąd ${((vNet/totalResistance)*1000).toFixed(1)} mA przekroczył Imax (${imax} mA) - brak rezystora R!`);
-              }
-            }
-          });
-        }
-      }
-
-      if (isClosedCircuit) {
-        circuitState.voltage = vSource;
-        circuitState.current = circuitCurrent;
-        circuitState.power = (circuitState.voltage * (circuitCurrent / 1000)) * 1000; // mW
-
-        netPotential.set(negNetRoot, 0.0);
-        netPotential.set(posNetRoot, vSource);
-
-        // Rozkład potencjałów w gałęzi
-        circuitState.elements.forEach(elem => {
-          if (elem.type === 'resistor') {
-            const n1 = findRoot(getNet(elem.id, elem.pins[0].id));
-            const n2 = findRoot(getNet(elem.id, elem.pins[1].id));
-            const vDrop = (circuitCurrent / 1000) * (elem.resistance || 1000);
-            
-            if (n1 === posNetRoot && !netPotential.has(n2)) {
-              netPotential.set(n2, Math.max(0, vSource - vDrop));
-            } else if (n2 === posNetRoot && !netPotential.has(n1)) {
-              netPotential.set(n1, Math.max(0, vSource - vDrop));
-            } else if (n1 === negNetRoot && !netPotential.has(n2)) {
-              netPotential.set(n2, vDrop);
-            } else if (n2 === negNetRoot && !netPotential.has(n1)) {
-              netPotential.set(n1, vDrop);
-            }
-          } else if (elem.type === 'led') {
-            const model = LED_MODELS[elem.ledModel || 'red'] || LED_MODELS.red;
-            const vf = elem.vf !== undefined ? elem.vf : model.vf;
-            const rs = elem.rs !== undefined ? elem.rs : model.rs;
-            const vDrop = vf + (circuitCurrent / 1000) * rs;
-
-            const na = findRoot(getNet(elem.id, 'a'));
-            const nk = findRoot(getNet(elem.id, 'k'));
-            if (nk === negNetRoot && !netPotential.has(na)) {
-              netPotential.set(na, vDrop);
-            } else if (na === posNetRoot && !netPotential.has(nk)) {
-              netPotential.set(nk, Math.max(0, vSource - vDrop));
-            }
-          } else if (elem.type === 'diode') {
-            const vf = elem.vf || 0.70;
-            const rs = elem.rs || 1.5;
-            const vDrop = vf + (circuitCurrent / 1000) * rs;
-
-            const na = findRoot(getNet(elem.id, 'a'));
-            const nk = findRoot(getNet(elem.id, 'k'));
-            if (nk === negNetRoot && !netPotential.has(na)) {
-              netPotential.set(na, vDrop);
-            } else if (na === posNetRoot && !netPotential.has(nk)) {
-              netPotential.set(nk, Math.max(0, vSource - vDrop));
-            }
-          }
-        });
-
-        // Wypełnij mapę potencjałów pinów
-        circuitState.elements.forEach(elem => {
-          elem.pins.forEach(pin => {
-            const net = findRoot(getNet(elem.id, pin.id));
-            const pot = netPotential.has(net) ? netPotential.get(net) : (net === posNetRoot ? vSource : 0);
-            circuitState.pinPotentials.set(`${elem.id}:${pin.id}`, pot);
-          });
-        });
-      } else {
+      if (!circuitState.elements || circuitState.elements.length === 0) {
         circuitState.voltage = 0;
         circuitState.current = 0;
         circuitState.power = 0;
-        circuitState.elements.forEach(elem => {
-          elem.pins.forEach(pin => {
-            circuitState.pinPotentials.set(`${elem.id}:${pin.id}`, 0);
-          });
-        });
+        circuitState.pinPotentials.clear();
+        if (circuitState.wireCurrents) circuitState.wireCurrents.clear();
+        return;
       }
 
-      // Aktualizacja wartości na miernikach umieszczonych na schemacie (Wariant 2)
+      // 1. Unikalne indeksy węzłów dla każdego styku
+      const pinToNode = new Map();
+      let nodeCount = 0;
       circuitState.elements.forEach(el => {
-        if (el.type === 'voltmeter') {
-          const p1Net = findRoot(getNet(el.id, el.pins[0].id));
-          const p2Net = findRoot(getNet(el.id, el.pins[1].id));
-          const w1 = circuitState.wires.some(w => (w.fromElem === el && w.fromPin.id === el.pins[0].id) || (w.toElem === el && w.toPin.id === el.pins[0].id));
-          const w2 = circuitState.wires.some(w => (w.fromElem === el && w.fromPin.id === el.pins[1].id) || (w.toElem === el && w.toPin.id === el.pins[1].id));
+        el.pins.forEach(p => {
+          pinToNode.set(`${el.id}:${p.id}`, nodeCount++);
+        });
+      });
 
-          if (w1 && w2 && isClosedCircuit) {
-            const v1 = netPotential.has(p1Net) ? netPotential.get(p1Net) : (p1Net === posNetRoot ? vSource : 0);
-            const v2 = netPotential.has(p2Net) ? netPotential.get(p2Net) : (p2Net === posNetRoot ? vSource : 0);
-            const measuredU = Math.abs(v1 - v2);
-            el.measuredVal = measuredU.toFixed(2) + ' V';
-          } else {
-            el.measuredVal = '0.00 V';
+      // 2. Wybór węzła odniesienia (GND / 0V)
+      let gndNode = -1;
+      const gndEl = circuitState.elements.find(e => e.type === 'gnd');
+      if (gndEl) {
+        gndNode = pinToNode.get(`${gndEl.id}:${gndEl.pins[0].id}`);
+      } else {
+        const bat = circuitState.elements.find(e => e.type === 'battery' || e.type === 'generator');
+        if (bat) {
+          gndNode = pinToNode.get(`${bat.id}:m`);
+        } else {
+          gndNode = 0;
+        }
+      }
+      if (gndNode === undefined || gndNode < 0) gndNode = 0;
+
+      const dim = nodeCount - 1;
+      if (dim <= 0) {
+        circuitState.voltage = 0;
+        circuitState.current = 0;
+        circuitState.power = 0;
+        return;
+      }
+
+      function mapNode(idx) {
+        if (idx === gndNode) return -1;
+        return idx < gndNode ? idx : idx - 1;
+      }
+      function unmapNode(matIdx) {
+        return matIdx < gndNode ? matIdx : matIdx + 1;
+      }
+
+      let V = new Array(nodeCount).fill(0);
+      circuitState.elements.forEach(el => {
+        if (el.type === 'battery') {
+          const np = pinToNode.get(`${el.id}:p`);
+          if (np !== undefined) V[np] = el.voltage || 9.0;
+        }
+      });
+
+      const gWire = 200; // 5 mOhm na przewód
+
+      // Pętla nieliniowa Newtona-Raphsona (15 iteracji dla pełnej zbieżności półprzewodników)
+      for (let iter = 0; iter < 15; iter++) {
+        const G = Array.from({ length: dim }, () => new Array(dim).fill(0));
+        const RHS = new Array(dim).fill(0);
+
+        function addG(n1, n2, g) {
+          if (n1 === undefined || n2 === undefined) return;
+          const m1 = mapNode(n1);
+          const m2 = mapNode(n2);
+          if (m1 >= 0) G[m1][m1] += g;
+          if (m2 >= 0) G[m2][m2] += g;
+          if (m1 >= 0 && m2 >= 0) {
+            G[m1][m2] -= g;
+            G[m2][m1] -= g;
           }
-        } else if (el.type === 'ammeter') {
-          const w1 = circuitState.wires.some(w => (w.fromElem === el && w.fromPin.id === el.pins[0].id) || (w.toElem === el && w.toPin.id === el.pins[0].id));
-          const w2 = circuitState.wires.some(w => (w.fromElem === el && w.fromPin.id === el.pins[1].id) || (w.toElem === el && w.toPin.id === el.pins[1].id));
-          if (w1 && w2 && isClosedCircuit && circuitState.current > 0) {
-            el.measuredVal = circuitState.current.toFixed(1) + ' mA';
-          } else {
-            el.measuredVal = '0.0 mA';
+        }
+        function addI(n1, n2, ieq) {
+          if (n1 === undefined || n2 === undefined) return;
+          const m1 = mapNode(n1);
+          const m2 = mapNode(n2);
+          if (m1 >= 0) RHS[m1] -= ieq;
+          if (m2 >= 0) RHS[m2] += ieq;
+        }
+
+        // Stemplowanie przewodów (wires)
+        circuitState.wires.forEach(w => {
+          const n1 = pinToNode.get(`${w.fromElem.id}:${w.fromPin.id}`);
+          const n2 = pinToNode.get(`${w.toElem.id}:${w.toPin.id}`);
+          addG(n1, n2, gWire);
+        });
+
+        // Stemplowanie elementów
+        circuitState.elements.forEach(el => {
+          switch (el.type) {
+            case 'battery': {
+              const np = pinToNode.get(`${el.id}:p`);
+              const nm = pinToNode.get(`${el.id}:m`);
+              const vBat = el.voltage || 9.0;
+              const gBat = 100;
+              addG(np, nm, gBat);
+              addI(np, nm, - vBat * gBat);
+              break;
+            }
+            case 'generator': {
+              const np = pinToNode.get(`${el.id}:p`);
+              const nm = pinToNode.get(`${el.id}:m`);
+              const vGen = (el.voltage || 5.0) * Math.sin(2 * Math.PI * 1000 * circuitState.time);
+              const gGen = 100;
+              addG(np, nm, gGen);
+              addI(np, nm, - vGen * gGen);
+              break;
+            }
+            case 'resistor': {
+              const n1 = pinToNode.get(`${el.id}:1`);
+              const n2 = pinToNode.get(`${el.id}:2`);
+              const r = Math.max(0.1, el.resistance || 1000);
+              addG(n1, n2, 1 / r);
+              break;
+            }
+            case 'potentiometer': {
+              const n1 = pinToNode.get(`${el.id}:1`);
+              const nw = pinToNode.get(`${el.id}:wiper`);
+              const n2 = pinToNode.get(`${el.id}:2`);
+              const rTot = Math.max(1, (el.resistance || 10) * 1000);
+              const pos = el.wiperPos !== undefined ? el.wiperPos : 0.5;
+              const r1 = Math.max(0.1, rTot * pos);
+              const r2 = Math.max(0.1, rTot * (1 - pos));
+              addG(n1, nw, 1 / r1);
+              addG(nw, n2, 1 / r2);
+              break;
+            }
+            case 'switch': {
+              const n1 = pinToNode.get(`${el.id}:1`);
+              const n2 = pinToNode.get(`${el.id}:2`);
+              const gSw = el.closed ? 200 : 1e-7;
+              addG(n1, n2, gSw);
+              break;
+            }
+            case 'capacitor': {
+              const n1 = pinToNode.get(`${el.id}:1`);
+              const n2 = pinToNode.get(`${el.id}:2`);
+              const capUf = el.capacitance || 100;
+              const xc = 1 / (2 * Math.PI * 1000 * (capUf * 1e-6) + 1e-9);
+              addG(n1, n2, 1 / xc);
+              break;
+            }
+            case 'inductor': {
+              const n1 = pinToNode.get(`${el.id}:1`);
+              const n2 = pinToNode.get(`${el.id}:2`);
+              const indMh = el.inductance || 10;
+              const xl = (2 * Math.PI * 1000 * (indMh * 1e-3)) + 0.01;
+              addG(n1, n2, 1 / xl);
+              break;
+            }
+            case 'transformer': {
+              const np1 = pinToNode.get(`${el.id}:p1`);
+              const np2 = pinToNode.get(`${el.id}:p2`);
+              const ns1 = pinToNode.get(`${el.id}:s1`);
+              const ns2 = pinToNode.get(`${el.id}:s2`);
+              addG(np1, np2, 1 / 2);
+              addG(ns1, ns2, 1 / 2);
+              break;
+            }
+            case 'led':
+            case 'diode': {
+              const na = pinToNode.get(`${el.id}:a`);
+              const nk = pinToNode.get(`${el.id}:k`);
+              if (na === undefined || nk === undefined) break;
+              const vD = V[na] - V[nk];
+              const vf = el.vf !== undefined ? el.vf : (el.type === 'led' ? 1.95 : 0.70);
+              const rs = el.rs !== undefined ? el.rs : (el.type === 'led' ? 15 : 1.5);
+              const Ion = 0.001;
+              if (el.isBurned) {
+                addG(na, nk, 1e-7);
+              } else if (vD <= 0) {
+                addG(na, nk, 1e-7);
+              } else if (vD < vf) {
+                const g = 2 * Ion * vD / (vf * vf) + 1e-7;
+                const I = Ion * Math.pow(vD / vf, 2);
+                const Ieq = I - g * vD;
+                addG(na, nk, g);
+                addI(na, nk, Ieq);
+              } else {
+                const g = 1 / rs;
+                const I = Ion + (vD - vf) / rs;
+                const Ieq = I - g * vD;
+                addG(na, nk, g);
+                addI(na, nk, Ieq);
+              }
+              break;
+            }
+            case 'npn': {
+              const nb = pinToNode.get(`${el.id}:b`);
+              const nc = pinToNode.get(`${el.id}:c`);
+              const ne = pinToNode.get(`${el.id}:e`);
+              if (nb === undefined || nc === undefined || ne === undefined) break;
+              const vbe = V[nb] - V[ne];
+              const vf = 0.68;
+              const rs = 10;
+              const Ion = 0.001;
+              let ib = 0;
+              if (vbe <= 0) {
+                addG(nb, ne, 1e-7);
+              } else if (vbe < vf) {
+                const g = 2 * Ion * vbe / (vf * vf) + 1e-7;
+                const I = Ion * Math.pow(vbe / vf, 2);
+                const Ieq = I - g * vbe;
+                addG(nb, ne, g);
+                addI(nb, ne, Ieq);
+                ib = I;
+              } else {
+                const g = 1 / rs;
+                const I = Ion + (vbe - vf) / rs;
+                const Ieq = I - g * vbe;
+                addG(nb, ne, g);
+                addI(nb, ne, Ieq);
+                ib = I;
+              }
+
+              const beta = 150;
+              const icTarget = Math.max(0, beta * ib);
+              const vce = Math.max(0, V[nc] - V[ne]);
+              const rSat = 10;
+              const icSat = Math.max(0, (vce - 0.15) / rSat);
+              if (icTarget >= icSat) {
+                addG(nc, ne, 1 / rSat);
+                addI(nc, ne, - 0.15 / rSat);
+              } else {
+                addI(nc, ne, icTarget);
+              }
+              break;
+            }
+            case 'pnp': {
+              const nb = pinToNode.get(`${el.id}:b`);
+              const ne = pinToNode.get(`${el.id}:e`);
+              const nc = pinToNode.get(`${el.id}:c`);
+              if (nb === undefined || ne === undefined || nc === undefined) break;
+              const veb = V[ne] - V[nb];
+              const vf = 0.68;
+              const rs = 10;
+              const Ion = 0.001;
+              let ib = 0;
+              if (veb <= 0) {
+                addG(ne, nb, 1e-7);
+              } else if (veb < vf) {
+                const g = 2 * Ion * veb / (vf * vf) + 1e-7;
+                const I = Ion * Math.pow(veb / vf, 2);
+                const Ieq = I - g * veb;
+                addG(ne, nb, g);
+                addI(ne, nb, Ieq);
+                ib = I;
+              } else {
+                const g = 1 / rs;
+                const I = Ion + (veb - vf) / rs;
+                const Ieq = I - g * veb;
+                addG(ne, nb, g);
+                addI(ne, nb, Ieq);
+                ib = I;
+              }
+
+              const beta = 150;
+              const icTarget = Math.max(0, beta * ib);
+              const vec = Math.max(0, V[ne] - V[nc]);
+              const rSat = 10;
+              const icSat = Math.max(0, (vec - 0.15) / rSat);
+              if (icTarget >= icSat) {
+                addG(ne, nc, 1 / rSat);
+                addI(ne, nc, - 0.15 / rSat);
+              } else {
+                addI(ne, nc, icTarget);
+              }
+              break;
+            }
+            case 'voltmeter': {
+              const np = pinToNode.get(`${el.id}:p`);
+              const nm = pinToNode.get(`${el.id}:m`);
+              addG(np, nm, 1e-7);
+              break;
+            }
+            case 'ammeter': {
+              const np = pinToNode.get(`${el.id}:p`);
+              const nm = pinToNode.get(`${el.id}:m`);
+              addG(np, nm, 1000); // 1 mOhm
+              break;
+            }
+            case 'speaker': {
+              const n1 = pinToNode.get(`${el.id}:in`);
+              const n2 = pinToNode.get(`${el.id}:gnd`);
+              addG(n1, n2, 1 / 8);
+              break;
+            }
+            case 'microphone': {
+              const n1 = pinToNode.get(`${el.id}:out`);
+              const n2 = pinToNode.get(`${el.id}:gnd`);
+              const vMic = 0.1 * Math.sin(2 * Math.PI * 1000 * circuitState.time);
+              const gMic = 1 / 600;
+              addG(n1, n2, gMic);
+              addI(n1, n2, - vMic * gMic);
+              break;
+            }
+          }
+        });
+
+        // Boczniki numeryczne
+        for (let i = 0; i < dim; i++) G[i][i] += 1e-9;
+
+        // Rozwiązanie układu liniowego Gaussa
+        const M = Array.from({ length: dim }, (_, i) => [...G[i], RHS[i]]);
+        for (let i = 0; i < dim; i++) {
+          let maxRow = i;
+          for (let k = i + 1; k < dim; k++) {
+            if (Math.abs(M[k][i]) > Math.abs(M[maxRow][i])) maxRow = k;
+          }
+          if (Math.abs(M[maxRow][i]) > 1e-12) {
+            if (maxRow !== i) { const tmp = M[i]; M[i] = M[maxRow]; M[maxRow] = tmp; }
+            const pivot = M[i][i];
+            for (let j = i; j <= dim; j++) M[i][j] /= pivot;
+            for (let k = 0; k < dim; k++) {
+              if (k !== i) {
+                const factor = M[k][i];
+                for (let j = i; j <= dim; j++) M[k][j] -= factor * M[i][j];
+              }
+            }
+          }
+        }
+
+        V = new Array(nodeCount).fill(0);
+        for (let i = 0; i < dim; i++) {
+          V[unmapNode(i)] = isNaN(M[i][dim]) ? 0 : M[i][dim];
+        }
+      }
+
+      // Sprawdzanie przeciążenia LED na stanie ustalonym
+      circuitState.elements.forEach(el => {
+        if (el.type === 'led' && !el.isBurned) {
+          const na = pinToNode.get(`${el.id}:a`);
+          const nk = pinToNode.get(`${el.id}:k`);
+          if (na !== undefined && nk !== undefined) {
+            const vD = V[na] - V[nk];
+            const vf = el.vf !== undefined ? el.vf : 1.95;
+            const rs = el.rs !== undefined ? el.rs : 15;
+            if (vD > vf) {
+              const I_mA = (vD - vf) / rs * 1000;
+              const imax = el.imax || 35;
+              if (I_mA > imax * 1.5) {
+                el.isBurned = true;
+                showToast(`💥 Dioda LED uległa spaleniu! Prąd ${I_mA.toFixed(1)} mA przekroczył Imax (${imax} mA) - brak rezystora R!`);
+              }
+            }
           }
         }
       });
 
-      // Aktualizacja wybranego miernika w panelu bocznym
+      // Zapis potencjałów pinów
+      circuitState.pinPotentials.clear();
+      pinToNode.forEach((nodeIdx, key) => {
+        circuitState.pinPotentials.set(key, V[nodeIdx]);
+      });
+
+      // Wyznaczenie rzeczywistych prądów w każdym przewodzie
+      if (!circuitState.wireCurrents) circuitState.wireCurrents = new Map();
+      circuitState.wireCurrents.clear();
+      let maxCurrent = 0;
+
+      circuitState.wires.forEach(w => {
+        const n1 = pinToNode.get(`${w.fromElem.id}:${w.fromPin.id}`);
+        const n2 = pinToNode.get(`${w.toElem.id}:${w.toPin.id}`);
+        if (n1 !== undefined && n2 !== undefined) {
+          const I = (V[n1] - V[n2]) * gWire * 1000; // mA
+          circuitState.wireCurrents.set(w, I);
+          if (Math.abs(I) > maxCurrent) maxCurrent = Math.abs(I);
+        } else {
+          circuitState.wireCurrents.set(w, 0);
+        }
+      });
+
+      // Odczyty mierników na schemacie
+      circuitState.elements.forEach(el => {
+        if (el.type === 'voltmeter') {
+          const np = pinToNode.get(`${el.id}:p`);
+          const nm = pinToNode.get(`${el.id}:m`);
+          const vp = np !== undefined ? V[np] : 0;
+          const vm = nm !== undefined ? V[nm] : 0;
+          const measuredU = Math.abs(vp - vm);
+          el.measuredVal = measuredU.toFixed(2) + ' V';
+        } else if (el.type === 'ammeter') {
+          const np = pinToNode.get(`${el.id}:p`);
+          const nm = pinToNode.get(`${el.id}:m`);
+          const vp = np !== undefined ? V[np] : 0;
+          const vm = nm !== undefined ? V[nm] : 0;
+          const I = Math.abs((vp - vm) * 1000 * 1000); // mA
+          el.measuredVal = I.toFixed(1) + ' mA';
+        }
+      });
+
+      // Multimetr laboratoryjny
+      const bat = circuitState.elements.find(e => e.type === 'battery' || e.type === 'generator');
+      circuitState.voltage = bat ? (bat.voltage || 9.0) : 0;
+      circuitState.current = maxCurrent;
+      circuitState.power = (circuitState.voltage * (circuitState.current / 1000)) * 1000;
+
       if (circuitState.selectedElement && (circuitState.selectedElement.type === 'voltmeter' || circuitState.selectedElement.type === 'ammeter')) {
         const liveValElem = document.getElementById('liveMeterPropVal');
         if (liveValElem) {
@@ -2851,7 +3020,6 @@
         }
       }
 
-      // Aktualizacja wyświetlacza multimetru
       document.getElementById('dispVoltage').textContent = circuitState.voltage.toFixed(2) + ' V';
       document.getElementById('dispCurrent').textContent = circuitState.current.toFixed(1) + ' mA';
       document.getElementById('dispPower').textContent = circuitState.power.toFixed(1) + ' mW';
@@ -3009,26 +3177,35 @@
         showToast('Wczytano: Ściemniacz LED z potencjometrem');
 
       } else if (presetName === 'transistor_switch') {
-        // 4. Klucz tranzystorowy NPN (Wzór podręcznikowy)
-        const bat = createPresetElem('battery', cx - 200, cy, 90, { voltage: 9.0 });
-        const rBase = createPresetElem('resistor', cx - 60, cy, 0, { resistance: 10000 });
-        const npn = createPresetElem('npn', cx + 40, cy, 0);
-        const rColl = createPresetElem('resistor', cx + 54, cy - 150, 90, { resistance: 470 });
-        const led = createPresetElem('led', cx + 54, cy - 70, 90);
+        // 4. Klucz tranzystorowy NPN (Układ laboratoryjny z dzielnikiem bazy i pomiarami V & A)
+        const bat = createPresetElem('battery', cx + 180, cy + 60, 90, { voltage: 9.0 });
+        const r10k = createPresetElem('resistor', cx - 160, cy - 80, 90, { resistance: 10000 });
+        const r47k = createPresetElem('resistor', cx - 160, cy + 120, 90, { resistance: 4700 });
+        const volt = createPresetElem('voltmeter', cx - 240, cy + 120, 90);
+        const npn = createPresetElem('npn', cx - 20, cy + 60, 0);
+        const rc = createPresetElem('resistor', cx + 60, cy - 180, 90, { resistance: 390 });
+        const led = createPresetElem('led', cx + 60, cy - 100, 90);
+        const amm = createPresetElem('ammeter', cx + 60, cy - 20, 90);
 
         circuitState.wires.push(
-          // Szyna zasilania (+) do rezystora bazy i rezystora kolektora
-          { fromElem: bat, fromPin: bat.pins[0], toElem: rColl, toPin: rColl.pins[0], routeMode: 'auto' },
-          { fromElem: bat, fromPin: bat.pins[0], toElem: rBase, toPin: rBase.pins[0], routeMode: 'auto' },
-          // Rezystor bazy do Bazy NPN (linia prosta pozioma)
-          { fromElem: rBase, fromPin: rBase.pins[1], toElem: npn, toPin: npn.pins[0], routeMode: 'auto' },
-          // Gałąź kolektora: Rc -> LED -> Kolektor NPN (proste linie pionowe)
-          { fromElem: rColl, fromPin: rColl.pins[1], toElem: led, toPin: led.pins[0], routeMode: 'auto' },
-          { fromElem: led, fromPin: led.pins[1], toElem: npn, toPin: npn.pins[1], routeMode: 'auto' },
-          // Emiter do szyny masy (-)
+          // Szyna górna (+9V): bat(+) -> rc(1) oraz bat(+) -> r10k(1)
+          { fromElem: bat, fromPin: bat.pins[0], toElem: rc, toPin: rc.pins[0], routeMode: 'auto' },
+          { fromElem: bat, fromPin: bat.pins[0], toElem: r10k, toPin: r10k.pins[0], routeMode: 'auto' },
+          // Dzielnik bazy: r10k(2) -> r47k(1) oraz do bazy NPN
+          { fromElem: r10k, fromPin: r10k.pins[1], toElem: r47k, toPin: r47k.pins[0], routeMode: 'auto' },
+          { fromElem: r10k, fromPin: r10k.pins[1], toElem: npn, toPin: npn.pins[0], routeMode: 'auto' },
+          // Woltomierz równolegle do r47k
+          { fromElem: r47k, fromPin: r47k.pins[0], toElem: volt, toPin: volt.pins[0], routeMode: 'auto' },
+          { fromElem: r47k, fromPin: r47k.pins[1], toElem: volt, toPin: volt.pins[1], routeMode: 'auto' },
+          // Gałąź kolektora: rc(2) -> led(a) -> led(k) -> amm(p) -> amm(m) -> npn(c)
+          { fromElem: rc, fromPin: rc.pins[1], toElem: led, toPin: led.pins[0], routeMode: 'auto' },
+          { fromElem: led, fromPin: led.pins[1], toElem: amm, toPin: amm.pins[0], routeMode: 'auto' },
+          { fromElem: amm, fromPin: amm.pins[1], toElem: npn, toPin: npn.pins[1], routeMode: 'auto' },
+          // Szyna dolna masy (0V / GND): r47k(2) -> bat(m) oraz npn(e) -> bat(m)
+          { fromElem: r47k, fromPin: r47k.pins[1], toElem: bat, toPin: bat.pins[1], routeMode: 'auto' },
           { fromElem: npn, fromPin: npn.pins[2], toElem: bat, toPin: bat.pins[1], routeMode: 'auto' }
         );
-        showToast('Wczytano: Klucz Tranzystorowy NPN sterujący diodą');
+        showToast('Wczytano: Klucz Tranzystorowy NPN (Dzielnik + LED + Pomiary)');
 
       } else if (presetName === 'diode_rectifier') {
         // 5. Prostownik jednopołówkowy z diodą i filtrem RC
