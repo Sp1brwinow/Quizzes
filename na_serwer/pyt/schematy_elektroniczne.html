@@ -2783,20 +2783,18 @@
               const vD = V[na] - V[nk];
               const vf = el.vf !== undefined ? el.vf : (el.type === 'led' ? 1.95 : 0.70);
               const rs = el.rs !== undefined ? el.rs : (el.type === 'led' ? 15 : 1.5);
-              const Ion = 0.001;
-              if (el.isBurned) {
-                addG(na, nk, 1e-7);
-              } else if (vD <= 0) {
-                addG(na, nk, 1e-7);
+              const Iknee = 0.0001; // 0.1 mA
+              if (el.isBurned || vD <= 0) {
+                addG(na, nk, 1e-9);
               } else if (vD < vf) {
-                const g = 2 * Ion * vD / (vf * vf) + 1e-7;
-                const I = Ion * Math.pow(vD / vf, 2);
+                const g = 4 * Iknee * Math.pow(vD / vf, 3) / vf + 1e-9;
+                const I = Iknee * Math.pow(vD / vf, 4);
                 const Ieq = I - g * vD;
                 addG(na, nk, g);
                 addI(na, nk, Ieq);
               } else {
                 const g = 1 / rs;
-                const I = Ion + (vD - vf) / rs;
+                const I = Iknee + (vD - vf) / rs;
                 const Ieq = I - g * vD;
                 addG(na, nk, g);
                 addI(na, nk, Ieq);
@@ -2809,32 +2807,39 @@
               const ne = pinToNode.get(`${el.id}:e`);
               if (nb === undefined || nc === undefined || ne === undefined) break;
               const vbe = V[nb] - V[ne];
-              const vf = 0.68;
-              const rs = 10;
-              const Ion = 0.001;
-              let ib = 0;
+
+              // Model Shockleya złącza Baza-Emiter dla BC547 (Is = 15 fA, n = 1.05, Vt = 26 mV, Rb = 10 Ohm)
+              const Is = 1.5e-14;
+              const nVt = 1.05 * 0.026; // ~0.0273 V
+              const Rb = 10;
+              const V_trans = 0.65;
+              const I_trans = Is * (Math.exp(V_trans / nVt) - 1);
+              const gd_trans = (Is * Math.exp(V_trans / nVt)) / nVt;
+              const g_trans = gd_trans / (1 + gd_trans * Rb);
+
+              let geff, Ieq, ib;
               if (vbe <= 0) {
-                addG(nb, ne, 1e-7);
-              } else if (vbe < vf) {
-                const g = 2 * Ion * vbe / (vf * vf) + 1e-7;
-                const I = Ion * Math.pow(vbe / vf, 2);
-                const Ieq = I - g * vbe;
-                addG(nb, ne, g);
-                addI(nb, ne, Ieq);
-                ib = I;
+                geff = 1e-9; Ieq = 0; ib = 0;
+              } else if (vbe < V_trans) {
+                const eVal = Math.exp(vbe / nVt);
+                const Id = Is * (eVal - 1);
+                const gd = (Is * eVal) / nVt + 1e-9;
+                geff = gd / (1 + gd * Rb);
+                ib = Math.max(0, Id / (1 + gd * Rb));
+                Ieq = ib - geff * vbe;
               } else {
-                const g = 1 / rs;
-                const I = Ion + (vbe - vf) / rs;
-                const Ieq = I - g * vbe;
-                addG(nb, ne, g);
-                addI(nb, ne, Ieq);
-                ib = I;
+                geff = g_trans;
+                ib = Math.max(0, I_trans + (vbe - V_trans) * g_trans);
+                Ieq = ib - geff * vbe;
               }
 
-              const beta = 150;
+              addG(nb, ne, geff);
+              addI(nb, ne, Ieq);
+
+              const beta = 200;
               const icTarget = Math.max(0, beta * ib);
               const vce = Math.max(0, V[nc] - V[ne]);
-              const rSat = 10;
+              const rSat = 8;
               const icSat = Math.max(0, (vce - 0.15) / rSat);
               if (icTarget >= icSat) {
                 addG(nc, ne, 1 / rSat);
@@ -2850,32 +2855,39 @@
               const nc = pinToNode.get(`${el.id}:c`);
               if (nb === undefined || ne === undefined || nc === undefined) break;
               const veb = V[ne] - V[nb];
-              const vf = 0.68;
-              const rs = 10;
-              const Ion = 0.001;
-              let ib = 0;
+
+              // Model Shockleya złącza Emiter-Baza dla BC557 (Is = 15 fA, n = 1.05, Vt = 26 mV, Rb = 10 Ohm)
+              const Is = 1.5e-14;
+              const nVt = 1.05 * 0.026;
+              const Rb = 10;
+              const V_trans = 0.65;
+              const I_trans = Is * (Math.exp(V_trans / nVt) - 1);
+              const gd_trans = (Is * Math.exp(V_trans / nVt)) / nVt;
+              const g_trans = gd_trans / (1 + gd_trans * Rb);
+
+              let geff, Ieq, ib;
               if (veb <= 0) {
-                addG(ne, nb, 1e-7);
-              } else if (veb < vf) {
-                const g = 2 * Ion * veb / (vf * vf) + 1e-7;
-                const I = Ion * Math.pow(veb / vf, 2);
-                const Ieq = I - g * veb;
-                addG(ne, nb, g);
-                addI(ne, nb, Ieq);
-                ib = I;
+                geff = 1e-9; Ieq = 0; ib = 0;
+              } else if (veb < V_trans) {
+                const eVal = Math.exp(veb / nVt);
+                const Id = Is * (eVal - 1);
+                const gd = (Is * eVal) / nVt + 1e-9;
+                geff = gd / (1 + gd * Rb);
+                ib = Math.max(0, Id / (1 + gd * Rb));
+                Ieq = ib - geff * veb;
               } else {
-                const g = 1 / rs;
-                const I = Ion + (veb - vf) / rs;
-                const Ieq = I - g * veb;
-                addG(ne, nb, g);
-                addI(ne, nb, Ieq);
-                ib = I;
+                geff = g_trans;
+                ib = Math.max(0, I_trans + (veb - V_trans) * g_trans);
+                Ieq = ib - geff * veb;
               }
 
-              const beta = 150;
+              addG(ne, nb, geff);
+              addI(ne, nb, Ieq);
+
+              const beta = 200;
               const icTarget = Math.max(0, beta * ib);
               const vec = Math.max(0, V[ne] - V[nc]);
-              const rSat = 10;
+              const rSat = 8;
               const icSat = Math.max(0, (vec - 0.15) / rSat);
               if (icTarget >= icSat) {
                 addG(ne, nc, 1 / rSat);
