@@ -205,7 +205,23 @@
       color: var(--text-muted);
     }
 
-    /* ŚRODEK: OBSZAR ROBOCZY SCHEMATU */
+    /* ŚRODEK: OBSZAR ROBOCZY SCHEMATU Z PASKAMI PRZEWIJANIA (LEWY I DOLNY) */
+    .workspace-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      background: #020617;
+    }
+
+    .workspace-row {
+      flex: 1;
+      display: flex;
+      position: relative;
+      overflow: hidden;
+    }
+
     .workspace-container {
       flex: 1;
       position: relative;
@@ -218,6 +234,154 @@
       width: 100%;
       height: 100%;
       display: block;
+    }
+
+    /* PIONOWY PASEK PRZEWIJANIA PO LEWEJ STRONIE (LEFT VERTICAL SCROLLBAR) */
+    .custom-scrollbar-v {
+      width: 16px;
+      background: #090e1a;
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      user-select: none;
+      z-index: 6;
+      flex-shrink: 0;
+    }
+
+    .scroll-arrow {
+      height: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 8px;
+      color: var(--text-muted);
+      cursor: pointer;
+      background: #0f172a;
+      transition: all 0.15s;
+    }
+    .scroll-arrow:hover {
+      background: #1e293b;
+      color: var(--accent-blue);
+    }
+    .scroll-arrow:active {
+      background: var(--accent-blue);
+      color: #000;
+    }
+
+    .scroll-track-inner-v {
+      flex: 1;
+      position: relative;
+      background: #070d18;
+      cursor: pointer;
+    }
+
+    .scroll-thumb-v {
+      position: absolute;
+      left: 2px;
+      width: 11px;
+      min-height: 24px;
+      background: #334155;
+      border: 1px solid #475569;
+      border-radius: 4px;
+      cursor: grab;
+      transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+    }
+    .scroll-thumb-v:hover {
+      background: #475569;
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 6px rgba(56, 189, 248, 0.4);
+    }
+    .scroll-thumb-v.dragging {
+      background: var(--accent-blue);
+      border-color: #7dd3fc;
+      cursor: grabbing;
+    }
+
+    /* POZIOMY PASEK PRZEWIJANIA NA DOLE (BOTTOM HORIZONTAL SCROLLBAR) */
+    .workspace-bottom-bar {
+      height: 16px;
+      display: flex;
+      background: #090e1a;
+      border-top: 1px solid var(--border-color);
+      user-select: none;
+      z-index: 6;
+      flex-shrink: 0;
+    }
+
+    .scrollbar-corner {
+      width: 16px;
+      height: 16px;
+      background: #0f172a;
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: all 0.15s;
+    }
+    .scrollbar-corner:hover {
+      background: var(--accent-blue);
+      color: #000;
+    }
+
+    .custom-scrollbar-h {
+      flex: 1;
+      display: flex;
+      flex-direction: row;
+      background: #090e1a;
+      overflow: hidden;
+    }
+
+    .scroll-arrow-h {
+      width: 16px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 8px;
+      color: var(--text-muted);
+      cursor: pointer;
+      background: #0f172a;
+      transition: all 0.15s;
+    }
+    .scroll-arrow-h:hover {
+      background: #1e293b;
+      color: var(--accent-blue);
+    }
+    .scroll-arrow-h:active {
+      background: var(--accent-blue);
+      color: #000;
+    }
+
+    .scroll-track-inner-h {
+      flex: 1;
+      position: relative;
+      background: #070d18;
+      cursor: pointer;
+    }
+
+    .scroll-thumb-h {
+      position: absolute;
+      top: 2px;
+      height: 11px;
+      min-width: 24px;
+      background: #334155;
+      border: 1px solid #475569;
+      border-radius: 4px;
+      cursor: grab;
+      transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+    }
+    .scroll-thumb-h:hover {
+      background: #475569;
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 6px rgba(56, 189, 248, 0.4);
+    }
+    .scroll-thumb-h.dragging {
+      background: var(--accent-blue);
+      border-color: #7dd3fc;
+      cursor: grabbing;
     }
 
     /* Pływające paski narzędzi w obszarze roboczym */
@@ -421,6 +585,17 @@
     </div>
 
     <div class="header-actions">
+      <button class="btn-action" onclick="saveCircuitToFile()" title="Zapisz projekt schematu do pliku JSON na dysku">
+        💾 Zapisz (.json)
+      </button>
+      <button class="btn-action" onclick="document.getElementById('fileInput').click()" title="Wczytaj zapisany wcześniej schemat z pliku JSON">
+        📂 Wczytaj (.json)
+      </button>
+      <button class="btn-action" onclick="exportCircuitToImage()" title="Eksportuj schemat jako plik graficzny PNG">
+        🖼️ Eksport PNG
+      </button>
+      <input type="file" id="fileInput" accept=".json" style="display: none;" onchange="loadCircuitFromFile(event)">
+      <div style="width: 1px; height: 18px; background: var(--border-color); margin: 0 4px;"></div>
       <button class="btn-action btn-audio" id="btnAudioToggle" onclick="toggleAudio()">
         🔊 Dźwięk Toru Audio (OFF)
       </button>
@@ -593,26 +768,53 @@
       </div>
     </div>
 
-    <!-- ŚRODEK: OBSZAR ROBOCZY CANVAS 2D -->
-    <div class="workspace-container" id="workspaceContainer">
-      <canvas id="circuitCanvas"></canvas>
+    <!-- ŚRODEK: OBSZAR ROBOCZY CANVAS 2D Z PASKAMI PRZEWIJANIA -->
+    <div class="workspace-wrapper">
+      <div class="workspace-row">
+        <!-- PIONOWY PASEK PRZEWIJANIA PO LEWEJ STRONIE (LEFT VERTICAL SCROLLBAR) -->
+        <div class="custom-scrollbar-v" id="vScrollTrack" title="Przewijaj schemat w pionie (Góra / Dół)">
+          <div class="scroll-arrow" id="btnScrollUp" title="Przewiń w górę">▲</div>
+          <div class="scroll-track-inner-v" id="vTrackInner">
+            <div class="scroll-thumb-v" id="vScrollThumb" title="Przeciągnij, aby przesunąć widok pionowo"></div>
+          </div>
+          <div class="scroll-arrow" id="btnScrollDown" title="Przewiń w dół">▼</div>
+        </div>
 
-      <!-- Pływające menu narzędziowe -->
-      <div class="floating-toolbar">
-        <button class="tool-btn" onclick="rotateSelected()" title="Obróć zaznaczony symbol (Klawisz R)">🔄 Obróć (R)</button>
-        <button class="tool-btn" onclick="deleteSelected()" title="Usuń zaznaczony element lub przewód">🗑️ Usuń</button>
-        <div style="width: 1px; height: 18px; background: var(--border-color); margin: 0 4px;"></div>
-        <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">PROWADZENIE:</span>
-        <button class="tool-btn active" id="btnWireDirect">Kąty Proste 90&deg;</button>
+        <!-- OBSZAR CANVAS -->
+        <div class="workspace-container" id="workspaceContainer">
+          <canvas id="circuitCanvas"></canvas>
+
+          <!-- Pływające menu narzędziowe -->
+          <div class="floating-toolbar">
+            <button class="tool-btn" onclick="rotateSelected()" title="Obróć zaznaczony symbol (Klawisz R)">🔄 Obróć (R)</button>
+            <button class="tool-btn" onclick="deleteSelected()" title="Usuń zaznaczony element lub przewód">🗑️ Usuń</button>
+            <button class="tool-btn" onclick="centerView()" title="Wyśrodkuj widok na schemacie (Klawisz C)">🎯 Centruj widok</button>
+            <div style="width: 1px; height: 18px; background: var(--border-color); margin: 0 4px;"></div>
+            <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">PROWADZENIE:</span>
+            <button class="tool-btn active" id="btnWireDirect">Kąty Proste 90&deg;</button>
+          </div>
+
+          <!-- Podpowiedź sterowania -->
+          <div class="hint-bar">
+            <span>Łączenie: <strong>LPM</strong> na piny | Przesuwanie widoku: <strong>Przeciągnij tło / Rolka myszy / Suwaki</strong> | Usuwanie: <strong>„Usuń”</strong></span>
+          </div>
+
+          <!-- Toast Powiadomień -->
+          <div class="toast-msg" id="toastMsg">Gotowe</div>
+        </div>
       </div>
 
-      <!-- Podpowiedź sterowania -->
-      <div class="hint-bar">
-        <span>Łączenie: <strong>LPM</strong> na piny | Zaznacz / Przesuń: <strong>LPM</strong> | Obrót: <strong>R</strong> | Usuwanie: przycisk <strong>„Usuń”</strong></span>
+      <!-- POZIOMY PASEK PRZEWIJANIA NA DOLE (BOTTOM HORIZONTAL SCROLLBAR) -->
+      <div class="workspace-bottom-bar">
+        <div class="scrollbar-corner" onclick="centerView()" title="Kliknij, aby wyśrodkować widok schematu">🎯</div>
+        <div class="custom-scrollbar-h" id="hScrollTrack" title="Przewijaj schemat w poziomie (Lewo / Prawo)">
+          <div class="scroll-arrow-h" id="btnScrollLeft" title="Przewiń w lewo">◀</div>
+          <div class="scroll-track-inner-h" id="hTrackInner">
+            <div class="scroll-thumb-h" id="hScrollThumb" title="Przeciągnij, aby przesunąć widok poziomo"></div>
+          </div>
+          <div class="scroll-arrow-h" id="btnScrollRight" title="Przewiń w prawo">▶</div>
+        </div>
       </div>
-
-      <!-- Toast Powiadomień -->
-      <div class="toast-msg" id="toastMsg">Gotowe</div>
     </div>
 
     <!-- PRAWY PANEL: WŁAŚCIWOŚCI, POMIARY & PRESETY -->
@@ -731,6 +933,13 @@
       tempWireTarget: null,
       isDragging: false,
       dragOffset: { x: 0, y: 0 },
+      // Przewijanie i wirtualna przestrzeń schematu
+      scrollX: 0,
+      scrollY: 0,
+      worldWidth: 3200,
+      worldHeight: 2400,
+      isPanning: false,
+      panStart: { mouseX: 0, mouseY: 0, scrollX: 0, scrollY: 0 },
       gridSnap: true,
       gridSize: 20,
       showElectrons: true,
@@ -761,6 +970,7 @@
       scopeCanvas = document.getElementById('scopeCanvas');
       scopeCtx = scopeCanvas.getContext('2d');
 
+      setupScrollbars();
       resizeCanvas();
       window.addEventListener('resize', resizeCanvas);
 
@@ -790,6 +1000,198 @@
       canvas.height = container.clientHeight;
       scopeCanvas.width = scopeCanvas.parentElement.clientWidth;
       scopeCanvas.height = scopeCanvas.parentElement.clientHeight;
+      updateScrollbars();
+    }
+
+    // --- OBSŁUGA PASKÓW PRZEWIJANIA (LEWY PIONOWY & DOLNY POZIOMY) ---
+    function setupScrollbars() {
+      const vTrackInner = document.getElementById('vTrackInner');
+      const vThumb = document.getElementById('vScrollThumb');
+      const hTrackInner = document.getElementById('hTrackInner');
+      const hThumb = document.getElementById('hScrollThumb');
+
+      let isDraggingV = false;
+      let isDraggingH = false;
+      let startMouseY = 0;
+      let startMouseX = 0;
+      let startScrollY = 0;
+      let startScrollX = 0;
+
+      // 1. Pionowy suwak (Vertical thumb)
+      vThumb.addEventListener('mousedown', (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        isDraggingV = true;
+        vThumb.classList.add('dragging');
+        startMouseY = e.clientY;
+        startScrollY = circuitState.scrollY;
+      });
+
+      // Kliknięcie w tor pionowy (poza suwakiem)
+      vTrackInner.addEventListener('mousedown', (e) => {
+        if (e.target === vThumb) return;
+        const rect = vTrackInner.getBoundingClientRect();
+        const clickY = e.clientY - rect.top;
+        const thumbTop = parseFloat(vThumb.style.top) || 0;
+        const thumbHeight = parseFloat(vThumb.style.height) || 24;
+        const pageSize = canvas.height * 0.75;
+        if (clickY < thumbTop) {
+          setScroll(circuitState.scrollX, circuitState.scrollY - pageSize);
+        } else if (clickY > thumbTop + thumbHeight) {
+          setScroll(circuitState.scrollX, circuitState.scrollY + pageSize);
+        }
+      });
+
+      // 2. Poziomy suwak (Horizontal thumb)
+      hThumb.addEventListener('mousedown', (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        isDraggingH = true;
+        hThumb.classList.add('dragging');
+        startMouseX = e.clientX;
+        startScrollX = circuitState.scrollX;
+      });
+
+      // Kliknięcie w tor poziomy (poza suwakiem)
+      hTrackInner.addEventListener('mousedown', (e) => {
+        if (e.target === hThumb) return;
+        const rect = hTrackInner.getBoundingClientRect();
+        const clickX = e.clientX - rect.left;
+        const thumbLeft = parseFloat(hThumb.style.left) || 0;
+        const thumbWidth = parseFloat(hThumb.style.width) || 24;
+        const pageSize = canvas.width * 0.75;
+        if (clickX < thumbLeft) {
+          setScroll(circuitState.scrollX - pageSize, circuitState.scrollY);
+        } else if (clickX > thumbLeft + thumbWidth) {
+          setScroll(circuitState.scrollX + pageSize, circuitState.scrollY);
+        }
+      });
+
+      // Globalne przeciąganie suwaków myszą
+      window.addEventListener('mousemove', (e) => {
+        if (isDraggingV) {
+          const trackH = vTrackInner.clientHeight;
+          const thumbH = parseFloat(vThumb.style.height) || 24;
+          const maxTrackTravel = trackH - thumbH;
+          const maxScrollY = Math.max(1, circuitState.worldHeight - canvas.height);
+          if (maxTrackTravel > 0) {
+            const deltaY = e.clientY - startMouseY;
+            const deltaScroll = (deltaY / maxTrackTravel) * maxScrollY;
+            setScroll(circuitState.scrollX, startScrollY + deltaScroll);
+          }
+        }
+        if (isDraggingH) {
+          const trackW = hTrackInner.clientWidth;
+          const thumbW = parseFloat(hThumb.style.width) || 24;
+          const maxTrackTravel = trackW - thumbW;
+          const maxScrollX = Math.max(1, circuitState.worldWidth - canvas.width);
+          if (maxTrackTravel > 0) {
+            const deltaX = e.clientX - startMouseX;
+            const deltaScroll = (deltaX / maxTrackTravel) * maxScrollX;
+            setScroll(startScrollX + deltaScroll, circuitState.scrollY);
+          }
+        }
+      });
+
+      window.addEventListener('mouseup', () => {
+        if (isDraggingV) {
+          isDraggingV = false;
+          vThumb.classList.remove('dragging');
+        }
+        if (isDraggingH) {
+          isDraggingH = false;
+          hThumb.classList.remove('dragging');
+        }
+      });
+
+      // Przyciski strzałek
+      document.getElementById('btnScrollUp').addEventListener('click', () => {
+        setScroll(circuitState.scrollX, circuitState.scrollY - 60);
+      });
+      document.getElementById('btnScrollDown').addEventListener('click', () => {
+        setScroll(circuitState.scrollX, circuitState.scrollY + 60);
+      });
+      document.getElementById('btnScrollLeft').addEventListener('click', () => {
+        setScroll(circuitState.scrollX - 60, circuitState.scrollY);
+      });
+      document.getElementById('btnScrollRight').addEventListener('click', () => {
+        setScroll(circuitState.scrollX + 60, circuitState.scrollY);
+      });
+
+      // Obsługa kółka myszy nad obszarem roboczym
+      container.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        if (e.shiftKey) {
+          setScroll(circuitState.scrollX + e.deltaY, circuitState.scrollY);
+        } else {
+          setScroll(circuitState.scrollX + e.deltaX, circuitState.scrollY + e.deltaY);
+        }
+      }, { passive: false });
+    }
+
+    function updateScrollbars() {
+      const vTrackInner = document.getElementById('vTrackInner');
+      const vThumb = document.getElementById('vScrollThumb');
+      const hTrackInner = document.getElementById('hTrackInner');
+      const hThumb = document.getElementById('hScrollThumb');
+
+      if (!vTrackInner || !vThumb || !hTrackInner || !hThumb || !canvas) return;
+
+      // Dynamiczne powiększenie wirtualnego świata jeśli elementy sięgają dalej
+      let maxElemX = 0;
+      let maxElemY = 0;
+      circuitState.elements.forEach(el => {
+        if (el.x > maxElemX) maxElemX = el.x;
+        if (el.y > maxElemY) maxElemY = el.y;
+      });
+      circuitState.worldWidth = Math.max(3200, maxElemX + 600);
+      circuitState.worldHeight = Math.max(2400, maxElemY + 600);
+
+      // Aktualizacja suwaka pionowego (Left Vertical Scrollbar)
+      const trackH = vTrackInner.clientHeight;
+      const maxScrollY = Math.max(0, circuitState.worldHeight - canvas.height);
+      const thumbH = Math.max(24, Math.min(trackH, (canvas.height / circuitState.worldHeight) * trackH));
+      const thumbTop = maxScrollY > 0 ? (circuitState.scrollY / maxScrollY) * (trackH - thumbH) : 0;
+
+      vThumb.style.height = `${thumbH}px`;
+      vThumb.style.top = `${Math.max(0, Math.min(trackH - thumbH, thumbTop))}px`;
+
+      // Aktualizacja suwaka poziomego (Bottom Horizontal Scrollbar)
+      const trackW = hTrackInner.clientWidth;
+      const maxScrollX = Math.max(0, circuitState.worldWidth - canvas.width);
+      const thumbW = Math.max(24, Math.min(trackW, (canvas.width / circuitState.worldWidth) * trackW));
+      const thumbLeft = maxScrollX > 0 ? (circuitState.scrollX / maxScrollX) * (trackW - thumbW) : 0;
+
+      hThumb.style.width = `${thumbW}px`;
+      hThumb.style.left = `${Math.max(0, Math.min(trackW - thumbW, thumbLeft))}px`;
+    }
+
+    function setScroll(x, y) {
+      const maxPanX = Math.max(0, circuitState.worldWidth - canvas.width);
+      const maxPanY = Math.max(0, circuitState.worldHeight - canvas.height);
+      circuitState.scrollX = Math.max(0, Math.min(maxPanX, Math.round(x)));
+      circuitState.scrollY = Math.max(0, Math.min(maxPanY, Math.round(y)));
+      updateScrollbars();
+    }
+
+    function centerView(targetX, targetY) {
+      if (targetX === undefined || targetY === undefined) {
+        if (circuitState.elements.length > 0) {
+          let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+          circuitState.elements.forEach(el => {
+            minX = Math.min(minX, el.x);
+            maxX = Math.max(maxX, el.x);
+            minY = Math.min(minY, el.y);
+            maxY = Math.max(maxY, el.y);
+          });
+          targetX = (minX + maxX) / 2;
+          targetY = (minY + maxY) / 2;
+        } else {
+          targetX = circuitState.worldWidth / 2;
+          targetY = circuitState.worldHeight / 2;
+        }
+      }
+      setScroll(targetX - canvas.width / 2, targetY - canvas.height / 2);
     }
 
     // --- OBSŁUGA INTERAKCJI MYSZY I KLAWIATURY ---
@@ -798,14 +1200,30 @@
 
       canvas.addEventListener('mousedown', (e) => {
         const rect = canvas.getBoundingClientRect();
-        const mouseX = e.clientX - rect.left;
-        const mouseY = e.clientY - rect.top;
-        mouseDownPos = { x: mouseX, y: mouseY };
+        const screenX = e.clientX - rect.left;
+        const screenY = e.clientY - rect.top;
+        const worldX = screenX + circuitState.scrollX;
+        const worldY = screenY + circuitState.scrollY;
+        mouseDownPos = { x: screenX, y: screenY };
 
-        // 1. LEWY PRZYCISK MYSZY (LPM): Piny lub Przeciąganie elementu / Przełączanie
+        // Środkowy przycisk myszy (przycisk rolki) -> przesuwanie widoku (Pan)
+        if (e.button === 1) {
+          e.preventDefault();
+          circuitState.isPanning = true;
+          circuitState.panStart = {
+            mouseX: e.clientX,
+            mouseY: e.clientY,
+            scrollX: circuitState.scrollX,
+            scrollY: circuitState.scrollY
+          };
+          canvas.style.cursor = 'grabbing';
+          return;
+        }
+
+        // 1. LEWY PRZYCISK MYSZY (LPM): Piny, Elementy, Przewody lub Przesuwanie tła
         if (e.button === 0) {
           // A. Sprawdzamy kliknięcie w pin
-          const clickedPin = findPinAt(mouseX, mouseY);
+          const clickedPin = findPinAt(worldX, worldY);
           if (clickedPin) {
             handlePinClick(clickedPin);
             return;
@@ -818,7 +1236,7 @@
           }
 
           // B. Sprawdzamy kliknięcie w element (zaznaczenie lub przeciąganie / przełącznik)
-          const clickedElem = findElementAt(mouseX, mouseY);
+          const clickedElem = findElementAt(worldX, worldY);
           if (clickedElem) {
             selectElement(clickedElem);
 
@@ -830,31 +1248,38 @@
 
             circuitState.isDragging = true;
             circuitState.dragOffset = {
-              x: mouseX - clickedElem.x,
-              y: mouseY - clickedElem.y
+              x: worldX - clickedElem.x,
+              y: worldY - clickedElem.y
             };
             return;
           }
 
           // C. Sprawdzamy kliknięcie w przewód
-          const clickedWire = findWireAt(mouseX, mouseY);
+          const clickedWire = findWireAt(worldX, worldY);
           if (clickedWire) {
             selectWire(clickedWire);
             return;
           }
 
-          // D. Kliknięcie w puste tło -> odznacz wszystko
+          // D. Kliknięcie w puste tło -> odznacz wszystko i rozpocznij przesuwanie widoku (Pan)
           deselectAll();
+          circuitState.isPanning = true;
+          circuitState.panStart = {
+            mouseX: e.clientX,
+            mouseY: e.clientY,
+            scrollX: circuitState.scrollX,
+            scrollY: circuitState.scrollY
+          };
         }
 
-        // 2. PRAWY PRZYCISK MYSZY (PPM): Zaznaczanie lub szybkie usuwanie
+        // 2. PRAWY PRZYCISK MYSZY (PPM): Zaznaczanie lub odznaczanie
         if (e.button === 2) {
-          const clickedElem = findElementAt(mouseX, mouseY);
+          const clickedElem = findElementAt(worldX, worldY);
           if (clickedElem) {
             selectElement(clickedElem);
             return;
           }
-          const clickedWire = findWireAt(mouseX, mouseY);
+          const clickedWire = findWireAt(worldX, worldY);
           if (clickedWire) {
             selectWire(clickedWire);
             return;
@@ -865,44 +1290,65 @@
 
       canvas.addEventListener('mousemove', (e) => {
         const rect = canvas.getBoundingClientRect();
-        const mouseX = e.clientX - rect.left;
-        const mouseY = e.clientY - rect.top;
+        const screenX = e.clientX - rect.left;
+        const screenY = e.clientY - rect.top;
+        const worldX = screenX + circuitState.scrollX;
+        const worldY = screenY + circuitState.scrollY;
+
+        // Przesuwanie widoku (Panning)
+        if (circuitState.isPanning) {
+          const dx = e.clientX - circuitState.panStart.mouseX;
+          const dy = e.clientY - circuitState.panStart.mouseY;
+          setScroll(circuitState.panStart.scrollX - dx, circuitState.panStart.scrollY - dy);
+          canvas.style.cursor = 'grabbing';
+          return;
+        }
 
         // Ciągnięcie przewodu (podgląd w czasie rzeczywistym)
         if (circuitState.connectingPin) {
-          circuitState.tempWireTarget = snapToGrid(mouseX, mouseY);
+          circuitState.tempWireTarget = snapToGrid(worldX, worldY);
         }
 
         // Przeciąganie elementu po siatce
         if (circuitState.isDragging && circuitState.selectedElement) {
-          const newPos = snapToGrid(mouseX - circuitState.dragOffset.x, mouseY - circuitState.dragOffset.y);
+          const newPos = snapToGrid(worldX - circuitState.dragOffset.x, worldY - circuitState.dragOffset.y);
           circuitState.selectedElement.x = newPos.x;
           circuitState.selectedElement.y = newPos.y;
+          updateScrollbars();
         }
 
         // Zmiana kursora
-        const isOverPin = findPinAt(mouseX, mouseY);
-        const isOverElem = findElementAt(mouseX, mouseY);
-        const isOverWire = findWireAt(mouseX, mouseY);
+        const isOverPin = findPinAt(worldX, worldY);
+        const isOverElem = findElementAt(worldX, worldY);
+        const isOverWire = findWireAt(worldX, worldY);
         if (isOverPin) canvas.style.cursor = 'crosshair';
         else if (isOverElem) canvas.style.cursor = 'move';
         else if (isOverWire) canvas.style.cursor = 'pointer';
         else canvas.style.cursor = 'default';
       });
 
-      canvas.addEventListener('mouseup', () => {
+      window.addEventListener('mouseup', () => {
         circuitState.isDragging = false;
+        if (circuitState.isPanning) {
+          circuitState.isPanning = false;
+          canvas.style.cursor = 'default';
+        }
       });
 
       canvas.addEventListener('contextmenu', (e) => e.preventDefault());
 
-      // Klawiatura: Obrót (R), Anulowanie połączenia / Odznaczenie (Esc)
+      // Klawiatura: Obrót (R), Anulowanie połączenia / Odznaczenie (Esc), Centrowanie (C)
       window.addEventListener('keydown', (e) => {
+        if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA')) {
+          return;
+        }
         if (e.key === 'r' || e.key === 'R') {
           rotateSelected();
         } else if (e.key === 'Escape') {
           cancelWireConnection();
           deselectAll();
+        } else if (e.key === 'c' || e.key === 'C') {
+          centerView();
         }
       });
     }
@@ -912,16 +1358,22 @@
       ctx.fillStyle = '#020617';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Siatka Snap-to-Grid
+      // Siatka Snap-to-Grid (przesuwająca się synchronicznie z widokiem)
       if (circuitState.gridSnap) {
         ctx.fillStyle = '#1e293b';
         const step = circuitState.gridSize;
-        for (let x = step; x < canvas.width; x += step) {
-          for (let y = step; y < canvas.height; y += step) {
+        const startX = - (circuitState.scrollX % step);
+        const startY = - (circuitState.scrollY % step);
+        for (let x = startX; x < canvas.width; x += step) {
+          for (let y = startY; y < canvas.height; y += step) {
             ctx.fillRect(x - 1, y - 1, 2, 2);
           }
         }
       }
+
+      ctx.save();
+      // Transformacja kamery (przesunięcie widoku o scrollX, scrollY)
+      ctx.translate(-circuitState.scrollX, -circuitState.scrollY);
 
       // 1. Rysowanie Przewodów (Ścieżek)
       drawWires();
@@ -949,6 +1401,8 @@
       if (circuitState.showElectrons && circuitState.current > 0) {
         drawElectrons();
       }
+
+      ctx.restore();
     }
 
     // --- ZNORMALIZOWANE SYMBOLE PN-EN / IEC ---
@@ -1460,7 +1914,9 @@
 
     // --- FUNKCJE LOGICZNE I POMOCNICZE ELEMENTÓW ---
     function addSymbol(type) {
-      const snapCenter = snapToGrid(canvas.width / 2 + (Math.random() - 0.5) * 160, canvas.height / 2 + (Math.random() - 0.5) * 120);
+      const viewCenterX = circuitState.scrollX + canvas.width / 2;
+      const viewCenterY = circuitState.scrollY + canvas.height / 2;
+      const snapCenter = snapToGrid(viewCenterX + (Math.random() - 0.5) * 160, viewCenterY + (Math.random() - 0.5) * 120);
       const elem = {
         id: 'elem_' + Date.now() + '_' + Math.floor(Math.random()*1000),
         type,
@@ -1572,6 +2028,7 @@
       }
 
       circuitState.elements.push(elem);
+      updateScrollbars();
       selectElement(elem);
       showToast(`Dodano: ${elem.name}`);
     }
@@ -2233,8 +2690,8 @@
     function loadPreset(presetName) {
       clearCircuit();
 
-      const cx = Math.round(canvas.width / 2);
-      const cy = Math.round(canvas.height / 2);
+      const cx = Math.round(circuitState.worldWidth / 2);
+      const cy = Math.round(circuitState.worldHeight / 2);
 
       if (presetName === 'ohm_law') {
         // 1. Prawo Ohma: Bateria + Rezystor + Dioda LED
@@ -2378,6 +2835,9 @@
         );
         showToast('Wczytano: Pomiary V & A (Woltomierz równolegle, Amperomierz szeregowo)');
       }
+
+      centerView(cx, cy);
+      updateScrollbars();
     }
 
     function createPresetElem(type, x, y, rotation, props = {}) {
@@ -2473,6 +2933,278 @@
 
       circuitState.elements.push(elem);
       return elem;
+    }
+
+    // --- ZAPIS I ODCZYT SCHEMATU Z DYSKU (JSON & PNG Z WYBOREM KATALOGU I NAZWY) ---
+    async function saveCircuitToFile() {
+      if (circuitState.elements.length === 0) {
+        showToast('⚠️ Schemat jest pusty – brak elementów do zapisania.');
+        return;
+      }
+
+      const defaultFileName = `schemat_obwodu_${new Date().toISOString().slice(0, 10)}.json`;
+
+      const exportData = {
+        app: "Symulator Schematów Ideowych 2D",
+        version: "1.0",
+        savedAt: new Date().toISOString(),
+        elements: circuitState.elements.map(elem => ({
+          id: elem.id,
+          type: elem.type,
+          name: elem.name,
+          x: elem.x,
+          y: elem.y,
+          rotation: elem.rotation,
+          voltage: elem.voltage,
+          resistance: elem.resistance,
+          capacitance: elem.capacitance,
+          inductance: elem.inductance,
+          ratio: elem.ratio,
+          closed: elem.closed,
+          ledModel: elem.ledModel,
+          vf: elem.vf,
+          rs: elem.rs,
+          imax: elem.imax,
+          isBurned: elem.isBurned,
+          pins: elem.pins
+        })),
+        wires: circuitState.wires.map(w => ({
+          fromElemId: w.fromElem.id,
+          fromPinId: w.fromPin.id,
+          toElemId: w.toElem.id,
+          toPinId: w.toPin.id
+        }))
+      };
+
+      const jsonStr = JSON.stringify(exportData, null, 2);
+      const blob = new Blob([jsonStr], { type: 'application/json' });
+
+      // Natywny dialog 'Zapisz jako' (Wybór folderu i nazwy pliku)
+      if ('showSaveFilePicker' in window) {
+        try {
+          const handle = await window.showSaveFilePicker({
+            suggestedName: defaultFileName,
+            types: [{
+              description: 'Plik schematu elektronicznego JSON (*.json)',
+              accept: { 'application/json': ['.json'] }
+            }]
+          });
+          const writable = await handle.createWritable();
+          await writable.write(blob);
+          await writable.close();
+          showToast(`💾 Zapisano plik: ${handle.name}`);
+          return;
+        } catch (err) {
+          if (err.name === 'AbortError') {
+            return; // Użytkownik zamknął okno bez zapisu
+          }
+          console.warn('showSaveFilePicker error:', err);
+        }
+      }
+
+      // Fallback: Monit o nazwę pliku + pobieranie przeglądarkowe
+      let chosenName = prompt('Podaj nazwę pliku do zapisu (.json):', defaultFileName);
+      if (!chosenName) return;
+      if (!chosenName.toLowerCase().endsWith('.json')) chosenName += '.json';
+
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = chosenName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast(`💾 Zapisano schemat jako: ${chosenName}`);
+    }
+
+    function loadCircuitFromFile(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const data = JSON.parse(e.target.result);
+          if (!data.elements || !Array.isArray(data.elements)) {
+            throw new Error('Plik nie zawiera poprawnych danych schematu.');
+          }
+
+          clearCircuit();
+
+          const elemMap = new Map();
+
+          // Odtwarzanie elementów
+          data.elements.forEach(rawElem => {
+            const elem = {
+              id: rawElem.id,
+              type: rawElem.type,
+              name: rawElem.name || rawElem.type,
+              x: rawElem.x,
+              y: rawElem.y,
+              rotation: rawElem.rotation || 0,
+              pins: rawElem.pins || [],
+              voltage: rawElem.voltage,
+              resistance: rawElem.resistance,
+              capacitance: rawElem.capacitance,
+              inductance: rawElem.inductance,
+              ratio: rawElem.ratio,
+              closed: rawElem.closed,
+              ledModel: rawElem.ledModel,
+              vf: rawElem.vf,
+              rs: rawElem.rs,
+              imax: rawElem.imax,
+              isBurned: rawElem.isBurned
+            };
+            circuitState.elements.push(elem);
+            elemMap.set(elem.id, elem);
+          });
+
+          // Odtwarzanie połączeń przewodami
+          if (data.wires && Array.isArray(data.wires)) {
+            data.wires.forEach(w => {
+              const fromElem = elemMap.get(w.fromElemId);
+              const toElem = elemMap.get(w.toElemId);
+              if (fromElem && toElem) {
+                const fromPin = fromElem.pins.find(p => p.id === w.fromPinId);
+                const toPin = toElem.pins.find(p => p.id === w.toPinId);
+                if (fromPin && toPin) {
+                  circuitState.wires.push({
+                    fromElem,
+                    fromPin,
+                    toElem,
+                    toPin
+                  });
+                }
+              }
+            });
+          }
+
+          deselectAll();
+          centerView();
+          updateScrollbars();
+          showToast(`📂 Wczytano plik: ${file.name}`);
+        } catch (err) {
+          console.error(err);
+          alert('Błąd podczas wczytywania pliku schematu: ' + err.message);
+        }
+        event.target.value = '';
+      };
+      reader.readAsText(file);
+    }
+
+    async function exportCircuitToImage() {
+      if (circuitState.elements.length === 0) {
+        showToast('⚠️ Schemat jest pusty.');
+        return;
+      }
+
+      // Renderowanie całego obwodu do dedykowanego canvasu
+      let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+      circuitState.elements.forEach(el => {
+        minX = Math.min(minX, el.x);
+        maxX = Math.max(maxX, el.x);
+        minY = Math.min(minY, el.y);
+        maxY = Math.max(maxY, el.y);
+      });
+
+      const pad = 80;
+      const exportW = Math.max(800, (maxX - minX) + pad * 2);
+      const exportH = Math.max(600, (maxY - minY) + pad * 2);
+
+      const offCanvas = document.createElement('canvas');
+      offCanvas.width = exportW;
+      offCanvas.height = exportH;
+      const offCtx = offCanvas.getContext('2d');
+
+      // Tło
+      offCtx.fillStyle = '#020617';
+      offCtx.fillRect(0, 0, exportW, exportH);
+
+      // Siatka
+      offCtx.fillStyle = '#1e293b';
+      for (let x = 20; x < exportW; x += 20) {
+        for (let y = 20; y < exportH; y += 20) {
+          offCtx.fillRect(x - 1, y - 1, 2, 2);
+        }
+      }
+
+      const shiftX = pad - minX;
+      const shiftY = pad - minY;
+
+      offCtx.save();
+      offCtx.translate(shiftX, shiftY);
+
+      // Przewody
+      circuitState.wires.forEach(wire => {
+        const p1 = getPinWorldPos(wire.fromElem, wire.fromPin);
+        const p2 = getPinWorldPos(wire.toElem, wire.toPin);
+        offCtx.strokeStyle = circuitState.voltage > 0 ? '#ef4444' : '#64748b';
+        offCtx.lineWidth = 2.5;
+        offCtx.beginPath();
+        drawOrthogonalPath(offCtx, p1.x, p1.y, p2.x, p2.y);
+        offCtx.stroke();
+
+        offCtx.fillStyle = '#f8fafc';
+        offCtx.beginPath();
+        offCtx.arc(p1.x, p1.y, 4, 0, Math.PI * 2);
+        offCtx.arc(p2.x, p2.y, 4, 0, Math.PI * 2);
+        offCtx.fill();
+      });
+
+      // Elementy
+      const savedCtx = ctx;
+      ctx = offCtx;
+      circuitState.elements.forEach(elem => {
+        drawSymbol(elem);
+      });
+      ctx = savedCtx;
+
+      offCtx.restore();
+
+      // Stopka
+      offCtx.font = 'bold 12px sans-serif';
+      offCtx.fillStyle = '#38bdf8';
+      offCtx.fillText('📐 Symulator Schematów Ideowych 2D | SP 1 w Brwinowie', 20, exportH - 20);
+
+      const defaultFileName = `schemat_elektroniczny_${new Date().toISOString().slice(0, 10)}.png`;
+      const blob = await new Promise(resolve => offCanvas.toBlob(resolve, 'image/png'));
+
+      if ('showSaveFilePicker' in window) {
+        try {
+          const handle = await window.showSaveFilePicker({
+            suggestedName: defaultFileName,
+            types: [{
+              description: 'Plik obrazu PNG (*.png)',
+              accept: { 'image/png': ['.png'] }
+            }]
+          });
+          const writable = await handle.createWritable();
+          await writable.write(blob);
+          await writable.close();
+          showToast(`🖼️ Zapisano obraz: ${handle.name}`);
+          return;
+        } catch (err) {
+          if (err.name === 'AbortError') {
+            return;
+          }
+          console.warn('showSaveFilePicker error:', err);
+        }
+      }
+
+      let chosenName = prompt('Podaj nazwę pliku graficznego (.png):', defaultFileName);
+      if (!chosenName) return;
+      if (!chosenName.toLowerCase().endsWith('.png')) chosenName += '.png';
+
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = chosenName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast(`🖼️ Wyeksportowano obraz jako: ${chosenName}`);
     }
 
     function showToast(msg) {
