@@ -835,7 +835,233 @@
       return new THREE.CanvasTexture(canvas);
     }
 
+    // --- PROCEDURALNA FOTOREALISTYCZNA TEKSTURA ZIEMI (MAPA Z KOSMOSU) ---
+    function createEarthTexture() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 1024;
+      canvas.height = 512;
+      const ctx = canvas.getContext('2d');
+      const w = 1024, h = 512;
+
+      // 1. Głębia oceanów (gradient z naturalnym cieniowaniem stref)
+      const oceanGrad = ctx.createLinearGradient(0, 0, 0, h);
+      oceanGrad.addColorStop(0, '#0a2342');
+      oceanGrad.addColorStop(0.25, '#0c356a');
+      oceanGrad.addColorStop(0.5, '#001a35');
+      oceanGrad.addColorStop(0.75, '#0c356a');
+      oceanGrad.addColorStop(1, '#0a2342');
+      ctx.fillStyle = oceanGrad;
+      ctx.fillRect(0, 0, w, h);
+
+      // Pomocnik projekcji równokątnej (Equirectangular projection)
+      function mapX(lon) { return ((lon + 180) % 360) * (w / 360); }
+      function mapY(lat) { return (90 - lat) * (h / 180); }
+
+      function drawLandPoly(coords, fillColor, strokeColor) {
+        if (!coords || coords.length === 0) return;
+        ctx.beginPath();
+        ctx.moveTo(mapX(coords[0][0]), mapY(coords[0][1]));
+        for (let i = 1; i < coords.length; i++) {
+          ctx.lineTo(mapX(coords[i][0]), mapY(coords[i][1]));
+        }
+        ctx.closePath();
+        if (strokeColor) {
+          ctx.strokeStyle = strokeColor;
+          ctx.lineWidth = 4;
+          ctx.stroke();
+        }
+        ctx.fillStyle = fillColor;
+        ctx.fill();
+      }
+
+      // 2. Szelfy kontynentalne i płycizny oceaniczne (turkusowa poświata przybrzeżna)
+      const shallowColor = 'rgba(14, 165, 233, 0.45)';
+
+      // 3. Kontury lądów i kontynentów
+      // Ameryka Północna
+      const northAmerica = [
+        [-168, 65], [-160, 71], [-140, 70], [-130, 68], [-120, 60], [-125, 48],
+        [-124, 38], [-117, 32], [-110, 23], [-105, 19], [-90, 15], [-80, 8],
+        [-77, 8], [-80, 15], [-83, 22], [-81, 25], [-80, 28], [-75, 35],
+        [-70, 42], [-65, 45], [-60, 47], [-64, 52], [-80, 52], [-82, 60],
+        [-95, 68], [-120, 72], [-140, 70], [-165, 66]
+      ];
+      drawLandPoly(northAmerica, '#1e3a1e', shallowColor);
+
+      // Ameryka Południowa
+      const southAmerica = [
+        [-77, 8], [-72, 11], [-60, 10], [-50, 0], [-35, -5], [-38, -13],
+        [-48, -28], [-55, -38], [-65, -45], [-68, -54], [-75, -50], [-73, -40],
+        [-72, -30], [-76, -18], [-81, -5], [-77, 8]
+      ];
+      drawLandPoly(southAmerica, '#14532d', shallowColor);
+
+      // Afryka
+      const africa = [
+        [-5, 36], [10, 37], [25, 32], [32, 31], [35, 27], [43, 12],
+        [51, 11], [45, 5], [40, -5], [35, -15], [30, -30], [20, -34],
+        [18, -34], [12, -20], [10, -5], [5, 4], [-15, 12], [-17, 21],
+        [-10, 28], [-5, 36]
+      ];
+      drawLandPoly(africa, '#15803d', shallowColor);
+
+      // Eurazja (Europa + Azja)
+      const eurasia = [
+        [-9, 36], [-9, 43], [0, 44], [5, 50], [8, 55], [15, 58], [25, 71],
+        [40, 68], [60, 70], [80, 73], [105, 77], [130, 72], [160, 70],
+        [170, 66], [178, 65], [160, 55], [140, 50], [130, 40], [122, 30],
+        [108, 20], [105, 10], [100, 5], [85, 20], [78, 8], [72, 20],
+        [68, 24], [60, 25], [50, 27], [45, 25], [36, 32], [28, 41],
+        [20, 40], [15, 40], [5, 43], [-5, 36], [-9, 36]
+      ];
+      drawLandPoly(eurasia, '#166534', shallowColor);
+
+      // Australia
+      const australia = [
+        [114, -22], [120, -17], [130, -12], [136, -12], [142, -11], [145, -15],
+        [150, -23], [153, -28], [150, -35], [140, -38], [130, -32], [115, -34],
+        [114, -22]
+      ];
+      drawLandPoly(australia, '#854d0e', shallowColor);
+
+      // Pustynie i strefy aridowe (Sahara, Półwysep Arabski, Outback)
+      const sahara = [[-12, 30], [30, 30], [35, 18], [20, 15], [-12, 18]];
+      drawLandPoly(sahara, '#ca8a04');
+
+      const arabia = [[36, 30], [55, 25], [58, 22], [54, 16], [43, 13], [38, 26]];
+      drawLandPoly(arabia, '#d97706');
+
+      const outback = [[120, -20], [140, -20], [140, -30], [122, -30]];
+      drawLandPoly(outback, '#c2410c');
+
+      // Pasma górskie i wyżyny (Himalaje / Tybet, Andy, Góry Skaliste)
+      const himalayas = [[72, 36], [98, 36], [95, 28], [75, 28]];
+      drawLandPoly(himalayas, '#78350f');
+
+      const andes = [[-75, 5], [-70, -15], [-72, -35], [-68, -50], [-72, -50], [-76, -15]];
+      drawLandPoly(andes, '#57534e');
+
+      // Grenlandia (Lądolód)
+      const greenland = [[-50, 60], [-25, 65], [-20, 75], [-35, 83], [-55, 78], [-55, 68]];
+      drawLandPoly(greenland, '#f1f5f9', 'rgba(255,255,255,0.4)');
+
+      // Wielka Brytania i Irlandia
+      drawLandPoly([[-10, 51], [-2, 58], [2, 52], [-5, 50]], '#16a34a');
+      // Japonia
+      drawLandPoly([[130, 32], [140, 38], [142, 44], [138, 43], [130, 34]], '#15803d');
+      // Madagaskar
+      drawLandPoly([[44, -12], [50, -15], [47, -25], [43, -25]], '#15803d');
+      // Nowa Zelandia
+      drawLandPoly([[168, -46], [178, -38], [174, -35], [166, -45]], '#16a34a');
+
+      // 4. Czapy lodowe na biegunach (Arktyka i Antarktyda)
+      ctx.fillStyle = '#f8fafc';
+      ctx.fillRect(0, 0, w, 28);
+
+      // Antarktyda z pofałdowaną linią lodowców
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.moveTo(0, h);
+      ctx.lineTo(0, h - 55);
+      for (let x = 0; x <= w; x += 30) {
+        const yOffset = Math.sin(x * 0.05) * 8 + Math.cos(x * 0.02) * 5;
+        ctx.lineTo(x, h - 55 + yOffset);
+      }
+      ctx.lineTo(w, h);
+      ctx.closePath();
+      ctx.fill();
+
+      // 5. Organiczna mikrostruktura i szum roślinności
+      for (let i = 0; i < 400; i++) {
+        const rx = Math.random() * w;
+        const ry = Math.random() * h;
+        const pixel = ctx.getImageData(rx, ry, 1, 1).data;
+        if (pixel[1] > 55 && pixel[2] < 90) {
+          ctx.fillStyle = Math.random() > 0.5 ? 'rgba(21, 128, 61, 0.4)' : 'rgba(161, 98, 7, 0.3)';
+          ctx.beginPath();
+          ctx.arc(rx, ry, Math.random() * 5 + 2, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      // 6. Światła miast (nocne skupiska aglomeracji miejskich)
+      const cityClusters = [
+        [5, 48], [10, 52], [20, 52], [0, 51], [12, 42], [24, 38], [37, 55],
+        [-74, 40], [-87, 41], [-118, 34], [-122, 37], [-95, 29], [-80, 25],
+        [116, 39], [121, 31], [139, 35], [77, 28], [72, 19], [100, 13],
+        [-46, -23], [-58, -34], [31, 30], [28, -26], [151, -33]
+      ];
+      cityClusters.forEach(([lon, lat]) => {
+        const cx = mapX(lon);
+        const cy = mapY(lat);
+        for (let k = 0; k < 10; k++) {
+          ctx.fillStyle = 'rgba(253, 224, 71, 0.75)';
+          ctx.beginPath();
+          ctx.arc(cx + (Math.random() - 0.5) * 14, cy + (Math.random() - 0.5) * 12, Math.random() * 1.5 + 0.5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      });
+
+      return new THREE.CanvasTexture(canvas);
+    }
+
+    // --- PROCEDURALNA WARSTWA CHMUR DLA ZIEMI ---
+    function createEarthCloudsTexture() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 1024;
+      canvas.height = 512;
+      const ctx = canvas.getContext('2d');
+      const w = 1024, h = 512;
+      ctx.clearRect(0, 0, w, h);
+
+      // 1. Równikowy pas chmur ITCZ (Intertropical Convergence Zone)
+      for (let x = 0; x < w; x += 15) {
+        const baseY = h * 0.5 + Math.sin(x * 0.02) * 20;
+        const count = Math.floor(Math.random() * 5) + 3;
+        for (let i = 0; i < count; i++) {
+          ctx.fillStyle = `rgba(255, 255, 255, ${Math.random() * 0.4 + 0.2})`;
+          ctx.beginPath();
+          ctx.arc(x + (Math.random() - 0.5) * 20, baseY + (Math.random() - 0.5) * 25, Math.random() * 25 + 10, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      // 2. Cyklony i wiry pogodowe (Huragany / fronty sztormowe)
+      const stormCenters = [
+        [w * 0.25, h * 0.28], [w * 0.7, h * 0.26], [w * 0.4, h * 0.72], [w * 0.85, h * 0.74]
+      ];
+      stormCenters.forEach(([cx, cy]) => {
+        for (let a = 0; a < Math.PI * 6; a += 0.15) {
+          const r = a * 6.5;
+          const px = cx + Math.cos(a) * r;
+          const py = cy + Math.sin(a) * r * 0.65;
+          ctx.fillStyle = `rgba(255, 255, 255, ${Math.max(0.08, 0.65 - a / (Math.PI * 6))})`;
+          ctx.beginPath();
+          ctx.arc(px, py, Math.random() * 12 + 6, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      });
+
+      // 3. Pasmowe chmury cirrus i pasaty
+      for (let y of [h * 0.2, h * 0.35, h * 0.65, h * 0.8]) {
+        for (let x = 0; x < w; x += 30) {
+          if (Math.random() > 0.3) {
+            ctx.fillStyle = `rgba(255, 255, 255, ${Math.random() * 0.35 + 0.15})`;
+            ctx.beginPath();
+            ctx.ellipse(x, y + Math.sin(x * 0.03) * 15, Math.random() * 45 + 15, Math.random() * 10 + 4, 0.2, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+      }
+
+      return new THREE.CanvasTexture(canvas);
+    }
+
     function createPlanetTexture(colorHex, planetId) {
+      if (planetId === 'earth') {
+        return createEarthTexture();
+      }
+
       const canvas = document.createElement('canvas');
       canvas.width = 512;
       canvas.height = 256;
@@ -843,17 +1069,18 @@
       ctx.fillStyle = colorHex;
       ctx.fillRect(0, 0, 512, 256);
 
-      if (planetId === 'earth') {
-        ctx.fillStyle = '#15803d';
-        for (let i = 0; i < 50; i++) {
+      if (planetId === 'mars') {
+        // Ciemne morza wulkaniczne i czapy lodowe Marsa
+        ctx.fillStyle = '#991b1b';
+        for (let i = 0; i < 40; i++) {
           ctx.beginPath();
-          ctx.arc(Math.random() * 512, Math.random() * 256, Math.random() * 45 + 10, 0, Math.PI * 2);
+          ctx.arc(Math.random() * 512, Math.random() * 256, Math.random() * 35 + 10, 0, Math.PI * 2);
           ctx.fill();
         }
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.55)';
-        for (let i = 0; i < 35; i++) {
-          ctx.fillRect(Math.random() * 512, Math.random() * 256, Math.random() * 90 + 20, Math.random() * 16 + 4);
-        }
+        // Czapy polarne Marsa
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, 512, 14);
+        ctx.fillRect(0, 242, 512, 14);
       } else if (planetId === 'jupiter' || planetId === 'saturn') {
         for (let y = 0; y < 256; y += 4) {
           const shade = Math.sin(y * 0.12) * 40;
@@ -861,6 +1088,7 @@
           ctx.fillRect(0, y, 512, 4);
         }
         if (planetId === 'jupiter') {
+          // Wielka Czerwona Plama
           ctx.fillStyle = '#b91c1c';
           ctx.beginPath();
           ctx.ellipse(340, 165, 45, 26, 0, 0, Math.PI * 2);
@@ -1049,16 +1277,73 @@
       orbitPivot.add(planetAnchor);
 
       // Siatka planety (obraca się wokół własnej osi Y oraz ma nachylenie osi tilt w osi Z)
-      const pGeo = new THREE.SphereGeometry(p.radius, 32, 32);
+      const pGeo = new THREE.SphereGeometry(p.radius, 48, 48);
       const pMat = new THREE.MeshStandardMaterial({
         map: createPlanetTexture(p.color, p.id),
-        roughness: 0.75,
-        metalness: 0.1
+        roughness: (p.id === 'earth') ? 0.55 : 0.75,
+        metalness: (p.id === 'earth') ? 0.05 : 0.1
       });
       const pMesh = new THREE.Mesh(pGeo, pMat);
       pMesh.rotation.z = p.tilt;
       pMesh.userData = p;
       planetAnchor.add(pMesh);
+
+      let earthCloudMesh = null;
+
+      // Specjalne realistyczne warstwy dla ZIEMI (Chmury, Atmosfera i Upgrade tekstur NASA)
+      if (p.id === 'earth') {
+        // 1. Dynamiczna powłoka chmur wirująca nad kontynentami
+        const cloudGeo = new THREE.SphereGeometry(p.radius * 1.018, 48, 48);
+        const cloudMat = new THREE.MeshStandardMaterial({
+          map: createEarthCloudsTexture(),
+          transparent: true,
+          opacity: 0.85,
+          roughness: 0.9,
+          blending: THREE.NormalBlending
+        });
+        earthCloudMesh = new THREE.Mesh(cloudGeo, cloudMat);
+        pMesh.add(earthCloudMesh);
+
+        // 2. Poświata błękitnej atmosfery Ziemi (Rozpraszanie Rayleigha / Fresnel glow)
+        const atmosMat = new THREE.ShaderMaterial({
+          uniforms: {},
+          vertexShader: `
+            varying vec3 vNormal;
+            void main() {
+              vNormal = normalize(normalMatrix * normal);
+              gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+            }
+          `,
+          fragmentShader: `
+            varying vec3 vNormal;
+            void main() {
+              float intensity = pow(max(0.0, 0.7 - dot(vNormal, vec3(0.0, 0.0, 1.0))), 2.2);
+              gl_FragColor = vec4(0.22, 0.65, 1.0, 1.0) * (intensity * 0.8);
+            }
+          `,
+          side: THREE.BackSide,
+          blending: THREE.AdditiveBlending,
+          transparent: true
+        });
+        const atmosMesh = new THREE.Mesh(new THREE.SphereGeometry(p.radius * 1.14, 32, 32), atmosMat);
+        planetAnchor.add(atmosMesh);
+
+        // 3. Opcjonalne pobranie wysokiej rozdzielczości zdjęć satelitarnych NASA Blue Marble (z natychmiastowym fallbackiem)
+        try {
+          const texLoader = new THREE.TextureLoader();
+          texLoader.setCrossOrigin('anonymous');
+          texLoader.load('https://cdn.jsdelivr.net/gh/mrdoob/three.js@master/examples/textures/planets/earth_atmos_2048.jpg', (tex) => {
+            pMat.map = tex;
+            pMat.needsUpdate = true;
+          });
+          texLoader.load('https://cdn.jsdelivr.net/gh/mrdoob/three.js@master/examples/textures/planets/earth_clouds_1024.png', (cTex) => {
+            cloudMat.map = cTex;
+            cloudMat.needsUpdate = true;
+          });
+        } catch (e) {
+          console.log('Using procedural earth texture');
+        }
+      }
 
       // Pierścienie Saturna
       if (p.hasRings) {
@@ -1106,6 +1391,7 @@
       planetObjects.push({
         data: p,
         mesh: pMesh,
+        cloudMesh: earthCloudMesh,
         anchor: planetAnchor,
         pivot: orbitPivot,
         angle: Math.random() * Math.PI * 2
@@ -1255,6 +1541,11 @@
       // 1. Ruch planet wokół Słońca i wokół własnej osi
       planetObjects.forEach(po => {
         po.mesh.rotation.y += po.data.rotSpeed * deltaSpeed;
+
+        // Jeśli planeta ma warstwę chmur (np. Ziemia), obracaj chmury niezależnie (dryf atmosferyczny)
+        if (po.cloudMesh) {
+          po.cloudMesh.rotation.y += (po.data.rotSpeed + 0.0006) * deltaSpeed;
+        }
 
         if (po.data.dist > 0 && po.anchor) {
           po.angle += po.data.orbitSpeed * deltaSpeed;
