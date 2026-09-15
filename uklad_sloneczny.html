@@ -1381,17 +1381,42 @@
 
     function createSaturnRingsTexture() {
       const canvas = document.createElement('canvas');
-      canvas.width = 512;
-      canvas.height = 32;
+      canvas.width = 1024;
+      canvas.height = 64;
       const ctx = canvas.getContext('2d');
-      const grad = ctx.createLinearGradient(0, 0, 512, 0);
-      grad.addColorStop(0.0, 'rgba(210, 180, 130, 0.0)');
-      grad.addColorStop(0.2, 'rgba(220, 195, 140, 0.85)');
-      grad.addColorStop(0.48, 'rgba(140, 120, 80, 0.15)');
-      grad.addColorStop(0.72, 'rgba(230, 210, 160, 0.9)');
-      grad.addColorStop(1.0, 'rgba(200, 175, 125, 0.0)');
+      const grad = ctx.createLinearGradient(0, 0, 1024, 0);
+
+      // Krawędź wewnętrzna (przezroczysta)
+      grad.addColorStop(0.00, 'rgba(0, 0, 0, 0.0)');
+      // Pierścień C (półprzezroczysty, ciemniejszy)
+      grad.addColorStop(0.08, 'rgba(160, 140, 100, 0.35)');
+      grad.addColorStop(0.20, 'rgba(180, 155, 110, 0.55)');
+      // Pierścień B (najjaśniejszy, najgęstszy – złocisto-kremowy)
+      grad.addColorStop(0.25, 'rgba(235, 215, 165, 0.95)');
+      grad.addColorStop(0.45, 'rgba(245, 225, 180, 0.98)');
+      grad.addColorStop(0.65, 'rgba(215, 190, 140, 0.92)');
+      // PRZERWA CASSINIEGO (Cassini Division – ciemna przerwa)
+      grad.addColorStop(0.68, 'rgba(30, 20, 10, 0.05)');
+      grad.addColorStop(0.72, 'rgba(20, 15, 10, 0.02)');
+      // Pierścień A (zewnętrzny, subtelniejszy)
+      grad.addColorStop(0.75, 'rgba(220, 195, 150, 0.88)');
+      grad.addColorStop(0.88, 'rgba(195, 170, 125, 0.80)');
+      // Przerwa Enckego i krawędź zewnętrzna
+      grad.addColorStop(0.92, 'rgba(60, 45, 30, 0.15)');
+      grad.addColorStop(0.96, 'rgba(180, 155, 115, 0.65)');
+      grad.addColorStop(1.00, 'rgba(0, 0, 0, 0.0)');
+
       ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, 512, 32);
+      ctx.fillRect(0, 0, 1024, 64);
+
+      // Drobne mikro-prążki cząstek lodu i pyłu
+      for (let x = 0; x < 1024; x += 4) {
+        if (x > 250 && (x < 680 || x > 740)) {
+          ctx.fillStyle = Math.random() > 0.5 ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)';
+          ctx.fillRect(x, 0, 2, 64);
+        }
+      }
+
       return new THREE.CanvasTexture(canvas);
     }
 
@@ -1479,7 +1504,6 @@
       mars: 'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/marsmap1k.jpg',
       jupiter: 'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/jupitermap.jpg',
       saturn: 'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/saturnmap.jpg',
-      saturnRing: 'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/saturnringcolor.jpg',
       uranus: 'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/uranusmap.jpg',
       neptune: 'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/neptunemap.jpg'
     };
@@ -1525,6 +1549,45 @@
     });
     const glowMesh = new THREE.Mesh(new THREE.SphereGeometry(sunData.radius * 1.25, 32, 32), glowMat);
     scene.add(glowMesh);
+
+    // Pomocnicza funkcja do tworzenia ciągłej, 360-stopniowej geometrii pierścieni Saturna
+    function createSaturnRingGeometry(innerRadius, outerRadius, thetaSegments = 128) {
+      const geometry = new THREE.BufferGeometry();
+      const positions = [];
+      const uvs = [];
+      const indices = [];
+
+      for (let i = 0; i <= thetaSegments; i++) {
+        const angle = (i / thetaSegments) * Math.PI * 2;
+        const cos = Math.cos(angle);
+        const sin = Math.sin(angle);
+
+        // Wierzchołek wewnętrzny (U = 0)
+        positions.push(innerRadius * cos, innerRadius * sin, 0);
+        uvs.push(0, i / thetaSegments);
+
+        // Wierzchołek zewnętrzny (U = 1)
+        positions.push(outerRadius * cos, outerRadius * sin, 0);
+        uvs.push(1, i / thetaSegments);
+      }
+
+      for (let i = 0; i < thetaSegments; i++) {
+        const v1 = i * 2;
+        const v2 = i * 2 + 1;
+        const v3 = (i + 1) * 2;
+        const v4 = (i + 1) * 2 + 1;
+
+        indices.push(v1, v2, v3);
+        indices.push(v2, v4, v3);
+      }
+
+      geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+      geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
+      geometry.setIndex(indices);
+      geometry.computeVertexNormals();
+
+      return geometry;
+    }
 
     // Pomocnicza funkcja do tworzenia orbit księżyców
     function createMoonOrbitLine(radius, colorHex) {
@@ -1715,23 +1778,22 @@
         planetAnchor.add(gAtmosMesh);
       }
 
-      // Pierścienie Saturna
+      // Pierścienie Saturna (dostosowana radialna geometria dla pełnego, ciągłego pierścienia 360°)
       if (p.hasRings) {
-        const ringGeo = new THREE.RingGeometry(p.radius * 1.4, p.radius * 2.5, 64);
+        const innerR = p.radius * 1.35;
+        const outerR = p.radius * 2.55;
+        const ringGeo = createSaturnRingGeometry(innerR, outerR, 128);
+
         const ringMat = new THREE.MeshBasicMaterial({
           map: createSaturnRingsTexture(),
           side: THREE.DoubleSide,
           transparent: true,
-          opacity: 0.85
+          opacity: 0.95,
+          depthWrite: false
         });
         const ringMesh = new THREE.Mesh(ringGeo, ringMat);
         ringMesh.rotation.x = Math.PI / 2;
         pMesh.add(ringMesh);
-
-        texLoader.load(NASA_TEXTURES.saturnRing, (rTex) => {
-          ringMat.map = rTex;
-          ringMat.needsUpdate = true;
-        });
       }
 
       // Dodawanie księżyców do kotwicy danej planety
