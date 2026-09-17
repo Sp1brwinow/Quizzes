@@ -1,0 +1,1677 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Symulator 3D: Cykl Skalny & Procesy Glebotwórcze – HACK CLUB</title>
+
+    <!-- Google Analytics Tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZP827DTZJ5"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-ZP827DTZJ5');
+    </script>
+
+    <!-- Three.js & OrbitControls -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <!-- Tween.js do płynnych przejść kamery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
+
+    <link rel="stylesheet" href="style.css" />
+
+    <style>
+        :root {
+            --bg-dark: #070e17;
+            --panel-bg: rgba(13, 23, 39, 0.88);
+            --panel-border: rgba(56, 189, 248, 0.28);
+            --primary: #38bdf8;
+            --accent-lava: #f97316;
+            --accent-magma: #ef4444;
+            --accent-sed: #fbbf24;
+            --accent-meta: #a855f7;
+            --accent-soil: #10b981;
+            --accent-glej: #06b6d4;
+            --accent-biel: #e2e8f0;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Kontener 3D WebGL */
+        #canvas-container {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        /* Górna belka nawigacji */
+        .top-navbar {
+            position: absolute;
+            top: 14px;
+            left: 16px;
+            right: 16px;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            pointer-events: none;
+            gap: 12px;
+        }
+
+        .nav-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            pointer-events: auto;
+        }
+
+        .btn-nav {
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid var(--panel-border);
+            color: #7dd3fc;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.25s ease;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            cursor: pointer;
+        }
+
+        .btn-nav:hover {
+            color: #ffffff;
+            border-color: #38bdf8;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.5);
+            transform: translateY(-2px);
+            background: rgba(30, 58, 95, 0.9);
+        }
+
+        .badge-title {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.92) 0%, rgba(30, 41, 59, 0.9) 100%);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            padding: 8px 18px;
+            border-radius: 14px;
+            font-size: 1rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(12px);
+            color: #ffffff;
+            pointer-events: auto;
+        }
+
+        .badge-title span.highlight {
+            background: linear-gradient(135deg, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Przełącznik główny: Cykl Skalny vs Profil Glebowy */
+        .view-switcher {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 14px;
+            padding: 4px;
+            display: flex;
+            gap: 4px;
+            pointer-events: auto;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .switch-btn {
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            padding: 7px 15px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.88rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .switch-btn.active {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            color: #ffffff;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.45);
+        }
+
+        .switch-btn:hover:not(.active) {
+            color: #f1f5f9;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        /* Panel wyboru procesów (Lewy pasek) */
+        .process-selector-panel {
+            position: absolute;
+            top: 76px;
+            left: 16px;
+            width: 320px;
+            max-height: calc(100vh - 170px);
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 18px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            z-index: 10;
+            backdrop-filter: blur(14px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            overflow-y: auto;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        .process-selector-panel::-webkit-scrollbar {
+            width: 6px;
+        }
+        .process-selector-panel::-webkit-scrollbar-thumb {
+            background: rgba(56, 189, 248, 0.3);
+            border-radius: 4px;
+        }
+
+        .section-header {
+            font-size: 0.78rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #38bdf8;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 4px;
+            border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+            margin-top: 4px;
+        }
+
+        .process-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .process-item {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 10px 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .process-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: transparent;
+            transition: background 0.2s;
+        }
+
+        .process-item:hover {
+            background: rgba(30, 41, 59, 0.9);
+            border-color: rgba(56, 189, 248, 0.4);
+            transform: translateX(4px);
+        }
+
+        .process-item.active {
+            background: linear-gradient(90deg, rgba(2, 132, 199, 0.3) 0%, rgba(15, 23, 42, 0.8) 100%);
+            border-color: #38bdf8;
+            box-shadow: 0 0 16px rgba(56, 189, 248, 0.25);
+        }
+
+        .process-item.active::before {
+            background: #38bdf8;
+        }
+
+        .proc-icon {
+            font-size: 1.4rem;
+            flex-shrink: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 8px;
+        }
+
+        .proc-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            overflow: hidden;
+        }
+
+        .proc-name {
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: #ffffff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .proc-tag {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+        }
+
+        /* Panel edukacyjny (Prawy pasek) */
+        .info-panel {
+            position: absolute;
+            top: 76px;
+            right: 16px;
+            width: 380px;
+            max-height: calc(100vh - 170px);
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 18px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            z-index: 10;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            overflow-y: auto;
+            transition: all 0.3s ease;
+        }
+
+        .info-panel::-webkit-scrollbar {
+            width: 6px;
+        }
+        .info-panel::-webkit-scrollbar-thumb {
+            background: rgba(56, 189, 248, 0.3);
+            border-radius: 4px;
+        }
+
+        .info-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .info-badge {
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-block;
+            margin-bottom: 4px;
+        }
+
+        .badge-geo { background: rgba(249, 115, 22, 0.2); color: #fb923c; border: 1px solid rgba(249, 115, 22, 0.4); }
+        .badge-soil { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); }
+
+        .info-title {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: #ffffff;
+            line-height: 1.25;
+        }
+
+        .info-desc {
+            font-size: 0.92rem;
+            color: #cbd5e1;
+            line-height: 1.6;
+        }
+
+        .info-box {
+            background: rgba(15, 23, 42, 0.75);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            border-radius: 12px;
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .info-box-title {
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: #38bdf8;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .param-item {
+            background: rgba(255, 255, 255, 0.04);
+            padding: 6px 10px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .param-label {
+            font-size: 0.7rem;
+            color: #94a3b8;
+        }
+
+        .param-value {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #f1f5f9;
+        }
+
+        .chips-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .chip {
+            background: rgba(56, 189, 248, 0.12);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            color: #7dd3fc;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.78rem;
+            font-weight: 600;
+        }
+
+        .chip-meta { background: rgba(168, 85, 247, 0.15); border-color: rgba(168, 85, 247, 0.35); color: #d8b4fe; }
+        .chip-magma { background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.35); color: #fca5a5; }
+        .chip-soil { background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.35); color: #6ee7b7; }
+
+        /* Dolny pasek kontroli odtwarzania */
+        .bottom-bar {
+            position: absolute;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 20px;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            backdrop-filter: blur(14px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            max-width: 90vw;
+        }
+
+        .ctrl-btn {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            color: #f1f5f9;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: all 0.2s;
+        }
+
+        .ctrl-btn:hover {
+            background: rgba(2, 132, 199, 0.4);
+            border-color: #38bdf8;
+            color: #ffffff;
+            transform: scale(1.05);
+        }
+
+        .ctrl-btn.play-active {
+            background: linear-gradient(135deg, #0284c7, #0369a1);
+            border-color: #38bdf8;
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.5);
+        }
+
+        .speed-btn {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            color: #7dd3fc;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .speed-btn:hover {
+            border-color: #38bdf8;
+            color: #ffffff;
+        }
+
+        .timeline-slider-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 220px;
+        }
+
+        .timeline-slider {
+            flex-grow: 1;
+            height: 6px;
+            -webkit-appearance: none;
+            background: rgba(56, 189, 248, 0.2);
+            border-radius: 3px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .timeline-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #38bdf8;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.8);
+            transition: transform 0.1s;
+        }
+
+        .timeline-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.25);
+        }
+
+        /* Wskazówki kamery (HUD) */
+        .hud-hint {
+            position: absolute;
+            bottom: 84px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(15, 23, 42, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #94a3b8;
+            font-size: 0.78rem;
+            padding: 4px 12px;
+            border-radius: 999px;
+            z-index: 5;
+            pointer-events: none;
+            backdrop-filter: blur(8px);
+        }
+
+        /* Etykiety 3D na ekranie */
+        .tag-3d {
+            position: absolute;
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(56, 189, 248, 0.5);
+            color: #ffffff;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+            white-space: nowrap;
+            transition: opacity 0.2s ease;
+            z-index: 4;
+        }
+
+        /* Modal Quizu Sprawdzającego */
+        .quiz-modal {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 520px;
+            max-width: 92vw;
+            background: rgba(13, 23, 39, 0.96);
+            border: 2px solid rgba(56, 189, 248, 0.5);
+            border-radius: 22px;
+            padding: 26px;
+            z-index: 100;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 35px rgba(56, 189, 248, 0.3);
+            backdrop-filter: blur(20px);
+            display: none;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .quiz-modal.show {
+            display: flex;
+            animation: popIn 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+        }
+
+        @keyframes popIn {
+            0% { opacity: 0; transform: translate(-50%, -46%) scale(0.92); }
+            100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        }
+
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .quiz-close {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 1.4rem;
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .quiz-close:hover { color: #ffffff; }
+
+        .quiz-option {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: #f1f5f9;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+        }
+
+        .quiz-option:hover {
+            background: rgba(56, 189, 248, 0.15);
+            border-color: #38bdf8;
+            transform: translateX(4px);
+        }
+
+        .quiz-option.correct {
+            background: rgba(16, 185, 129, 0.25) !important;
+            border-color: #10b981 !important;
+            color: #6ee7b7;
+        }
+
+        .quiz-option.wrong {
+            background: rgba(239, 68, 68, 0.25) !important;
+            border-color: #ef4444 !important;
+            color: #fca5a5;
+        }
+
+        /* Responsywność */
+        @media (max-width: 900px) {
+            .process-selector-panel {
+                width: 260px;
+                top: 70px;
+            }
+            .info-panel {
+                width: 300px;
+                top: 70px;
+            }
+            .badge-title span.desc-hide {
+                display: none;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .process-selector-panel {
+                left: 10px;
+                right: 10px;
+                width: auto;
+                max-height: 180px;
+                top: 65px;
+            }
+            .info-panel {
+                left: 10px;
+                right: 10px;
+                width: auto;
+                top: 255px;
+                max-height: 220px;
+            }
+            .bottom-bar {
+                padding: 6px 12px;
+                gap: 8px;
+            }
+            .timeline-slider-box {
+                min-width: 120px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Trójwymiarowa scena Three.js -->
+    <div id="canvas-container"></div>
+
+    <!-- Górna belka nawigacji -->
+    <header class="top-navbar">
+        <div class="nav-group">
+            <a href="pomocnicze.html" class="btn-nav">
+                <span>← Quizy & Geografia</span>
+            </a>
+            <div class="badge-title">
+                <span>🌋</span>
+                <span>Procesy Ziemi <span class="highlight">3D</span></span>
+                <span class="desc-hide" style="color: #64748b; font-weight: 500; font-size: 0.85rem;">| Obieg Skał & Gleby</span>
+            </div>
+        </div>
+
+        <div class="nav-group">
+            <!-- Przełącznik trybu widoku -->
+            <div class="view-switcher">
+                <button class="switch-btn active" id="btn-mode-macro" onclick="switchViewMode('macro')">
+                    <span>🏔️ Cykl Skalny (Litosfera)</span>
+                </button>
+                <button class="switch-btn" id="btn-mode-soil" onclick="switchViewMode('soil')">
+                    <span>🌱 Pedogeneza (Profil Glebowy)</span>
+                </button>
+            </div>
+
+            <button class="btn-nav" style="background: rgba(16, 185, 129, 0.2); border-color: rgba(16, 185, 129, 0.4); color: #6ee7b7;" onclick="openQuiz()">
+                <span>🧠 Sprawdź wiedzę (Quiz)</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Lewy panel wyboru procesów -->
+    <aside class="process-selector-panel" id="process-panel">
+        <!-- Generowane dynamicznie przez JS w zależności od trybu widoku -->
+    </aside>
+
+    <!-- Prawy panel edukacyjny -->
+    <aside class="info-panel" id="info-panel">
+        <div class="info-header">
+            <div class="proc-icon" id="info-icon" style="font-size: 2rem; width: 44px; height: 44px;">🌋</div>
+            <div>
+                <span class="info-badge badge-geo" id="info-category">Proces Geologiczny</span>
+                <h2 class="info-title" id="info-title">Magmatyzm i Krystalizacja</h2>
+            </div>
+        </div>
+
+        <p class="info-desc" id="info-description">
+            Krzepnięcie stopu krzemianowego we wnętrzu skorupy ziemskiej (skały głębinowe / plutoniczne) lub wylanie lawy na powierzchnię Ziemi (skały wylewne / wulkaniczne).
+        </p>
+
+        <div class="info-box">
+            <div class="info-box-title">⚙️ Warunki i Środowisko</div>
+            <div class="info-grid-2">
+                <div class="param-item">
+                    <span class="param-label">Temperatura (T)</span>
+                    <span class="param-value" id="param-temp">700°C – 1300°C</span>
+                </div>
+                <div class="param-item">
+                    <span class="param-label">Ciśnienie (p)</span>
+                    <span class="param-value" id="param-press">Wysokie do 1 atm</span>
+                </div>
+                <div class="param-item">
+                    <span class="param-label">Głębokość</span>
+                    <span class="param-value" id="param-depth">0 – 30 km</span>
+                </div>
+                <div class="param-item">
+                    <span class="param-label">Czynnik główny</span>
+                    <span class="param-value" id="param-factor">Ciepło Ziemi & Spadek T</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <div class="info-box-title">💎 Powstające Skały / Poziomy</div>
+            <div class="chips-container" id="info-chips">
+                <span class="chip chip-magma">Granit (plutoniczna)</span>
+                <span class="chip chip-magma">Bazalt (wylewna)</span>
+                <span class="chip chip-magma">Gabro</span>
+                <span class="chip chip-magma">Andezyt</span>
+            </div>
+        </div>
+
+        <div class="info-box" style="background: rgba(30, 41, 59, 0.5);">
+            <div class="info-box-title">💡 Znaczenie & Ciekawostka</div>
+            <p class="info-desc" id="info-curiosity" style="font-size: 0.85rem;">
+                Powolne stygnięcie w głębi Ziemi pozwala minerałom urosnąć w duże, widoczne gołym okiem kryształy (struktura jawnokrystaliczna granitu). Szybkie chłodzenie lawy w wodzie lub powietrzu tworzy strukturę skrytokrystaliczną lub szklistą (obsydian).
+            </p>
+        </div>
+    </aside>
+
+    <!-- Wskazówka nawigacji 3D -->
+    <div class="hud-hint">
+        🖱️ Lewy przycisk: Obrót 3D | Prawy przycisk: Przesunięcie | Kółko: Zoom
+    </div>
+
+    <!-- Dolny pasek kontroli odtwarzania -->
+    <footer class="bottom-bar">
+        <button class="ctrl-btn" id="btn-prev" title="Poprzedni proces" onclick="stepProcess(-1)">⏮</button>
+        <button class="ctrl-btn play-active" id="btn-play" title="Odtwarzaj / Pauza" onclick="togglePlay()">⏸</button>
+        <button class="ctrl-btn" id="btn-next" title="Następny proces" onclick="stepProcess(1)">⏭</button>
+        <button class="ctrl-btn" id="btn-reset" title="Resetuj widok kamery" onclick="resetCamera()">🔄</button>
+
+        <div class="timeline-slider-box">
+            <span style="font-size: 0.8rem; color: #94a3b8;">Faza:</span>
+            <input type="range" class="timeline-slider" id="timeline" min="0" max="100" value="0" oninput="onTimelineChange(this.value)">
+            <span id="timeline-val" style="font-size: 0.82rem; font-weight: 700; color: #38bdf8; min-width: 35px;">0%</span>
+        </div>
+
+        <button class="speed-btn" id="btn-speed" onclick="toggleSpeed()">Prędkość: 1x</button>
+    </footer>
+
+    <!-- Modal Mini-Quizu -->
+    <div class="quiz-modal" id="quiz-modal">
+        <div class="quiz-header">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 1.5rem;">🧠</span>
+                <h3 style="color: #38bdf8; font-size: 1.25rem;">Sprawdź swoją wiedzę</h3>
+            </div>
+            <button class="quiz-close" onclick="closeQuiz()">✕</button>
+        </div>
+        <p id="quiz-question" style="font-size: 1.05rem; font-weight: 600; line-height: 1.5; color: #ffffff;">
+            Ładowanie pytania...
+        </p>
+        <div id="quiz-options" style="display: flex; flex-direction: column; gap: 8px;">
+            <!-- Opcje generowane przez JS -->
+        </div>
+        <div id="quiz-feedback" style="font-size: 0.9rem; min-height: 24px; font-weight: 700;"></div>
+        <button class="btn-nav" id="quiz-next-btn" style="align-self: flex-end; display: none;" onclick="nextQuestion()">
+            Następne pytanie →
+        </button>
+    </div>
+
+    <!-- Dane procesów i główny skrypt logiki oraz Three.js -->
+    <script>
+        /* =========================================================================
+           1. BAZA DANYCH PROCESÓW (CYKL SKALNY + PROCESY GLEBOTWÓRCZE)
+           ========================================================================= */
+        const PROCESS_DATA = {
+            macro: [
+                {
+                    id: 'magmatism',
+                    name: 'Magmatyzm i Krystalizacja',
+                    tag: 'Powstawanie skał magmowych',
+                    icon: '🌋',
+                    category: 'Proces Geologiczny',
+                    badgeClass: 'badge-geo',
+                    desc: 'Krzepnięcie stopu krzemianowego (magmy) we wnętrzu Ziemi tworzy skały głębinowe (plutoniczne, np. granit), a wylew lawy na powierzchnię tworzy skały wylewne (wulkaniczne, np. bazalt).',
+                    temp: '700°C – 1300°C',
+                    press: '1 – 10 000 atm',
+                    depth: '0 – 35 km',
+                    factor: 'Stygnięcie stopu krzemianowego',
+                    chips: ['Granit (głębinowa)', 'Bazalt (wylewna)', 'Gabro', 'Obsydian', 'Andezyt'],
+                    curiosity: 'Powolne stygnięcie w głębi Ziemi (tysiące lat) sprzyja krystalizacji dużych kryształów (struktura jawnokrystaliczna). Szybkie krzepnięcie lawy na powietrzu nie daje czasu na rozrost kryształów (struktura szklista).',
+                    camera: { pos: [14, 12, 22], target: [2, 0, 0] }
+                },
+                {
+                    id: 'weathering',
+                    name: 'Wietrzenie i Erozja',
+                    tag: 'Rozpad i niszczenie skał',
+                    icon: '💨',
+                    category: 'Proces Powierzchniowy',
+                    badgeClass: 'badge-geo',
+                    desc: 'Fizyczny rozpad skał (zamróz wodny, insolacja) oraz ich chemiczny rozkład (krasowienie, utlenianie, hydratacja). Erozja odrywa i wymywa materiał za pomocą wody, wiatru i grawitacji.',
+                    temp: '-40°C do +50°C',
+                    press: '1 atm (powierzchnia)',
+                    depth: '0 m (szczyty i stoki)',
+                    factor: 'Woda, wiatr, mróz, gazy atmosferyczne',
+                    chips: ['Zwietrzelina', 'Głazy i rumosz', 'Żwir', 'Piasek kwarcowy', 'Iły'],
+                    curiosity: 'Zjawisko wietrzenia mrozowego (zamróz) polega na zwiększaniu objętości wody o ok. 9% podczas zamarzania w szczelinach skalnych, co działa jak potężny klin rozłupujący skałę.',
+                    camera: { pos: [-8, 14, 18], target: [-8, 5, 0] }
+                },
+                {
+                    id: 'transport_sedimentation',
+                    name: 'Transport i Sedymentacja',
+                    tag: 'Spływ i akumulacja w basenie',
+                    icon: '🌊',
+                    category: 'Proces Powierzchniowy',
+                    badgeClass: 'badge-geo',
+                    desc: 'Przemieszczanie okruchów skalnych przez rzeki, prądy morskie i wiatr, a następnie ich opadanie i gromadzenie się warstwami na dnie jezior, delt i mórz.',
+                    temp: '0°C do 30°C',
+                    press: '1 – 100 atm (wodne)',
+                    depth: 'Dno rzek i oceanów',
+                    factor: 'Energia grawitacyjna i prądy wodne',
+                    chips: ['Muł denny', 'Ił sedymentacyjny', 'Piaski rzeczne', 'Warstwy osadów'],
+                    curiosity: 'Najdrobniejsze frakcje (iły, zawiesina koloidalna) osadzają się najdalej od brzegu w spokojnych, głębokich basenach morskich, tworząc rozległe poziome laminy.',
+                    camera: { pos: [6, 8, 20], target: [8, 0, 0] }
+                },
+                {
+                    id: 'diagenesis',
+                    name: 'Diageneza i Lityfikacja',
+                    tag: 'Powstawanie skał osadowych',
+                    icon: '🧱',
+                    category: 'Proces Geologiczny',
+                    badgeClass: 'badge-geo',
+                    desc: 'Kompakcja (zagęszczanie pod ciężarem nadkładu), odwadnianie oraz cementacja spoiwem mineralnym (krzemionką, węglanem wapnia) przekształcająca luźny osad w litą skałę.',
+                    temp: '50°C – 200°C',
+                    press: '100 – 1500 atm',
+                    depth: '1 – 5 km pod osadami',
+                    factor: 'Nacisk nadkładu & cementacja',
+                    chips: ['Piaskowiec (z piasku)', 'Wapień (organiczny/chem.)', 'Zlepieniec', 'Iłowiec / Łupek'],
+                    curiosity: 'Wapienie często powstają ze skorupek i szkieletów mikroskopijnych otwornic i glonów kokolitowych, które opadały na dno mórz przez miliony lat.',
+                    camera: { pos: [8, 4, 16], target: [8, -2, 0] }
+                },
+                {
+                    id: 'metamorphism',
+                    name: 'Metamorfizm (Przeobrażenie)',
+                    tag: 'Stres tektoniczny i rekrystalizacja',
+                    icon: '⚡',
+                    category: 'Proces Wnętrza Ziemi',
+                    badgeClass: 'badge-geo',
+                    desc: 'Przeobrażenie strukturalne i mineralne skał w stanie stałym pod wpływem potężnego ciśnienia kierunkowego i wysokiej temperatury. Powstaje charakterystyczna foliacja (pasmowość).',
+                    temp: '200°C – 700°C',
+                    press: '3 000 – 12 000 atm',
+                    depth: '8 – 30 km (strefa orogenezy)',
+                    factor: 'Nacisk tektoniczny (stres) & T',
+                    chips: ['Gnejs (z granitu)', 'Marmur (z wapienia)', 'Kwarcyt (z piaskowca)', 'Fyllit'],
+                    curiosity: 'Wapień poddany metamorfizmowi traci porowatość i skamieniałości, a kryształy kalcytu ulegają ciasnej rekrystalizacji tworząc szlachetny marmur.',
+                    camera: { pos: [-2, 2, 18], target: [-2, -4, 0] }
+                },
+                {
+                    id: 'anatexis',
+                    name: 'Anateksis (Topnienie skał)',
+                    tag: 'Powrót do postaci magmy',
+                    icon: '🔥',
+                    category: 'Proces Wnętrza Ziemi',
+                    badgeClass: 'badge-geo',
+                    desc: 'Zanurzenie skał w głębokim płaszczu lub strefie subdukcji przekraczające temperaturę topnienia minerałów. Skały topią się tworząc nowy stop magmowy i zamykając cykl skalny.',
+                    temp: '> 750°C – 1200°C',
+                    press: '> 10 000 atm',
+                    depth: '> 30 km (dolna skorupa/płaszcz)',
+                    factor: 'Ciepło wnętrza Ziemi & woda z subdukcji',
+                    chips: ['Nowy stop magmowy', 'Migmatyty (częściowy stop)', 'Intruzje plutoniczne'],
+                    curiosity: 'Cykl skalny nie ma ani początku, ani końca – atomy kwarcu w dzisiejszym piasku na plaży mogły być miliard lat temu stopem w płaszczu Ziemi!',
+                    camera: { pos: [0, -2, 22], target: [0, -6, 0] }
+                }
+            ],
+            soil: [
+                {
+                    id: 'humification',
+                    name: 'Humifikacja i Mineralizacja',
+                    tag: 'Rozkład materii organicznej',
+                    icon: '🍂',
+                    category: 'Proces Glebotwórczy',
+                    badgeClass: 'badge-soil',
+                    desc: 'Mikrobiologiczny rozkład ściółki leśnej i resztek roślinnych prowadzący do wytworzenia trwałej, bogatej w próchnicę warstwy glebowej (poziom próchniczny A).',
+                    temp: '5°C – 25°C',
+                    press: '1 atm',
+                    depth: '0 – 25 cm',
+                    factor: 'Mikroorganizmy, grzyby, dżdżownice, wilgoć',
+                    chips: ['Poziom O (ściółka)', 'Poziom A (próchnica)', 'Kwasy humusowe', 'Związki N, P, K'],
+                    curiosity: '1 gram żyznej gleby może zawierać ponad miliard bakterii oraz kilometry strzępek grzybni, które tworzą próchnicę o ogromnej zdolności zatrzymywania wody.',
+                    camera: { pos: [0, 8, 14], target: [0, 4, 0] }
+                },
+                {
+                    id: 'eluviation_illuviation',
+                    name: 'Eluwiazacja i Iluwiazacja',
+                    tag: 'Przemywanie w głąb profilu',
+                    icon: '💧',
+                    category: 'Proces Glebotwórczy',
+                    badgeClass: 'badge-soil',
+                    desc: 'Wsiąkająca woda opadowa wymywa składniki mineralne i koloidy z górnej warstwy (eluwiazacja – poziom E), a następnie deponuje je w głębszym poziomie wzbogacenia (iluwiazacja – poziom B).',
+                    temp: 'Umiarkowana',
+                    press: '1 atm',
+                    depth: '15 – 80 cm',
+                    factor: 'Wsiąkające wody opadowe & grawitacja',
+                    chips: ['Poziom E (wymycia)', 'Poziom B (wmycia/wzbogacenia)', 'Koloidy ilaste', 'Związki Fe i Al'],
+                    curiosity: 'Poziom eluwialny (E) staje się jaśniejszy, gdyż traci barwiące związki żelaza i próchnicy, podczas gdy poziom B zyskuje intensywną barwę i zwięzłą strukturę.',
+                    camera: { pos: [0, 4, 15], target: [0, 1, 0] }
+                },
+                {
+                    id: 'podsolization',
+                    name: 'Bielicowanie (Gleby Bielicowe)',
+                    tag: 'Kwaśne ługowanie pod borami',
+                    icon: '🌲',
+                    category: 'Proces Glebotwórczy',
+                    badgeClass: 'badge-soil',
+                    desc: 'Silne ługowanie związków żelaza i glinu w środowisku kwaśnym (pod iglastymi borami sosnowymi/świerkowymi), tworzące charakterystyczny, popielato-biały poziom wymycia.',
+                    temp: 'Chłodny/umiarkowany klimat',
+                    press: '1 atm',
+                    depth: '10 – 60 cm',
+                    factor: 'Kwaśna ściółka iglasta (niskie pH)',
+                    chips: ['Gleby bielicowe', 'Poziom popielaty (E)', 'Rdzawy poziom B (szklisty)', 'Bory iglaste'],
+                    curiosity: 'Bielice zawdzięczają swą nazwę wyglądowi poziomu E, który przypomina wysypany biały popiół lub bielidło, ponieważ pozostał w nim niemal wyłącznie czysty piasek kwarcowy.',
+                    camera: { pos: [0, 4, 14], target: [0, 1, 0] }
+                },
+                {
+                    id: 'brunification',
+                    name: 'Brunatnienie (Gleby Brunatne)',
+                    tag: 'Wietrzenie krzemianów pod lasami',
+                    icon: '🌳',
+                    category: 'Proces Glebotwórczy',
+                    badgeClass: 'badge-soil',
+                    desc: 'Równomierne uwalnianie i utlenianie żelaza ze zwietrzałych minerałów krzemianowych w klimacie umiarkowanym (pod lasami liściastymi), nadające glebie ciepłą, brunatną barwę.',
+                    temp: 'Umiarkowany ciepły',
+                    press: '1 atm',
+                    depth: '10 – 90 cm',
+                    factor: 'Zwietrzelina krzemianowa, tlen, lasy liściaste',
+                    chips: ['Gleby brunatne', 'Tlenki i wodorotlenki żelaza', 'Kompleksy ilasto-próchniczne'],
+                    curiosity: 'Gleby brunatne to jedne z najbardziej typowych gleb środkowej Europy i Polski, bardzo korzystne dla rolnictwa dzięki zrównoważonej strukturze gruzełkowatej.',
+                    camera: { pos: [0, 3, 14], target: [0, 0, 0] }
+                },
+                {
+                    id: 'gleying',
+                    name: 'Oglejenie (Warunki Beztlenowe)',
+                    tag: 'Redukcja żelaza przy nasyceniu wodą',
+                    icon: '🌫️',
+                    category: 'Proces Glebotwórczy',
+                    badgeClass: 'badge-soil',
+                    desc: 'Proces redukcji związków żelaza ($Fe^{3+} \\to Fe^{2+}$) pod wpływem trwałego nasycenia wstrzymaną wodą gruntową i braku tlenu, wywołujący sinoniebieską barwę gleby.',
+                    temp: 'Niska do umiarkowanej',
+                    press: '1 atm (beztlenowo)',
+                    depth: 'Dolne partie profilu (strefa wód)',
+                    factor: 'Stojąca woda gruntowa, brak tlenu O2',
+                    chips: ['Poziom glejowy (G)', 'Związki Fe(II)', 'Sinoniebieskie zabarwienie', 'Torfowiska / mokradła'],
+                    curiosity: 'Gdy próbkę sinoniebieskiej gleby glejowej wystawi się na świeże powietrze, po pewnym czasie utlenia się na słońcu i żółknie lub brązowieje!',
+                    camera: { pos: [0, -1, 14], target: [0, -3, 0] }
+                }
+            ]
+        };
+
+        /* Pytania do Mini-Quizu */
+        const QUIZ_QUESTIONS = [
+            {
+                q: "Jaka skała powstaje w wyniku powolnego stygnięcia magmy głęboko pod powierzchnią Ziemi?",
+                options: ["Granit (skała głębinowa)", "Bazalt (skała wylewna)", "Marmur (skała metamorficzna)", "Piaskowiec (skała osadowa)"],
+                correct: 0,
+                explain: "Granit to skała magmowa plutoniczna (głębinowa), która krzepnie bardzo powoli, tworząc widoczne kryształy kwarcu, skaleni i mik."
+            },
+            {
+                q: "W jaki sposób wapień przekształca się w marmur?",
+                options: ["Poprzez rozpuszczenie w rzece", "Pod wpływem wysokiego ciśnienia i temperatury bez stopienia (metamorfizm)", "Przez zamarzanie wody w szczelinach", "W wyniku lityfikacji na dnie oceanu"],
+                correct: 1,
+                explain: "Metamorfizm to przeobrażenie skał pod wpływem wysokiej temperatury i ciśnienia kierunkowego w głębi skorupy ziemskiej."
+            },
+            {
+                q: "Czym charakteryzuje się proces bielicowania w glebie?",
+                options: ["Powstawaniem sinoniebieskiej barwy przez brak tlenu", "Intensywnym wymywaniem żelaza i próchnicy pod borami iglastymi (jasny poziom E)", "Wytwarzaniem wyłącznie lawy wulkanicznej", "Kompakcją piasku w piaskowiec"],
+                correct: 1,
+                explain: "Bielicowanie zachodzi w kwaśnym środowisku pod borami iglastymi, tworząc jasny, popielato-biały poziom eluwialny (wymycia)."
+            },
+            {
+                q: "Jaki czynnik wywołuje proces oglejenia i sinoniebieskie zabarwienie w glebie?",
+                options: ["Stałe nasycenie wodą i brak tlenu (redukcja związków żelaza)", "Wysoka insolacja na pustyni", "Nacisk lądolodu", "Pożar lasu"],
+                correct: 0,
+                explain: "W warunkach beztlenowych pod wodą gruntową zachodzi redukcja związków żelaza Fe3+ do Fe2+, co nadaje glebie charakterystyczną siną barwę."
+            },
+            {
+                q: "Jak nazywa się proces przekształcania luźnego osadu w litą skałę osadową?",
+                options: ["Erozja", "Diageneza i lityfikacja", "Anateksis", "Humifikacja"],
+                correct: 1,
+                explain: "Diageneza i lityfikacja obejmują ściskanie, odwadnianie i cementację luźnych ziaren (np. piasku w piaskowiec)."
+            }
+        ];
+
+        /* =========================================================================
+           2. INICJALIZACJA STANU APLIKACJI
+           ========================================================================= */
+        let currentMode = 'macro'; // 'macro' (Cykl Skalny) lub 'soil' (Profil Glebowy)
+        let currentProcessIndex = 0;
+        let isPlaying = true;
+        let animSpeed = 1.0;
+        let timelineProgress = 0.0;
+        let currentQuizIndex = 0;
+        let quizScore = 0;
+
+        /* =========================================================================
+           3. INICJALIZACJA THREE.JS
+           ========================================================================= */
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x060c15);
+        scene.fog = new THREE.FogExp2(0x060c15, 0.02);
+
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(16, 14, 24);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        container.appendChild(renderer.domElement);
+
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.maxPolarAngle = Math.PI / 2 + 0.05; // nie schodź pod podłogę
+        controls.minDistance = 6;
+        controls.maxDistance = 60;
+
+        /* Oświetlenie Sceny */
+        const ambientLight = new THREE.AmbientLight(0xdde8f5, 0.65);
+        scene.add(ambientLight);
+
+        const sunLight = new THREE.DirectionalLight(0xfffaed, 1.2);
+        sunLight.position.set(25, 40, 20);
+        sunLight.castShadow = true;
+        sunLight.shadow.mapSize.width = 2048;
+        sunLight.shadow.mapSize.height = 2048;
+        sunLight.shadow.camera.near = 0.5;
+        sunLight.shadow.camera.far = 100;
+        const d = 25;
+        sunLight.shadow.camera.left = -d;
+        sunLight.shadow.camera.right = d;
+        sunLight.shadow.camera.top = d;
+        sunLight.shadow.camera.bottom = -d;
+        scene.add(sunLight);
+
+        // Dodatkowe światło wypełniające od spodu (ciepłe dla magmy)
+        const magmaPointLight = new THREE.PointLight(0xff3b00, 2.5, 30);
+        magmaPointLight.position.set(0, -6, 0);
+        scene.add(magmaPointLight);
+
+        /* =========================================================================
+           4. TWORZENIE MODELI 3D (BLOKDIAGRAM LITOSFERY & PROFIL GLEBOWY)
+           ========================================================================= */
+        const macroGroup = new THREE.Group();
+        const soilGroup = new THREE.Group();
+        scene.add(macroGroup);
+        scene.add(soilGroup);
+        soilGroup.visible = false;
+
+        /* --- 4A. BLOKDIAGRAM GEOLOGICZNY (MAKRO) --- */
+        let magmaMesh, volcanoMesh, oceanMesh, sedimentLayers = [], metaMesh, erosionParticles, magmaParticles;
+
+        function buildMacroGeologyScene() {
+            // Główna podstawa / skorupa ziemska (przekrój blokowy)
+            const crustGeo = new THREE.BoxGeometry(24, 10, 14);
+            const crustMat = new THREE.MeshStandardMaterial({
+                color: 0x222a35,
+                roughness: 0.9,
+                metalness: 0.1
+            });
+            const crustMesh = new THREE.Mesh(crustGeo, crustMat);
+            crustMesh.position.y = -5;
+            crustMesh.receiveShadow = true;
+            macroGroup.add(crustMesh);
+
+            // Góra / Szczyt wulkaniczny (lewa strona)
+            const mountainGeo = new THREE.ConeGeometry(7, 8, 32);
+            const mountainMat = new THREE.MeshStandardMaterial({
+                color: 0x475569,
+                roughness: 0.95,
+                flatShading: true
+            });
+            volcanoMesh = new THREE.Mesh(mountainGeo, mountainMat);
+            volcanoMesh.position.set(-6, 4, 0);
+            volcanoMesh.castShadow = true;
+            volcanoMesh.receiveShadow = true;
+            macroGroup.add(volcanoMesh);
+
+            // Komin wulkaniczny / krater
+            const craterGeo = new THREE.CylinderGeometry(0.8, 1.4, 2, 16);
+            const craterMat = new THREE.MeshStandardMaterial({
+                color: 0x1e293b,
+                roughness: 0.8
+            });
+            const crater = new THREE.Mesh(craterGeo, craterMat);
+            crater.position.set(-6, 7.8, 0);
+            macroGroup.add(crater);
+
+            // Komora magmowa w głębi (kula żarząca się)
+            const magmaGeo = new THREE.SphereGeometry(3.2, 32, 24);
+            magmaMesh = new THREE.MeshStandardMaterial({
+                color: 0xff3b00,
+                emissive: 0xff2200,
+                emissiveIntensity: 0.9,
+                roughness: 0.3
+            });
+            const magmaSphere = new THREE.Mesh(magmaGeo, magmaMesh);
+            magmaSphere.position.set(-4, -5, 0);
+            macroGroup.add(magmaSphere);
+
+            // Basen Sedymentacyjny / Ocean (prawa strona)
+            const waterGeo = new THREE.BoxGeometry(11, 2.5, 14);
+            const waterMat = new THREE.MeshStandardMaterial({
+                color: 0x0284c7,
+                transparent: true,
+                opacity: 0.75,
+                roughness: 0.1,
+                metalness: 0.2
+            });
+            oceanMesh = new THREE.Mesh(waterGeo, waterMat);
+            oceanMesh.position.set(6.5, 1.25, 0);
+            macroGroup.add(oceanMesh);
+
+            // Warstwy skał osadowych na dnie basenu
+            const layerColors = [0xd97706, 0xb45309, 0xf59e0b, 0xca8a04];
+            for (let i = 0; i < 4; i++) {
+                const layerGeo = new THREE.BoxGeometry(11, 0.8, 13.8);
+                const layerMat = new THREE.MeshStandardMaterial({
+                    color: layerColors[i],
+                    roughness: 0.85
+                });
+                const layer = new THREE.Mesh(layerGeo, layerMat);
+                layer.position.set(6.5, -0.4 - (i * 0.85), 0);
+                layer.receiveShadow = true;
+                macroGroup.add(layer);
+                sedimentLayers.push(layer);
+            }
+
+            // Strefa Metamorfizmu (sfałdowane warstwy z foliacją pod naciskiem)
+            const metaGeo = new THREE.CylinderGeometry(4, 5, 4, 16, 8);
+            const metaMat = new THREE.MeshStandardMaterial({
+                color: 0x7c3aed,
+                roughness: 0.7,
+                wireframe: false,
+                flatShading: true
+            });
+            metaMesh = new THREE.Mesh(metaGeo, metaMat);
+            metaMesh.position.set(0, -4.5, 1);
+            metaMesh.rotation.z = Math.PI / 6;
+            macroGroup.add(metaMesh);
+
+            // Cząsteczki Erozji i Spływu (Rzeka cząstek)
+            const pCount = 350;
+            const pGeo = new THREE.BufferGeometry();
+            const pPositions = new Float32Array(pCount * 3);
+            for (let i = 0; i < pCount; i++) {
+                pPositions[i * 3] = -5 + Math.random() * 2;
+                pPositions[i * 3 + 1] = 4 + Math.random() * 3;
+                pPositions[i * 3 + 2] = (Math.random() - 0.5) * 4;
+            }
+            pGeo.setAttribute('position', new THREE.BufferAttribute(pPositions, 3));
+            const pMat = new THREE.PointsMaterial({
+                color: 0xfde047,
+                size: 0.25,
+                transparent: true,
+                opacity: 0.85
+            });
+            erosionParticles = new THREE.Points(pGeo, pMat);
+            macroGroup.add(erosionParticles);
+
+            // Cząsteczki Lawy / Magmy
+            const mCount = 200;
+            const mGeo = new THREE.BufferGeometry();
+            const mPositions = new Float32Array(mCount * 3);
+            for (let i = 0; i < mCount; i++) {
+                mPositions[i * 3] = -6 + (Math.random() - 0.5) * 1.5;
+                mPositions[i * 3 + 1] = -5 + Math.random() * 12;
+                mPositions[i * 3 + 2] = (Math.random() - 0.5) * 1.5;
+            }
+            mGeo.setAttribute('position', new THREE.BufferAttribute(mPositions, 3));
+            const mMat = new THREE.PointsMaterial({
+                color: 0xff3b00,
+                size: 0.35,
+                transparent: true,
+                opacity: 0.95
+            });
+            magmaParticles = new THREE.Points(mGeo, mMat);
+            macroGroup.add(magmaParticles);
+        }
+
+        /* --- 4B. PROFIL PEDOLOGICZNY / ODKRYWKA GLEBOWA (MEZO) --- */
+        let soilLayers = {}, groundwaterMesh, rainParticles, illuviationParticles;
+
+        function buildSoilProfileScene() {
+            // Odkrywka glebowa o wymiarach 8 x 14 x 8
+            const totalWidth = 10;
+            const depth = 8;
+
+            // Poziomy glebowe:
+            // 1. O - Ściółka organiczna (na samej górze)
+            const oGeo = new THREE.BoxGeometry(totalWidth, 0.8, depth);
+            const oMat = new THREE.MeshStandardMaterial({ color: 0x2e1a0d, roughness: 0.95 });
+            soilLayers.O = new THREE.Mesh(oGeo, oMat);
+            soilLayers.O.position.set(0, 5.6, 0);
+            soilGroup.add(soilLayers.O);
+
+            // Trawa / mikroroślinność na wierzchu
+            const grassGeo = new THREE.BoxGeometry(totalWidth, 0.15, depth);
+            const grassMat = new THREE.MeshStandardMaterial({ color: 0x15803d, roughness: 0.8 });
+            const grass = new THREE.Mesh(grassGeo, grassMat);
+            grass.position.set(0, 6.05, 0);
+            soilGroup.add(grass);
+
+            // 2. A - Poziom próchniczny (ciemny, czarno-brunatny)
+            const aGeo = new THREE.BoxGeometry(totalWidth, 2.0, depth);
+            const aMat = new THREE.MeshStandardMaterial({ color: 0x1c1917, roughness: 0.9 });
+            soilLayers.A = new THREE.Mesh(aGeo, aMat);
+            soilLayers.A.position.set(0, 4.2, 0);
+            soilGroup.add(soilLayers.A);
+
+            // 3. E - Poziom eluwialny (wymycia / jasny popielaty w bielicach)
+            const eGeo = new THREE.BoxGeometry(totalWidth, 2.0, depth);
+            const eMat = new THREE.MeshStandardMaterial({ color: 0x78716c, roughness: 0.85 });
+            soilLayers.E = new THREE.Mesh(eGeo, eMat);
+            soilLayers.E.position.set(0, 2.2, 0);
+            soilGroup.add(soilLayers.E);
+
+            // 4. B - Poziom iluwialny (wmycia / rdzawy, wzbogacony)
+            const bGeo = new THREE.BoxGeometry(totalWidth, 2.6, depth);
+            const bMat = new THREE.MeshStandardMaterial({ color: 0x9a3412, roughness: 0.85 });
+            soilLayers.B = new THREE.Mesh(bGeo, bMat);
+            soilLayers.B.position.set(0, -0.1, 0);
+            soilGroup.add(soilLayers.B);
+
+            // 5. C - Zwietrzelina skały macierzystej
+            const cGeo = new THREE.BoxGeometry(totalWidth, 2.8, depth);
+            const cMat = new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.9 });
+            soilLayers.C = new THREE.Mesh(cGeo, cMat);
+            soilLayers.C.position.set(0, -2.8, 0);
+            soilGroup.add(soilLayers.C);
+
+            // 6. R - Lita skała macierzysta (granit / piaskowiec)
+            const rGeo = new THREE.BoxGeometry(totalWidth, 3.0, depth);
+            const rMat = new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.95 });
+            soilLayers.R = new THREE.Mesh(rGeo, rMat);
+            soilLayers.R.position.set(0, -5.7, 0);
+            soilGroup.add(soilLayers.R);
+
+            // Podziemne zwierciadło wód gruntowych (wznoszące się przy oglejeniu)
+            const gwGeo = new THREE.BoxGeometry(totalWidth + 0.2, 4.5, depth + 0.2);
+            const gwMat = new THREE.MeshStandardMaterial({
+                color: 0x0891b2,
+                transparent: true,
+                opacity: 0.5,
+                roughness: 0.1
+            });
+            groundwaterMesh = new THREE.Mesh(gwGeo, gwMat);
+            groundwaterMesh.position.set(0, -5.5, 0);
+            soilGroup.add(groundwaterMesh);
+
+            // Cząsteczki opadów (deszcz wsiąkający w profil)
+            const rainCount = 400;
+            const rainGeo = new THREE.BufferGeometry();
+            const rainPos = new Float32Array(rainCount * 3);
+            for (let i = 0; i < rainCount; i++) {
+                rainPos[i * 3] = (Math.random() - 0.5) * totalWidth;
+                rainPos[i * 3 + 1] = 6 + Math.random() * 8;
+                rainPos[i * 3 + 2] = (Math.random() - 0.5) * depth;
+            }
+            rainGeo.setAttribute('position', new THREE.BufferAttribute(rainPos, 3));
+            const rainMat = new THREE.PointsMaterial({
+                color: 0x38bdf8,
+                size: 0.18,
+                transparent: true,
+                opacity: 0.75
+            });
+            rainParticles = new THREE.Points(rainGeo, rainMat);
+            soilGroup.add(rainParticles);
+
+            // Cząsteczki ługowania / wmywania w dół (eluwiazacja)
+            const illCount = 250;
+            const illGeo = new THREE.BufferGeometry();
+            const illPos = new Float32Array(illCount * 3);
+            for (let i = 0; i < illCount; i++) {
+                illPos[i * 3] = (Math.random() - 0.5) * (totalWidth - 1);
+                illPos[i * 3 + 1] = 3.5 - Math.random() * 4.5;
+                illPos[i * 3 + 2] = (Math.random() - 0.5) * (depth - 1);
+            }
+            illGeo.setAttribute('position', new THREE.BufferAttribute(illPos, 3));
+            const illMat = new THREE.PointsMaterial({
+                color: 0xf59e0b,
+                size: 0.22,
+                transparent: true,
+                opacity: 0.85
+            });
+            illuviationParticles = new THREE.Points(illGeo, illMat);
+            soilGroup.add(illuviationParticles);
+        }
+
+        buildMacroGeologyScene();
+        buildSoilProfileScene();
+
+        /* =========================================================================
+           5. INTERFEJS UŻYTKOWNIKA (RENDEROWANIE LISTY PROCESÓW I AKTUALIZACJA)
+           ========================================================================= */
+        const processPanel = document.getElementById('process-panel');
+
+        function renderProcessList() {
+            const list = PROCESS_DATA[currentMode];
+            let html = `
+                <div class="section-header">
+                    <span>${currentMode === 'macro' ? '🏔️ Etapy Cyklu Skalnego' : '🌱 Procesy Pedogenezy'}</span>
+                    <span>${list.length} procesów</span>
+                </div>
+                <div class="process-list">
+            `;
+
+            list.forEach((proc, idx) => {
+                const isActive = idx === currentProcessIndex;
+                html += `
+                    <div class="process-item ${isActive ? 'active' : ''}" onclick="selectProcess(${idx})">
+                        <div class="proc-icon">${proc.icon}</div>
+                        <div class="proc-info">
+                            <div class="proc-name">${proc.name}</div>
+                            <div class="proc-tag">${proc.tag}</div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `</div>`;
+            processPanel.innerHTML = html;
+        }
+
+        function updateInfoPanel() {
+            const proc = PROCESS_DATA[currentMode][currentProcessIndex];
+            if (!proc) return;
+
+            document.getElementById('info-icon').innerText = proc.icon;
+            document.getElementById('info-category').innerText = proc.category;
+            document.getElementById('info-category').className = `info-badge ${proc.badgeClass}`;
+            document.getElementById('info-title').innerText = proc.name;
+            document.getElementById('info-description').innerText = proc.desc;
+
+            document.getElementById('param-temp').innerText = proc.temp;
+            document.getElementById('param-press').innerText = proc.press;
+            document.getElementById('param-depth').innerText = proc.depth;
+            document.getElementById('param-factor').innerText = proc.factor;
+
+            const chipsCont = document.getElementById('info-chips');
+            chipsCont.innerHTML = proc.chips.map(c => `<span class="chip ${proc.badgeClass === 'badge-soil' ? 'chip-soil' : 'chip-meta'}">${c}</span>`).join('');
+
+            document.getElementById('info-curiosity').innerText = proc.curiosity;
+
+            // Płynna animacja kamery (Tween)
+            animateCameraTo(proc.camera.pos, proc.camera.target);
+        }
+
+        function selectProcess(idx) {
+            currentProcessIndex = idx;
+            timelineProgress = 0;
+            document.getElementById('timeline').value = 0;
+            document.getElementById('timeline-val').innerText = '0%';
+            renderProcessList();
+            updateInfoPanel();
+        }
+
+        function stepProcess(direction) {
+            const list = PROCESS_DATA[currentMode];
+            let next = currentProcessIndex + direction;
+            if (next < 0) next = list.length - 1;
+            if (next >= list.length) next = 0;
+            selectProcess(next);
+        }
+
+        function switchViewMode(mode) {
+            if (currentMode === mode) return;
+            currentMode = mode;
+            currentProcessIndex = 0;
+
+            document.getElementById('btn-mode-macro').classList.toggle('active', mode === 'macro');
+            document.getElementById('btn-mode-soil').classList.toggle('active', mode === 'soil');
+
+            macroGroup.visible = (mode === 'macro');
+            soilGroup.visible = (mode === 'soil');
+
+            renderProcessList();
+            updateInfoPanel();
+        }
+
+        /* =========================================================================
+           6. ANIMACJA KAMERY I TWEEN
+           ========================================================================= */
+        function animateCameraTo(targetPos, lookAtPos) {
+            new TWEEN.Tween(camera.position)
+                .to({ x: targetPos[0], y: targetPos[1], z: targetPos[2] }, 1200)
+                .easing(TWEEN.Easing.Cubic.Out)
+                .start();
+
+            new TWEEN.Tween(controls.target)
+                .to({ x: lookAtPos[0], y: lookAtPos[1], z: lookAtPos[2] }, 1200)
+                .easing(TWEEN.Easing.Cubic.Out)
+                .start();
+        }
+
+        function resetCamera() {
+            const proc = PROCESS_DATA[currentMode][currentProcessIndex];
+            animateCameraTo(proc.camera.pos, proc.camera.target);
+        }
+
+        function togglePlay() {
+            isPlaying = !isPlaying;
+            const btn = document.getElementById('btn-play');
+            btn.innerText = isPlaying ? '⏸' : '▶';
+            btn.classList.toggle('play-active', isPlaying);
+        }
+
+        function toggleSpeed() {
+            if (animSpeed === 1.0) animSpeed = 2.0;
+            else if (animSpeed === 2.0) animSpeed = 0.5;
+            else animSpeed = 1.0;
+            document.getElementById('btn-speed').innerText = `Prędkość: ${animSpeed}x`;
+        }
+
+        function onTimelineChange(val) {
+            timelineProgress = val / 100.0;
+            document.getElementById('timeline-val').innerText = `${Math.round(val)}%`;
+        }
+
+        /* =========================================================================
+           7. GŁÓWNA PĘTLA ANIMACJI THREE.JS
+           ========================================================================= */
+        const clock = new THREE.Clock();
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const delta = clock.getDelta();
+            const time = clock.getElapsedTime() * animSpeed;
+
+            TWEEN.update();
+            controls.update();
+
+            if (isPlaying) {
+                timelineProgress = (timelineProgress + delta * 0.15 * animSpeed) % 1.0;
+                document.getElementById('timeline').value = timelineProgress * 100;
+                document.getElementById('timeline-val').innerText = `${Math.round(timelineProgress * 100)}%`;
+            }
+
+            /* --- Animacje Trybu Makro (Cykl Skalny) --- */
+            if (macroGroup.visible) {
+                // Pulsowanie żaru magmy
+                const emissivePulse = 0.7 + Math.sin(time * 3) * 0.3;
+                magmaMesh.emissiveIntensity = emissivePulse;
+                magmaPointLight.intensity = 2.0 + emissivePulse * 1.5;
+
+                // Ruch cząsteczek erozji i spływu rzeką
+                const ePos = erosionParticles.geometry.attributes.position.array;
+                for (let i = 0; i < ePos.length; i += 3) {
+                    ePos[i] += delta * 1.8 * animSpeed; // ruch w prawo ku morzu
+                    ePos[i + 1] -= delta * 0.9 * animSpeed; // opadanie
+
+                    if (ePos[i] > 11 || ePos[i + 1] < -0.2) {
+                        ePos[i] = -6 + Math.random() * 2;
+                        ePos[i + 1] = 4 + Math.random() * 3;
+                        ePos[i + 2] = (Math.random() - 0.5) * 3;
+                    }
+                }
+                erosionParticles.geometry.attributes.position.needsUpdate = true;
+
+                // Ruch cząsteczek magmy w górę ku kraterowi
+                const mPos = magmaParticles.geometry.attributes.position.array;
+                for (let i = 0; i < mPos.length; i += 3) {
+                    mPos[i + 1] += delta * 3.5 * animSpeed;
+                    if (mPos[i + 1] > 8.5) {
+                        mPos[i + 1] = -5;
+                        mPos[i] = -6 + (Math.random() - 0.5) * 1.8;
+                    }
+                }
+                magmaParticles.geometry.attributes.position.needsUpdate = true;
+
+                // Delikatne falowanie tafli wody
+                oceanMesh.position.y = 1.25 + Math.sin(time * 2) * 0.05;
+
+                // Deformacja metamorficzna (fałdowanie)
+                if (currentProcessIndex === 4) { // metamorfizm
+                    metaMesh.scale.x = 1.0 + Math.sin(time * 4) * 0.15;
+                    metaMesh.scale.y = 1.0 - Math.sin(time * 4) * 0.1;
+                } else {
+                    metaMesh.scale.set(1, 1, 1);
+                }
+            }
+
+            /* --- Animacje Trybu Mezo (Profil Glebowy) --- */
+            if (soilGroup.visible) {
+                // Opady deszczu
+                const rPos = rainParticles.geometry.attributes.position.array;
+                for (let i = 0; i < rPos.length; i += 3) {
+                    rPos[i + 1] -= delta * 8 * animSpeed;
+                    if (rPos[i + 1] < 5.8) {
+                        rPos[i + 1] = 12 + Math.random() * 2;
+                    }
+                }
+                rainParticles.geometry.attributes.position.needsUpdate = true;
+
+                // Cząsteczki wmywania w dół profilu
+                const iPos = illuviationParticles.geometry.attributes.position.array;
+                for (let i = 0; i < iPos.length; i += 3) {
+                    iPos[i + 1] -= delta * 1.2 * animSpeed;
+                    if (iPos[i + 1] < -2.0) {
+                        iPos[i + 1] = 4.0;
+                    }
+                }
+                illuviationParticles.geometry.attributes.position.needsUpdate = true;
+
+                // Dynamiczna zmiana barw poziomów w zależności od aktywnego procesu glebotwórczego
+                const currentProcId = PROCESS_DATA.soil[currentProcessIndex].id;
+
+                // Bielicowanie -> rozjaśnianie poziomu E (bielicowy popiół)
+                if (currentProcId === 'podsolization') {
+                    soilLayers.E.material.color.setHex(0xe2e8f0);
+                    soilLayers.B.material.color.setHex(0x7c2d12);
+                }
+                // Brunatnienie -> ciepła rdzawo-brunatna barwa poziomu B i E
+                else if (currentProcId === 'brunification') {
+                    soilLayers.E.material.color.setHex(0x854d0e);
+                    soilLayers.B.material.color.setHex(0xa16207);
+                }
+                // Oglejenie -> podnoszenie poziomu wód i sinoniebieskie zabarwienie
+                else if (currentProcId === 'gleying') {
+                    groundwaterMesh.position.y = -3.5 + Math.sin(time * 2) * 0.3;
+                    soilLayers.C.material.color.setHex(0x0e7490); // sinoniebieski
+                    soilLayers.B.material.color.setHex(0x155e75);
+                } else {
+                    // Domyślne barwy
+                    soilLayers.E.material.color.setHex(0x78716c);
+                    soilLayers.B.material.color.setHex(0x9a3412);
+                    soilLayers.C.material.color.setHex(0xd97706);
+                    groundwaterMesh.position.y = -5.5;
+                }
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        /* =========================================================================
+           8. MINI-QUIZ INTERAKTYWNY
+           ========================================================================= */
+        const quizModal = document.getElementById('quiz-modal');
+
+        function openQuiz() {
+            currentQuizIndex = 0;
+            quizScore = 0;
+            quizModal.classList.add('show');
+            loadQuestion();
+        }
+
+        function closeQuiz() {
+            quizModal.classList.remove('show');
+        }
+
+        function loadQuestion() {
+            const q = QUIZ_QUESTIONS[currentQuizIndex];
+            document.getElementById('quiz-question').innerText = `${currentQuizIndex + 1}/${QUIZ_QUESTIONS.length}. ${q.q}`;
+            document.getElementById('quiz-feedback').innerText = '';
+            document.getElementById('quiz-next-btn').style.display = 'none';
+
+            const optContainer = document.getElementById('quiz-options');
+            optContainer.innerHTML = '';
+
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'quiz-option';
+                btn.innerText = opt;
+                btn.onclick = () => checkAnswer(idx, btn);
+                optContainer.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selectedIdx, btnElement) {
+            const q = QUIZ_QUESTIONS[currentQuizIndex];
+            const allBtns = document.querySelectorAll('.quiz-option');
+            allBtns.forEach(b => b.disabled = true);
+
+            const feedback = document.getElementById('quiz-feedback');
+
+            if (selectedIdx === q.correct) {
+                btnElement.classList.add('correct');
+                feedback.style.color = '#10b981';
+                feedback.innerText = `Świetnie! Prawidłowa odpowiedź. ${q.explain}`;
+                quizScore++;
+            } else {
+                btnElement.classList.add('wrong');
+                allBtns[q.correct].classList.add('correct');
+                feedback.style.color = '#ef4444';
+                feedback.innerText = `Niestety błąd. ${q.explain}`;
+            }
+
+            document.getElementById('quiz-next-btn').style.display = 'inline-flex';
+        }
+
+        function nextQuestion() {
+            currentQuizIndex++;
+            if (currentQuizIndex < QUIZ_QUESTIONS.length) {
+                loadQuestion();
+            } else {
+                // Koniec quizu
+                document.getElementById('quiz-question').innerText = `🎉 Gratulacje! Twój wynik: ${quizScore} / ${QUIZ_QUESTIONS.length}`;
+                document.getElementById('quiz-options').innerHTML = '';
+                document.getElementById('quiz-feedback').style.color = '#38bdf8';
+                document.getElementById('quiz-feedback').innerText = quizScore >= 4 ? 'Znakomicie opanowałeś procesy geologiczne i glebotwórcze!' : 'Warto powtórzyć symulacje 3D dla poszczególnych etapów!';
+                document.getElementById('quiz-next-btn').innerText = 'Zakończ Quiz';
+                document.getElementById('quiz-next-btn').onclick = closeQuiz;
+            }
+        }
+
+        /* =========================================================================
+           9. OBSŁUGA ZMIANY ROZMIARU OKNA
+           ========================================================================= */
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Start
+        renderProcessList();
+        updateInfoPanel();
+        animate();
+    </script>
+</body>
+
+</html>

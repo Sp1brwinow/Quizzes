@@ -323,6 +323,25 @@
             transform: translateY(-2px);
         }
 
+        .card-geo3d {
+            color: #f97316;
+            border: 2px solid rgba(249, 115, 22, 0.35);
+        }
+
+        .card-geo3d:hover {
+            border-color: #f97316;
+        }
+
+        .card-geo3d .btn-play-primary {
+            background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
+        }
+
+        .card-geo3d .btn-play-primary:hover {
+            background: linear-gradient(135deg, #c2410c 0%, #ea580c 100%);
+            box-shadow: 0 6px 20px rgba(249, 115, 22, 0.5);
+            transform: translateY(-2px);
+        }
+
         /* Stopka */
         .footer-nav {
             display: flex;
@@ -447,6 +466,34 @@
                 <div class="card-actions-box">
                     <a href="meteoryt.html" class="btn-play-primary" style="background: linear-gradient(135deg, #ea580c 0%, #dc2626 100%);">
                         <span>🚀 Otwórz Symulację Uderzenia 3D</span>
+                        <span>→</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Podsekcja 4: Procesy Ziemi 3D (Cykl Skalny & Pedogeneza) -->
+            <div class="game-card card-geo3d" style="grid-column: 1 / -1;">
+                <div>
+                    <div class="card-top">
+                        <span class="game-icon">🌋</span>
+                        <h2 class="game-title">Procesy Kształtujące Skały i Gleby 3D</h2>
+                    </div>
+                    <p class="game-desc">
+                        Interaktywny, trójwymiarowy symulator Three.js prezentujący cykl skalny (wietrzenie, erozję, sedymentację, diagenezę, metamorfizm, magmatyzm i anateksis) oraz procesy glebotwórcze (humifikację, eluwiazację/iluwiazację, bielicowanie, brunatnienie, oglejenie). Zawiera animacje cząsteczkowe, swobodną kamerę OrbitControls i wbudowany quiz sprawdzający wiedzę!
+                    </p>
+                    <div class="tags-container">
+                        <span class="tag">Three.js 3D</span>
+                        <span class="tag">Cykl Skalny</span>
+                        <span class="tag">Blokdiagram Litosfery</span>
+                        <span class="tag">Profil Glebowy (O-A-E-B-C-R)</span>
+                        <span class="tag">Animacje Cząsteczek</span>
+                        <span class="tag">Interaktywny Quiz</span>
+                    </div>
+                </div>
+
+                <div class="card-actions-box" style="flex-direction: row; flex-wrap: wrap;">
+                    <a href="geologia_3d.html" class="btn-play-primary" style="flex-grow: 1;">
+                        <span>🚀 Otwórz Symulator 3D Procesów Ziemi</span>
                         <span>→</span>
                     </a>
                 </div>
