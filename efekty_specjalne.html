@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <!-- Google Analytics Tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZP827DTZJ5"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-ZP827DTZJ5');
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Efekty Specjalne & Symulacje 3D – HACK CLUB</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css" />
+
+    <style>
+        :root {
+            --bg-primary: #070e1c;
+            --bg-card: rgba(14, 25, 52, 0.75);
+            --border-card: rgba(0, 242, 254, 0.25);
+            --accent-cyan: #00f2fe;
+            --accent-blue: #4facfe;
+            --accent-purple: #9b51e0;
+            --accent-gold: #ffb703;
+            --accent-emerald: #00f5d4;
+            --text-main: #f0f4ff;
+            --text-dim: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(79, 172, 254, 0.15) 0%, transparent 45%),
+                radial-gradient(circle at 85% 80%, rgba(155, 81, 224, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(0, 242, 254, 0.06) 0%, transparent 65%);
+            background-attachment: fixed;
+            overflow-x: hidden;
+        }
+
+        #snow-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        header {
+            padding: 24px 36px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(14px);
+            background: rgba(7, 14, 28, 0.85);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.45rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 14px;
+            align-items: center;
+        }
+
+        .btn-nav {
+            color: var(--text-dim);
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 0.92rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .btn-nav:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(0, 242, 254, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .btn-nav.primary {
+            background: linear-gradient(135deg, rgba(0, 242, 254, 0.15), rgba(79, 172, 254, 0.15));
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+        }
+
+        .btn-nav.primary:hover {
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.35);
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+            color: #070e1c;
+        }
+
+        .container {
+            max-width: 1240px;
+            margin: 0 auto;
+            padding: 40px 24px 80px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-section {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .badge-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 18px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            background: rgba(0, 242, 254, 0.12);
+            color: var(--accent-cyan);
+            border: 1px solid rgba(0, 242, 254, 0.35);
+            margin-bottom: 18px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .hero-title {
+            font-size: 3rem;
+            font-weight: 900;
+            line-height: 1.15;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #ffffff 30%, #a5c7fe 70%, #00f2fe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-desc {
+            font-size: 1.1rem;
+            color: var(--text-dim);
+            max-width: 780px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin: 45px 0 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 12px;
+        }
+
+        .section-header h2 {
+            font-size: 1.55rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .section-header i {
+            color: var(--accent-cyan);
+            font-size: 1.35rem;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+            gap: 26px;
+        }
+
+        .effect-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: 20px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            backdrop-filter: blur(16px);
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .effect-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at top right, rgba(0, 242, 254, 0.15), transparent 60%);
+            opacity: 0;
+            transition: opacity 0.35s ease;
+            pointer-events: none;
+        }
+
+        .effect-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(0, 242, 254, 0.6);
+            box-shadow: 0 16px 40px rgba(0, 242, 254, 0.18), 0 0 25px rgba(79, 172, 254, 0.12);
+        }
+
+        .effect-card:hover::before {
+            opacity: 1;
+        }
+
+        .card-preview {
+            height: 200px;
+            position: relative;
+            background: #091224;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .card-preview-bg {
+            position: absolute;
+            inset: 0;
+            opacity: 0.75;
+            transition: transform 0.5s ease;
+        }
+
+        .effect-card:hover .card-preview-bg {
+            transform: scale(1.08);
+        }
+
+        .preview-badge {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            backdrop-filter: blur(8px);
+            z-index: 2;
+        }
+
+        .badge-three { background: rgba(0, 242, 254, 0.25); color: var(--accent-cyan); border: 1px solid rgba(0, 242, 254, 0.5); }
+        .badge-babylon { background: rgba(255, 183, 3, 0.25); color: var(--accent-gold); border: 1px solid rgba(255, 183, 3, 0.5); }
+        .badge-glsl { background: rgba(155, 81, 224, 0.25); color: #d8b4fe; border: 1px solid rgba(155, 81, 224, 0.5); }
+        .badge-fbm { background: rgba(0, 245, 212, 0.25); color: var(--accent-emerald); border: 1px solid rgba(0, 245, 212, 0.5); }
+
+        .card-body {
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            z-index: 1;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-desc {
+            color: var(--text-dim);
+            font-size: 0.92rem;
+            line-height: 1.55;
+            margin-bottom: 18px;
+            flex-grow: 1;
+        }
+
+        .tech-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 22px;
+        }
+
+        .tech-tag {
+            font-size: 0.75rem;
+            font-family: 'JetBrains Mono', monospace;
+            padding: 3px 9px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.06);
+            color: #b0c2de;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .card-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 13px 20px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, rgba(0, 242, 254, 0.2), rgba(79, 172, 254, 0.2));
+            color: #fff;
+            border: 1px solid rgba(0, 242, 254, 0.4);
+        }
+
+        .card-btn:hover {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+            color: #070e1c;
+            box-shadow: 0 0 25px rgba(0, 242, 254, 0.4);
+        }
+
+        footer {
+            margin-top: 60px;
+            text-align: center;
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            padding: 24px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        @media (max-width: 768px) {
+            header {
+                padding: 16px 20px;
+                flex-direction: column;
+                gap: 14px;
+            }
+            .hero-title {
+                font-size: 2.2rem;
+            }
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="snow-canvas"></canvas>
+
+    <header>
+        <a href="index.html" class="logo">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+            <span>VFX Studio 3D</span>
+        </a>
+        <nav class="nav-links">
+            <a href="rozrywka.html" class="btn-nav"><i class="fa-solid fa-gamepad"></i> Strefa Rozrywki</a>
+            <a href="fraktale.html" class="btn-nav"><i class="fa-solid fa-infinity"></i> Fraktale</a>
+            <a href="index.html" class="btn-nav primary"><i class="fa-solid fa-house"></i> Strona Główna</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <section class="hero-section">
+            <div class="badge-pill">
+                <i class="fa-solid fa-sparkles"></i> Zaawansowana Grafika Komputerowa WebGL
+            </div>
+            <h1 class="hero-title">Efekty Specjalne & Symulacje 3D</h1>
+            <p class="hero-desc">
+                Uruchamiaj interaktywne symulacje w czasie rzeczywistym — od fotorealistycznych fal oceanicznych z fizyką wyporności żaglowca, po cząsteczkowe efekty filmowe CGI i optykę raymarchingową.
+            </p>
+        </section>
+
+        <!-- Kategoria 1: Morza i Oceany -->
+        <div class="section-header">
+            <i class="fa-solid fa-water"></i>
+            <h2>Fotorealistyczne Symulacje Oceanu & Żeglugi</h2>
+        </div>
+
+        <div class="cards-grid">
+            <!-- Three.js Ocean Card -->
+            <div class="effect-card">
+                <div class="card-preview">
+                    <div class="card-preview-bg" style="background: radial-gradient(circle at center, #0052d4, #4364f7, #6fb1fc);"></div>
+                    <span class="preview-badge badge-three"><i class="fa-solid fa-bolt"></i> Three.js + Bloom</span>
+                    <i class="fa-solid fa-ship" style="font-size: 3.5rem; color: #ffffff; opacity: 0.95; z-index: 1;"></i>
+                </div>
+                <div class="card-body">
+                    <div class="card-title">
+                        Ocean 3D (Three.js & Bloom HDR)
+                        <i class="fa-solid fa-sun" style="color: var(--accent-gold); font-size: 1.1rem;"></i>
+                    </div>
+                    <p class="card-desc">
+                        Symulacja 6 harmonicznych fal Gerstnera z postprocessingiem UnrealBloom, rozpraszaniem podpowierzchniowym (SSS), pianą morską, żaglowcem z 4-punktową fizyką wyporności oraz dźwiękiem fal morskich.
+                    </p>
+                    <div class="tech-tags">
+                        <span class="tech-tag">Three.js r160</span>
+                        <span class="tech-tag">UnrealBloomPass</span>
+                        <span class="tech-tag">Gerstner Waves</span>
+                        <span class="tech-tag">Buoyancy Physics</span>
+                        <span class="tech-tag">Web Audio API</span>
+                    </div>
+                    <a href="fraktale/ocean_threejs.html" class="card-btn">
+                        <i class="fa-solid fa-play"></i> Uruchom Symulację Three.js
+                    </a>
+                </div>
+            </div>
+
+            <!-- Babylon.js Ocean Card -->
+            <div class="effect-card">
+                <div class="card-preview">
+                    <div class="card-preview-bg" style="background: radial-gradient(circle at center, #001f3f, #0074d9, #39cccc);"></div>
+                    <span class="preview-badge badge-babylon"><i class="fa-solid fa-cube"></i> Babylon.js</span>
+                    <i class="fa-solid fa-sailboat" style="font-size: 3.5rem; color: #ffb703; opacity: 0.95; z-index: 1;"></i>
+                </div>
+                <div class="card-body">
+                    <div class="card-title">
+                        Ocean 3D (Babylon.js & Gerstner 8x)
+                        <i class="fa-solid fa-wind" style="color: var(--accent-cyan); font-size: 1.1rem;"></i>
+                    </div>
+                    <p class="card-desc">
+                        Silnik z 8 harmonicznymi Gerstnera, pianą komórkową Voronoi, efektami bryzgu cząsteczkowego (spray), dynamicznym niebem, kamerą FPV/Orbit oraz fizyką hydrodynamiczną.
+                    </p>
+                    <div class="tech-tags">
+                        <span class="tech-tag">Babylon.js 7.0</span>
+                        <span class="tech-tag">Custom GLSL</span>
+                        <span class="tech-tag">Particle Spray</span>
+                        <span class="tech-tag">Voronoi Foam</span>
+                    </div>
+                    <a href="fraktale/ocean_babylon.html" class="card-btn">
+                        <i class="fa-solid fa-play"></i> Uruchom Symulację Babylon.js
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Kategoria 2: Efekty Cząsteczkowe i Raymarching -->
+        <div class="section-header">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+            <h2>Cząsteczki CGI & Optyka GLSL</h2>
+        </div>
+
+        <div class="cards-grid">
+            <!-- CGI Particle Studio -->
+            <div class="effect-card">
+                <div class="card-preview">
+                    <div class="card-preview-bg" style="background: radial-gradient(circle at center, #2b0844, #6610f2, #e83e8c);"></div>
+                    <span class="preview-badge badge-glsl"><i class="fa-solid fa-fire"></i> VFX Studio</span>
+                    <i class="fa-solid fa-meteor" style="font-size: 3.5rem; color: #ff007f; opacity: 0.95; z-index: 1;"></i>
+                </div>
+                <div class="card-body">
+                    <div class="card-title">
+                        Generator Efektów Specjalnych CGI
+                    </div>
+                    <p class="card-desc">
+                        Symulacje cząsteczkowe w czasie rzeczywistym: realistyczny płomień ognia, rozgałęzione pioruny i błyskawice, pęknięcia tektoniczne oraz wirująca czarna dziura.
+                    </p>
+                    <div class="tech-tags">
+                        <span class="tech-tag">Particle Physics</span>
+                        <span class="tech-tag">Ogień & Pioruny</span>
+                        <span class="tech-tag">GPU Glow</span>
+                    </div>
+                    <a href="fraktale/efekty_specjalne.html" class="card-btn">
+                        <i class="fa-solid fa-play"></i> Otwórz Studio VFX
+                    </a>
+                </div>
+            </div>
+
+            <!-- Krople Wody i Raymarching -->
+            <div class="effect-card">
+                <div class="card-preview">
+                    <div class="card-preview-bg" style="background: radial-gradient(circle at center, #093028, #237a57);"></div>
+                    <span class="preview-badge badge-glsl"><i class="fa-solid fa-droplet"></i> Raymarching</span>
+                    <i class="fa-solid fa-cloud-showers-heavy" style="font-size: 3.5rem; color: #00f5d4; opacity: 0.95; z-index: 1;"></i>
+                </div>
+                <div class="card-body">
+                    <div class="card-title">
+                        Krople Wody & Refrakcja Szkła
+                    </div>
+                    <p class="card-desc">
+                        Shader raymarchingowy renderujący spływające krople deszczu po szkle z fizyczną refrakcją światła, zniekształceniem tła i rozmyciem głębi ostrości.
+                    </p>
+                    <div class="tech-tags">
+                        <span class="tech-tag">Raymarching GLSL</span>
+                        <span class="tech-tag">Refrakcja</span>
+                        <span class="tech-tag">Zjawiska Optyczne</span>
+                    </div>
+                    <a href="fraktale/krople_woda_raymarching.html" class="card-btn">
+                        <i class="fa-solid fa-play"></i> Zobacz Krople Deszczu
+                    </a>
+                </div>
+            </div>
+
+            <!-- Proceduralny Teren 3D -->
+            <div class="effect-card">
+                <div class="card-preview">
+                    <div class="card-preview-bg" style="background: radial-gradient(circle at center, #1b2838, #2a475e, #c7d5e0);"></div>
+                    <span class="preview-badge badge-fbm"><i class="fa-solid fa-mountain"></i> fBm 3D</span>
+                    <i class="fa-solid fa-mountain-sun" style="font-size: 3.5rem; color: #a5c7fe; opacity: 0.95; z-index: 1;"></i>
+                </div>
+                <div class="card-body">
+                    <div class="card-title">
+                        Krajobrazy 3D & Erozja Hydrauliczna
+                    </div>
+                    <p class="card-desc">
+                        Proceduralne generowanie pasm górskich za pomocą szumu fraktalnego (fBm), algorytmu Diamond-Square oraz symulacji żłobienia dolin przez deszcz i rzeki.
+                    </p>
+                    <div class="tech-tags">
+                        <span class="tech-tag">Fractal Brownian Motion</span>
+                        <span class="tech-tag">Hydraulic Erosion</span>
+                        <span class="tech-tag">Three.js Mesh</span>
+                    </div>
+                    <a href="fraktale/fbm_diamond_square_erozja.html" class="card-btn">
+                        <i class="fa-solid fa-play"></i> Odkryj Tereny 3D
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 HACK CLUB • Efekty Specjalne & Grafika Komputerowa WebGL (Three.js & Babylon.js)</p>
+    </footer>
+
+    <script>
+        const canvas = document.getElementById('snow-canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        let particles = [];
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        for (let i = 0; i < 60; i++) {
+            particles.push({
+                x: Math.random() * width,
+                y: Math.random() * height,
+                r: Math.random() * 2 + 0.8,
+                speedY: Math.random() * 0.5 + 0.2,
+                speedX: (Math.random() - 0.5) * 0.3,
+                alpha: Math.random() * 0.5 + 0.2
+            });
+        }
+
+        function renderBg() {
+            ctx.clearRect(0, 0, width, height);
+            ctx.fillStyle = '#00f2fe';
+            for (let p of particles) {
+                ctx.globalAlpha = p.alpha;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.fill();
+
+                p.y -= p.speedY;
+                p.x += p.speedX;
+                if (p.y < 0) {
+                    p.y = height;
+                    p.x = Math.random() * width;
+                }
+            }
+            requestAnimationFrame(renderBg);
+        }
+        renderBg();
+    </script>
+</body>
+</html>

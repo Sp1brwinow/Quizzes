@@ -277,6 +277,15 @@
             border-color: #10b981;
         }
 
+        .card-efekty {
+            color: #22d3ee;
+            border: 2px solid rgba(34, 211, 238, 0.35);
+        }
+
+        .card-efekty:hover {
+            border-color: #06b6d4;
+        }
+
         /* Stopka */
         .footer-nav {
             display: flex;
@@ -309,7 +318,7 @@
             <div class="badge">🪐 HACK CLUB – Strefa Interaktywna</div>
             <h1 class="title">Strefa Rozrywki</h1>
             <p class="subtitle">
-                Wybierz sekcję, którą chcesz eksplorować: odkrywaj matematyczne piękno fraktali 2D i 3D lub zanurz się w hipnotyzujących animacjach nieskończonego zoomu!
+                Wybierz sekcję, którą chcesz eksplorować: odkrywaj matematyczne piękno fraktali 2D i 3D, zanurz się w nieskończonym zoomie lub testuj realistyczne symulacje 3D i efekty specjalne!
             </p>
         </header>
 
@@ -358,6 +367,29 @@
                 </div>
                 <div class="category-action">
                     <span>Przejdź do Zoomu</span>
+                    <span>→</span>
+                </div>
+            </a>
+
+            <!-- Kategoria 3: Efekty Specjalne -->
+            <a href="efekty_specjalne.html" class="category-card card-efekty">
+                <div>
+                    <div class="card-top">
+                        <span class="category-icon">⚡</span>
+                        <h2 class="category-title">Efekty Specjalne & Symulacje 3D</h2>
+                    </div>
+                    <p class="category-desc">
+                        Zaawansowana grafika 3D i fizyka w czasie rzeczywistym: fotorealistyczny ocean w <strong>Three.js</strong> oraz <strong>Babylon.js</strong> (fale Gerstnera, Bloom HDR, żaglowiec z wypornością), cząsteczki CGI, krople wody i krajobrazy 3D.
+                    </p>
+                    <div class="tags-container">
+                        <span class="tag">⚡ Ocean Three.js + Bloom</span>
+                        <span class="tag">🌊 Ocean Babylon.js</span>
+                        <span class="tag">💥 Cząsteczki CGI</span>
+                        <span class="tag">💧 Raymarching Wody</span>
+                    </div>
+                </div>
+                <div class="category-action">
+                    <span>Otwórz Efekty Specjalne</span>
                     <span>→</span>
                 </div>
             </a>
