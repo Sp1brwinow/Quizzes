@@ -323,6 +323,25 @@
             transform: translateY(-2px);
         }
 
+        .card-climtrainer {
+            color: #a855f7;
+            border: 2px solid rgba(168, 85, 247, 0.35);
+        }
+
+        .card-climtrainer:hover {
+            border-color: #a855f7;
+        }
+
+        .card-climtrainer .btn-play-primary {
+            background: linear-gradient(135deg, #9333ea 0%, #7e22ce 100%);
+        }
+
+        .card-climtrainer .btn-play-primary:hover {
+            background: linear-gradient(135deg, #7e22ce 0%, #9333ea 100%);
+            box-shadow: 0 6px 20px rgba(168, 85, 247, 0.5);
+            transform: translateY(-2px);
+        }
+
 
         /* Stopka */
         .footer-nav {
@@ -360,7 +379,7 @@
             </p>
         </header>
 
-        <!-- Siatka 2 podsekcji gier -->
+        <!-- Siatka podsekcji gier -->
         <div class="games-grid">
             
             <!-- Podsekcja 1: ClimGuesser -->
@@ -387,14 +406,37 @@
                         <span>🎮 Zagraj w ClimGuesser</span>
                         <span>→</span>
                     </a>
-                    <a href="climguesser/climtrainer.html" class="btn-play-secondary">
-                        <span>📊 Otwórz ClimTrainer (Tryb Eksploracji)</span>
-                        <span>↗</span>
+                </div>
+            </div>
+
+            <!-- Podsekcja 2: ClimTrainer -->
+            <div class="game-card card-climtrainer">
+                <div>
+                    <div class="card-top">
+                        <span class="game-icon">📊</span>
+                        <h2 class="game-title">ClimTrainer</h2>
+                    </div>
+                    <p class="game-desc">
+                        Interaktywny atlas i eksplorator klimatogramów świata (Walter-Lieth). Przeglądaj stacje meteorologiczne ze wszystkich kontynentów, analizuj przebieg temperatur i opadów oraz poznawaj strefy klimatyczno-roślinne Ziemi!
+                    </p>
+                    <div class="tags-container">
+                        <span class="tag">Atlas Klimatyczny</span>
+                        <span class="tag">Wykresy Walter-Lieth</span>
+                        <span class="tag">Strefy Roślinne & Biomy</span>
+                        <span class="tag">Mapa Świata Leaflet</span>
+                        <span class="tag">Tryb Edukacyjny</span>
+                    </div>
+                </div>
+
+                <div class="card-actions-box">
+                    <a href="climguesser/climtrainer.html" class="btn-play-primary">
+                        <span>📊 Otwórz ClimTrainer (Eksplorator)</span>
+                        <span>→</span>
                     </a>
                 </div>
             </div>
 
-            <!-- Podsekcja 2: Famous Places -->
+            <!-- Podsekcja 3: Famous Places -->
             <div class="game-card card-famous">
                 <div>
                     <div class="card-top">
