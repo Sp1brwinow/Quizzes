@@ -12,21 +12,21 @@
     </script>
 
   <meta charset="UTF-8">
-  <title>Matematyka – Działania na liczbach całkowitych (Klasa 8)</title>
-  <link rel="stylesheet" href="quiz_style.css" />
+  <title>Matematyka – Liczby całkowite (Klasa 6)</title>
+  <link rel="stylesheet" href="../na_serwer/pyt/quiz_style.css" />
 </head>
 
 <body>
   <div class="top-nav">
-    <a href="../../pomocnicze.html" class="back-link">← Powrót do bazy quizów</a>
-    <a href="../../index.html" class="back-link">🏠 Strona główna</a>
+    <a href="../pomocnicze.html" class="back-link">← Powrót do bazy quizów</a>
+    <a href="../index.html" class="back-link">🏠 Strona główna</a>
   </div>
 
   <div class="container">
     <div id="naglowek">
-      <h2>📐 Matematyka: Działania na liczbach całkowitych (Klasa 8)</h2>
-      <p>Trening dodawania, mnożenia i odejmowania liczb z zakresu -100 do 100 oraz 2 do 10.</p>
-      <p>Napisz <strong>„cześć”</strong> lub <strong>„start”</strong>, aby rozwiązać 10 zadań.</p>
+      <h2>📐 Matematyka: Liczby całkowite (Klasa 6)</h2>
+      <p>Trening działań na liczbach całkowitych (dodawanie, odejmowanie i mnożenie liczb dodatnich i ujemnych).</p>
+      <p>Napisz <strong>„cześć”</strong> lub <strong>„start”</strong>, aby otrzymać pierwsze zadanie.</p>
     </div>
     
     <div id="conversation"></div>
@@ -34,14 +34,14 @@
     <textarea id="input" placeholder="Wpisz wynik i naciśnij Enter..."></textarea>
     
     <div class="input-controls">
-      <i>(Naciśnij Enter lub kliknij przycisk, aby wysłać)</i>
+      <i>(Naciśnij Enter lub kliknij przycisk, aby wysłać wynik)</i>
       <button type="button" onclick="sendUserMessage()">📤 Wyślij odpowiedź</button>
     </div>
   </div>
 
-  <script src="../wizard_orpheus.js"></script>
+  <script src="../na_serwer/wizard_orpheus.js"></script>
   <script>
-    let poczatek_pytania = `Create ten math problems involving addition, multiplication, and subtraction of two integers, one with numbers ranging from -100 to 100 and the other from 2 to 10.`;
+    let poczatek_pytania = 'Create ten math problems involving addition, multiplication, and subtraction of two integers, one with numbers ranging from -100 to 100 and the other from 2 to 10.';
     let wspolny_koniec_pytania = `Show the first problem. Ask the user to answer the problem. After receiving the user's answer, provide the correct solution every time. If fractions can be simplified, then simplify them. Ask for a solution to the next problem. Translate your answers and questions into Polish.`;
     
     let rugMan = new WizardOrpheus('', poczatek_pytania + ' ' + wspolny_koniec_pytania);
