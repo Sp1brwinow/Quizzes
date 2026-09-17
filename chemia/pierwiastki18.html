@@ -12,26 +12,26 @@
     </script>
 
   <meta charset="UTF-8">
-  <title>Chemia – Pierwiastki wybrane (Symbole)</title>
-  <link rel="stylesheet" href="quiz_style.css" />
+  <title>Chemia – Pierwiastki (Grupa 18: Symbole)</title>
+  <link rel="stylesheet" href="../na_serwer/pyt/quiz_style.css" />
 </head>
 
 <body>
   <div class="top-nav">
-    <a href="../../pomocnicze.html" class="back-link">← Powrót do bazy quizów</a>
-    <a href="../../index.html" class="back-link">🏠 Strona główna</a>
+    <a href="../pomocnicze.html" class="back-link">← Powrót do bazy quizów</a>
+    <a href="../index.html" class="back-link">🏠 Strona główna</a>
   </div>
 
   <div class="container">
     <div id="naglowek">
-      <h2>🧪 Chemia: Wybrane metale i pierwiastki (Pytania o symbole)</h2>
-      <p>Quiz ze znajomości symboli: niob, chrom, molibden, żelazo, nikiel, miedź, srebro, złoto, cynk, kadm, rtęć, glin, cyna, ołów, bizmut.</p>
+      <h2>🧪 Chemia: Gazy szlachetne / Grupa 18 (Pytania o symbole)</h2>
+      <p>Quiz ze znajomości symboli chemicznych helowców (hel, neon, argon, krypton, ksenon, radon, oganezon).</p>
       <p>Napisz <strong>„cześć”</strong> lub <strong>„start”</strong>, aby rozpocząć quiz.</p>
     </div>
     
     <div id="conversation"></div>
     
-    <textarea id="input" placeholder="Wpisz symbol chemiczny (np. Fe, Cu, Ag, Au)..."></textarea>
+    <textarea id="input" placeholder="Wpisz symbol chemiczny (np. He, Ne, Ar, Kr)..."></textarea>
     
     <div class="input-controls">
       <i>(Naciśnij Enter lub kliknij przycisk, aby wysłać)</i>
@@ -39,9 +39,9 @@
     </div>
   </div>
 
-  <script src="../wizard_orpheus.js"></script>
+  <script src="../na_serwer/wizard_orpheus.js"></script>
   <script>   
-    let poczatek_pytania = `Ask 16 questions about the symbols of elements: niobium, chromium, molybdenum, iron, nickel, copper, silver, gold, zinc, cadmium, mercury, aluminum, tin, lead, bismuth. The Polish names are: niob, chrom, molibden, żelazo, nikiel, miedź, srebro, złoto, cynk, kadm, rtęć, glin, cyna, ołów, bizmut. Ask one by one. If incorrect, enter the correct one. ALWAYS answer in Polish.`;
+    let poczatek_pytania = `Ask the following 8 questions about the symbols of the chemical elements: helium, neon, argon, krypton, xenon, radon, and oganesson. The Polish names are: hel, neon, argon, krypton, ksenon, radon, oganezon. Ask in order. If incorrect, enter the correct one. ALWAYS answer in Polish.`;
     let wspolny_koniec_pytania = `Show the first task. Ask the user to solve the task. After receiving the user's answer, provide the correct solution each time. Evaluate whether the answer is correct or incorrect. Ask to solve the next task. ALWAYS answer ONLY in Polish.`;
     
     let sessionID = Math.random().toString(36).substring(2);

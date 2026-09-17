@@ -12,26 +12,26 @@
     </script>
 
   <meta charset="UTF-8">
-  <title>Chemia – Pierwiastki (Grupa 18: Nazwy)</title>
-  <link rel="stylesheet" href="quiz_style.css" />
+  <title>Chemia – Pierwiastki wybrane (Nazwy)</title>
+  <link rel="stylesheet" href="../na_serwer/pyt/quiz_style.css" />
 </head>
 
 <body>
   <div class="top-nav">
-    <a href="../../pomocnicze.html" class="back-link">← Powrót do bazy quizów</a>
-    <a href="../../index.html" class="back-link">🏠 Strona główna</a>
+    <a href="../pomocnicze.html" class="back-link">← Powrót do bazy quizów</a>
+    <a href="../index.html" class="back-link">🏠 Strona główna</a>
   </div>
 
   <div class="container">
     <div id="naglowek">
-      <h2>🧪 Chemia: Gazy szlachetne / Grupa 18 (Pytania o nazwy)</h2>
-      <p>Bot podaje symbol gazu szlachetnego, a Twoim zadaniem jest wpisać jego pełną polską nazwę.</p>
+      <h2>🧪 Chemia: Wybrane metale i pierwiastki (Pytania o nazwy)</h2>
+      <p>Bot wyświetla symbol chemiczny metali (Nb, Cr, Mo, Fe, Ni, Cu, Ag, Au, Zn, Cd, Hg, Al, Sn, Pb, Bi), a Twoim zadaniem jest podać polską nazwę.</p>
       <p>Napisz <strong>„cześć”</strong> lub <strong>„start”</strong>, aby rozpocząć quiz.</p>
     </div>
     
     <div id="conversation"></div>
     
-    <textarea id="input" placeholder="Wpisz pełną polską nazwę (np. hel, neon, argon, ksenon)..."></textarea>
+    <textarea id="input" placeholder="Wpisz pełną polską nazwę pierwiastka (np. żelazo, miedź, złoto)..."></textarea>
     
     <div class="input-controls">
       <i>(Naciśnij Enter lub kliknij przycisk, aby wysłać)</i>
@@ -39,9 +39,9 @@
     </div>
   </div>
 
-  <script src="../wizard_orpheus.js"></script>
+  <script src="../na_serwer/wizard_orpheus.js"></script>
   <script>   
-    let poczatek_pytania = `Ask 8 questions about the elements: helium, neon, argon, krypton, xenon, radon, and oganesson. The Polish names are: hel, neon, argon, krypton, ksenon, radon, oganezon. Enter the symbol and ask for its Polish name. Ask one by one. ALWAYS answer in Polish.`;
+    let poczatek_pytania = `Ask 16 questions about the elements: niobium, chromium, molybdenum, iron, nickel, copper, silver, gold, zinc, cadmium, mercury, aluminum, tin, lead, bismuth. The Polish names are: niob, chrom, molibden, żelazo, nikiel, miedź, srebro, złoto, cynk, kadm, rtęć, glin, cyna, ołów, bizmut. Enter the symbol of the element and ask for its Polish name. Ask one by one. ALWAYS answer in Polish.`;
     let wspolny_koniec_pytania = `Show the first task. Ask the user to solve the task. After receiving the user's answer, provide the correct solution each time. Evaluate whether the answer is correct or incorrect. Ask them to solve the next task. ALWAYS answer ONLY in Polish.`;
     
     let sessionID = Math.random().toString(36).substring(2);
