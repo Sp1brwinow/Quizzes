@@ -12,21 +12,24 @@
     </script>
 
   <meta charset="UTF-8">
-  <title>Język Hiszpański A2 – Pytania i formy czasownika „ser”</title>
-  <link rel="stylesheet" href="quiz_style.css" />
+  <title>Język Hiszpański A1 – Zdania z czasownikiem „ser” (być)</title>
+  <link rel="stylesheet" href="../na_serwer/pyt/quiz_style.css" />
 </head>
 
 <body>
   <div class="top-nav">
-    <a href="../../pomocnicze.html" class="back-link">← Powrót do bazy quizów</a>
-    <a href="../../index.html" class="back-link">🏠 Strona główna</a>
+    <a href="../pomocnicze.html" class="back-link">← Powrót do bazy quizów</a>
+    <a href="../index.html" class="back-link">🏠 Strona główna</a>
   </div>
 
   <div class="container">
     <div id="naglowek">
-      <h2>🇪🇸 Język Hiszpański A2: Pytania i odmiana przez osoby</h2>
-      <p>Ćwiczenia pytań i odpowiedzi z odmianą czasownika we wszystkich osobach: <em>¿soy yo?, ¿eres tú?, ¿es él/ella?, ¿somos nosotros?, ¿sois vosotros?, ¿son ellos?</em></p>
-      <p>Napisz <strong>„¡Hola!”</strong> lub <strong>„Empezar”</strong>, aby rozpocząć konwersację.</p>
+      <h2>🇪🇸 Język Hiszpański A1: Czasownik „ser” (być)</h2>
+      <p>Ćwiczenia prostych zdań i pytań z odmianą czasownika <em>ser</em> (yo soy, tú eres, él/ella es...).</p>
+      <p>Napisz <strong>„¡Hola!”</strong>, a następnie <strong>„Hacer las cuestiones”</strong> lub poproś o pytanie po polsku.</p>
+      <p style="font-size: 0.88rem; color: #94a3b8;">
+        💡 <em>Odpowiadaj po hiszpańsku – bot oceni gramatykę i w razie błędu podpowie prawidłową formę.</em>
+      </p>
     </div>
     
     <div id="conversation"></div>
@@ -39,9 +42,9 @@
     </div>
   </div>
 
-  <script src="../wizard_orpheus.js"></script>
+  <script src="../na_serwer/wizard_orpheus.js"></script>
   <script>
-    let prompt = `Your task is to talk to the user in Spanish. Ask simple questions like: "am I", "are you", "is he", "is she", "are we", "are you", "are they" in combination with simple nouns and adjectives in Spanish. If the user asks a simple question, answer it. Translate your questions and answers into Polish when helpful. The user enters their answers in Spanish. If the user's answer is grammatically incorrect, gently correct it and show the correct version. If the answer is correct, confirm and ask another question.`;
+    let prompt = `Your task is to talk to the user in Spanish. Ask simple questions with the verb "is" (ser/estar) in combination with simple nouns and adjectives in Spanish. If the user asks a simple question, answer it. Provide helpful translations into Polish if needed. The user will enter their answers in Spanish. If the user's answer entered in Spanish is grammatically incorrect, gently correct it and show the correct version. If the answer is correct, praise them and ask the next question.`;
     
     let rugMan = new WizardOrpheus('', prompt);
 

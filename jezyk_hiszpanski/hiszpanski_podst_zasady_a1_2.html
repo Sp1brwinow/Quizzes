@@ -12,39 +12,36 @@
     </script>
 
   <meta charset="UTF-8">
-  <title>Język Hiszpański A1 – Zdania z czasownikiem „ser” (być)</title>
-  <link rel="stylesheet" href="quiz_style.css" />
+  <title>Język Hiszpański A1 – Zasady gramatyczne z „ser”</title>
+  <link rel="stylesheet" href="../na_serwer/pyt/quiz_style.css" />
 </head>
 
 <body>
   <div class="top-nav">
-    <a href="../../pomocnicze.html" class="back-link">← Powrót do bazy quizów</a>
-    <a href="../../index.html" class="back-link">🏠 Strona główna</a>
+    <a href="../pomocnicze.html" class="back-link">← Powrót do bazy quizów</a>
+    <a href="../index.html" class="back-link">🏠 Strona główna</a>
   </div>
 
   <div class="container">
     <div id="naglowek">
-      <h2>🇪🇸 Język Hiszpański A1: Czasownik „ser” (być)</h2>
-      <p>Ćwiczenia prostych zdań i pytań z odmianą czasownika <em>ser</em> (yo soy, tú eres, él/ella es...).</p>
-      <p>Napisz <strong>„¡Hola!”</strong>, a następnie <strong>„Hacer las cuestiones”</strong> lub poproś o pytanie po polsku.</p>
-      <p style="font-size: 0.88rem; color: #94a3b8;">
-        💡 <em>Odpowiadaj po hiszpańsku – bot oceni gramatykę i w razie błędu podpowie prawidłową formę.</em>
-      </p>
+      <h2>🇪🇸 Język Hiszpański A1: Zasady i pytania (Gramatyka)</h2>
+      <p>Zapytaj AI o reguły tworzenia zdań z czasownikiem <em>ser</em>, tworzenie pytań oraz stosowanie rodzajników w języku hiszpańskim.</p>
+      <p>Napisz np.: <strong>„jakie są zasady”</strong>, <strong>„wytłumacz odmianę”</strong> lub zadaj własne pytanie gramatyczne.</p>
     </div>
     
     <div id="conversation"></div>
     
-    <textarea id="input" placeholder="Wpisz odpowiedź po hiszpańsku i naciśnij Enter..."></textarea>
+    <textarea id="input" placeholder="Wpisz swoje pytanie gramatyczne i naciśnij Enter..."></textarea>
     
     <div class="input-controls">
       <i>(Naciśnij Enter lub kliknij przycisk, aby wysłać)</i>
-      <button type="button" onclick="sendUserMessage()">📤 Wyślij odpowiedź</button>
+      <button type="button" onclick="sendUserMessage()">📤 Wyślij pytanie</button>
     </div>
   </div>
 
-  <script src="../wizard_orpheus.js"></script>
+  <script src="../na_serwer/wizard_orpheus.js"></script>
   <script>
-    let prompt = `Your task is to talk to the user in Spanish. Ask simple questions with the verb "is" (ser/estar) in combination with simple nouns and adjectives in Spanish. If the user asks a simple question, answer it. Provide helpful translations into Polish if needed. The user will enter their answers in Spanish. If the user's answer entered in Spanish is grammatically incorrect, gently correct it and show the correct version. If the answer is correct, praise them and ask the next question.`;
+    let prompt = `The tasks are related to learning Spanish. First, explain clearly in Polish the rules for creating sentences like "yo soy, tú eres, él/ella es, nosotros somos, vosotros sois, ellos son" in combination with simple adjectives or nouns in Spanish. Show how to form questions and how articles work (el, la, los, las / un, una). Explain the rules in Polish, and provide practical examples in Spanish. Respond patiently to all user's follow-up questions.`;
     
     let rugMan = new WizardOrpheus('', prompt);
 
