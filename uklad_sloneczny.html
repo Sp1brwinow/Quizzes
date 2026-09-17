@@ -1,0 +1,3129 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+  <!-- Google Analytics Tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZP827DTZJ5"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-ZP827DTZJ5');
+  </script>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🌌 Układ Słoneczny 3D | Sekcja Fizyka – HACK CLUB</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      overflow: hidden;
+      background-color: #03050d;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      color: #fff;
+    }
+
+    #canvas-container {
+      width: 100vw;
+      height: 100vh;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 1;
+    }
+
+    /* UI Overlay Layers */
+    .ui-layer {
+      position: absolute;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    /* Top Navigation Bar */
+    .top-bar {
+      top: 20px;
+      left: 20px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      pointer-events: auto;
+      flex-wrap: wrap;
+    }
+
+    .nav-btn {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      color: #38bdf8;
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.88rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+    }
+
+    .nav-btn:hover {
+      background: #0284c7;
+      color: #ffffff;
+      transform: translateY(-2px);
+      box-shadow: 0 0 15px rgba(56, 189, 248, 0.5);
+    }
+
+    /* Header Title Card */
+    header {
+      top: 70px;
+      left: 20px;
+      pointer-events: auto;
+      background: rgba(10, 15, 30, 0.85);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      padding: 14px 20px;
+      border-radius: 14px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+      max-width: 410px;
+    }
+
+    header h1 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      background: linear-gradient(90deg, #ffcc00, #ff6600, #38bdf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 4px;
+    }
+
+    header p {
+      font-size: 0.81rem;
+      color: #94a3b8;
+      line-height: 1.4;
+    }
+
+    .ecliptic-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 6px;
+      padding: 4px 10px;
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      border-radius: 6px;
+      font-size: 0.74rem;
+      color: #38bdf8;
+      transition: all 0.3s ease;
+    }
+
+    /* Controls Panel */
+    #controls-panel {
+      bottom: 20px;
+      left: 20px;
+      pointer-events: auto;
+      background: rgba(10, 15, 30, 0.92);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 16px 18px;
+      border-radius: 16px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7);
+      width: 340px;
+      max-height: 68vh;
+      overflow-y: auto;
+    }
+
+    #controls-panel::-webkit-scrollbar {
+      width: 6px;
+    }
+    #controls-panel::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 4px;
+    }
+    #controls-panel::-webkit-scrollbar-thumb {
+      background: rgba(56, 189, 248, 0.3);
+      border-radius: 4px;
+    }
+
+    #scale-mode-group button {
+      flex: 1 1 45%;
+      text-align: center;
+      padding: 7px 6px;
+    }
+
+    #scale-mode-group button#btn-scale-real.active {
+      background: linear-gradient(135deg, #7c3aed, #9333ea);
+      border-color: #c084fc;
+      box-shadow: 0 0 12px rgba(192, 132, 252, 0.5);
+    }
+
+    #probe-buttons button.active {
+      background: linear-gradient(135deg, #7c3aed, #9333ea);
+      border-color: #c084fc;
+      box-shadow: 0 0 10px rgba(192, 132, 252, 0.4);
+    }
+
+    #btn-probe-follow.active {
+      background: #059669 !important;
+      border-color: #34d399 !important;
+      box-shadow: 0 0 10px rgba(52, 211, 153, 0.4) !important;
+    }
+
+    .panel-title {
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #38bdf8;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .control-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    button {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #f1f5f9;
+      padding: 6px 11px;
+      border-radius: 8px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    button:hover {
+      background: rgba(56, 189, 248, 0.25);
+      border-color: #38bdf8;
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+
+    button.active {
+      background: #0284c7;
+      color: #ffffff;
+      font-weight: 700;
+      border-color: #38bdf8;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+    }
+
+    input[type="range"] {
+      width: 120px;
+      accent-color: #38bdf8;
+      cursor: pointer;
+    }
+
+    /* Planet Info Card */
+    #info-card {
+      top: 20px;
+      right: 20px;
+      width: 330px;
+      pointer-events: auto;
+      background: rgba(10, 15, 30, 0.92);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7);
+      transition: all 0.3s ease;
+    }
+
+    #info-card h2 {
+      font-size: 1.35rem;
+      margin-bottom: 4px;
+      color: #ffcc00;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    #info-card .planet-type {
+      font-size: 0.78rem;
+      color: #38bdf8;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+
+    .info-stat {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      padding: 5px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .info-stat .label {
+      color: #94a3b8;
+    }
+
+    .info-stat .value {
+      font-weight: 600;
+      color: #ffffff;
+      text-align: right;
+    }
+
+    .info-stat.highlight {
+      background: rgba(56, 189, 248, 0.08);
+      padding: 6px 6px;
+      border-radius: 4px;
+      border-bottom: none;
+      margin: 3px 0;
+    }
+
+    .info-stat.highlight .label {
+      color: #38bdf8;
+      font-weight: 600;
+    }
+
+    #info-card .fun-fact {
+      margin-top: 12px;
+      padding-top: 10px;
+      font-size: 0.8rem;
+      line-height: 1.45;
+      color: #e2e8f0;
+      border-top: 1px dashed rgba(56, 189, 248, 0.25);
+    }
+
+    /* Instructions Hint */
+    #hint {
+      bottom: 20px;
+      right: 20px;
+      background: rgba(10, 15, 30, 0.75);
+      padding: 7px 14px;
+      border-radius: 20px;
+      font-size: 0.74rem;
+      color: #94a3b8;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(8px);
+    }
+
+    @media (max-width: 768px) {
+      header { display: none; }
+      #info-card { width: 290px; padding: 15px; font-size: 0.75rem; }
+      #controls-panel { width: 290px; }
+      #hint { display: none; }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- 3D WebGL Canvas -->
+  <div id="canvas-container"></div>
+
+  <!-- Top Navigation Links -->
+  <div class="top-bar ui-layer">
+    <a href="pomocnicze.html" class="nav-btn">← Baza Quizów i Fizyka</a>
+    <a href="index.html" class="nav-btn">🏠 Strona Główna</a>
+  </div>
+
+  <!-- Header -->
+  <header class="ui-layer">
+    <h1>🌌 Układ Słoneczny 3D</h1>
+    <p>Sekcja Fizyka • Płaszczyzna Ekliptyki, inklinacja i prawa Keplera</p>
+    <div class="ecliptic-badge" id="scale-badge">
+      🔬 <strong>Skala Dydaktyczna:</strong> Planety powiększone dla czytelności
+    </div>
+  </header>
+
+  <!-- Controls Panel -->
+  <div id="controls-panel" class="ui-layer">
+    <div class="panel-title">⏱️ Parametry Symulacji</div>
+    <div class="control-row">
+      <span>Prędkość czasu:</span>
+      <input type="range" id="time-speed" min="0" max="40" step="0.5" value="5" />
+      <span id="speed-val" style="min-width:35px; text-align:right; font-weight: bold; color: #38bdf8;">5x</span>
+    </div>
+    <div class="btn-group">
+      <button id="btn-pause">⏸️ Pauza</button>
+      <button id="btn-reset">🔄 Widok ogólny</button>
+      <button id="btn-toggle-orbits" class="active">🪐 Orbity: WŁ</button>
+      <button id="btn-toggle-ecliptic" class="active">🌐 Ekliptyka: WŁ</button>
+    </div>
+
+    <div class="panel-title" style="margin-top: 8px;">📐 Tryb Skali Układu</div>
+    <div class="btn-group" id="scale-mode-group">
+      <button id="btn-scale-edu" class="active" title="Planety powiększone – łatwo widoczne detale, chmury i księżyce">🔬 Dydaktyczna (Czytelna)</button>
+      <button id="btn-scale-real" title="Rzeczywiste proporcje rozmiarów do odległości (1 AU = 150 mln km) – ogromna pustka kosmosu">🌌 Rzeczywista 1:1 (Pustka)</button>
+    </div>
+
+    <div class="panel-title" style="margin-top: 8px;">🎯 Skupienie kamery (Planety)</div>
+    <div class="btn-group" id="planet-buttons">
+      <!-- Wygenerowane dynamicznie przez skrypt JS -->
+    </div>
+
+    <div class="panel-title" style="margin-top: 10px;">🌕 Główne Księżyce (Zoom & Detale)</div>
+    <div class="btn-group" id="moon-buttons">
+      <!-- Wygenerowane dynamicznie przez skrypt JS -->
+    </div>
+
+    <div class="panel-title" style="margin-top: 10px; color: #c084fc;">🚀 Misje Sond Kosmicznych (Trajektorie 3D)</div>
+    <div class="btn-group" id="probe-buttons">
+      <!-- Wygenerowane dynamicznie przez skrypt JS -->
+    </div>
+
+    <!-- Panel kontrolny aktywnej sondy (Timeline, Prędkość, Kamera) -->
+    <div id="probe-control-panel" style="display: none; margin-top: 8px; padding: 10px 12px; background: rgba(26, 16, 48, 0.75); border: 1px solid rgba(192, 132, 252, 0.4); border-radius: 12px;">
+      <div style="font-size: 0.8rem; font-weight: 700; color: #d8b4fe; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
+        <span id="probe-panel-title">🛰️ Voyager 1</span>
+        <button id="btn-probe-close" style="padding: 2px 8px; font-size: 0.7rem; background: rgba(239, 68, 68, 0.25); border-color: #ef4444; color: #fca5a5;">✕ Wyłącz</button>
+      </div>
+      <div class="control-row" style="margin-bottom: 4px;">
+        <span style="font-size: 0.75rem;">Etap misji (Oś czasu):</span>
+        <span id="probe-timeline-date" style="font-size: 0.75rem; color: #38bdf8; font-weight: bold;">1977</span>
+      </div>
+      <input type="range" id="probe-progress-slider" min="0" max="1000" step="1" value="0" style="width: 100%; margin-bottom: 8px; accent-color: #c084fc;" />
+      <div class="btn-group" style="margin-bottom: 6px;">
+        <button id="btn-probe-play" class="active">⏸️ Pauza lotu</button>
+        <button id="btn-probe-follow">🎥 Śledź sondę</button>
+      </div>
+      <div id="probe-telemetry-box" style="font-size: 0.72rem; color: #cbd5e1; background: rgba(10, 15, 30, 0.6); padding: 6px 8px; border-radius: 6px; margin-bottom: 6px; border: 1px solid rgba(255,255,255,0.08);">
+        <div><strong>Prędkość:</strong> <span id="telemetry-speed">17.0 km/s</span></div>
+        <div><strong>Dystans (Słońce / Ziemia):</strong> <span id="telemetry-dist">1.0 AU / 0 mln km</span></div>
+      </div>
+      <div id="probe-event-box" style="font-size: 0.73rem; color: #e2e8f0; line-height: 1.35; background: rgba(0,0,0,0.4); padding: 6px 8px; border-radius: 6px; border-left: 3px solid #c084fc;">
+        Start misji z Ziemi (Cape Canaveral)
+      </div>
+    </div>
+  </div>
+
+  <!-- Planet Info Card -->
+  <div id="info-card" class="ui-layer">
+    <h2 id="card-name">☀️ Słońce</h2>
+    <div id="card-type" class="planet-type">Gwiazda Centralna (Typ widmowy G2V)</div>
+    <div class="info-stat"><span class="label" id="lbl-diameter">Średnica:</span><span class="value" id="card-diameter">1 392 700 km</span></div>
+    <div class="info-stat"><span class="label" id="lbl-mass">Masa:</span><span class="value" id="card-mass">333 000 x Ziemia</span></div>
+    <div class="info-stat"><span class="label" id="lbl-dist">Odległość od Słońca:</span><span class="value" id="card-dist">Centrum układu (0 AU)</span></div>
+    <div class="info-stat highlight"><span class="label" id="lbl-inclination">Nachylenie orbity do Ekliptyki:</span><span class="value" id="card-inclination">0.00° (Odniesienie)</span></div>
+    <div class="info-stat"><span class="label" id="lbl-tilt">Nachylenie osi obrotu:</span><span class="value" id="card-tilt">7.25°</span></div>
+    <div class="info-stat"><span class="label" id="lbl-rotation">Doba (obrót osiowy):</span><span class="value" id="card-rotation">25 - 35 dni</span></div>
+    <div class="info-stat"><span class="label" id="lbl-orbit">Okres orbitalny:</span><span class="value" id="card-orbit">Centrum układu</span></div>
+    <div class="info-stat"><span class="label" id="lbl-temp">Temperatura pow.:</span><span class="value" id="card-temp">5 500 °C</span></div>
+    <div class="fun-fact" id="card-fact">
+      Słońce powstało ok. 4,6 mld lat temu z grawitacyjnego zapadnięcia obłoku molekularnego. Obracający się dysk protoplanetarny wyznaczył wspólną płaszczyznę ekliptyki, wokół której krążą dziś wszystkie planety.
+    </div>
+  </div>
+
+  <!-- Instructions Hint -->
+  <div id="hint" class="ui-layer">
+    🖱️ LPM: Obrót kamery | PPM: Przesuwanie | Rolka: Zoom | Kliknij w ciało niebieskie
+  </div>
+
+  <!-- Three.js + OrbitControls (CDN) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+  <script>
+    // --- BAZA DANYCH ASTRONOMICZNYCH I FIZYCZNYCH (Z NACHYLENIEM DO EKLIPTYKI) ---
+    const PLANET_DATA = [
+      {
+        id: 'sun',
+        name: '☀️ Słońce',
+        type: 'Gwiazda Centralna (Typ G2V)',
+        radius: 12,
+        realRadius: 3.5,
+        dist: 0,
+        realDist: 0,
+        distAU: '0.00 AU',
+        distKm: '0 km',
+        orbitSpeed: 0,
+        rotSpeed: 0.002,
+        tilt: 0.12, // 7.25 deg
+        orbitInclination: 0,
+        inclinationDeg: '0.00° (Odniesienie)',
+        tiltDeg: '7.25°',
+        color: '#ffaa00',
+        diameter: '1 392 700 km',
+        mass: '333 000 x Ziemia',
+        rotation: '25 - 35 dni ziemskich',
+        orbit: 'Centrum układu',
+        temp: '5 500 °C (jądro: 15 mln °C)',
+        fact: 'Układ Słoneczny uformował się z obracającego się dysku gazu i pyłu (mgławicy słonecznej). Dlatego orbity wszystkich planet leżą niemal w jednej płaszczyźnie zwanej ekliptyką.'
+      },
+      {
+        id: 'mercury',
+        name: '🌑 Merkury',
+        type: 'Planeta skalista',
+        radius: 1.6,
+        realRadius: 0.133,
+        dist: 26,
+        realDist: 93,
+        distAU: '0.39 AU',
+        distKm: '57,9 mln km',
+        orbitSpeed: 0.04,
+        rotSpeed: 0.003,
+        tilt: 0.03,
+        orbitInclination: 7.00 * (Math.PI / 180), // 7.00 stopni - największe nachylenie!
+        inclinationDeg: '7.00° (Największe!)',
+        tiltDeg: '0.03°',
+        color: '#a8a29e',
+        diameter: '4 879 km',
+        mass: '0,055 x Ziemia',
+        rotation: '58,6 dni ziemskich',
+        orbit: '88 dni (najszybszy)',
+        temp: '-173 °C do +427 °C',
+        fact: 'Merkury posiada największe nachylenie orbity do płaszczyzny ekliptyki spośród wszystkich 8 planet (aż 7,0°), co jest pozostałością po gwałtownych zderzeniach we wczesnym Układzie Słonecznym.'
+      },
+      {
+        id: 'venus',
+        name: '🌕 Wenus',
+        type: 'Planeta skalista',
+        radius: 2.8,
+        realRadius: 0.332,
+        dist: 38,
+        realDist: 173.5,
+        distAU: '0.72 AU',
+        distKm: '108,2 mln km',
+        orbitSpeed: 0.015,
+        rotSpeed: -0.0015, // obrót wsteczny
+        tilt: 3.1,
+        orbitInclination: 3.39 * (Math.PI / 180), // 3.39 stopni
+        inclinationDeg: '3.39°',
+        tiltDeg: '177.3° (Wsteczny obrót)',
+        color: '#eab308',
+        diameter: '12 104 km',
+        mass: '0,815 x Ziemia',
+        rotation: '243 dni (wsteczny obrót)',
+        orbit: '225 dni',
+        temp: '+464 °C (najgorętsza)',
+        fact: 'Orbita Wenus jest nachylona do ekliptyki o 3,39°. Z tego powodu rzadkie zjawisko tranzytu Wenus na tle tarczy Słońca zdarza się parami co ponad 100 lat (ostatnio w 2004 i 2012 r.).'
+      },
+      {
+        id: 'earth',
+        name: '🌍 Ziemia',
+        type: 'Planeta skalista (Biosfera)',
+        radius: 3.0,
+        realRadius: 0.350,
+        dist: 54,
+        realDist: 240.0,
+        distAU: '1.00 AU',
+        distKm: '149,6 mln km',
+        orbitSpeed: 0.01,
+        rotSpeed: 0.015,
+        tilt: 0.41, // 23.44 stopnia
+        orbitInclination: 0.00 * (Math.PI / 180), // 0.00 stopni - BAZA EKLIPTYKI
+        inclinationDeg: '0.00° (Definicja Ekliptyki)',
+        tiltDeg: '23.44° (Pory roku)',
+        color: '#0284c7',
+        diameter: '12 742 km',
+        mass: '5,97 × 10²⁴ kg',
+        rotation: '23h 56min (1 doba)',
+        orbit: '365,25 dnia (1 rok)',
+        temp: '+15 °C (średnia)',
+        fact: 'Płaszczyzna orbity Ziemi wokół Słońca definiuje Płaszczyznę Ekliptyki (0°). Nachylenie osi obrotu Ziemi o 23,44° względem prostopadłej do ekliptyki odpowiada za występowanie pór roku.'
+      },
+      {
+        id: 'mars',
+        name: '🔴 Mars',
+        type: 'Planeta skalista (Czerwona Planeta)',
+        radius: 2.0,
+        realRadius: 0.186,
+        dist: 72,
+        realDist: 365.8,
+        distAU: '1.52 AU',
+        distKm: '227,9 mln km',
+        orbitSpeed: 0.008,
+        rotSpeed: 0.014,
+        tilt: 0.44, // 25.19 stopni
+        orbitInclination: 1.85 * (Math.PI / 180), // 1.85 stopni
+        inclinationDeg: '1.85°',
+        tiltDeg: '25.19°',
+        color: '#dc2626',
+        diameter: '6 779 km',
+        mass: '0,107 x Ziemia',
+        rotation: '24h 37min (sol)',
+        orbit: '687 dni (1,88 roku)',
+        temp: '-63 °C (średnia)',
+        fact: 'Orbita Marsa jest nachylona o 1,85° do ekliptyki i ma wyraźnie eliptyczny kształt, co w XVII wieku pozwoliło Johannesowi Keplerowi sformułować słynne prawa ruchu planet.'
+      },
+      {
+        id: 'jupiter',
+        name: '🪐 Jowisz',
+        type: 'Gazowy Olbrzym',
+        radius: 6.8,
+        realRadius: 3.92,
+        dist: 105,
+        realDist: 1249.0,
+        distAU: '5.20 AU',
+        distKm: '778,5 mln km',
+        orbitSpeed: 0.003,
+        rotSpeed: 0.035,
+        tilt: 0.05, // 3.13 stopnia
+        orbitInclination: 1.30 * (Math.PI / 180), // 1.30 stopni
+        inclinationDeg: '1.30°',
+        tiltDeg: '3.13°',
+        color: '#d97706',
+        diameter: '139 820 km',
+        mass: '318 x Ziemia',
+        rotation: '9h 55min (najszybsza doba)',
+        orbit: '11,86 lat ziemskich',
+        temp: '-110 °C',
+        fact: 'Jowisz posiada ogromną masę (2,5 raza większą niż wszystkie pozostałe planety razem wzięte), dlatego jego grawitacja silnie stabilizuje płaszczyznę całego Układu Słonecznego.'
+      },
+      {
+        id: 'saturn',
+        name: '🪐 Saturn',
+        type: 'Gazowy Olbrzym z pierścieniami',
+        radius: 5.5,
+        realRadius: 3.31,
+        dist: 145,
+        realDist: 2299.7,
+        distAU: '9.58 AU',
+        distKm: '1,43 mld km',
+        orbitSpeed: 0.002,
+        rotSpeed: 0.03,
+        tilt: 0.47, // 26.73 stopnia
+        orbitInclination: 2.49 * (Math.PI / 180), // 2.49 stopni
+        inclinationDeg: '2.49°',
+        tiltDeg: '26.73°',
+        color: '#fde047',
+        hasRings: true,
+        diameter: '116 460 km',
+        mass: '95 x Ziemia',
+        rotation: '10h 33min',
+        orbit: '29,45 lat ziemskich',
+        temp: '-140 °C',
+        fact: 'Płaszczyzna pierścieni Saturna jest nachylona pod kątem 26,7° do jego orbity. Gdy Saturn krąży wokół Słońca, z Ziemi widzimy pierścienie raz od góry, raz z boku (wtedy niemal znikają!).'
+      },
+      {
+        id: 'uranus',
+        name: '🔵 Uran',
+        type: 'Lodowy Olbrzym',
+        radius: 4.0,
+        realRadius: 1.40,
+        dist: 185,
+        realDist: 4612.8,
+        distAU: '19.22 AU',
+        distKm: '2,87 mld km',
+        orbitSpeed: 0.0012,
+        rotSpeed: -0.02,
+        tilt: 1.71, // 97.77 stopni
+        orbitInclination: 0.77 * (Math.PI / 180), // 0.77 stopni
+        inclinationDeg: '0.77° (Prawie w płaszczyźnie)',
+        tiltDeg: '97.77° (Leży na boku)',
+        color: '#38bdf8',
+        diameter: '50 724 km',
+        mass: '14,5 x Ziemia',
+        rotation: '17h 14min (wsteczny)',
+        orbit: '84 lata ziemskie',
+        temp: '-195 °C',
+        fact: 'Mimo że orbita Uranu leży niemal idealnie w płaszczyźnie ekliptyki (nachylenie zaledwie 0,77°), to sama planeta jest przewrócona o 98°, tocząc się po orbicie biegunem w stronę Słońca.'
+      },
+      {
+        id: 'neptune',
+        name: '🌊 Neptun',
+        type: 'Lodowy Olbrzym',
+        radius: 3.9,
+        realRadius: 1.36,
+        dist: 225,
+        realDist: 7212.0,
+        distAU: '30.05 AU',
+        distKm: '4,50 mld km',
+        orbitSpeed: 0.0008,
+        rotSpeed: 0.022,
+        tilt: 0.49, // 28.32 stopnia
+        orbitInclination: 1.77 * (Math.PI / 180), // 1.77 stopni
+        inclinationDeg: '1.77°',
+        tiltDeg: '28.32°',
+        color: '#2563eb',
+        diameter: '49 244 km',
+        mass: '17,1 x Ziemia',
+        rotation: '16h 6min',
+        orbit: '164,8 lat ziemskich',
+        temp: '-200 °C',
+        fact: 'Orbita Neptuna jest nachylona o 1,77° do ekliptyki. Odkryto go w 1846 roku dzięki przewidywaniom matematycznym z zaburzeń orbity Uranu.'
+      }
+    ];
+
+    // --- BAZA DANYCH GŁÓWNYCH KSIĘŻYCÓW UKŁADU SŁONECZNEGO ---
+    const MOON_DATA = [
+      // 1. ZIEMIA
+      {
+        id: 'moon',
+        parentId: 'earth',
+        name: '🌕 Księżyc (Ziemia)',
+        parentName: 'Ziemia',
+        type: 'Naturalny satelita Ziemi',
+        radius: 0.7,
+        realRadius: 0.095,
+        dist: 5.8,
+        realDist: 1.35,
+        distParent: '384 400 km od Ziemi',
+        orbitSpeed: 0.035,
+        color: '#d1d5db',
+        diameter: '3 474 km',
+        mass: '0,0123 x Ziemia',
+        inclinationDeg: '5.14° do ekliptyki',
+        tiltDeg: '1.54°',
+        rotation: '27,3 dnia (synchroniczny)',
+        orbit: '27,3 dnia wokół Ziemi',
+        temp: '-130 °C do +120 °C',
+        fact: 'Księżyc obraca się synchronicznie – z Ziemi widzimy zawsze tę samą stronę. Jego grawitacja stabilizuje nachylenie osi Ziemi i wywołuje pływy morskie.'
+      },
+
+      // 2. MARS
+      {
+        id: 'phobos',
+        parentId: 'mars',
+        name: '🥔 Fobos (Mars)',
+        parentName: 'Mars',
+        type: 'Księżyc Marsa (Przechwycona planetoida)',
+        radius: 0.32,
+        realRadius: 0.035,
+        dist: 3.6,
+        realDist: 0.48,
+        distParent: '9 376 km od Marsa',
+        orbitSpeed: 0.11, // Obiega Marsa ponad 3 razy na 1 dobę marsjańską!
+        color: '#78716c',
+        diameter: '22,2 km (nieregularny)',
+        mass: '1,8 × 10⁻⁸ x Ziemia',
+        inclinationDeg: '1.08° do równika Marsa',
+        tiltDeg: '0°',
+        rotation: '7h 39min (synchroniczny)',
+        orbit: '7h 39min (szybciej niż doba Marsa!)',
+        temp: '-40 °C do -112 °C',
+        fact: 'Krąży tak blisko Marsa (ok. 6 000 km od powierzchni), że wschodzi na zachodzie i zachodzi na wschodzie 3 razy na dobę! Za ok. 30-50 mln lat siły pływowe rozerwą go na pierścień wokół Marsa.'
+      },
+      {
+        id: 'deimos',
+        parentId: 'mars',
+        name: '🌑 Deimos (Mars)',
+        parentName: 'Mars',
+        type: 'Księżyc Marsa (Przechwycona planetoida)',
+        radius: 0.25,
+        realRadius: 0.026,
+        dist: 5.4,
+        realDist: 0.75,
+        distParent: '23 460 km od Marsa',
+        orbitSpeed: 0.045,
+        color: '#a8a29e',
+        diameter: '12,4 km (nieregularny)',
+        mass: '2,5 × 10⁻⁹ x Ziemia',
+        inclinationDeg: '1.79° do równika Marsa',
+        tiltDeg: '0°',
+        rotation: '30,3 godziny',
+        orbit: '30,3 godziny wokół Marsa',
+        temp: '-40 °C (średnia)',
+        fact: 'Jest pokryty grubą warstwą drobnego pyłu (regolitu) wygładzającego kratery. Ma tak słabą grawitację, że człowiek mógłby z niego uciec w kosmos, odbijając się nogami!'
+      },
+
+      // 3. JOWISZ (Księżyce Galileuszowe)
+      {
+        id: 'io',
+        parentId: 'jupiter',
+        name: '🌋 Io (Jowisz)',
+        parentName: 'Jowisz',
+        type: 'Księżyc Galileuszowy Jowisza (Wulkany)',
+        radius: 0.65,
+        realRadius: 0.10,
+        dist: 11.5,
+        realDist: 6.8,
+        distParent: '421 700 km od Jowisza',
+        orbitSpeed: 0.08, // Rezonans Laplace'a 4:1
+        color: '#facc15',
+        diameter: '3 643 km',
+        mass: '0,015 x Ziemia',
+        inclinationDeg: '0.05° do równika Jowisza',
+        tiltDeg: '0°',
+        rotation: '1,77 dnia (synchroniczny)',
+        orbit: '1,77 dnia (Rezonans 4:1 z Ganimedesem)',
+        temp: '-130 °C (lawa: 1 200 °C)',
+        fact: 'Najbardziej aktywny wulkanicznie obiekt w Układzie Słonecznym! Posiada ponad 400 czynnych wulkanów wyrzucających siarkę na setki kilometrów z powodu ściskania pływowego przez Jowisza.'
+      },
+      {
+        id: 'europa',
+        parentId: 'jupiter',
+        name: '🧊 Europa (Jowisz)',
+        parentName: 'Jowisz',
+        type: 'Księżyc Galileuszowy Jowisza (Ocean)',
+        radius: 0.58,
+        realRadius: 0.086,
+        dist: 15.5,
+        realDist: 9.5,
+        distParent: '670 900 km od Jowisza',
+        orbitSpeed: 0.04, // Rezonans Laplace'a 2:1
+        color: '#bae6fd',
+        diameter: '3 122 km',
+        mass: '0,008 x Ziemia',
+        inclinationDeg: '0.47° do równika Jowisza',
+        tiltDeg: '0°',
+        rotation: '3,55 dnia (synchroniczny)',
+        orbit: '3,55 dnia (Rezonans 2:1 z Ganimedesem)',
+        temp: '-160 °C (powierzchnia)',
+        fact: 'Pod gładką skorupą lodową kryje się globalny, płynny ocean o głębokości do 100 km, zawierający 2x więcej wody niż wszystkie oceany Ziemi razem wzięte! Główny cel poszukiwań życia pozaziemskiego.'
+      },
+      {
+        id: 'ganymede',
+        parentId: 'jupiter',
+        name: '🪐 Ganimedes (Jowisz)',
+        parentName: 'Jowisz',
+        type: 'Księżyc Galileuszowy Jowisza (Olbrzym)',
+        radius: 0.95,
+        realRadius: 0.145,
+        dist: 20.5,
+        realDist: 14.5,
+        distParent: '1 070 400 km od Jowisza',
+        orbitSpeed: 0.02, // Rezonans Laplace'a 1:1
+        color: '#94a3b8',
+        diameter: '5 268 km',
+        mass: '0,025 x Ziemia',
+        inclinationDeg: '0.20° do równika Jowisza',
+        tiltDeg: '0°',
+        rotation: '7,15 dnia (synchroniczny)',
+        orbit: '7,15 dnia (Baza rezonansu Laplace\'a)',
+        temp: '-160 °C',
+        fact: 'Największy księżyc w całym Układzie Słonecznym (o 8% większy od samej planety Merkury!). Jako jedyny księżyc posiada własne, aktywne pole magnetyczne.'
+      },
+      {
+        id: 'callisto',
+        parentId: 'jupiter',
+        name: '🌑 Kallisto (Jowisz)',
+        parentName: 'Jowisz',
+        type: 'Księżyc Galileuszowy Jowisza (Kratery)',
+        radius: 0.85,
+        realRadius: 0.132,
+        dist: 26.5,
+        realDist: 21.0,
+        distParent: '1 882 700 km od Jowisza',
+        orbitSpeed: 0.0085,
+        color: '#64748b',
+        diameter: '4 821 km',
+        mass: '0,018 x Ziemia',
+        inclinationDeg: '0.28° do równika Jowisza',
+        tiltDeg: '0°',
+        rotation: '16,69 dnia',
+        orbit: '16,69 dnia wokół Jowisza',
+        temp: '-140 °C',
+        fact: 'Powierzchnia Kallisto jest najsilniej i najgęściej pokryta kraterami uderzeniowymi spośród wszystkich ciał niebieskich w Układzie Słonecznym. Jej krajobraz nie zmienił się od 4 mld lat.'
+      },
+
+      // 4. SATURN
+      {
+        id: 'mimas',
+        parentId: 'saturn',
+        name: '☄️ Mimas (Saturn)',
+        parentName: 'Saturn',
+        type: 'Księżyc Saturna (Gwiazda Śmierci)',
+        radius: 0.38,
+        realRadius: 0.045,
+        dist: 9.8,
+        realDist: 6.2,
+        distParent: '185 520 km od Saturna',
+        orbitSpeed: 0.065,
+        color: '#e2e8f0',
+        diameter: '396 km',
+        mass: '6,3 × 10⁻⁶ x Ziemia',
+        inclinationDeg: '1.57° do równika Saturna',
+        tiltDeg: '0°',
+        rotation: '22,6 godziny',
+        orbit: '22,6 godziny wokół Saturna',
+        temp: '-209 °C',
+        fact: 'Posiada gigantyczny krater uderzeniowy Herschel (o średnicy 130 km – 1/3 średnicy samego księżyca!), co nadaje mu wygląd słynnej „Gwiazdy Śmierci” z Gwiezdnych Wojen.'
+      },
+      {
+        id: 'enceladus',
+        parentId: 'saturn',
+        name: '✨ Enceladus (Saturn)',
+        parentName: 'Saturn',
+        type: 'Lodowy Księżyc Saturna (Kriogejezery)',
+        radius: 0.44,
+        realRadius: 0.055,
+        dist: 13.0,
+        realDist: 8.5,
+        distParent: '238 020 km od Saturna',
+        orbitSpeed: 0.045,
+        color: '#ffffff',
+        diameter: '504 km',
+        mass: '1,8 × 10⁻⁵ x Ziemia',
+        inclinationDeg: '0.00°',
+        tiltDeg: '0°',
+        rotation: '32,9 godziny',
+        orbit: '32,9 godziny wokół Saturna',
+        temp: '-198 °C (najbielszy obiekt)',
+        fact: 'Z pęknięć na biegunie południowym (tzw. tygrysich pasów) wyrzuca w kosmos potężne gejzery pary wodnej i soli z podpowierzchniowego oceanu, zasilając pierścień E Saturna!'
+      },
+      {
+        id: 'titan',
+        parentId: 'saturn',
+        name: '🟠 Tytan (Saturn)',
+        parentName: 'Saturn',
+        type: 'Księżyc Saturna (Gęsta Atmosfera & Jeziora)',
+        radius: 0.92,
+        realRadius: 0.142,
+        dist: 19.0,
+        realDist: 15.2,
+        distParent: '1 221 870 km od Saturna',
+        orbitSpeed: 0.022,
+        color: '#fbbf24',
+        diameter: '5 150 km',
+        mass: '0,0225 x Ziemia',
+        inclinationDeg: '0.35° do równika Saturna',
+        tiltDeg: '0°',
+        rotation: '15,94 dnia',
+        orbit: '15,94 dnia wokół Saturna',
+        temp: '-179 °C',
+        fact: 'Jedyny księżyc z gęstą atmosferą azotową oraz powierzchniowymi rzekami i jeziorami ciekłego metanu i etanu (cykl hydrologiczny metanu podobny do obiegu wody na Ziemi!).'
+      },
+
+      // 5. URAN
+      {
+        id: 'miranda',
+        parentId: 'uranus',
+        name: '🧗 Miranda (Uran)',
+        parentName: 'Uran',
+        type: 'Księżyc Uranu (Ekstremalna geologia)',
+        radius: 0.38,
+        realRadius: 0.042,
+        dist: 7.5,
+        realDist: 3.2,
+        distParent: '129 390 km od Uranu',
+        orbitSpeed: 0.055,
+        color: '#cbd5e1',
+        diameter: '471 km',
+        mass: '1,1 × 10⁻⁵ x Ziemia',
+        inclinationDeg: '4.34° do równika Uranu',
+        tiltDeg: '0°',
+        rotation: '33,9 godziny',
+        orbit: '33,9 godziny wokół Uranu',
+        temp: '-213 °C',
+        fact: 'Ma najbardziej poszarpaną i niezwykłą geologię w Układzie Słonecznym. Znajduje się tu Verona Rupes – pionowy klif o wysokości ok. 20 km (skok z niego trwałby kilkanaście minut!).'
+      },
+      {
+        id: 'titania',
+        parentId: 'uranus',
+        name: '👑 Tytania (Uran)',
+        parentName: 'Uran',
+        type: 'Największy księżyc Uranu',
+        radius: 0.65,
+        realRadius: 0.088,
+        dist: 13.0,
+        realDist: 6.2,
+        distParent: '435 910 km od Uranu',
+        orbitSpeed: 0.025,
+        color: '#94a3b8',
+        diameter: '1 578 km',
+        mass: '0,00057 x Ziemia',
+        inclinationDeg: '0.34° do równika Uranu',
+        tiltDeg: '0°',
+        rotation: '8,7 dnia',
+        orbit: '8,7 dnia wokół Uranu',
+        temp: '-203 °C',
+        fact: 'Odkryta w 1787 roku przez Williama Herschela. Jej powierzchnia jest przecięta gigantycznymi kanionami i rowami tektonicznymi o długości tysięcy kilometrów.'
+      },
+
+      // 6. NEPTUN
+      {
+        id: 'triton',
+        parentId: 'neptune',
+        name: '❄️ Tryton (Neptun)',
+        parentName: 'Neptun',
+        type: 'Księżyc Neptuna (Wsteczna orbita & Kriowulkany)',
+        radius: 0.78,
+        realRadius: 0.098,
+        dist: 11.5,
+        realDist: 5.6,
+        distParent: '354 760 km od Neptuna',
+        orbitSpeed: -0.035, // Ruch wsteczny (retrograde)
+        color: '#bfdbfe',
+        diameter: '2 706 km',
+        mass: '0,0036 x Ziemia',
+        inclinationDeg: '156.8° (Orbita Wsteczna!)',
+        tiltDeg: '0°',
+        rotation: '5,88 dnia (wsteczny)',
+        orbit: '5,88 dnia (obiega Neptuna pod prąd!)',
+        temp: '-235 °C (jedno z najzimniejszych ciał)',
+        fact: 'Jedyny duży księżyc krążący wokół planety WSTECZNIE (pod prąd rotacji planety). Został przechwycony grawitacyjnie z Pasa Kuipera. Posiada gejzery wyrzucające ciekły azot na 8 km!'
+      }
+    ];
+
+    // --- BAZA DANYCH SŁYNNYCH SOND KOSMICZNYCH I TRAJEKTORII LOTU ---
+    const PROBE_MISSIONS = [
+      {
+        id: 'voyager1',
+        name: '🛰️ Voyager 1',
+        icon: '🛰️',
+        isProbe: true,
+        agency: 'NASA (JPL)',
+        launchDate: '5 września 1977 r.',
+        status: 'Aktywna w przestrzeni międzygwiezdnej (>163 AU)',
+        type: 'Sonda głębokiego kosmosu',
+        description: 'Najdalej wysłany obiekt w historii ludzkości. Niesie Złotą Płytę (Golden Record). Odkryła aktywny wulkanizm na Io i skomplikowaną strukturę pierścieni Saturna, po czym asysta grawitacyjna wyrzuciła ją powyżej ekliptyki ku gwiazdom.',
+        color: '#a855f7',
+        speedKmS: '17,0 km/s (61 200 km/h)',
+        distanceNow: '163 AU (24,4 mld km od Ziemi)',
+        signalDelay: '22h 35m w jedną stronę',
+        powerSys: '3 generatory termoelektryczne RTG (Pluton-238)',
+        trajectoryType: 'Asysty grawitacyjne: Jowisz (1979) i Saturn (1980)',
+        tempDesc: 'Przestrzeń międzygwiezdna (-270 °C)',
+        fact: 'W 1990 r. na polecenie Carla Sagana sonda obróciła kamerę i wykonała słynne zdjęcie „Pale Blue Dot” (Błękitna Kropka) – Ziemię jako drobny piksel zawieszony w promieniu słonecznym.',
+        waypoints: [
+          { progress: 0.00, target: 'earth', angle: 0.20, offset: [0, 0, 0], date: '05.09.1977', event: '🚀 Start z Cape Canaveral na rakiecie Titan IIIE-Centaur', speed: '36.0 km/s', distAU: '1.00 AU', distEarth: '0 mln km' },
+          { progress: 0.15, target: 'sun', distScale: 2.8, angle: 0.80, y: 0.5, date: '10.12.1977', event: '🛡️ Przebycie Pasa Planetoid bez kolizji z odłamkami skalnymi', speed: '24.5 km/s', distAU: '2.80 AU', distEarth: '350 mln km' },
+          { progress: 0.35, target: 'jupiter', angle: 1.35, offset: [1.2, 0.8, -0.5], date: '05.03.1979', event: '🪐 Asysta Jowisza (349 000 km)! Odkrycie wulkanizmu na Io i pierścieni Jowisza.', speed: '32.0 km/s (asysta)', distAU: '5.20 AU', distEarth: '680 mln km' },
+          { progress: 0.60, target: 'saturn', angle: 1.95, offset: [0.8, 2.5, 0.4], date: '12.11.1980', event: '🪐 Przelot obok Saturna i Tytana (6 490 km). Wyrzut pod kątem 35° ponad ekliptykę!', speed: '25.0 km/s', distAU: '9.58 AU', distEarth: '1 430 mln km' },
+          { progress: 0.75, target: 'sun', distScale: 40.0, angle: 2.15, y: 22.0, date: '14.02.1990', event: '📷 Zdjęcie „Pale Blue Dot” (Błękitna Kropka) – Ziemia z dystansu 6 mld km.', speed: '17.4 km/s', distAU: '40.0 AU', distEarth: '6 000 mln km' },
+          { progress: 0.88, target: 'sun', distScale: 121.0, angle: 2.30, y: 70.0, date: '25.08.2012', event: '🌌 Przekroczenie Heliopauzy! Pierwszy w dziejach obiekt w przestrzeni międzygwiezdnej.', speed: '17.0 km/s', distAU: '121.0 AU', distEarth: '18 100 mln km' },
+          { progress: 1.00, target: 'sun', distScale: 163.0, angle: 2.40, y: 95.0, date: 'Dziś (2026)', event: '📡 Przestrzeń międzygwiezdna. Sonda stale transmituje pomiary plazmy galaktycznej.', speed: '17.0 km/s', distAU: '163.0 AU', distEarth: '24 400 mln km' }
+        ]
+      },
+      {
+        id: 'voyager2',
+        name: '🛰️ Voyager 2',
+        icon: '🛰️',
+        isProbe: true,
+        agency: 'NASA (JPL)',
+        launchDate: '20 sierpnia 1977 r.',
+        status: 'Aktywna w przestrzeni międzygwiezdnej (>136 AU)',
+        type: 'Sonda Wielkiej Wyprawy (Grand Tour)',
+        description: 'Jedyna sonda w historii, która z bliska odwiedziła aż 4 olbrzymy gazowe: Jowisza, Saturna, Urana i Neptuna, korzystając ze zjawiska ustawienia planet powtarzającego się raz na 175 lat.',
+        color: '#06b6d4',
+        speedKmS: '15,3 km/s (55 000 km/h)',
+        distanceNow: '136 AU (20,4 mld km od Ziemi)',
+        signalDelay: '18h 50m w jedną stronę',
+        powerSys: 'Generatory termoelektryczne RTG (Pluton-238)',
+        trajectoryType: 'Grand Tour: Jowisz (1979), Saturn (1981), Uran (1986), Neptun (1989)',
+        tempDesc: 'Przestrzeń międzygwiezdna (-270 °C)',
+        fact: 'Dzięki Voyagerowi 2 ludzkość po raz pierwszy zobaczyła błękitną tarczę Urana i lazurowego Neptuna oraz gejzery ciekłego azotu strzelające na księżycu Trytonie.',
+        waypoints: [
+          { progress: 0.00, target: 'earth', angle: 0.15, offset: [0, 0, 0], date: '20.08.1977', event: '🚀 Start z Cape Canaveral (16 dni przed Voyagerem 1)', speed: '36.0 km/s', distAU: '1.00 AU', distEarth: '0 mln km' },
+          { progress: 0.22, target: 'jupiter', angle: 1.25, offset: [1.5, -0.4, 0.8], date: '09.07.1979', event: '🪐 Asysta Jowisza (570 000 km). Zdjęcia lodowych spękań Europy i kraterów Ganimedesa.', speed: '27.0 km/s', distAU: '5.20 AU', distEarth: '680 mln km' },
+          { progress: 0.42, target: 'saturn', angle: 2.05, offset: [1.2, -0.6, 1.0], date: '26.08.1981', event: '🪐 Asysta Saturna (101 000 km). Pomiary gęstości atmosfery Tytana i mikrostruktury pierścieni.', speed: '22.0 km/s', distAU: '9.58 AU', distEarth: '1 430 mln km' },
+          { progress: 0.65, target: 'uranus', angle: 2.85, offset: [0.6, -1.2, 0.4], date: '24.01.1986', event: '🔵 Pierwszy przelot obok Urana (81 500 km)! Odkrycie 10 nowych księżyców i klifów Mirandy.', speed: '18.0 km/s', distAU: '19.22 AU', distEarth: '2 870 mln km' },
+          { progress: 0.82, target: 'neptune', angle: 3.45, offset: [0.4, -2.0, -0.8], date: '25.08.1989', event: '🌊 Pierwszy przelot obok Neptuna (4 950 km)! Odkrycie gejzerów azotu na Trytonie.', speed: '16.5 km/s', distAU: '30.05 AU', distEarth: '4 500 mln km' },
+          { progress: 0.92, target: 'sun', distScale: 119.0, angle: 3.80, y: -45.0, date: '05.11.2018', event: '🌌 Wejście w przestrzeń międzygwiezdną na południowej półkuli heliosfery.', speed: '15.3 km/s', distAU: '119.0 AU', distEarth: '17 800 mln km' },
+          { progress: 1.00, target: 'sun', distScale: 136.0, angle: 4.00, y: -58.0, date: 'Dziś (2026)', event: '📡 Ciągła transmisja telemetryczna z głębokiego kosmosu międzygwiezdnego.', speed: '15.3 km/s', distAU: '136.0 AU', distEarth: '20 400 mln km' }
+        ]
+      },
+      {
+        id: 'cassini',
+        name: '🪐 Cassini-Huygens',
+        icon: '🪐',
+        isProbe: true,
+        agency: 'NASA / ESA / ASI',
+        launchDate: '15 października 1997 r.',
+        status: 'Zakończona sukcesem (Wielki Finał 2017)',
+        type: 'Orbiter Saturna & Lądownik Tytana',
+        description: 'Najbardziej zaawansowana misja do układu Saturna. Odkryła ciekłe węglowodorowe morza na Tytanie oraz globalny płynny ocean i pióropusze pary wodnej na Enceladusie.',
+        color: '#eab308',
+        speedKmS: 'Prędkość orbitalna Saturna: 6–35 km/s',
+        distanceNow: 'Zakończona w atmosferze Saturna',
+        signalDelay: '84 minuty (z orbity Saturna)',
+        powerSys: 'Generatory RTG + bateria lądownika',
+        trajectoryType: 'Pętla VVEJGA: Wenus (1998, 1999), Ziemia (1999), Jowisz (2000)',
+        tempDesc: 'Układ Saturna (-180 °C)',
+        fact: 'W 2017 r. sonda wykonała 22 brawurowe nurkowania w wąskiej szczelinie między Saturnem a wewnętrznym pierścieniem, po czym celowo spłonęła w atmosferze planety, by nie skazić mikrobiologicznie Enceladusa.',
+        waypoints: [
+          { progress: 0.00, target: 'earth', angle: 0.00, offset: [0, 0, 0], date: '15.10.1997', event: '🚀 Start rakietą Titan IVB z przylądka Canaveral', speed: '39.0 km/s', distAU: '1.00 AU', distEarth: '0 mln km' },
+          { progress: 0.15, target: 'venus', angle: 1.60, offset: [0.3, 0.1, -0.2], date: '26.04.1998', event: '🌕 Pierwsza asysta Wenus (+7 km/s energii orbitalnej)', speed: '37.0 km/s', distAU: '0.72 AU', distEarth: '136 mln km' },
+          { progress: 0.28, target: 'venus', angle: 4.40, offset: [-0.2, 0.1, 0.3], date: '24.06.1999', event: '🌕 Druga asysta Wenus (+5.5 km/s)', speed: '39.5 km/s', distAU: '0.72 AU', distEarth: '150 mln km' },
+          { progress: 0.40, target: 'earth', angle: 6.28, offset: [0.2, -0.1, 0.2], date: '18.08.1999', event: '🌍 Przelot obok Ziemi (1 100 km) i katapultowanie w stronę Jowisza', speed: '41.0 km/s', distAU: '1.00 AU', distEarth: '1 100 km' },
+          { progress: 0.60, target: 'jupiter', angle: 7.80, offset: [1.8, 0.3, 0.5], date: '30.12.2000', event: '🪐 Asysta Jowisza (9.7 mln km). Wykonanie 26 000 zdjęć wspólnie z sondą Galileo!', speed: '34.0 km/s', distAU: '5.20 AU', distEarth: '680 mln km' },
+          { progress: 0.78, target: 'saturn', angle: 9.30, offset: [0.6, 0.2, -0.5], date: '01.07.2004', event: '🪐 Wejście na orbitę Saturna (SOI) przez przerwę w pierścieniach!', speed: '15.0 km/s', distAU: '9.58 AU', distEarth: '1 430 mln km' },
+          { progress: 0.88, target: 'saturn', angle: 9.80, offset: [0.4, 0.1, 0.3], date: '14.01.2005', event: '🪂 Lądowanie próbnika Huygens na Tytanie! Pierwsze zdjęcia z powierzchni Tytana.', speed: '5.5 km/s', distAU: '9.58 AU', distEarth: '1 430 mln km' },
+          { progress: 1.00, target: 'saturn', angle: 10.30, offset: [0.05, 0.02, 0.05], date: '15.09.2017', event: '🔥 Wielki Finał: Celowe zanurzenie i spłonięcie w atmosferze Saturna.', speed: '35.0 km/s', distAU: '9.58 AU', distEarth: '1 430 mln km' }
+        ]
+      },
+      {
+        id: 'pathfinder',
+        name: '🔴 Mars Pathfinder & Sojourner',
+        icon: '🔴',
+        isProbe: true,
+        agency: 'NASA',
+        launchDate: '4 grudnia 1996 r.',
+        status: 'Misja zakończona sukcesem (Ares Vallis, Mars)',
+        type: 'Lądownik marsjański & Łazik Sojourner',
+        description: 'Przełomowa misja taniego i bezpiecznego lądowania na Marsie z wykorzystaniem poduszek powietrznych (Airbags). Pierwszy w historii kołowy łazik (Sojourner) badający skały Marsa.',
+        color: '#ef4444',
+        speedKmS: 'Prędkość transferowa: ~21 km/s',
+        distanceNow: 'Na powierzchni Marsa (Ares Vallis)',
+        signalDelay: '10–20 minut (zależnie od układu orbit)',
+        powerSys: 'Panele słoneczne GaAs + baterie litowe',
+        trajectoryType: 'Transfer Hohmanna: Ziemia -> Mars',
+        tempDesc: 'Powierzchnia Marsa (-60 °C)',
+        fact: 'Zamiast ciężkich silników hamujących Pathfinder użył naddźwiękowego spadochronu i zestawu 24 ogromnych poduszek gazowych, odbijając się od Marsa kilkanaście razy przed zatrzymaniem!',
+        waypoints: [
+          { progress: 0.00, target: 'earth', angle: 0.20, offset: [0, 0, 0], date: '04.12.1996', event: '🚀 Start z Cape Canaveral na rakiecie Delta II', speed: '34.0 km/s', distAU: '1.00 AU', distEarth: '0 mln km' },
+          { progress: 0.30, target: 'sun', distScale: 1.18, angle: 1.10, y: 0.10, date: '15.02.1997', event: 'Eliptyczna orbita transferowa Hohmanna ku orbicie Marsa', speed: '27.5 km/s', distAU: '1.18 AU', distEarth: '45 mln km' },
+          { progress: 0.65, target: 'sun', distScale: 1.38, angle: 2.05, y: 0.15, date: '01.05.1997', event: 'Korekta trajektorii i zbliżanie do punktu przechwycenia przez Marsa', speed: '24.0 km/s', distAU: '1.38 AU', distEarth: '120 mln km' },
+          { progress: 0.90, target: 'mars', angle: 2.85, offset: [0.8, 0.3, 0.5], date: '04.07.1997', event: '🔥 Bezpośrednie wejście w atmosferę Marsa z prędkością 27 000 km/h!', speed: '7.5 km/s', distAU: '1.52 AU', distEarth: '191 mln km' },
+          { progress: 1.00, target: 'mars', angle: 2.92, offset: [0.02, 0.01, 0.01], date: '04.07.1997', event: '🎈 Lądowanie w Ares Vallis na poduszkach powietrznych i zjazd łazika Sojourner!', speed: '0 km/s (lądowanie)', distAU: '1.52 AU', distEarth: '191 mln km' }
+        ]
+      },
+      {
+        id: 'newhorizons',
+        name: '❄️ New Horizons',
+        icon: '❄️',
+        isProbe: true,
+        agency: 'NASA',
+        launchDate: '19 stycznia 2006 r.',
+        status: 'Aktywna w Pasie Kuipera (>58 AU)',
+        type: 'Przelotowa sonda Pasa Kuipera & Plutona',
+        description: 'Najszybsza sonda przy opuszczaniu Ziemi. Zrobiła pierwsze w historii zdjęcia Plutona w wysokiej rozdzielczości (lodowe serce Tombaugh Regio) oraz pierwotnej planetoidy Arrokoth.',
+        color: '#38bdf8',
+        speedKmS: '13,8 km/s (49 600 km/h)',
+        distanceNow: '58,5 AU (8,7 mld km od Ziemi)',
+        signalDelay: '8h 05m w jedną stronę',
+        powerSys: 'Generator RTG (Pluton-238)',
+        trajectoryType: 'Bezpośredni przelot + asysta Jowisza (2007)',
+        tempDesc: 'Pas Kuipera (-230 °C)',
+        fact: 'Na pokładzie New Horizons znajduje się odrobina skremowanych prochów Clyde\'a Tombaugha – astronoma, który odkrył Plutona w 1930 roku!',
+        waypoints: [
+          { progress: 0.00, target: 'earth', angle: 0.30, offset: [0, 0, 0], date: '19.01.2006', event: '🚀 Rekordowy start: 58 500 km/h bezpośrednio ku Jowiszowi!', speed: '16.26 km/s (rekord)', distAU: '1.00 AU', distEarth: '0 mln km' },
+          { progress: 0.22, target: 'jupiter', angle: 1.15, offset: [1.2, 0.4, -0.6], date: '28.02.2007', event: '🪐 Asysta Jowisza (2.3 mln km) – zysk +4 km/s i zdjęcia erupcji wulkanu Tvashtar na Io!', speed: '23.0 km/s', distAU: '5.20 AU', distEarth: '680 mln km' },
+          { progress: 0.50, target: 'sun', distScale: 18.0, angle: 2.10, y: 1.5, date: '18.03.2011', event: 'Przekroczenie orbity Urana w stanie hibernacji elektronicznej', speed: '15.5 km/s', distAU: '18.0 AU', distEarth: '2 700 mln km' },
+          { progress: 0.72, target: 'sun', distScale: 32.9, angle: 2.75, y: 2.5, date: '14.07.2015', event: '❤️ Historyczny przelot obok Plutona i Charona (12 500 km)! Odkrycie lodowego serca.', speed: '14.0 km/s', distAU: '32.9 AU', distEarth: '4 700 mln km' },
+          { progress: 0.88, target: 'sun', distScale: 43.3, angle: 3.10, y: 3.2, date: '01.01.2019', event: '☄️ Przelot obok planetoidy Arrokoth (43 AU) – najdalszego zbadanego obiektu!', speed: '13.9 km/s', distAU: '43.3 AU', distEarth: '6 500 mln km' },
+          { progress: 1.00, target: 'sun', distScale: 58.5, angle: 3.35, y: 4.1, date: 'Dziś (2026)', event: '🌌 Eksploracja głębokiego Pasa Kuipera na krańcach Układu Słonecznego.', speed: '13.8 km/s', distAU: '58.5 AU', distEarth: '8 750 mln km' }
+        ]
+      },
+      {
+        id: 'parker',
+        name: '☀️ Parker Solar Probe',
+        icon: '☀️',
+        isProbe: true,
+        agency: 'NASA',
+        launchDate: '12 sierpnia 2018 r.',
+        status: 'Aktywna (Cykliczne zbliżenia do Słońca)',
+        type: 'Sonda Korony Słonecznej (Dotknięcie Słońca)',
+        description: 'Najszybszy statek kosmiczny stworzony przez człowieka (ponad 690 000 km/h). Jako pierwsza sonda weszła w koronę słoneczną poniżej powierzchni Alfvéna.',
+        color: '#f97316',
+        speedKmS: 'Do 192 km/s (692 000 km/h w peryhelium!)',
+        distanceNow: 'Orbita heliocentryczna (Peryhelium: 6,1 mln km)',
+        signalDelay: 'Od 2 do 15 minut',
+        powerSys: 'Panele słoneczne chłodzone cieczą pod osłoną TPS',
+        trajectoryType: '7 asyst grawitacyjnych Wenus zacieśniających peryhelium',
+        tempDesc: 'Tarcza TPS: 1400 °C (wnętrze sondy: 25 °C)',
+        fact: 'Tarcza termiczna z kompozytu węglowego ma grubość zaledwie 11,4 cm, ale chroni aparaturę przed temperaturą 1400 °C, utrzymując wewnątrz przyjemne 25 °C!',
+        waypoints: [
+          { progress: 0.00, target: 'earth', angle: 0.00, offset: [0, 0, 0], date: '12.08.2018', event: '🚀 Start rakietą Delta IV Heavy z potężnym trzecim stopniem', speed: '38.0 km/s', distAU: '1.00 AU', distEarth: '0 mln km' },
+          { progress: 0.20, target: 'venus', angle: 0.95, offset: [0.15, 0.02, -0.1], date: '03.10.2018', event: '🌕 Pierwsza z 7 asyst Wenus – zacieśnienie orbity ku Słońcu', speed: '45.0 km/s', distAU: '0.72 AU', distEarth: '108 mln km' },
+          { progress: 0.45, target: 'sun', distScale: 0.24, angle: 1.80, y: 0.05, date: '06.11.2018', event: '🔥 Pierwsze rekordowe peryhelium (24 mln km od Słońca)', speed: '95.0 km/s', distAU: '0.16 AU', distEarth: '140 mln km' },
+          { progress: 0.70, target: 'sun', distScale: 0.13, angle: 3.50, y: -0.05, date: '28.04.2021', event: '☀️ Historyczne „Dotknięcie Słońca” – wejście w plazmę korony słonecznej!', speed: '147.0 km/s', distAU: '0.08 AU', distEarth: '130 mln km' },
+          { progress: 1.00, target: 'sun', distScale: 0.045, angle: 5.20, y: 0.02, date: '2024–2026', event: '⚡ Ostateczne peryhelium: 6,1 mln km od fotosfery z prędkością 692 000 km/h!', speed: '192.0 km/s (rekord ludzkości)', distAU: '0.04 AU', distEarth: '150 mln km' }
+        ]
+      },
+      {
+        id: 'rosetta',
+        name: '☄️ Rosetta & Philae',
+        icon: '☄️',
+        isProbe: true,
+        agency: 'ESA (Europejska Agencja Kosmiczna)',
+        launchDate: '2 marca 2004 r.',
+        status: 'Misja zakończona sukcesem (Kometa 67P)',
+        type: 'Orbiter kometarny & Lądownik Philae',
+        description: 'Pierwsza w dziejach misja, która weszła na orbitę jądra komety (67P/Czuriumow-Gierasimienko) i wysłała lądownik Philae, który osiadł na lodowo-skalnej powierzchni.',
+        color: '#10b981',
+        speedKmS: 'Prędkość względem komety: ~1 m/s (lot formacyjny)',
+        distanceNow: 'Na powierzchni komety 67P',
+        signalDelay: '28–45 minut',
+        powerSys: 'Gigantyczne skrzydła paneli PV o rozpiętości 32 metrów',
+        trajectoryType: 'Złożona grawitacyjna trasa: Ziemia (x3), Mars (x1)',
+        tempDesc: 'Od -150 °C do -40 °C w pobliżu komety',
+        fact: 'Rosetta wykazała, że woda na kometach ma inny skład izotopowy (stosunek deuteru do wodoru) niż woda w oceanach Ziemi, co zmieniło teorie o pochodzeniu wody na naszej planecie!',
+        waypoints: [
+          { progress: 0.00, target: 'earth', angle: 0.00, offset: [0, 0, 0], date: '02.03.2004', event: '🚀 Start z Gujany Francuskiej na rakiecie Ariane 5', speed: '33.0 km/s', distAU: '1.00 AU', distEarth: '0 mln km' },
+          { progress: 0.20, target: 'earth', angle: 0.85, offset: [0.1, 0.05, 0.1], date: '04.03.2005', event: '🌍 Pierwsza asysta Ziemi', speed: '38.0 km/s', distAU: '1.00 AU', distEarth: '1 950 km' },
+          { progress: 0.35, target: 'mars', angle: 1.45, offset: [0.2, 0.02, -0.1], date: '25.02.2007', event: '🔴 Asysta Marsa (250 km nad powierzchnią)', speed: '36.0 km/s', distAU: '1.52 AU', distEarth: '240 mln km' },
+          { progress: 0.55, target: 'sun', distScale: 2.70, angle: 2.15, y: 0.20, date: '05.09.2008', event: '🪨 Przelot obok planetoidy Steins (800 km)', speed: '28.0 km/s', distAU: '2.70 AU', distEarth: '360 mln km' },
+          { progress: 0.75, target: 'sun', distScale: 3.50, angle: 3.10, y: 0.40, date: '06.08.2014', event: '☄️ Wejście na orbitę komety 67P po 10 latach podróży!', speed: '18.0 km/s', distAU: '3.50 AU', distEarth: '405 mln km' },
+          { progress: 0.88, target: 'sun', distScale: 3.00, angle: 3.65, y: 0.30, date: '12.11.2014', event: '🪂 Lądowanie próbnika Philae na powierzchni komety!', speed: '1.0 m/s', distAU: '3.00 AU', distEarth: '510 mln km' },
+          { progress: 1.00, target: 'sun', distScale: 2.00, angle: 4.15, y: 0.15, date: '30.09.2016', event: '✨ Kontrolowane lądowanie Rosetty na komecie (Wielki Finał)', speed: '0.9 m/s', distAU: '2.00 AU', distEarth: '720 mln km' }
+        ]
+      },
+      {
+        id: 'pioneer10',
+        name: '📡 Pioneer 10',
+        icon: '📡',
+        isProbe: true,
+        agency: 'NASA Ames',
+        launchDate: '2 marca 1972 r.',
+        status: 'Ostatni sygnał odebrany w 2003 r. (>134 AU)',
+        type: 'Pionier eksploracji Pasa Planetoid i Jowisza',
+        description: 'Pierwszy statek kosmiczny, który bezpiecznie przeleciał przez Pas Planetoid i przesłał pierwsze zbliżenia Jowisza oraz Wielkiej Czerwonej Plamy. Niesie Tabliczkę Pioneera z informacją o ludziach.',
+        color: '#f59e0b',
+        speedKmS: '12,0 km/s (43 200 km/h)',
+        distanceNow: 'Ponad 134 AU (kierunek gwiazda Aldebaran)',
+        signalDelay: '18h 40m w jedną stronę',
+        powerSys: 'Generatory RTG SNAP-19',
+        trajectoryType: 'Pierwsza asysta grawitacyjna Jowisza (1973)',
+        tempDesc: 'Głęboka przestrzeń kosmiczna (-270 °C)',
+        fact: 'Pioneer 10 leci w kierunku gwiazdy Aldebaran w gwiazdozbiorze Byka, do której dotrze za około 2 miliony lat!',
+        waypoints: [
+          { progress: 0.00, target: 'earth', angle: 0.10, offset: [0, 0, 0], date: '02.03.1972', event: '🚀 Start z Cape Canaveral na rakiecie Atlas-Centaur', speed: '36.0 km/s', distAU: '1.00 AU', distEarth: '0 mln km' },
+          { progress: 0.25, target: 'sun', distScale: 2.80, angle: 0.70, y: 0.10, date: '15.07.1972', event: '🛡️ Pierwsze w dziejach bezpieczne przebycie Pasa Planetoid', speed: '25.0 km/s', distAU: '2.80 AU', distEarth: '350 mln km' },
+          { progress: 0.50, target: 'jupiter', angle: 1.30, offset: [1.1, 0.3, 0.4], date: '03.12.1973', event: '🪐 Pierwsze w historii zdjęcia Jowisza z bliska (130 000 km)!', speed: '38.0 km/s (asysta)', distAU: '5.20 AU', distEarth: '680 mln km' },
+          { progress: 0.75, target: 'sun', distScale: 30.0, angle: 2.10, y: 0.80, date: '13.06.1983', event: 'Przekroczenie orbity Neptuna – pierwszy obiekt opuszczający planety', speed: '13.0 km/s', distAU: '30.0 AU', distEarth: '4 500 mln km' },
+          { progress: 1.00, target: 'sun', distScale: 134.0, angle: 2.60, y: 2.80, date: 'Dziś (2026)', event: '🌌 Głęboka przestrzeń w kierunku gwiazdy Aldebaran (lot trwa miliony lat).', speed: '12.0 km/s', distAU: '134.0 AU', distEarth: '20 100 mln km' }
+        ]
+      }
+    ];
+
+    // --- GENEROWANIE PROCEDURALNYCH TEKSTUR ---
+    function createSunTexture() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 1024;
+      canvas.height = 512;
+      const ctx = canvas.getContext('2d');
+      const grad = ctx.createLinearGradient(0, 0, 0, 512);
+      grad.addColorStop(0, '#ffdd44');
+      grad.addColorStop(0.5, '#ff5500');
+      grad.addColorStop(1, '#ff1100');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 1024, 512);
+
+      for (let i = 0; i < 300; i++) {
+        ctx.fillStyle = Math.random() > 0.5 ? 'rgba(255, 240, 150, 0.35)' : 'rgba(180, 20, 0, 0.25)';
+        ctx.beginPath();
+        ctx.arc(Math.random() * 1024, Math.random() * 512, Math.random() * 40 + 5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      return new THREE.CanvasTexture(canvas);
+    }
+
+    // --- PROCEDURALNA FOTOREALISTYCZNA TEKSTURA ZIEMI (MAPA Z KOSMOSU) ---
+    function createEarthTexture() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 1024;
+      canvas.height = 512;
+      const ctx = canvas.getContext('2d');
+      const w = 1024, h = 512;
+
+      // 1. Głębia oceanów (gradient z naturalnym cieniowaniem stref)
+      const oceanGrad = ctx.createLinearGradient(0, 0, 0, h);
+      oceanGrad.addColorStop(0, '#0a2342');
+      oceanGrad.addColorStop(0.25, '#0c356a');
+      oceanGrad.addColorStop(0.5, '#001a35');
+      oceanGrad.addColorStop(0.75, '#0c356a');
+      oceanGrad.addColorStop(1, '#0a2342');
+      ctx.fillStyle = oceanGrad;
+      ctx.fillRect(0, 0, w, h);
+
+      // Pomocnik projekcji równokątnej (Equirectangular projection)
+      function mapX(lon) { return ((lon + 180) % 360) * (w / 360); }
+      function mapY(lat) { return (90 - lat) * (h / 180); }
+
+      function drawLandPoly(coords, fillColor, strokeColor) {
+        if (!coords || coords.length === 0) return;
+        ctx.beginPath();
+        ctx.moveTo(mapX(coords[0][0]), mapY(coords[0][1]));
+        for (let i = 1; i < coords.length; i++) {
+          ctx.lineTo(mapX(coords[i][0]), mapY(coords[i][1]));
+        }
+        ctx.closePath();
+        if (strokeColor) {
+          ctx.strokeStyle = strokeColor;
+          ctx.lineWidth = 4;
+          ctx.stroke();
+        }
+        ctx.fillStyle = fillColor;
+        ctx.fill();
+      }
+
+      // 2. Szelfy kontynentalne i płycizny oceaniczne (turkusowa poświata przybrzeżna)
+      const shallowColor = 'rgba(14, 165, 233, 0.45)';
+
+      // 3. Kontury lądów i kontynentów
+      // Ameryka Północna
+      const northAmerica = [
+        [-168, 65], [-160, 71], [-140, 70], [-130, 68], [-120, 60], [-125, 48],
+        [-124, 38], [-117, 32], [-110, 23], [-105, 19], [-90, 15], [-80, 8],
+        [-77, 8], [-80, 15], [-83, 22], [-81, 25], [-80, 28], [-75, 35],
+        [-70, 42], [-65, 45], [-60, 47], [-64, 52], [-80, 52], [-82, 60],
+        [-95, 68], [-120, 72], [-140, 70], [-165, 66]
+      ];
+      drawLandPoly(northAmerica, '#1e3a1e', shallowColor);
+
+      // Ameryka Południowa
+      const southAmerica = [
+        [-77, 8], [-72, 11], [-60, 10], [-50, 0], [-35, -5], [-38, -13],
+        [-48, -28], [-55, -38], [-65, -45], [-68, -54], [-75, -50], [-73, -40],
+        [-72, -30], [-76, -18], [-81, -5], [-77, 8]
+      ];
+      drawLandPoly(southAmerica, '#14532d', shallowColor);
+
+      // Afryka
+      const africa = [
+        [-5, 36], [10, 37], [25, 32], [32, 31], [35, 27], [43, 12],
+        [51, 11], [45, 5], [40, -5], [35, -15], [30, -30], [20, -34],
+        [18, -34], [12, -20], [10, -5], [5, 4], [-15, 12], [-17, 21],
+        [-10, 28], [-5, 36]
+      ];
+      drawLandPoly(africa, '#15803d', shallowColor);
+
+      // Eurazja (Europa + Azja)
+      const eurasia = [
+        [-9, 36], [-9, 43], [0, 44], [5, 50], [8, 55], [15, 58], [25, 71],
+        [40, 68], [60, 70], [80, 73], [105, 77], [130, 72], [160, 70],
+        [170, 66], [178, 65], [160, 55], [140, 50], [130, 40], [122, 30],
+        [108, 20], [105, 10], [100, 5], [85, 20], [78, 8], [72, 20],
+        [68, 24], [60, 25], [50, 27], [45, 25], [36, 32], [28, 41],
+        [20, 40], [15, 40], [5, 43], [-5, 36], [-9, 36]
+      ];
+      drawLandPoly(eurasia, '#166534', shallowColor);
+
+      // Australia
+      const australia = [
+        [114, -22], [120, -17], [130, -12], [136, -12], [142, -11], [145, -15],
+        [150, -23], [153, -28], [150, -35], [140, -38], [130, -32], [115, -34],
+        [114, -22]
+      ];
+      drawLandPoly(australia, '#854d0e', shallowColor);
+
+      // Pustynie i strefy aridowe (Sahara, Półwysep Arabski, Outback)
+      const sahara = [[-12, 30], [30, 30], [35, 18], [20, 15], [-12, 18]];
+      drawLandPoly(sahara, '#ca8a04');
+
+      const arabia = [[36, 30], [55, 25], [58, 22], [54, 16], [43, 13], [38, 26]];
+      drawLandPoly(arabia, '#d97706');
+
+      const outback = [[120, -20], [140, -20], [140, -30], [122, -30]];
+      drawLandPoly(outback, '#c2410c');
+
+      // Pasma górskie i wyżyny (Himalaje / Tybet, Andy, Góry Skaliste)
+      const himalayas = [[72, 36], [98, 36], [95, 28], [75, 28]];
+      drawLandPoly(himalayas, '#78350f');
+
+      const andes = [[-75, 5], [-70, -15], [-72, -35], [-68, -50], [-72, -50], [-76, -15]];
+      drawLandPoly(andes, '#57534e');
+
+      // Grenlandia (Lądolód)
+      const greenland = [[-50, 60], [-25, 65], [-20, 75], [-35, 83], [-55, 78], [-55, 68]];
+      drawLandPoly(greenland, '#f1f5f9', 'rgba(255,255,255,0.4)');
+
+      // Wielka Brytania i Irlandia
+      drawLandPoly([[-10, 51], [-2, 58], [2, 52], [-5, 50]], '#16a34a');
+      // Japonia
+      drawLandPoly([[130, 32], [140, 38], [142, 44], [138, 43], [130, 34]], '#15803d');
+      // Madagaskar
+      drawLandPoly([[44, -12], [50, -15], [47, -25], [43, -25]], '#15803d');
+      // Nowa Zelandia
+      drawLandPoly([[168, -46], [178, -38], [174, -35], [166, -45]], '#16a34a');
+
+      // 4. Czapy lodowe na biegunach (Arktyka i Antarktyda)
+      ctx.fillStyle = '#f8fafc';
+      ctx.fillRect(0, 0, w, 28);
+
+      // Antarktyda z pofałdowaną linią lodowców
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.moveTo(0, h);
+      ctx.lineTo(0, h - 55);
+      for (let x = 0; x <= w; x += 30) {
+        const yOffset = Math.sin(x * 0.05) * 8 + Math.cos(x * 0.02) * 5;
+        ctx.lineTo(x, h - 55 + yOffset);
+      }
+      ctx.lineTo(w, h);
+      ctx.closePath();
+      ctx.fill();
+
+      // 5. Organiczna mikrostruktura i szum roślinności
+      for (let i = 0; i < 400; i++) {
+        const rx = Math.random() * w;
+        const ry = Math.random() * h;
+        const pixel = ctx.getImageData(rx, ry, 1, 1).data;
+        if (pixel[1] > 55 && pixel[2] < 90) {
+          ctx.fillStyle = Math.random() > 0.5 ? 'rgba(21, 128, 61, 0.4)' : 'rgba(161, 98, 7, 0.3)';
+          ctx.beginPath();
+          ctx.arc(rx, ry, Math.random() * 5 + 2, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      // 6. Światła miast (nocne skupiska aglomeracji miejskich)
+      const cityClusters = [
+        [5, 48], [10, 52], [20, 52], [0, 51], [12, 42], [24, 38], [37, 55],
+        [-74, 40], [-87, 41], [-118, 34], [-122, 37], [-95, 29], [-80, 25],
+        [116, 39], [121, 31], [139, 35], [77, 28], [72, 19], [100, 13],
+        [-46, -23], [-58, -34], [31, 30], [28, -26], [151, -33]
+      ];
+      cityClusters.forEach(([lon, lat]) => {
+        const cx = mapX(lon);
+        const cy = mapY(lat);
+        for (let k = 0; k < 10; k++) {
+          ctx.fillStyle = 'rgba(253, 224, 71, 0.75)';
+          ctx.beginPath();
+          ctx.arc(cx + (Math.random() - 0.5) * 14, cy + (Math.random() - 0.5) * 12, Math.random() * 1.5 + 0.5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      });
+
+      return new THREE.CanvasTexture(canvas);
+    }
+
+    // --- PROCEDURALNA WARSTWA CHMUR DLA ZIEMI ---
+    function createEarthCloudsTexture() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 1024;
+      canvas.height = 512;
+      const ctx = canvas.getContext('2d');
+      const w = 1024, h = 512;
+      ctx.clearRect(0, 0, w, h);
+
+      // 1. Równikowy pas chmur ITCZ (Intertropical Convergence Zone)
+      for (let x = 0; x < w; x += 15) {
+        const baseY = h * 0.5 + Math.sin(x * 0.02) * 20;
+        const count = Math.floor(Math.random() * 5) + 3;
+        for (let i = 0; i < count; i++) {
+          ctx.fillStyle = `rgba(255, 255, 255, ${Math.random() * 0.4 + 0.2})`;
+          ctx.beginPath();
+          ctx.arc(x + (Math.random() - 0.5) * 20, baseY + (Math.random() - 0.5) * 25, Math.random() * 25 + 10, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      // 2. Cyklony i wiry pogodowe (Huragany / fronty sztormowe)
+      const stormCenters = [
+        [w * 0.25, h * 0.28], [w * 0.7, h * 0.26], [w * 0.4, h * 0.72], [w * 0.85, h * 0.74]
+      ];
+      stormCenters.forEach(([cx, cy]) => {
+        for (let a = 0; a < Math.PI * 6; a += 0.15) {
+          const r = a * 6.5;
+          const px = cx + Math.cos(a) * r;
+          const py = cy + Math.sin(a) * r * 0.65;
+          ctx.fillStyle = `rgba(255, 255, 255, ${Math.max(0.08, 0.65 - a / (Math.PI * 6))})`;
+          ctx.beginPath();
+          ctx.arc(px, py, Math.random() * 12 + 6, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      });
+
+      // 3. Pasmowe chmury cirrus i pasaty
+      for (let y of [h * 0.2, h * 0.35, h * 0.65, h * 0.8]) {
+        for (let x = 0; x < w; x += 30) {
+          if (Math.random() > 0.3) {
+            ctx.fillStyle = `rgba(255, 255, 255, ${Math.random() * 0.35 + 0.15})`;
+            ctx.beginPath();
+            ctx.ellipse(x, y + Math.sin(x * 0.03) * 15, Math.random() * 45 + 15, Math.random() * 10 + 4, 0.2, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+      }
+
+      return new THREE.CanvasTexture(canvas);
+    }
+
+    // --- PROCEDURALNE FOTOREALISTYCZNE TEKSTURY DLA WSZYSTKICH PLANET ---
+    function createPlanetTexture(colorHex, planetId) {
+      if (planetId === 'earth') {
+        return createEarthTexture();
+      }
+
+      const canvas = document.createElement('canvas');
+      canvas.width = 1024;
+      canvas.height = 512;
+      const ctx = canvas.getContext('2d');
+      const w = 1024, h = 512;
+
+      if (planetId === 'mercury') {
+        // Merkury: ciemnoszara, silnie skraterowana powierzchnia bazaltowa
+        ctx.fillStyle = '#4b5563';
+        ctx.fillRect(0, 0, w, h);
+        for (let i = 0; i < 400; i++) {
+          ctx.fillStyle = Math.random() > 0.6 ? 'rgba(31, 41, 55, 0.45)' : 'rgba(156, 163, 175, 0.35)';
+          ctx.beginPath();
+          ctx.arc(Math.random() * w, Math.random() * h, Math.random() * 20 + 2, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        // Promienie uderzeniowe kraterów (Basen Caloris i Debussy)
+        for (let k = 0; k < 6; k++) {
+          const cx = Math.random() * w, cy = Math.random() * h;
+          ctx.fillStyle = 'rgba(243, 244, 246, 0.85)';
+          ctx.beginPath();
+          ctx.arc(cx, cy, 6, 0, Math.PI * 2);
+          ctx.fill();
+          for (let r = 0; r < 8; r++) {
+            const ang = (r / 8) * Math.PI * 2;
+            ctx.strokeStyle = 'rgba(243, 244, 246, 0.35)';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.lineTo(cx + Math.cos(ang) * 90, cy + Math.sin(ang) * 90);
+            ctx.stroke();
+          }
+        }
+      } else if (planetId === 'venus') {
+        // Wenus: gęsta, wirująca, pastelowo-żółta pokrywa chmur kwasu siarkowego
+        const vGrad = ctx.createLinearGradient(0, 0, 0, h);
+        vGrad.addColorStop(0, '#fef08a');
+        vGrad.addColorStop(0.2, '#fde047');
+        vGrad.addColorStop(0.5, '#eab308');
+        vGrad.addColorStop(0.8, '#fde047');
+        vGrad.addColorStop(1, '#fef08a');
+        ctx.fillStyle = vGrad;
+        ctx.fillRect(0, 0, w, h);
+        for (let y = 0; y < h; y += 8) {
+          ctx.fillStyle = `rgba(202, 138, 4, ${Math.sin(y * 0.05) * 0.18 + 0.1})`;
+          ctx.fillRect(0, y, w, 6);
+        }
+        for (let i = 0; i < 40; i++) {
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.25)';
+          ctx.beginPath();
+          ctx.ellipse(Math.random() * w, Math.random() * h, Math.random() * 120 + 40, Math.random() * 20 + 8, 0.15, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      } else if (planetId === 'mars') {
+        // Mars: Czerwona gleba, ciemne morza wulkaniczne, kanion Valles Marineris i czapy polarne
+        const mGrad = ctx.createLinearGradient(0, 0, 0, h);
+        mGrad.addColorStop(0, '#7f1d1d');
+        mGrad.addColorStop(0.5, '#b91c1c');
+        mGrad.addColorStop(1, '#7f1d1d');
+        ctx.fillStyle = mGrad;
+        ctx.fillRect(0, 0, w, h);
+
+        // Ciemne morza bazaltowe (Syrtis Major, Acidalia Planitia)
+        ctx.fillStyle = 'rgba(30, 10, 10, 0.75)';
+        const darkRegions = [
+          [w * 0.55, h * 0.5, 90, 60],
+          [w * 0.3, h * 0.35, 110, 50],
+          [w * 0.75, h * 0.6, 120, 45],
+          [w * 0.2, h * 0.65, 80, 40]
+        ];
+        darkRegions.forEach(([cx, cy, rx, ry]) => {
+          ctx.beginPath();
+          ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+          ctx.fill();
+        });
+
+        // Gigantyczny kanion Valles Marineris (4000 km pęknięcie na równiku)
+        ctx.strokeStyle = '#180505';
+        ctx.lineWidth = 5;
+        ctx.beginPath();
+        ctx.moveTo(w * 0.22, h * 0.52);
+        ctx.quadraticCurveTo(w * 0.35, h * 0.55, w * 0.48, h * 0.51);
+        ctx.stroke();
+
+        // Wulkany Olympus Mons i Tharsis
+        ctx.fillStyle = '#450a0a';
+        ctx.beginPath();
+        ctx.arc(w * 0.18, h * 0.45, 18, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#f87171';
+        ctx.beginPath();
+        ctx.arc(w * 0.18, h * 0.45, 4, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Czapy polarne (lód CO2 i wodny)
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, w, 24);
+        ctx.fillRect(0, h - 24, w, 24);
+      } else if (planetId === 'jupiter') {
+        // Jowisz: Realistyczne pasy atmosferyczne (Belts & Zones) z Wielką Czerwoną Plamą
+        const jGrad = ctx.createLinearGradient(0, 0, 0, h);
+        jGrad.addColorStop(0, '#78350f');
+        jGrad.addColorStop(0.18, '#d97706');
+        jGrad.addColorStop(0.35, '#fef3c7');
+        jGrad.addColorStop(0.48, '#92400e');
+        jGrad.addColorStop(0.55, '#fef3c7');
+        jGrad.addColorStop(0.68, '#b45309');
+        jGrad.addColorStop(0.85, '#d97706');
+        jGrad.addColorStop(1, '#78350f');
+        ctx.fillStyle = jGrad;
+        ctx.fillRect(0, 0, w, h);
+
+        for (let y = 0; y < h; y += 4) {
+          const shift = Math.sin(y * 0.08) * 0.25;
+          ctx.fillStyle = shift > 0 ? `rgba(120, 53, 15, ${shift})` : `rgba(254, 243, 199, ${-shift})`;
+          ctx.fillRect(0, y, w, 4);
+        }
+
+        for (let i = 0; i < 60; i++) {
+          ctx.fillStyle = Math.random() > 0.5 ? 'rgba(255, 255, 255, 0.4)' : 'rgba(146, 64, 14, 0.35)';
+          ctx.beginPath();
+          ctx.ellipse(Math.random() * w, Math.random() * h, Math.random() * 50 + 15, Math.random() * 8 + 3, 0, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        // WIELKA CZERWONA PLAMA (Great Red Spot)
+        const grsX = w * 0.68, grsY = h * 0.65;
+        ctx.fillStyle = '#fde68a';
+        ctx.beginPath();
+        ctx.ellipse(grsX, grsY, 56, 32, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#dc2626';
+        ctx.beginPath();
+        ctx.ellipse(grsX, grsY, 46, 24, -0.05, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#991b1b';
+        ctx.beginPath();
+        ctx.ellipse(grsX, grsY, 28, 14, 0, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (planetId === 'saturn') {
+        // Saturn: Złocisto-maślane pasma gazowe
+        const sGrad = ctx.createLinearGradient(0, 0, 0, h);
+        sGrad.addColorStop(0, '#ca8a04');
+        sGrad.addColorStop(0.25, '#fde047');
+        sGrad.addColorStop(0.5, '#eab308');
+        sGrad.addColorStop(0.75, '#facc15');
+        sGrad.addColorStop(1, '#a16207');
+        ctx.fillStyle = sGrad;
+        ctx.fillRect(0, 0, w, h);
+        for (let y = 0; y < h; y += 6) {
+          ctx.fillStyle = `rgba(161, 98, 7, ${Math.sin(y * 0.06) * 0.15 + 0.1})`;
+          ctx.fillRect(0, y, w, 5);
+        }
+      } else if (planetId === 'uranus') {
+        // Uran: Jednolity seledynowo-błękitny gaz metanowy
+        const uGrad = ctx.createLinearGradient(0, 0, 0, h);
+        uGrad.addColorStop(0, '#38bdf8');
+        uGrad.addColorStop(0.5, '#7dd3fc');
+        uGrad.addColorStop(1, '#38bdf8');
+        ctx.fillStyle = uGrad;
+        ctx.fillRect(0, 0, w, h);
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.12)';
+        ctx.fillRect(0, h * 0.45, w, h * 0.1);
+      } else if (planetId === 'neptune') {
+        // Neptun: Głęboki lazur, Wielka Ciemna Plama i białe chmury metanowe (Scooter)
+        const nGrad = ctx.createLinearGradient(0, 0, 0, h);
+        nGrad.addColorStop(0, '#1e3a8a');
+        nGrad.addColorStop(0.3, '#1d4ed8');
+        nGrad.addColorStop(0.5, '#2563eb');
+        nGrad.addColorStop(0.7, '#1d4ed8');
+        nGrad.addColorStop(1, '#1e3a8a');
+        ctx.fillStyle = nGrad;
+        ctx.fillRect(0, 0, w, h);
+
+        // Wielka Ciemna Plama Neptuna
+        ctx.fillStyle = '#0f172a';
+        ctx.beginPath();
+        ctx.ellipse(w * 0.45, h * 0.42, 45, 25, -0.1, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Jasne, pierzaste chmury metanowe ("Scooter")
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+        for (let i = 0; i < 8; i++) {
+          ctx.beginPath();
+          ctx.ellipse(w * (0.2 + i * 0.1), h * (0.4 + (i % 3) * 0.08), 35, 6, 0.1, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      return new THREE.CanvasTexture(canvas);
+    }
+
+    // --- PROCEDURALNE TEKSTURY GŁÓWNYCH KSIĘŻYCÓW ---
+    function createMoonTexture(m) {
+      const canvas = document.createElement('canvas');
+      canvas.width = 512;
+      canvas.height = 256;
+      const ctx = canvas.getContext('2d');
+      const w = 512, h = 256;
+
+      if (m.id === 'moon') {
+        // KSIĘŻYC ZIEMI: Jasna skorupa anortozytowa + ciemne morza bazaltowe (Maria)
+        ctx.fillStyle = '#cbd5e1';
+        ctx.fillRect(0, 0, w, h);
+
+        // Morza księżycowe (Maria) widoczne z Ziemi
+        const maria = [
+          [w * 0.38, h * 0.35, 65, 55], // Oceanus Procellarum
+          [w * 0.48, h * 0.32, 45, 38], // Mare Imbrium (Morze Deszczów)
+          [w * 0.60, h * 0.35, 30, 28], // Mare Serenitatis (Morze Jasności)
+          [w * 0.63, h * 0.48, 34, 26], // Mare Tranquillitatis (Morze Spokoju - Apollo 11)
+          [w * 0.72, h * 0.42, 22, 20], // Mare Crisium
+          [w * 0.65, h * 0.60, 26, 24]  // Mare Fecunditatis
+        ];
+        ctx.fillStyle = '#475569';
+        maria.forEach(([cx, cy, rx, ry]) => {
+          ctx.beginPath();
+          ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+          ctx.fill();
+        });
+
+        // Kratery i drobna tekstura regolitu
+        for (let i = 0; i < 200; i++) {
+          ctx.fillStyle = Math.random() > 0.5 ? 'rgba(30, 41, 59, 0.3)' : 'rgba(241, 245, 249, 0.35)';
+          ctx.beginPath();
+          ctx.arc(Math.random() * w, Math.random() * h, Math.random() * 6 + 1.5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        // Krater Tycho z gigantycznym systemem promienistym (Biegun Południowy)
+        const tychoX = w * 0.52, tychoY = h * 0.78;
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(tychoX, tychoY, 5, 0, Math.PI * 2);
+        ctx.fill();
+        for (let a = 0; a < 12; a++) {
+          const ang = (a / 12) * Math.PI * 2;
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+          ctx.lineWidth = 1.2;
+          ctx.beginPath();
+          ctx.moveTo(tychoX, tychoY);
+          ctx.lineTo(tychoX + Math.cos(ang) * 95, tychoY + Math.sin(ang) * 95);
+          ctx.stroke();
+        }
+      } else if (m.id === 'io') {
+        // Io: Wulkaniczna siarka, żółć, pomarańcz i czarne kaldery wulkanów
+        ctx.fillStyle = '#eab308';
+        ctx.fillRect(0, 0, w, h);
+        for (let i = 0; i < 50; i++) {
+          ctx.fillStyle = Math.random() > 0.5 ? '#ca8a04' : '#f97316';
+          ctx.beginPath();
+          ctx.arc(Math.random() * w, Math.random() * h, Math.random() * 25 + 5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        for (let k = 0; k < 12; k++) {
+          ctx.fillStyle = '#18181b';
+          ctx.beginPath();
+          ctx.arc(Math.random() * w, Math.random() * h, Math.random() * 5 + 2, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      } else if (m.id === 'europa') {
+        // Europa: Gładki biało-błękitny lód z rdzawymi pęknięciami (Lineae)
+        ctx.fillStyle = '#f0f9ff';
+        ctx.fillRect(0, 0, w, h);
+        ctx.strokeStyle = '#b45309';
+        ctx.lineWidth = 1.5;
+        for (let i = 0; i < 18; i++) {
+          ctx.beginPath();
+          ctx.moveTo(Math.random() * w, Math.random() * h);
+          ctx.quadraticCurveTo(Math.random() * w, Math.random() * h, Math.random() * w, Math.random() * h);
+          ctx.stroke();
+        }
+      } else if (m.id === 'ganymede' || m.id === 'callisto') {
+        ctx.fillStyle = m.id === 'ganymede' ? '#64748b' : '#334155';
+        ctx.fillRect(0, 0, w, h);
+        for (let i = 0; i < 150; i++) {
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
+          ctx.beginPath();
+          ctx.arc(Math.random() * w, Math.random() * h, Math.random() * 5 + 1, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      } else if (m.id === 'titan') {
+        // Tytan: Pomarańczowo-złoty smog metanowy
+        const tGrad = ctx.createLinearGradient(0, 0, 0, h);
+        tGrad.addColorStop(0, '#d97706');
+        tGrad.addColorStop(0.5, '#f59e0b');
+        tGrad.addColorStop(1, '#d97706');
+        ctx.fillStyle = tGrad;
+        ctx.fillRect(0, 0, w, h);
+      } else if (m.id === 'enceladus') {
+        // Enceladus: Lśniący biały lód z błękitnymi gejzerami na biegunie
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, w, h);
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 2;
+        for (let i = 0; i < 4; i++) {
+          ctx.beginPath();
+          ctx.moveTo(w * 0.4 + i * 20, h - 25);
+          ctx.lineTo(w * 0.45 + i * 20, h - 5);
+          ctx.stroke();
+        }
+      } else {
+        // Domyślny kraterowany księżyc skalisty
+        ctx.fillStyle = m.color || '#94a3b8';
+        ctx.fillRect(0, 0, w, h);
+        for (let i = 0; i < 80; i++) {
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+          ctx.beginPath();
+          ctx.arc(Math.random() * w, Math.random() * h, Math.random() * 8 + 2, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      return new THREE.CanvasTexture(canvas);
+    }
+
+    function createSaturnRingsTexture() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 1024;
+      canvas.height = 64;
+      const ctx = canvas.getContext('2d');
+      const grad = ctx.createLinearGradient(0, 0, 1024, 0);
+
+      // Krawędź wewnętrzna (przezroczysta)
+      grad.addColorStop(0.00, 'rgba(0, 0, 0, 0.0)');
+      // Pierścień C (półprzezroczysty, ciemniejszy)
+      grad.addColorStop(0.08, 'rgba(160, 140, 100, 0.35)');
+      grad.addColorStop(0.20, 'rgba(180, 155, 110, 0.55)');
+      // Pierścień B (najjaśniejszy, najgęstszy – złocisto-kremowy)
+      grad.addColorStop(0.25, 'rgba(235, 215, 165, 0.95)');
+      grad.addColorStop(0.45, 'rgba(245, 225, 180, 0.98)');
+      grad.addColorStop(0.65, 'rgba(215, 190, 140, 0.92)');
+      // PRZERWA CASSINIEGO (Cassini Division – ciemna przerwa)
+      grad.addColorStop(0.68, 'rgba(30, 20, 10, 0.05)');
+      grad.addColorStop(0.72, 'rgba(20, 15, 10, 0.02)');
+      // Pierścień A (zewnętrzny, subtelniejszy)
+      grad.addColorStop(0.75, 'rgba(220, 195, 150, 0.88)');
+      grad.addColorStop(0.88, 'rgba(195, 170, 125, 0.80)');
+      // Przerwa Enckego i krawędź zewnętrzna
+      grad.addColorStop(0.92, 'rgba(60, 45, 30, 0.15)');
+      grad.addColorStop(0.96, 'rgba(180, 155, 115, 0.65)');
+      grad.addColorStop(1.00, 'rgba(0, 0, 0, 0.0)');
+
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 1024, 64);
+
+      // Drobne mikro-prążki cząstek lodu i pyłu
+      for (let x = 0; x < 1024; x += 4) {
+        if (x > 250 && (x < 680 || x > 740)) {
+          ctx.fillStyle = Math.random() > 0.5 ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)';
+          ctx.fillRect(x, 0, 2, 64);
+        }
+      }
+
+      return new THREE.CanvasTexture(canvas);
+    }
+
+    // --- INICJALIZACJA SCENY THREE.JS ---
+    const container = document.getElementById('canvas-container');
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x03050d, 0.0007);
+
+    const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.05, 3000);
+    camera.position.set(0, 160, 260);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    container.appendChild(renderer.domElement);
+
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.maxDistance = 1500;
+    controls.minDistance = 0.15;
+
+    // --- OŚWIETLENIE ---
+    const ambientLight = new THREE.AmbientLight(0x223355, 0.55);
+    scene.add(ambientLight);
+
+    const sunPointLight = new THREE.PointLight(0xffffff, 2.4, 1200, 0.5);
+    scene.add(sunPointLight);
+
+    // --- PŁASZCZYZNA EKLIPTYKI (REFERENCYJNA SIATKA I DYSK) ---
+    const eclipticGroup = new THREE.Group();
+
+    // Dysk ekliptyki (reprezentujący pierwotny dysk protoplanetarny)
+    const eclipticDiscGeo = new THREE.RingGeometry(20, 240, 64);
+    const eclipticDiscMat = new THREE.MeshBasicMaterial({
+      color: 0x0284c7,
+      side: THREE.DoubleSide,
+      transparent: true,
+      opacity: 0.05
+    });
+    const eclipticDisc = new THREE.Mesh(eclipticDiscGeo, eclipticDiscMat);
+    eclipticDisc.rotation.x = Math.PI / 2;
+    eclipticGroup.add(eclipticDisc);
+
+    // Siatka współrzędnych ekliptyki (Płaszczyzna Ziemi = 0.00°)
+    const eclipticGrid = new THREE.GridHelper(480, 24, 0x38bdf8, 0x1e293b);
+    eclipticGrid.position.y = -0.05;
+    eclipticGrid.material.transparent = true;
+    eclipticGrid.material.opacity = 0.22;
+    eclipticGroup.add(eclipticGrid);
+
+    scene.add(eclipticGroup);
+
+    // --- ROZGWIEŻDŻONE TŁO (STARFIELD) ---
+    const starGeo = new THREE.BufferGeometry();
+    const starCount = 6000;
+    const starPos = new Float32Array(starCount * 3);
+    for (let i = 0; i < starCount * 3; i += 3) {
+      starPos[i] = (Math.random() - 0.5) * 45000;
+      starPos[i + 1] = (Math.random() - 0.5) * 45000;
+      starPos[i + 2] = (Math.random() - 0.5) * 45000;
+    }
+    starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+    const starMat = new THREE.PointsMaterial({ color: 0xffffff, size: 1.3, transparent: true, opacity: 0.85 });
+    const starField = new THREE.Points(starGeo, starMat);
+    scene.add(starField);
+
+    // --- BUDOWA SŁOŃCA, PLANET I KSIĘŻYCÓW ---
+    const planetObjects = [];
+    const moonObjects = [];
+    const orbitLines = [];
+    let focusedObject = null;
+    let cameraTargetPos = new THREE.Vector3();
+    let isTransitioningCamera = false;
+    let isRealScale = false;
+
+    // --- BAZA ORYGINALNYCH ZDJĘĆ SATELITARNYCH I SOND KOSMICZNYCH NASA / ESA ---
+    const NASA_TEXTURES = {
+      sun: 'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/sunmap.jpg',
+      mercury: 'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/mercurymap.jpg',
+      venus: 'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/venusmap.jpg',
+      earth: 'https://cdn.jsdelivr.net/gh/mrdoob/three.js@master/examples/textures/planets/earth_atmos_2048.jpg',
+      earthClouds: 'https://cdn.jsdelivr.net/gh/mrdoob/three.js@master/examples/textures/planets/earth_clouds_1024.png',
+      moon: 'https://cdn.jsdelivr.net/gh/mrdoob/three.js@master/examples/textures/planets/moon_1024.jpg',
+      mars: 'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/marsmap1k.jpg',
+      jupiter: 'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/jupitermap.jpg',
+      saturn: 'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/saturnmap.jpg',
+      uranus: 'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/uranusmap.jpg',
+      neptune: 'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/neptunemap.jpg'
+    };
+
+    const texLoader = new THREE.TextureLoader();
+    texLoader.setCrossOrigin('anonymous');
+
+    // Słońce
+    const sunData = PLANET_DATA[0];
+    const sunGeo = new THREE.SphereGeometry(sunData.radius, 64, 64);
+    const sunMat = new THREE.MeshBasicMaterial({ map: createSunTexture() });
+    const sunMesh = new THREE.Mesh(sunGeo, sunMat);
+    sunMesh.userData = sunData;
+    scene.add(sunMesh);
+    planetObjects.push({ data: sunData, mesh: sunMesh, anchor: scene, pivot: scene, angle: 0, currentDist: 0 });
+
+    // Asynchroniczne doładowanie oryginalnego zdjęcia fotosfery Słońca z sondy SDO
+    texLoader.load(NASA_TEXTURES.sun, (tex) => {
+      sunMat.map = tex;
+      sunMat.needsUpdate = true;
+    });
+
+    // Poświata Słońca
+    const glowMat = new THREE.ShaderMaterial({
+      uniforms: {},
+      vertexShader: `
+        varying vec3 vNormal;
+        void main() {
+          vNormal = normalize(normalMatrix * normal);
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        varying vec3 vNormal;
+        void main() {
+          float intensity = pow(max(0.0, 0.65 - dot(vNormal, vec3(0.0, 0.0, 1.0))), 2.0);
+          gl_FragColor = vec4(1.0, 0.65, 0.15, 1.0) * intensity;
+        }
+      `,
+      side: THREE.BackSide,
+      blending: THREE.AdditiveBlending,
+      transparent: true
+    });
+    const glowMesh = new THREE.Mesh(new THREE.SphereGeometry(sunData.radius * 1.25, 32, 32), glowMat);
+    scene.add(glowMesh);
+
+    // Znacznik lokalizacyjny (Beacon) ułatwiający odnalezienie ciał w pustce kosmicznej w skali 1:1
+    function createBeaconSprite(colorHex, name) {
+      const canvas = document.createElement('canvas');
+      canvas.width = 128;
+      canvas.height = 128;
+      const ctx = canvas.getContext('2d');
+
+      // Świecący pierścień celownika
+      ctx.strokeStyle = colorHex || '#38bdf8';
+      ctx.lineWidth = 6;
+      ctx.beginPath();
+      ctx.arc(64, 64, 46, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Znaczniki krzyżowe (HUD reticle)
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.moveTo(64, 10); ctx.lineTo(64, 26);
+      ctx.moveTo(64, 102); ctx.lineTo(64, 118);
+      ctx.moveTo(10, 64); ctx.lineTo(26, 64);
+      ctx.moveTo(102, 64); ctx.lineTo(118, 64);
+      ctx.stroke();
+
+      // Jasny punkt centralny
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(64, 64, 10, 0, Math.PI * 2);
+      ctx.fill();
+
+      const tex = new THREE.CanvasTexture(canvas);
+      const mat = new THREE.SpriteMaterial({
+        map: tex,
+        transparent: true,
+        opacity: 0.9,
+        depthTest: false,
+        sizeAttenuation: false // Stały rozmiar na ekranie niezależnie od odległości!
+      });
+      const sprite = new THREE.Sprite(mat);
+      sprite.scale.set(0.042, 0.042, 1.0);
+      sprite.visible = false;
+      return sprite;
+    }
+
+    // Pomocnicza funkcja do tworzenia ciągłej, 360-stopniowej geometrii pierścieni Saturna
+    function createSaturnRingGeometry(innerRadius, outerRadius, thetaSegments = 128) {
+      const geometry = new THREE.BufferGeometry();
+      const positions = [];
+      const uvs = [];
+      const indices = [];
+
+      for (let i = 0; i <= thetaSegments; i++) {
+        const angle = (i / thetaSegments) * Math.PI * 2;
+        const cos = Math.cos(angle);
+        const sin = Math.sin(angle);
+
+        positions.push(innerRadius * cos, innerRadius * sin, 0);
+        uvs.push(0, i / thetaSegments);
+
+        positions.push(outerRadius * cos, outerRadius * sin, 0);
+        uvs.push(1, i / thetaSegments);
+      }
+
+      for (let i = 0; i < thetaSegments; i++) {
+        const v1 = i * 2;
+        const v2 = i * 2 + 1;
+        const v3 = (i + 1) * 2;
+        const v4 = (i + 1) * 2 + 1;
+
+        indices.push(v1, v2, v3);
+        indices.push(v2, v4, v3);
+      }
+
+      geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+      geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
+      geometry.setIndex(indices);
+      geometry.computeVertexNormals();
+
+      return geometry;
+    }
+
+    // Pomocnicza funkcja do tworzenia orbit księżyców
+    function createMoonOrbitLine(radius, colorHex) {
+      const orbitGeo = new THREE.BufferGeometry();
+      const points = [];
+      const segments = 64;
+      for (let j = 0; j <= segments; j++) {
+        const theta = (j / segments) * Math.PI * 2;
+        points.push(new THREE.Vector3(Math.cos(theta) * radius, 0, Math.sin(theta) * radius));
+      }
+      orbitGeo.setFromPoints(points);
+      const orbitMat = new THREE.LineBasicMaterial({
+        color: colorHex || 0x38bdf8,
+        transparent: true,
+        opacity: 0.35
+      });
+      return new THREE.Line(orbitGeo, orbitMat);
+    }
+
+    // Tworzenie orbit, planet i ich księżyców
+    for (let i = 1; i < PLANET_DATA.length; i++) {
+      const p = PLANET_DATA[i];
+
+      // Węzeł nadrzędny orbity (Orbit Pivot) nachylony pod kątem inklinacji do płaszczyzny ekliptyki
+      const orbitPivot = new THREE.Group();
+      orbitPivot.rotation.z = p.orbitInclination;
+      scene.add(orbitPivot);
+
+      // Linia orbity planety
+      const orbitGeo = new THREE.BufferGeometry();
+      const points = [];
+      const segments = 128;
+      for (let j = 0; j <= segments; j++) {
+        const theta = (j / segments) * Math.PI * 2;
+        points.push(new THREE.Vector3(Math.cos(theta) * p.dist, 0, Math.sin(theta) * p.dist));
+      }
+      orbitGeo.setFromPoints(points);
+      const orbitMat = new THREE.LineBasicMaterial({
+        color: (p.id === 'earth') ? 0x00d4ff : 0x475569,
+        transparent: true,
+        opacity: (p.id === 'earth') ? 0.7 : 0.45
+      });
+      const orbitLine = new THREE.Line(orbitGeo, orbitMat);
+      orbitPivot.add(orbitLine);
+      orbitLines.push(orbitLine);
+
+      // Kotwica planety (nie obraca się wokół własnej osi, porusza się tylko po orbicie)
+      const planetAnchor = new THREE.Group();
+      orbitPivot.add(planetAnchor);
+
+      // Znacznik pozycji (Beacon) dla widoku rzeczywistego
+      const beacon = createBeaconSprite(p.color, p.name);
+      beacon.userData = { id: p.id };
+      planetAnchor.add(beacon);
+
+      // Siatka planety (wysoka geometria sfery 64x64 dla idealnej gładkości)
+      const pGeo = new THREE.SphereGeometry(p.radius, 64, 64);
+      const pMat = new THREE.MeshStandardMaterial({
+        map: createPlanetTexture(p.color, p.id),
+        roughness: (p.id === 'earth') ? 0.55 : 0.8,
+        metalness: (p.id === 'earth') ? 0.05 : 0.05
+      });
+      const pMesh = new THREE.Mesh(pGeo, pMat);
+      pMesh.rotation.z = p.tilt;
+      pMesh.userData = p;
+      planetAnchor.add(pMesh);
+
+      // Asynchroniczne doładowanie oryginalnego zdjęcia z sondy kosmicznej NASA/ESA
+      if (NASA_TEXTURES[p.id]) {
+        texLoader.load(NASA_TEXTURES[p.id], (tex) => {
+          pMat.map = tex;
+          pMat.needsUpdate = true;
+        });
+      }
+
+      let earthCloudMesh = null;
+
+      // Specjalne realistyczne warstwy dla ZIEMI (Chmury, Atmosfera i Upgrade tekstur NASA)
+      if (p.id === 'earth') {
+        // 1. Dynamiczna powłoka chmur wirująca nad kontynentami
+        const cloudGeo = new THREE.SphereGeometry(p.radius * 1.018, 64, 64);
+        const cloudMat = new THREE.MeshStandardMaterial({
+          map: createEarthCloudsTexture(),
+          transparent: true,
+          opacity: 0.85,
+          roughness: 0.9,
+          blending: THREE.NormalBlending
+        });
+        earthCloudMesh = new THREE.Mesh(cloudGeo, cloudMat);
+        pMesh.add(earthCloudMesh);
+
+        // Doładowanie satelitarnej mapy chmur NASA
+        texLoader.load(NASA_TEXTURES.earthClouds, (cTex) => {
+          cloudMat.map = cTex;
+          cloudMat.needsUpdate = true;
+        });
+
+        // 2. Poświata błękitnej atmosfery Ziemi (Rozpraszanie Rayleigha / Fresnel glow)
+        const atmosMat = new THREE.ShaderMaterial({
+          uniforms: {},
+          vertexShader: `
+            varying vec3 vNormal;
+            void main() {
+              vNormal = normalize(normalMatrix * normal);
+              gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+            }
+          `,
+          fragmentShader: `
+            varying vec3 vNormal;
+            void main() {
+              float intensity = pow(max(0.0, 0.7 - dot(vNormal, vec3(0.0, 0.0, 1.0))), 2.2);
+              gl_FragColor = vec4(0.22, 0.65, 1.0, 1.0) * (intensity * 0.8);
+            }
+          `,
+          side: THREE.BackSide,
+          blending: THREE.AdditiveBlending,
+          transparent: true
+        });
+        const atmosMesh = new THREE.Mesh(new THREE.SphereGeometry(p.radius * 1.14, 32, 32), atmosMat);
+        pMesh.add(atmosMesh);
+      } else if (p.id === 'venus') {
+        // Złocisto-kremowa poświata atmosfery Wenus
+        const vAtmosMat = new THREE.ShaderMaterial({
+          uniforms: {},
+          vertexShader: `
+            varying vec3 vNormal;
+            void main() {
+              vNormal = normalize(normalMatrix * normal);
+              gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+            }
+          `,
+          fragmentShader: `
+            varying vec3 vNormal;
+            void main() {
+              float intensity = pow(max(0.0, 0.7 - dot(vNormal, vec3(0.0, 0.0, 1.0))), 2.2);
+              gl_FragColor = vec4(0.95, 0.82, 0.35, 1.0) * (intensity * 0.5);
+            }
+          `,
+          side: THREE.BackSide,
+          blending: THREE.AdditiveBlending,
+          transparent: true
+        });
+        const vAtmosMesh = new THREE.Mesh(new THREE.SphereGeometry(p.radius * 1.12, 32, 32), vAtmosMat);
+        pMesh.add(vAtmosMesh);
+      } else if (p.id === 'mars') {
+        // Cienka rdzawo-pomarańczowa poświata atmosferyczna Marsa
+        const mAtmosMat = new THREE.ShaderMaterial({
+          uniforms: {},
+          vertexShader: `
+            varying vec3 vNormal;
+            void main() {
+              vNormal = normalize(normalMatrix * normal);
+              gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+            }
+          `,
+          fragmentShader: `
+            varying vec3 vNormal;
+            void main() {
+              float intensity = pow(max(0.0, 0.75 - dot(vNormal, vec3(0.0, 0.0, 1.0))), 2.5);
+              gl_FragColor = vec4(0.85, 0.35, 0.2, 1.0) * (intensity * 0.45);
+            }
+          `,
+          side: THREE.BackSide,
+          blending: THREE.AdditiveBlending,
+          transparent: true
+        });
+        const mAtmosMesh = new THREE.Mesh(new THREE.SphereGeometry(p.radius * 1.10, 32, 32), mAtmosMat);
+        pMesh.add(mAtmosMesh);
+      } else if (p.id === 'uranus' || p.id === 'neptune') {
+        // Gazowa błękitna poświata lodowych olbrzymów
+        const isNeptune = p.id === 'neptune';
+        const gAtmosMat = new THREE.ShaderMaterial({
+          uniforms: {},
+          vertexShader: `
+            varying vec3 vNormal;
+            void main() {
+              vNormal = normalize(normalMatrix * normal);
+              gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+            }
+          `,
+          fragmentShader: `
+            varying vec3 vNormal;
+            void main() {
+              float intensity = pow(max(0.0, 0.7 - dot(vNormal, vec3(0.0, 0.0, 1.0))), 2.2);
+              gl_FragColor = ${isNeptune ? 'vec4(0.15, 0.45, 1.0, 1.0)' : 'vec4(0.3, 0.85, 0.95, 1.0)'} * (intensity * 0.6);
+            }
+          `,
+          side: THREE.BackSide,
+          blending: THREE.AdditiveBlending,
+          transparent: true
+        });
+        const gAtmosMesh = new THREE.Mesh(new THREE.SphereGeometry(p.radius * 1.10, 32, 32), gAtmosMat);
+        pMesh.add(gAtmosMesh);
+      }
+
+      // Pierścienie Saturna (dostosowana radialna geometria dla pełnego, ciągłego pierścienia 360°)
+      if (p.hasRings) {
+        const innerR = p.radius * 1.35;
+        const outerR = p.radius * 2.55;
+        const ringGeo = createSaturnRingGeometry(innerR, outerR, 128);
+
+        const ringMat = new THREE.MeshBasicMaterial({
+          map: createSaturnRingsTexture(),
+          side: THREE.DoubleSide,
+          transparent: true,
+          opacity: 0.95,
+          depthWrite: false
+        });
+        const ringMesh = new THREE.Mesh(ringGeo, ringMat);
+        ringMesh.rotation.x = Math.PI / 2;
+        pMesh.add(ringMesh);
+      }
+
+      // Dodawanie księżyców do kotwicy danej planety
+      const planetMoons = MOON_DATA.filter(m => m.parentId === p.id);
+      planetMoons.forEach(m => {
+        // Orbita księżyca
+        const mOrbit = createMoonOrbitLine(m.dist, 0x38bdf8);
+        planetAnchor.add(mOrbit);
+        orbitLines.push(mOrbit);
+
+        // Siatka księżyca z dedykowaną geologiczną teksturą
+        const mGeo = new THREE.SphereGeometry(m.radius, 24, 24);
+        const mMat = new THREE.MeshStandardMaterial({
+          map: createMoonTexture(m),
+          roughness: 0.85,
+          metalness: 0.05
+        });
+        const mMesh = new THREE.Mesh(mGeo, mMat);
+        mMesh.position.set(m.dist, 0, 0);
+        mMesh.userData = m;
+        planetAnchor.add(mMesh);
+
+        // Opcjonalne doładowanie oryginalnej mapy Księżyca NASA LRO
+        if (m.id === 'moon') {
+          try {
+            const moonTexLoader = new THREE.TextureLoader();
+            moonTexLoader.setCrossOrigin('anonymous');
+            moonTexLoader.load('https://cdn.jsdelivr.net/gh/mrdoob/three.js@master/examples/textures/planets/moon_1024.jpg', (mTex) => {
+              mMat.map = mTex;
+              mMat.needsUpdate = true;
+            });
+          } catch (e) {}
+        }
+
+        moonObjects.push({
+          data: m,
+          mesh: mMesh,
+          orbitLine: mOrbit,
+          parentAnchor: planetAnchor,
+          currentDist: m.dist,
+          angle: Math.random() * Math.PI * 2
+        });
+      });
+
+      // Zapis do tablicy obiektów planet
+      planetObjects.push({
+        data: p,
+        mesh: pMesh,
+        cloudMesh: earthCloudMesh,
+        anchor: planetAnchor,
+        pivot: orbitPivot,
+        orbitLine: orbitLine,
+        beacon: beacon,
+        currentDist: p.dist,
+        angle: Math.random() * Math.PI * 2
+      });
+    }
+
+    // --- INTERFEJS UŻYTKOWNIKA I PRZYCISKI PLANET, KSIĘŻYCÓW I SOND ---
+    const planetBtnContainer = document.getElementById('planet-buttons');
+    PLANET_DATA.forEach(p => {
+      const btn = document.createElement('button');
+      btn.innerText = p.name;
+      btn.dataset.id = p.id;
+      btn.addEventListener('click', () => selectObject(p.id));
+      planetBtnContainer.appendChild(btn);
+    });
+
+    const moonBtnContainer = document.getElementById('moon-buttons');
+    MOON_DATA.forEach(m => {
+      const btn = document.createElement('button');
+      btn.innerText = m.name;
+      btn.dataset.id = m.id;
+      btn.addEventListener('click', () => selectObject(m.id));
+      moonBtnContainer.appendChild(btn);
+    });
+
+    const probeBtnContainer = document.getElementById('probe-buttons');
+    PROBE_MISSIONS.forEach(mission => {
+      const btn = document.createElement('button');
+      btn.innerText = mission.name;
+      btn.dataset.id = mission.id;
+      btn.title = mission.description;
+      btn.addEventListener('click', () => selectProbeMission(mission.id));
+      probeBtnContainer.appendChild(btn);
+    });
+
+    // --- ZMIENNE STANU SOND KOSMICZNYCH I TRAJEKTORII ---
+    let activeProbeMission = null;
+    let probeCurve = null;
+    let probeWaypointsWorld = [];
+    let probeTrajectoryLine = null;
+    let probeWaypointMarkersGroup = null;
+    let spacecraftMesh = null;
+    let probeProgress = 0.0;
+    let isProbePlaying = true;
+    let isFollowProbe = false;
+
+    // --- GENEROWANIE PROCEDURALNEJ SIATKI 3D SONDY KOSMICZNEJ ---
+    function createSpacecraftMesh(mission) {
+      const probeGroup = new THREE.Group();
+      probeGroup.name = 'spacecraft_' + mission.id;
+      probeGroup.userData = mission;
+
+      // 1. Główny kadłub sondy (Złota wielowarstwowa folia termiczna MLI)
+      const busMat = new THREE.MeshStandardMaterial({
+        color: 0xdfb15b,
+        metalness: 0.88,
+        roughness: 0.22,
+        envMapIntensity: 1.2
+      });
+      const busGeo = new THREE.CylinderGeometry(0.7, 0.7, 1.2, 8);
+      const busMesh = new THREE.Mesh(busGeo, busMat);
+      busMesh.rotation.z = Math.PI / 2;
+      probeGroup.add(busMesh);
+
+      // 2. Paraboliczna antena wysokiego zysku (HGA High Gain Antenna)
+      const dishMat = new THREE.MeshStandardMaterial({
+        color: 0xf8fafc,
+        metalness: 0.35,
+        roughness: 0.35,
+        side: THREE.DoubleSide
+      });
+      const dishGeo = new THREE.ConeGeometry(1.65, 0.45, 24, 1, true);
+      const dishMesh = new THREE.Mesh(dishGeo, dishMat);
+      dishMesh.position.set(0.85, 0, 0);
+      dishMesh.rotation.z = -Math.PI / 2;
+      probeGroup.add(dishMesh);
+
+      // Odbłyśnik pomocniczy w ognisku anteny (Subreflector)
+      const feedGeo = new THREE.CylinderGeometry(0.06, 0.06, 0.55, 8);
+      const feedMat = new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.9, roughness: 0.2 });
+      const feedMesh = new THREE.Mesh(feedGeo, feedMat);
+      feedMesh.position.set(1.15, 0, 0);
+      feedMesh.rotation.z = Math.PI / 2;
+      probeGroup.add(feedMesh);
+
+      // 3. Źródło zasilania (Panele fotowoltaiczne LUB generatory RTG)
+      const isSolar = (mission.id === 'parker' || mission.id === 'rosetta' || mission.id === 'pathfinder');
+      if (isSolar) {
+        // Skrzydła paneli słonecznych z krzemową powłoką
+        const panelGeo = new THREE.BoxGeometry(0.06, 1.2, 3.8);
+        const panelMat = new THREE.MeshStandardMaterial({
+          color: 0x0284c7,
+          metalness: 0.85,
+          roughness: 0.2,
+          emissive: 0x0369a1,
+          emissiveIntensity: 0.2
+        });
+        const panelMesh = new THREE.Mesh(panelGeo, panelMat);
+        panelMesh.position.set(0, 0, 0);
+        probeGroup.add(panelMesh);
+
+        // Osłona termiczna TPS dla Parker Solar Probe
+        if (mission.id === 'parker') {
+          const tpsGeo = new THREE.BoxGeometry(0.35, 2.6, 2.6);
+          const tpsMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.1, metalness: 0.1 });
+          const tpsMesh = new THREE.Mesh(tpsGeo, tpsMat);
+          tpsMesh.position.set(1.0, 0, 0);
+          probeGroup.add(tpsMesh);
+        }
+      } else {
+        // Generatory RTG (Pluton-238) na wysięgniku
+        const rtgGroup = new THREE.Group();
+        const boomGeo = new THREE.CylinderGeometry(0.04, 0.04, 2.2, 6);
+        const boomMat = new THREE.MeshStandardMaterial({ color: 0x64748b, metalness: 0.8, roughness: 0.3 });
+        const boomMesh = new THREE.Mesh(boomGeo, boomMat);
+        boomMesh.position.set(-0.2, 1.1, 0);
+        rtgGroup.add(boomMesh);
+
+        const rtgGeo = new THREE.CylinderGeometry(0.28, 0.28, 0.75, 12);
+        const rtgMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.7, roughness: 0.4 });
+        const rtgMesh = new THREE.Mesh(rtgGeo, rtgMat);
+        rtgMesh.position.set(-0.2, 2.2, 0);
+        rtgGroup.add(rtgMesh);
+
+        probeGroup.add(rtgGroup);
+      }
+
+      // 4. Maszt magnetometru i instrumentów naukowych
+      const magBoomGeo = new THREE.CylinderGeometry(0.025, 0.025, 3.2, 6);
+      const magBoomMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.9, roughness: 0.2 });
+      const magBoom = new THREE.Mesh(magBoomGeo, magBoomMat);
+      magBoom.position.set(-0.2, -1.6, 0);
+      probeGroup.add(magBoom);
+
+      // 5. Dysza silnika manewrowego
+      const nozzleGeo = new THREE.ConeGeometry(0.35, 0.5, 12, 1, true);
+      const nozzleMat = new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.9, roughness: 0.3 });
+      const nozzleMesh = new THREE.Mesh(nozzleGeo, nozzleMat);
+      nozzleMesh.position.set(-0.85, 0, 0);
+      nozzleMesh.rotation.z = Math.PI / 2;
+      probeGroup.add(nozzleMesh);
+
+      // 6. Optyczny znacznik HUD (Beacon Point)
+      const bColor = new THREE.Color(mission.color || '#38bdf8');
+      const beaconGeo = new THREE.BufferGeometry();
+      beaconGeo.setAttribute('position', new THREE.Float32BufferAttribute([0, 0, 0], 3));
+      const beaconMat = new THREE.PointsMaterial({
+        color: bColor,
+        size: 10,
+        sizeAttenuation: false,
+        transparent: true,
+        opacity: 0.95
+      });
+      const beacon = new THREE.Points(beaconGeo, beaconMat);
+      probeGroup.add(beacon);
+
+      return probeGroup;
+    }
+
+    // --- OBLICZANIE WSPÓŁRZĘDNYCH PUNKTÓW TRAJEKTORII LOTU ---
+    function calculateWaypointPos(wp, mission) {
+      const angle = (wp.angle !== undefined) ? wp.angle : (wp.progress * 3.5);
+      let dist = 0;
+      let y = (wp.y || 0);
+
+      if (wp.target === 'sun') {
+        const scaleFactor = (wp.distScale !== undefined) ? wp.distScale : 1.0;
+        if (isRealScale) {
+          dist = scaleFactor * 240.0;
+          y = y * 80.0;
+        } else {
+          if (mission && mission.id === 'parker') {
+            dist = Math.max(13.8, scaleFactor * 65.0);
+          } else {
+            if (scaleFactor <= 1.0) dist = scaleFactor * 54.0;
+            else if (scaleFactor <= 5.2) dist = 54.0 + (scaleFactor - 1.0) * (105.0 - 54.0) / 4.2;
+            else if (scaleFactor <= 9.58) dist = 105.0 + (scaleFactor - 5.2) * (145.0 - 105.0) / 4.38;
+            else if (scaleFactor <= 30.0) dist = 145.0 + (scaleFactor - 9.58) * (225.0 - 145.0) / 20.42;
+            else dist = 225.0 + (scaleFactor - 30.0) * 1.5;
+          }
+          y = y * 2.5;
+        }
+        return new THREE.Vector3(Math.cos(angle) * dist, y, Math.sin(angle) * dist);
+      }
+
+      // Cel to planeta
+      const pData = PLANET_DATA.find(p => p.id === wp.target) || PLANET_DATA[3]; // domyślnie Ziemia
+      const pDist = isRealScale ? pData.realDist : pData.dist;
+      const pRadius = isRealScale ? pData.realRadius : pData.radius;
+
+      const offX = wp.offset ? wp.offset[0] * (isRealScale ? (pRadius * 4.0 + 2.0) : (pRadius * 1.3 + 1.0)) : 0;
+      const offY = wp.offset ? wp.offset[1] * (isRealScale ? (pRadius * 4.0 + 2.0) : (pRadius * 1.3 + 1.0)) : 0;
+      const offZ = wp.offset ? wp.offset[2] * (isRealScale ? (pRadius * 4.0 + 2.0) : (pRadius * 1.3 + 1.0)) : 0;
+
+      y = y * (isRealScale ? 80.0 : 2.5) + offY;
+
+      return new THREE.Vector3(
+        Math.cos(angle) * pDist + offX,
+        y,
+        Math.sin(angle) * pDist + offZ
+      );
+    }
+
+    // --- BUDOWANIE KRZYWEJ 3D TRAJEKTORII I ZNACZNIKÓW MISJI ---
+    function buildProbeTrajectory(mission) {
+      if (probeTrajectoryLine) {
+        scene.remove(probeTrajectoryLine);
+        if (probeTrajectoryLine.geometry) probeTrajectoryLine.geometry.dispose();
+        if (probeTrajectoryLine.material) probeTrajectoryLine.material.dispose();
+        probeTrajectoryLine = null;
+      }
+      if (probeWaypointMarkersGroup) {
+        scene.remove(probeWaypointMarkersGroup);
+        while (probeWaypointMarkersGroup.children.length > 0) {
+          const child = probeWaypointMarkersGroup.children[0];
+          probeWaypointMarkersGroup.remove(child);
+          if (child.geometry) child.geometry.dispose();
+          if (child.material) child.material.dispose();
+        }
+      } else {
+        probeWaypointMarkersGroup = new THREE.Group();
+      }
+      scene.add(probeWaypointMarkersGroup);
+
+      if (spacecraftMesh) {
+        scene.remove(spacecraftMesh);
+        spacecraftMesh = null;
+      }
+
+      const pts = [];
+      probeWaypointsWorld = [];
+
+      mission.waypoints.forEach(wp => {
+        const worldPos = calculateWaypointPos(wp, mission);
+        pts.push(worldPos);
+        probeWaypointsWorld.push({
+          ...wp,
+          pos: worldPos
+        });
+      });
+
+      probeCurve = new THREE.CatmullRomCurve3(pts, false, 'catmullrom', 0.15);
+
+      const curvePoints = probeCurve.getPoints(350);
+      const lineGeo = new THREE.BufferGeometry().setFromPoints(curvePoints);
+      const lineMat = new THREE.LineBasicMaterial({
+        color: new THREE.Color(mission.color || '#c084fc'),
+        transparent: true,
+        opacity: 0.85,
+        linewidth: 2
+      });
+      probeTrajectoryLine = new THREE.Line(lineGeo, lineMat);
+      scene.add(probeTrajectoryLine);
+
+      const markerGeo = new THREE.SphereGeometry(isRealScale ? 2.5 : 0.65, 16, 16);
+      probeWaypointsWorld.forEach(wp => {
+        const markerMat = new THREE.MeshBasicMaterial({
+          color: new THREE.Color(mission.color || '#38bdf8')
+        });
+        const marker = new THREE.Mesh(markerGeo, markerMat);
+        marker.position.copy(wp.pos);
+        marker.userData = {
+          isWaypoint: true,
+          probeId: mission.id,
+          ...wp
+        };
+        probeWaypointMarkersGroup.add(marker);
+      });
+
+      spacecraftMesh = createSpacecraftMesh(mission);
+      const initialScale = isRealScale ? 2.2 : 0.9;
+      spacecraftMesh.scale.setScalar(initialScale);
+      scene.add(spacecraftMesh);
+
+      updateProbePosition(probeProgress);
+    }
+
+    // --- AKTUALIZACJA POZYCJI I TELEMETRII SONDY ---
+    function updateProbePosition(progress) {
+      if (!probeCurve || !spacecraftMesh) return;
+      const clampedProgress = Math.max(0, Math.min(1, progress));
+      const pt = probeCurve.getPointAt(clampedProgress);
+      spacecraftMesh.position.copy(pt);
+
+      const tangent = probeCurve.getTangentAt(clampedProgress).normalize();
+      const axis = new THREE.Vector3(1, 0, 0);
+      spacecraftMesh.quaternion.setFromUnitVectors(axis, tangent);
+
+      updateProbeTelemetry(clampedProgress);
+    }
+
+    function updateProbeTelemetry(progress) {
+      if (!activeProbeMission || !activeProbeMission.waypoints) return;
+      const wps = activeProbeMission.waypoints;
+
+      let idx = 0;
+      for (let i = 0; i < wps.length - 1; i++) {
+        if (progress >= wps[i].progress && progress <= wps[i + 1].progress) {
+          idx = i;
+          break;
+        }
+        if (progress > wps[wps.length - 1].progress) {
+          idx = wps.length - 2;
+        }
+      }
+
+      const curWp = wps[idx];
+      const nextWp = wps[idx + 1] || curWp;
+
+      const dateEl = document.getElementById('probe-timeline-date');
+      if (dateEl) {
+        dateEl.innerText = curWp.date + (curWp !== nextWp ? ` → ${nextWp.date}` : '');
+      }
+
+      const speedEl = document.getElementById('telemetry-speed');
+      if (speedEl) {
+        speedEl.innerText = curWp.speed || activeProbeMission.speedKmS;
+      }
+
+      const distEl = document.getElementById('telemetry-dist');
+      if (distEl) {
+        distEl.innerText = `${curWp.distAU || '-'} / ${curWp.distEarth || '-'}`;
+      }
+
+      const eventEl = document.getElementById('probe-event-box');
+      if (eventEl) {
+        eventEl.innerHTML = `<strong>${curWp.date}:</strong> ${curWp.event}`;
+      }
+    }
+
+    // --- WYBÓR I ZAMKNIĘCIE MISJI SONDY ---
+    function selectProbeMission(probeId) {
+      const mission = PROBE_MISSIONS.find(m => m.id === probeId);
+      if (!mission) return;
+
+      activeProbeMission = mission;
+      focusedObject = null;
+
+      const panel = document.getElementById('probe-control-panel');
+      if (panel) panel.style.display = 'block';
+
+      const titleEl = document.getElementById('probe-panel-title');
+      if (titleEl) titleEl.innerText = mission.name;
+
+      document.querySelectorAll('#probe-buttons button').forEach(b => {
+        b.classList.toggle('active', b.dataset.id === mission.id);
+      });
+      document.querySelectorAll('#planet-buttons button, #moon-buttons button').forEach(b => {
+        b.classList.remove('active');
+      });
+
+      probeProgress = 0.0;
+      const slider = document.getElementById('probe-progress-slider');
+      if (slider) slider.value = 0;
+
+      buildProbeTrajectory(mission);
+      updateInfoCard(mission);
+
+      if (spacecraftMesh) {
+        const sPos = spacecraftMesh.position.clone();
+        const offset = isRealScale ? 35 : 14;
+        cameraTargetPos.copy(sPos).add(new THREE.Vector3(offset, offset * 0.5, offset));
+        controls.target.copy(sPos);
+        isTransitioningCamera = true;
+      }
+    }
+
+    function closeProbeMission() {
+      activeProbeMission = null;
+      isFollowProbe = false;
+
+      const panel = document.getElementById('probe-control-panel');
+      if (panel) panel.style.display = 'none';
+
+      const btnFollow = document.getElementById('btn-probe-follow');
+      if (btnFollow) {
+        btnFollow.classList.remove('active');
+        btnFollow.innerText = '🎥 Śledź sondę';
+      }
+
+      document.querySelectorAll('#probe-buttons button').forEach(b => b.classList.remove('active'));
+
+      if (probeTrajectoryLine) {
+        scene.remove(probeTrajectoryLine);
+        probeTrajectoryLine = null;
+      }
+      if (probeWaypointMarkersGroup) {
+        scene.remove(probeWaypointMarkersGroup);
+        probeWaypointMarkersGroup = null;
+      }
+      if (spacecraftMesh) {
+        scene.remove(spacecraftMesh);
+        spacecraftMesh = null;
+      }
+
+      updateInfoCard(PLANET_DATA[0]);
+    }
+
+    // --- KONTROLKI TRAJEKTORII SONDY W PANELU ---
+    const btnProbeClose = document.getElementById('btn-probe-close');
+    if (btnProbeClose) btnProbeClose.addEventListener('click', closeProbeMission);
+
+    const btnProbePlay = document.getElementById('btn-probe-play');
+    if (btnProbePlay) {
+      btnProbePlay.addEventListener('click', () => {
+        isProbePlaying = !isProbePlaying;
+        btnProbePlay.innerText = isProbePlaying ? '⏸️ Pauza lotu' : '▶️ Wznów lot';
+        btnProbePlay.classList.toggle('active', isProbePlaying);
+      });
+    }
+
+    const btnProbeFollow = document.getElementById('btn-probe-follow');
+    if (btnProbeFollow) {
+      btnProbeFollow.addEventListener('click', () => {
+        isFollowProbe = !isFollowProbe;
+        btnProbeFollow.innerText = isFollowProbe ? '🎥 Śledzenie: WŁ' : '🎥 Śledź sondę';
+        btnProbeFollow.classList.toggle('active', isFollowProbe);
+        if (isFollowProbe) {
+          focusedObject = null;
+          isTransitioningCamera = false;
+        }
+      });
+    }
+
+    const probeSlider = document.getElementById('probe-progress-slider');
+    if (probeSlider) {
+      probeSlider.addEventListener('input', (e) => {
+        probeProgress = parseFloat(e.target.value) / 1000.0;
+        updateProbePosition(probeProgress);
+      });
+    }
+
+    // --- PRZEŁĄCZANIE SKALI SYMULACJI (DYDAKTYCZNA VS RZECZYWISTA 1:1) ---
+    function setScaleMode(real) {
+      isRealScale = real;
+
+      // Przyciski UI
+      const btnEdu = document.getElementById('btn-scale-edu');
+      const btnReal = document.getElementById('btn-scale-real');
+      if (btnEdu && btnReal) {
+        btnEdu.classList.toggle('active', !isRealScale);
+        btnReal.classList.toggle('active', isRealScale);
+      }
+
+      // Etykieta nagłówka
+      const scaleBadge = document.getElementById('scale-badge');
+      if (scaleBadge) {
+        if (isRealScale) {
+          scaleBadge.innerHTML = '🌌 <strong>Skala Rzeczywista 1:1:</strong> Prawdziwa pustka kosmosu (odległości w skali AU)';
+          scaleBadge.style.borderColor = '#c084fc';
+          scaleBadge.style.color = '#e9d5ff';
+          scaleBadge.style.background = 'rgba(147, 51, 234, 0.22)';
+        } else {
+          scaleBadge.innerHTML = '🔬 <strong>Skala Dydaktyczna:</strong> Planety powiększone dla czytelności';
+          scaleBadge.style.borderColor = 'rgba(56, 189, 248, 0.3)';
+          scaleBadge.style.color = '#38bdf8';
+          scaleBadge.style.background = 'rgba(56, 189, 248, 0.12)';
+        }
+      }
+
+      // Słońce
+      const sunScale = isRealScale ? (PLANET_DATA[0].realRadius / PLANET_DATA[0].radius) : 1.0;
+      sunMesh.scale.setScalar(sunScale);
+      glowMesh.scale.setScalar(sunScale);
+
+      // Dysk i siatka ekliptyki
+      const eclipticScale = isRealScale ? 32.0 : 1.0;
+      eclipticGroup.scale.set(eclipticScale, 1.0, eclipticScale);
+
+      // Parametry kamery, mgły i światła
+      camera.far = isRealScale ? 50000 : 3000;
+      controls.maxDistance = isRealScale ? 35000 : 1500;
+      camera.updateProjectionMatrix();
+      scene.fog.density = isRealScale ? 0.00002 : 0.0007;
+      sunPointLight.distance = isRealScale ? 30000 : 1200;
+
+      // Planety
+      planetObjects.forEach(po => {
+        if (po.data.id === 'sun') return;
+        const pScale = isRealScale ? (po.data.realRadius / po.data.radius) : 1.0;
+        po.mesh.scale.setScalar(pScale);
+        po.currentDist = isRealScale ? po.data.realDist : po.data.dist;
+
+        if (po.orbitLine) {
+          const oScale = isRealScale ? (po.data.realDist / po.data.dist) : 1.0;
+          po.orbitLine.scale.set(oScale, 1.0, oScale);
+        }
+
+        if (po.beacon) {
+          po.beacon.visible = isRealScale;
+        }
+      });
+
+      // Księżyce
+      moonObjects.forEach(mo => {
+        const mScale = isRealScale ? (mo.data.realRadius / mo.data.radius) : 1.0;
+        mo.mesh.scale.setScalar(mScale);
+        mo.currentDist = isRealScale ? mo.data.realDist : mo.data.dist;
+
+        if (mo.orbitLine) {
+          const mOrbitScale = isRealScale ? (mo.data.realDist / mo.data.dist) : 1.0;
+          mo.orbitLine.scale.set(mOrbitScale, 1.0, mOrbitScale);
+        }
+      });
+
+      // Przebudowa aktywnej trajektorii sondy w nowej skali
+      if (activeProbeMission) {
+        buildProbeTrajectory(activeProbeMission);
+      }
+
+      // Korekta kamery
+      if (focusedObject) {
+        selectObject(focusedObject.data.id);
+      } else if (!isFollowProbe) {
+        cameraTargetPos.set(0, isRealScale ? 3500 : 160, isRealScale ? 7500 : 260);
+        controls.target.set(0, 0, 0);
+        isTransitioningCamera = true;
+      }
+    }
+
+    const btnScaleEdu = document.getElementById('btn-scale-edu');
+    const btnScaleReal = document.getElementById('btn-scale-real');
+    if (btnScaleEdu) btnScaleEdu.addEventListener('click', () => setScaleMode(false));
+    if (btnScaleReal) btnScaleReal.addEventListener('click', () => setScaleMode(true));
+
+    // --- AKTUALIZACJA KARTY INFORMACYJNEJ (PLANETY, KSIĘŻYCE I SONDY) ---
+    function updateInfoCard(data) {
+      document.getElementById('card-name').innerText = data.name;
+      document.getElementById('card-type').innerText = data.type;
+
+      const lblDiameter = document.getElementById('lbl-diameter');
+      const lblMass = document.getElementById('lbl-mass');
+      const lblDist = document.getElementById('lbl-dist');
+      const lblInclination = document.getElementById('lbl-inclination');
+      const lblTilt = document.getElementById('lbl-tilt');
+      const lblRotation = document.getElementById('lbl-rotation');
+      const lblOrbit = document.getElementById('lbl-orbit');
+      const lblTemp = document.getElementById('lbl-temp');
+
+      if (data.isProbe) {
+        if (lblDiameter) lblDiameter.innerText = 'Zasilanie:';
+        document.getElementById('card-diameter').innerText = data.powerSys || '-';
+
+        if (lblMass) lblMass.innerText = 'Agencja:';
+        document.getElementById('card-mass').innerText = data.agency || '-';
+
+        if (lblDist) lblDist.innerText = 'Aktualna pozycja:';
+        document.getElementById('card-dist').innerText = data.distanceNow || '-';
+
+        if (lblInclination) lblInclination.innerText = 'Prędkość ucieczki/lotu:';
+        document.getElementById('card-inclination').innerText = data.speedKmS || '-';
+
+        if (lblTilt) lblTilt.innerText = 'Opóźnienie sygnału radiowego:';
+        document.getElementById('card-tilt').innerText = data.signalDelay || '-';
+
+        if (lblRotation) lblRotation.innerText = 'Data startu:';
+        document.getElementById('card-rotation').innerText = data.launchDate || '-';
+
+        if (lblOrbit) lblOrbit.innerText = 'Trajektoria / Asysty:';
+        document.getElementById('card-orbit').innerText = data.trajectoryType || '-';
+
+        if (lblTemp) lblTemp.innerText = 'Status misji:';
+        document.getElementById('card-temp').innerText = data.status || '-';
+
+        document.getElementById('card-fact').innerHTML = `<strong>Ciekawostka:</strong> ${data.fact}<br><br><strong>Opis misji:</strong> ${data.description}`;
+      } else {
+        if (lblDiameter) lblDiameter.innerText = 'Średnica:';
+        document.getElementById('card-diameter').innerText = data.diameter;
+
+        if (lblMass) lblMass.innerText = 'Masa:';
+        document.getElementById('card-mass').innerText = data.mass;
+
+        if (lblDist) lblDist.innerText = 'Odległość od Słońca:';
+        const distEl = document.getElementById('card-dist');
+        if (distEl) {
+          if (data.id === 'sun') {
+            distEl.innerText = 'Centrum układu (0 AU)';
+          } else if (data.parentId) {
+            distEl.innerText = data.distParent || (data.orbit || 'Orbita wokół ' + data.parentName);
+          } else if (data.distAU) {
+            distEl.innerText = `${data.distAU} (${data.distKm})`;
+          } else {
+            distEl.innerText = '-';
+          }
+        }
+
+        if (lblInclination) lblInclination.innerText = 'Nachylenie orbity do Ekliptyki:';
+        document.getElementById('card-inclination').innerText = data.inclinationDeg || '0.00°';
+
+        if (lblTilt) lblTilt.innerText = 'Nachylenie osi obrotu:';
+        document.getElementById('card-tilt').innerText = data.tiltDeg || '0.00°';
+
+        if (lblRotation) lblRotation.innerText = 'Doba (obrót osiowy):';
+        document.getElementById('card-rotation').innerText = data.rotation;
+
+        if (lblOrbit) lblOrbit.innerText = 'Okres orbitalny:';
+        document.getElementById('card-orbit').innerText = data.orbit;
+
+        if (lblTemp) lblTemp.innerText = 'Temperatura pow.:';
+        document.getElementById('card-temp').innerText = data.temp;
+
+        document.getElementById('card-fact').innerText = data.fact;
+      }
+
+      // Aktywny stan przycisków
+      document.querySelectorAll('#planet-buttons button, #moon-buttons button').forEach(b => {
+        b.classList.toggle('active', b.dataset.id === data.id);
+      });
+      document.querySelectorAll('#probe-buttons button').forEach(b => {
+        b.classList.toggle('active', b.dataset.id === data.id);
+      });
+    }
+
+    function selectObject(objectId) {
+      // Szukanie w planetach
+      let target = planetObjects.find(po => po.data.id === objectId);
+      let isMoon = false;
+
+      // Jeśli nie planeta, szukaj w księżycach
+      if (!target) {
+        target = moonObjects.find(mo => mo.data.id === objectId);
+        isMoon = true;
+      }
+
+      if (!target) return;
+
+      focusedObject = target;
+      isFollowProbe = false;
+      const btnFollow = document.getElementById('btn-probe-follow');
+      if (btnFollow) {
+        btnFollow.classList.remove('active');
+        btnFollow.innerText = '🎥 Śledź sondę';
+      }
+
+      updateInfoCard(target.data);
+
+      const targetWorldPos = new THREE.Vector3();
+      target.mesh.getWorldPosition(targetWorldPos);
+
+      // Dostosowanie odległości zoomu na podstawie aktywnego promienia
+      const activeRadius = isRealScale ? (target.data.realRadius || target.data.radius * 0.1) : target.data.radius;
+      const offsetDist = isMoon
+        ? (activeRadius * 6.0 + (isRealScale ? 0.35 : 3.5))
+        : (activeRadius * 4.5 + (isRealScale ? 1.0 : 8.0));
+
+      cameraTargetPos.copy(targetWorldPos).add(new THREE.Vector3(offsetDist * 0.7, offsetDist * 0.5, offsetDist));
+      isTransitioningCamera = true;
+    }
+
+    // Wykrywanie kliknięć myszką w obiekty 3D (Planety, Księżyce, Znaczniki i Sondy)
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+
+    window.addEventListener('pointerdown', (e) => {
+      if (e.target.closest('.ui-layer')) return;
+
+      mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+
+      raycaster.setFromCamera(mouse, camera);
+      const allMeshes = [];
+      planetObjects.forEach(po => {
+        if (po.mesh) allMeshes.push(po.mesh);
+        if (po.beacon && po.beacon.visible) allMeshes.push(po.beacon);
+      });
+      moonObjects.forEach(mo => {
+        if (mo.mesh) allMeshes.push(mo.mesh);
+      });
+      if (probeWaypointMarkersGroup) {
+        probeWaypointMarkersGroup.children.forEach(m => allMeshes.push(m));
+      }
+      if (spacecraftMesh) {
+        allMeshes.push(spacecraftMesh);
+      }
+
+      const intersects = raycaster.intersectObjects(allMeshes, true);
+
+      if (intersects.length > 0) {
+        let hit = intersects[0].object;
+        if (hit.userData && hit.userData.isWaypoint) {
+          // Kliknięcie w kamień milowy na trajektorii sondy
+          probeProgress = hit.userData.progress;
+          const slider = document.getElementById('probe-progress-slider');
+          if (slider) slider.value = Math.round(probeProgress * 1000);
+          updateProbePosition(probeProgress);
+          return;
+        }
+
+        while (hit.parent && hit.parent !== scene && !hit.userData.id) {
+          hit = hit.parent;
+        }
+        if (hit.userData && hit.userData.id) {
+          if (hit.userData.isProbe) {
+            selectProbeMission(hit.userData.id);
+          } else {
+            selectObject(hit.userData.id);
+          }
+        }
+      }
+    });
+
+    // --- OBSŁUGA STEROWANIA SYMULACJĄ ---
+    let timeSpeed = 5;
+    let isPaused = false;
+
+    const speedSlider = document.getElementById('time-speed');
+    const speedVal = document.getElementById('speed-val');
+    speedSlider.addEventListener('input', (e) => {
+      timeSpeed = parseFloat(e.target.value);
+      speedVal.innerText = timeSpeed + 'x';
+    });
+
+    const btnPause = document.getElementById('btn-pause');
+    btnPause.addEventListener('click', () => {
+      isPaused = !isPaused;
+      btnPause.innerText = isPaused ? '▶️ Wznów' : '⏸️ Pauza';
+      btnPause.classList.toggle('active', isPaused);
+    });
+
+    const btnReset = document.getElementById('btn-reset');
+    btnReset.addEventListener('click', () => {
+      focusedObject = null;
+      isFollowProbe = false;
+      isTransitioningCamera = false;
+      const btnFollow = document.getElementById('btn-probe-follow');
+      if (btnFollow) {
+        btnFollow.classList.remove('active');
+        btnFollow.innerText = '🎥 Śledź sondę';
+      }
+      if (isRealScale) {
+        camera.position.set(0, 3500, 7500);
+      } else {
+        camera.position.set(0, 160, 260);
+      }
+      controls.target.set(0, 0, 0);
+      controls.update();
+      updateInfoCard(PLANET_DATA[0]);
+    });
+
+    const btnToggleOrbits = document.getElementById('btn-toggle-orbits');
+    btnToggleOrbits.addEventListener('click', () => {
+      if (orbitLines.length === 0) return;
+      const visible = !orbitLines[0].visible;
+      orbitLines.forEach(l => l.visible = visible);
+      btnToggleOrbits.classList.toggle('active', visible);
+      btnToggleOrbits.innerText = visible ? '🪐 Orbity: WŁ' : '🪐 Orbity: WYŁ';
+    });
+
+    const btnToggleEcliptic = document.getElementById('btn-toggle-ecliptic');
+    btnToggleEcliptic.addEventListener('click', () => {
+      eclipticGroup.visible = !eclipticGroup.visible;
+      btnToggleEcliptic.classList.toggle('active', eclipticGroup.visible);
+      btnToggleEcliptic.innerText = eclipticGroup.visible ? '🌐 Ekliptyka: WŁ' : '🌐 Ekliptyka: WYŁ';
+    });
+
+    // --- PĘTLA GŁÓWNA ANIMACJI ---
+    function animate() {
+      requestAnimationFrame(animate);
+
+      const deltaSpeed = isPaused ? 0 : timeSpeed * 0.1;
+
+      // 1. Ruch planet wokół Słońca i wokół własnej osi
+      planetObjects.forEach(po => {
+        po.mesh.rotation.y += po.data.rotSpeed * deltaSpeed;
+
+        if (po.cloudMesh) {
+          po.cloudMesh.rotation.y += (po.data.rotSpeed + 0.0006) * deltaSpeed;
+        }
+
+        const dist = po.currentDist !== undefined ? po.currentDist : po.data.dist;
+        if (dist > 0 && po.anchor) {
+          po.angle += po.data.orbitSpeed * deltaSpeed;
+          po.anchor.position.x = Math.cos(po.angle) * dist;
+          po.anchor.position.z = Math.sin(po.angle) * dist;
+        }
+
+        if (po.beacon && isRealScale) {
+          const worldPos = new THREE.Vector3();
+          po.mesh.getWorldPosition(worldPos);
+          const distToCam = camera.position.distanceTo(worldPos);
+          const activeR = po.data.realRadius || 1.0;
+          if (distToCam < activeR * 35) {
+            const op = Math.max(0, (distToCam - activeR * 8) / (activeR * 27));
+            po.beacon.material.opacity = op * 0.9;
+            po.beacon.visible = op > 0.02;
+          } else {
+            po.beacon.visible = true;
+            po.beacon.material.opacity = 0.9;
+          }
+        }
+      });
+
+      // 2. Ruch wszystkich księżyców wokół ich planet macierzystych
+      moonObjects.forEach(mo => {
+        const mDist = mo.currentDist !== undefined ? mo.currentDist : mo.data.dist;
+        mo.angle += mo.data.orbitSpeed * deltaSpeed;
+        mo.mesh.position.x = Math.cos(mo.angle) * mDist;
+        mo.mesh.position.z = Math.sin(mo.angle) * mDist;
+      });
+
+      // 3. Animacja lotu aktywnej sondy kosmicznej
+      if (activeProbeMission && probeCurve && spacecraftMesh) {
+        if (isProbePlaying) {
+          const step = 0.00028 * (isPaused ? 0 : timeSpeed * 0.1);
+          probeProgress = (probeProgress + step) % 1.0;
+          const slider = document.getElementById('probe-progress-slider');
+          if (slider) slider.value = Math.round(probeProgress * 1000);
+          updateProbePosition(probeProgress);
+        }
+
+        // 4. Tryb kamery śledzącej sondę (Follow Probe Mode / Chase Cam)
+        if (isFollowProbe) {
+          const currentPos = spacecraftMesh.position;
+          const tangent = probeCurve.getTangentAt(probeProgress).normalize();
+          const offsetBehind = isRealScale ? 18.0 : 6.5;
+          const offsetUp = isRealScale ? 6.0 : 2.5;
+          const offsetAhead = isRealScale ? 25.0 : 10.0;
+
+          const camPos = currentPos.clone()
+            .sub(tangent.clone().multiplyScalar(offsetBehind))
+            .add(new THREE.Vector3(0, offsetUp, 0));
+
+          camera.position.lerp(camPos, 0.08);
+          controls.target.lerp(currentPos.clone().add(tangent.clone().multiplyScalar(offsetAhead)), 0.08);
+        }
+      }
+
+      // 5. Płynne śledzenie kamery na wybranej planecie lub księżycu
+      if (focusedObject && !isFollowProbe) {
+        const targetWorldPos = new THREE.Vector3();
+        focusedObject.mesh.getWorldPosition(targetWorldPos);
+
+        if (isTransitioningCamera) {
+          camera.position.lerp(cameraTargetPos, 0.045);
+          controls.target.lerp(targetWorldPos, 0.055);
+
+          if (camera.position.distanceTo(cameraTargetPos) < (isRealScale ? 0.3 : 0.8)) {
+            isTransitioningCamera = false;
+          }
+        } else {
+          const diff = targetWorldPos.clone().sub(controls.target);
+          controls.target.add(diff);
+          camera.position.add(diff);
+        }
+      }
+
+      controls.update();
+      renderer.render(scene, camera);
+    }
+
+    // Responsywność okna
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // Start od karty Słońca i widoku ogólnego
+    updateInfoCard(PLANET_DATA[0]);
+    animate();
+  </script>
+</body>
+
+</html>
