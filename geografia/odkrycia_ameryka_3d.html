@@ -1,0 +1,1633 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wielkie Odkrycia Geograficzne: USA i Kanada (3D) – HACK CLUB</title>
+
+    <!-- Google Analytics Tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZP827DTZJ5"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-ZP827DTZJ5');
+    </script>
+
+    <!-- Three.js, OrbitControls & Tween.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../style.css" />
+
+    <style>
+        :root {
+            --bg-dark: #050a14;
+            --panel-bg: rgba(10, 18, 34, 0.92);
+            --panel-border: rgba(56, 189, 248, 0.32);
+            --primary: #38bdf8;
+            --accent-gold: #f59e0b;
+            --accent-green: #10b981;
+            --accent-purple: #a855f7;
+            --accent-red: #ef4444;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #canvas-container {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        /* Górny pasek nawigacyjny */
+        .top-navbar {
+            position: absolute;
+            top: 16px;
+            left: 20px;
+            right: 20px;
+            z-index: 10;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            pointer-events: none;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .nav-left, .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            pointer-events: auto;
+        }
+
+        .back-btn {
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            color: #38bdf8;
+            text-decoration: none;
+            padding: 9px 16px;
+            border-radius: 12px;
+            font-size: 0.86rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            backdrop-filter: blur(14px);
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.45);
+        }
+
+        .back-btn:hover {
+            background: #0284c7;
+            color: #fff;
+            transform: translateX(-3px);
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+        }
+
+        .title-badge {
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            padding: 8px 18px;
+            border-radius: 14px;
+            backdrop-filter: blur(14px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.45);
+        }
+
+        .title-badge h1 {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .title-badge h1 span.highlight {
+            color: var(--primary);
+        }
+
+        .title-badge p {
+            font-size: 0.74rem;
+            color: var(--text-muted);
+        }
+
+        /* Przyciski trybu i widoku */
+        .btn-toggle-group {
+            display: flex;
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid var(--panel-border);
+            border-radius: 12px;
+            padding: 4px;
+            gap: 4px;
+            backdrop-filter: blur(14px);
+            box-shadow: 0 4px 18px rgba(0,0,0,0.45);
+        }
+
+        .btn-tab {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 0.84rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-tab:hover {
+            color: #fff;
+        }
+
+        .btn-tab.active {
+            background: var(--primary);
+            color: #04101e;
+            box-shadow: 0 2px 10px rgba(56, 189, 248, 0.35);
+        }
+
+        .btn-mode {
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            color: #fff;
+            padding: 9px 16px;
+            border-radius: 12px;
+            font-size: 0.86rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            backdrop-filter: blur(14px);
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.45);
+        }
+
+        .btn-mode:hover {
+            border-color: var(--accent-gold);
+            color: var(--accent-gold);
+        }
+
+        .btn-mode.quiz-active {
+            background: var(--accent-gold);
+            color: #000;
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 16px rgba(245, 158, 11, 0.4);
+        }
+
+        /* Lewy Panel - Lista Odkrywców */
+        #explorer-sidebar {
+            position: absolute;
+            top: 80px;
+            left: 20px;
+            bottom: 24px;
+            width: 320px;
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 18px;
+            backdrop-filter: blur(18px);
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .sidebar-title {
+            padding: 14px 18px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .sidebar-filter {
+            padding: 8px 12px;
+            display: flex;
+            gap: 6px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            background: rgba(0,0,0,0.25);
+        }
+
+        .filter-chip {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.1);
+            color: var(--text-muted);
+            font-size: 0.72rem;
+            padding: 4px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .filter-chip.active, .filter-chip:hover {
+            border-color: var(--primary);
+            color: #fff;
+            background: rgba(56, 189, 248, 0.14);
+        }
+
+        .explorer-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .explorer-card {
+            padding: 10px 12px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .explorer-card:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+
+        .explorer-card.active {
+            background: rgba(56, 189, 248, 0.15);
+            border-color: var(--primary);
+            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.18);
+        }
+
+        .card-row-1 {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-name {
+            font-weight: 800;
+            font-size: 0.88rem;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .color-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 6px currentColor;
+        }
+
+        .card-years {
+            font-size: 0.74rem;
+            color: var(--accent-gold);
+            font-weight: 700;
+        }
+
+        .card-desc-brief {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            line-height: 1.3;
+        }
+
+        /* Prawy Panel - Szczegóły / Fiszki / Quiz */
+        #detail-panel {
+            position: absolute;
+            top: 80px;
+            right: 20px;
+            width: 380px;
+            max-height: calc(100vh - 110px);
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 18px;
+            backdrop-filter: blur(18px);
+            z-index: 10;
+            padding: 20px;
+            overflow-y: auto;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .tag-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .country-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.74rem;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .btn-tts {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: var(--text-muted);
+            border-radius: 8px;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-tts:hover {
+            color: #fff;
+            border-color: var(--primary);
+            background: rgba(56, 189, 248, 0.2);
+        }
+
+        .detail-title {
+            font-size: 1.25rem;
+            font-weight: 900;
+            color: #ffffff;
+            letter-spacing: -0.3px;
+        }
+
+        .detail-summary {
+            background: rgba(255, 255, 255, 0.04);
+            border-left: 3px solid var(--primary);
+            padding: 10px 14px;
+            border-radius: 0 10px 10px 0;
+            font-size: 0.86rem;
+            line-height: 1.5;
+            color: #e2e8f0;
+        }
+
+        .detail-box {
+            background: rgba(15, 23, 42, 0.65);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 0.82rem;
+            line-height: 1.6;
+        }
+
+        .detail-box strong {
+            color: #fff;
+        }
+
+        .exam-tip {
+            border-color: rgba(245, 158, 11, 0.35);
+            background: rgba(245, 158, 11, 0.08);
+        }
+
+        .exam-tip-title {
+            color: var(--accent-gold);
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+        }
+
+        /* Quiz Styling */
+        .quiz-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .quiz-status {
+            background: rgba(245, 158, 11, 0.15);
+            border: 1px solid rgba(245, 158, 11, 0.4);
+            color: var(--accent-gold);
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-weight: 800;
+            font-size: 0.85rem;
+            text-align: center;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .quiz-question-text {
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: #fff;
+            line-height: 1.45;
+        }
+
+        .quiz-answers-box {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .quiz-opt {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #f1f5f9;
+            padding: 12px 14px;
+            border-radius: 10px;
+            text-align: left;
+            cursor: pointer;
+            font-size: 0.84rem;
+            transition: all 0.2s ease;
+            line-height: 1.35;
+        }
+
+        .quiz-opt:hover:not(:disabled) {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--primary);
+        }
+
+        .quiz-opt.correct {
+            background: rgba(16, 185, 129, 0.25) !important;
+            border-color: var(--accent-green) !important;
+            color: #34d399 !important;
+            font-weight: 800;
+        }
+
+        .quiz-opt.wrong {
+            background: rgba(239, 68, 68, 0.25) !important;
+            border-color: var(--accent-red) !important;
+            color: #f87171 !important;
+        }
+
+        .quiz-feedback {
+            font-size: 0.82rem;
+            line-height: 1.5;
+            color: #cbd5e1;
+            padding: 10px;
+            border-radius: 8px;
+            background: rgba(0,0,0,0.35);
+            border-left: 3px solid var(--accent-gold);
+            display: none;
+        }
+
+        .btn-next-q {
+            background: var(--primary);
+            border: none;
+            color: #04101e;
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-weight: 800;
+            font-size: 0.88rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .btn-next-q:hover {
+            filter: brightness(1.1);
+            transform: translateY(-2px);
+        }
+
+        /* Dolna legenda mapy fizycznej / hipsometrycznej */
+        .hypsometric-legend {
+            position: absolute;
+            bottom: 18px;
+            left: 20px;
+            z-index: 10;
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            padding: 8px 14px;
+            border-radius: 14px;
+            backdrop-filter: blur(14px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.45);
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            pointer-events: auto;
+        }
+
+        .legend-title {
+            font-size: 0.72rem;
+            font-weight: 800;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .legend-bar {
+            display: flex;
+            height: 10px;
+            width: 240px;
+            border-radius: 5px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .leg-seg { flex: 1; height: 100%; }
+
+        .legend-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.66rem;
+            color: #cbd5e1;
+            font-weight: 600;
+        }
+
+        /* Dolny HUD ze wskazówkami */
+        .bottom-hud {
+            position: absolute;
+            bottom: 18px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            background: rgba(13, 23, 42, 0.85);
+            border: 1px solid var(--panel-border);
+            padding: 6px 16px;
+            border-radius: 999px;
+            font-size: 0.74rem;
+            color: var(--text-muted);
+            pointer-events: none;
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+        }
+
+        .hud-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Scrollbary */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+
+        @media (max-width: 900px) {
+            #explorer-sidebar { display: none; }
+            .hypsometric-legend { display: none; }
+            #detail-panel { width: calc(100vw - 40px); right: 20px; top: auto; bottom: 60px; max-height: 40vh; }
+            .top-navbar { flex-direction: column; align-items: flex-start; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="canvas-container"></div>
+
+    <!-- Pasek Nawigacji -->
+    <header class="top-navbar">
+        <div class="nav-left">
+            <a href="../pomocnicze.html" class="back-btn">
+                <i class="fa-solid fa-arrow-left"></i> Powrót do Geografii
+            </a>
+            <div class="title-badge">
+                <h1><i class="fa-solid fa-mountain-sun" style="color:#10b981"></i> Szkolna Mapa Fizyczna 3D: <span class="highlight">USA i Kanada</span></h1>
+                <p>Klasyczna hipsometria i batymetria • Rzeźba terenu • Szlaki odkrywców</p>
+            </div>
+        </div>
+
+        <div class="nav-right">
+            <!-- Przełącznik Tekstury Mapy -->
+            <div class="btn-toggle-group">
+                <button id="tex-hyp" class="btn-tab active" onclick="switchTextureStyle('hyp')">
+                    <i class="fa-solid fa-layer-group"></i> Hipsometria
+                </button>
+                <button id="tex-sat" class="btn-tab" onclick="switchTextureStyle('sat')">
+                    <i class="fa-solid fa-satellite"></i> Topo-Satelita
+                </button>
+            </div>
+
+            <!-- Przełącznik Globus / Płaska Mapa Ścienna 3D -->
+            <div class="btn-toggle-group">
+                <button id="tab-globe" class="btn-tab active" onclick="switchView('globe')">
+                    <i class="fa-solid fa-earth-americas"></i> Glob 3D
+                </button>
+                <button id="tab-map" class="btn-tab" onclick="switchView('map')">
+                    <i class="fa-solid fa-map"></i> Mapa Ścienna 3D
+                </button>
+            </div>
+
+            <!-- Przełącznik Trybu (Nauka / Quiz) -->
+            <button id="btn-mode-toggle" class="btn-mode" onclick="toggleMode()">
+                <i class="fa-solid fa-graduation-cap"></i> <span id="mode-label">Tryb Quizu</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Lewy Panel: Lista Odkrywców i Filtry -->
+    <aside id="explorer-sidebar">
+        <div class="sidebar-title">
+            <span><i class="fa-solid fa-route" style="color:var(--primary)"></i> Wyprawy i Odkrywcy</span>
+            <span id="route-count-badge" style="font-size:0.75rem; color:var(--text-muted)">10 tras</span>
+        </div>
+        <div class="sidebar-filter">
+            <button class="filter-chip active" onclick="filterExplorers('all', this)">Wszystkie</button>
+            <button class="filter-chip" onclick="filterExplorers('morskie', this)">Morskie</button>
+            <button class="filter-chip" onclick="filterExplorers('ladowe', this)">Lądowe & Rzeczne</button>
+            <button class="filter-chip" onclick="filterExplorers('arktyka', this)">Arktyka</button>
+        </div>
+        <div class="explorer-list" id="explorerListContainer"></div>
+    </aside>
+
+    <!-- Prawy Panel: Fiszki edukacyjne / Tryb Quizu -->
+    <main id="detail-panel">
+        <!-- Widok Nauki (Fiszka) -->
+        <div id="study-container">
+            <div class="tag-row">
+                <div class="country-tag" id="expCountryBadge"><i class="fa-solid fa-flag"></i> Norwegia / Wikingowie</div>
+                <button class="btn-tts" onclick="speakCurrentInfo()" title="Odsłuchaj lektora AI"><i class="fa-solid fa-volume-high"></i></button>
+            </div>
+            
+            <h2 class="detail-title" id="expHeaderTitle">Leif Erikson</h2>
+            
+            <div class="detail-summary" id="expMainSummary">
+                Około 1000 roku dopłynął do wschodnich wybrzeży Kanady, odkrywając Ziemię Baffina, Labrador i Nową Fundlandię.
+            </div>
+
+            <div class="detail-box" id="expRouteGeoDetails">
+                <strong>Odkryte obiekty i szlak:</strong><br>
+                • <em>Helluland</em> (Ziemia Baffina)<br>
+                • <em>Markland</em> (Półwysep Labrador)<br>
+                • <em>Winlandia</em> (Nowa Fundlandia / osada L'Anse aux Meadows).
+            </div>
+
+            <div class="detail-box exam-tip" id="expExamTipBox">
+                <div class="exam-tip-title"><i class="fa-solid fa-lightbulb"></i> Pewniak na konkursie:</div>
+                <div id="expExamTipContent">
+                    Pierwsze udokumentowane europejskie lądowanie w Ameryce Północnej (na 500 lat przed Krzysztofem Kolumbem).
+                </div>
+            </div>
+        </div>
+
+        <!-- Widok Quizu -->
+        <div id="quiz-container" style="display:none;" class="quiz-wrap">
+            <div class="quiz-status">
+                <span id="quizScoreText">Punkty: 0 / 0</span>
+                <span id="quizAccuracyText">Skuteczność: 100%</span>
+            </div>
+            <div class="quiz-question-text" id="quizQuestionText">Pytanie konkursowe...</div>
+            <div class="quiz-answers-box" id="quizAnswersBox"></div>
+            <div class="quiz-feedback" id="quizFeedbackBox"></div>
+            <button class="btn-next-q" id="quizNextBtn" style="display:none;" onclick="loadNextQuestion()">
+                Następne pytanie <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </div>
+    </main>
+
+    <!-- Legenda Mapy Fizycznej (Hypsometric Legend) -->
+    <div class="hypsometric-legend">
+        <div class="legend-title"><i class="fa-solid fa-layer-group" style="color:var(--primary)"></i> Skala Hipsometryczna i Batymetryczna</div>
+        <div class="legend-bar">
+            <div class="leg-seg" style="background:#0e2f54;" title="Głębie oceaniczne (>4000m)"></div>
+            <div class="leg-seg" style="background:#22629b;" title="Morza i baseny (2000-4000m)"></div>
+            <div class="leg-seg" style="background:#52a8dd;" title="Szelf kontynentalny i ławiska (0-200m)"></div>
+            <div class="leg-seg" style="background:#489f38;" title="Niziny (0-200m n.p.m.)"></div>
+            <div class="leg-seg" style="background:#8fc34a;" title="Niziny wyższe (200-300m)"></div>
+            <div class="leg-seg" style="background:#fed766;" title="Wyżyny i równiny (300-500m)"></div>
+            <div class="leg-seg" style="background:#f48422;" title="Góry średnie (500-1500m)"></div>
+            <div class="leg-seg" style="background:#9a3412;" title="Góry wysokie - Kordyliery (1500-3000m+)"></div>
+            <div class="leg-seg" style="background:#ffffff;" title="Lodowce i śniegi (Grenlandia, szczyty)"></div>
+        </div>
+        <div class="legend-labels">
+            <span>-6000m (Głębie)</span>
+            <span>0m (Wybrzeże)</span>
+            <span>+4000m (Szczyty)</span>
+        </div>
+    </div>
+
+    <!-- Dolny HUD ze wskazówkami sterowania -->
+    <footer class="bottom-hud">
+        <div class="hud-item"><i class="fa-solid fa-arrow-pointer" style="color:var(--primary)"></i> Kliknij trasę / odkrywcę</div>
+        <div class="hud-item"><i class="fa-solid fa-arrows-rotate"></i> Lewy przycisk: Obrót 3D</div>
+        <div class="hud-item"><i class="fa-solid fa-magnifying-glass-plus"></i> Kółko myszy: Zoom</div>
+    </footer>
+
+    <script>
+        /* =========================================================================
+           1. BAZA DANYCH ODKRYĆ GEOGRAFICZNYCH (USA I KANADA) - DOKŁADNE SZLAKI
+           ========================================================================= */
+        const EXPLORERS = [
+            {
+                id: 'erikson',
+                name: 'Leif Erikson',
+                years: 'ok. 1000 r.',
+                country: 'Wikingowie (Norwegia / Grenlandia)',
+                category: 'morskie',
+                color: '#38bdf8',
+                summary: 'Około 1000 roku wyruszył z Grenlandii na zachód, docierając do wschodnich wybrzeży Kanady.',
+                details: '<strong>Nazwy wikińskie z sag:</strong><br>• <em>Helluland</em> (Ziemia Płaskich Kamieni) – Ziemia Baffina<br>• <em>Markland</em> (Ziemia Lasów) – Półwysep Labrador<br>• <em>Winlandia</em> (Kraina Winorośli) – osada <strong>L\'Anse aux Meadows</strong> na Nowej Fundlandii.',
+                examTip: 'Wikingowie dotarli do Ameryki ok. 500 lat przed Kolumbem. Stanowisko L\'Anse aux Meadows wpisano na listę UNESCO.',
+                points: [
+                    { lat: 61.1, lon: -45.5, name: 'Grenlandia (Brattahlid)' },
+                    { lat: 63.0, lon: -54.0, name: 'Cieśnina Davisa' },
+                    { lat: 64.2, lon: -65.0, name: 'Helluland (Ziemia Baffina)' },
+                    { lat: 58.5, lon: -62.5, name: 'Morze Labradorskie' },
+                    { lat: 53.5, lon: -56.0, name: 'Markland (Płw. Labrador)' },
+                    { lat: 51.8, lon: -55.8, name: 'Cieśnina Belle Isle' },
+                    { lat: 51.5, lon: -55.5, name: 'Winlandia (L\'Anse aux Meadows)' }
+                ]
+            },
+            {
+                id: 'cabot',
+                name: 'John Cabot (Giovanni Caboto)',
+                years: '1497 r.',
+                country: 'Anglia (pod banderą Henryka VII Tudora)',
+                category: 'morskie',
+                color: '#ec4899',
+                summary: 'Włoski żeglarz w służbie Anglii. Na statku Matthew dopłynął do wybrzeży wschodniej Kanady.',
+                details: '<strong>Kluczowe odkrycia:</strong><br>• Odkrycie Nowej Fundlandii oraz Wyspy Przylądka Bretońskiego.<br>• Odkrycie <strong>Wielkich Ławic Nowofundlandzkich</strong> (niezwykle obfite łowiska dorsza na szelfie).',
+                examTip: 'Wyprawa Cabota dała Anglikom podstawę prawno-polityczną do późniejszych roszczeń terytorialnych w Ameryce Północnej.',
+                points: [
+                    { lat: 51.45, lon: -2.6, name: 'Bristol (Anglia - Start)' },
+                    { lat: 51.2, lon: -9.5, name: 'Wybrzeże Irlandii (Fastnet)' },
+                    { lat: 52.5, lon: -25.0, name: 'Północny Atlantyk' },
+                    { lat: 51.0, lon: -40.0, name: 'Otwarte wody Atlantyku' },
+                    { lat: 48.0, lon: -48.0, name: 'Wielkie Ławice Nowofundlandzkie' },
+                    { lat: 48.6, lon: -53.1, name: 'Nowa Fundlandia (Przylądek Bonavista)' },
+                    { lat: 46.0, lon: -60.0, name: 'Wyspa Przylądka Bretońskiego' }
+                ]
+            },
+            {
+                id: 'cartier',
+                name: 'Jacques Cartier',
+                years: '1534–1542 r.',
+                country: 'Francja (Franciszek I)',
+                category: 'morskie',
+                color: '#2563eb',
+                summary: 'Odkrywca i badacz Rzeki i Zatoki Świętego Wawrzyńca. Dał początek Nowej Francji.',
+                details: '<strong>Kluczowe fakty:</strong><br>• Przepłynięcie Zatoki Św. Wawrzyńca i nawigacja w głąb rzeki.<br>• Dotarcie do irokeskich wiosek: <em>Stadacona</em> (dzisiejsze miasto Quebec) oraz <em>Hochelaga</em> (wzgórze Mont-Royal / dzisiejszy Montreal).<br>• Użył po raz pierwszy nazwy <strong>Kanada</strong> (od słowa <em>kanata</em> = osada/wioska).',
+                examTip: 'Nazwa Kanada oraz początek francuskiego osadnictwa i kultury frankofońskiej w prowincji Quebec.',
+                points: [
+                    { lat: 48.6, lon: -2.0, name: 'Saint-Malo (Francja - Start)' },
+                    { lat: 49.5, lon: -15.0, name: 'Wyjście na Atlantyk' },
+                    { lat: 50.0, lon: -35.0, name: 'Północny Atlantyk' },
+                    { lat: 51.5, lon: -55.5, name: 'Cieśnina Belle Isle' },
+                    { lat: 49.0, lon: -64.5, name: 'Zatoka Św. Wawrzyńca' },
+                    { lat: 48.8, lon: -64.4, name: 'Zatoka Gaspé (Krzyż Francuski)' },
+                    { lat: 48.1, lon: -69.7, name: 'Ujście Rzeki Saguenay (Tadoussac)' },
+                    { lat: 46.8, lon: -71.2, name: 'Stadacona (Quebec)' },
+                    { lat: 45.5, lon: -73.5, name: 'Hochelaga (Montreal)' }
+                ]
+            },
+            {
+                id: 'drake',
+                name: 'Sir Francis Drake',
+                years: '1577–1580 r. (1579)',
+                country: 'Anglia (Elżbieta I)',
+                category: 'morskie',
+                color: '#ea580c',
+                summary: 'Drugie w historii opłynięcie Ziemi. Dotarł na zachodnie wybrzeże Ameryki Północnej.',
+                details: '<strong>Przebieg trasy w Ameryce Płn.:</strong><br>• Po pokonaniu Cieśniny Magellana i łupieniu portów hiszpańskich popłynął daleko na północ.<br>• Lądował w 1579 r. w rejonie dzisiejszej Kalifornii (Zatoka Drakes Bay), nazywając tę krainę <em>Nova Albion</em> (Nowy Albion) i ogłaszając ją własnością korony angielskiej.',
+                examTip: 'Pierwszy Anglik, który opłynął glob, oraz jeden z pierwszych badaczy pacyficznego wybrzeża dzisiejszych USA (Kalifornia/Oregon).',
+                points: [
+                    { lat: 10.0, lon: -100.0, name: 'Pacyfik Środkowy' },
+                    { lat: 15.8, lon: -96.3, name: 'Wybrzeże Meksyku (Guatulco)' },
+                    { lat: 22.9, lon: -109.9, name: 'Przylądek San Lucas (Kalifornia Dolna)' },
+                    { lat: 30.0, lon: -117.0, name: 'Pacyfik Północny' },
+                    { lat: 34.0, lon: -120.0, name: 'Wybrzeże Kalifornii' },
+                    { lat: 38.0, lon: -123.0, name: 'Nowy Albion (Kalifornia / Drakes Bay)' },
+                    { lat: 43.5, lon: -125.0, name: 'Wybrzeże Oregonu (Przylądek Blanco)' }
+                ]
+            },
+            {
+                id: 'hudson',
+                name: 'Henry Hudson',
+                years: '1609–1611 r.',
+                country: 'Holandia (1609) / Anglia (1610)',
+                category: 'morskie',
+                color: '#059669',
+                summary: 'Poszukiwacz Przejścia Północno-Zachodniego. Odkrył rzekę Hudson oraz Zatokę Hudsona.',
+                details: '<strong>Dwie wielkie wyprawy:</strong><br>• 1609 (dla Holandii na statku Halve Maen): Rzeka <strong>Hudson</strong> (Manhattan / dzisiejszy Nowy Jork) – zalążek Nowego Amsterdamu.<br>• 1610–1611 (dla Anglii na statku Discovery): Cieśnina Hudsona, gigantyczna <strong>Zatoka Hudsona</strong> i Zatoka Jamesa. Zginął w wyniku buntu załogi.',
+                examTip: 'Jego imieniem nazwano rzekę w Nowym Jorku, Cieśninę Hudsona oraz drugą co do wielkości zatokę świata – Zatokę Hudsona.',
+                points: [
+                    { lat: 51.5, lon: 0.1, name: 'Londyn / Amsterdam' },
+                    { lat: 50.0, lon: -30.0, name: 'Północny Atlantyk' },
+                    { lat: 42.0, lon: -70.0, name: 'Przylądek Cod (Nowa Anglia)' },
+                    { lat: 40.7, lon: -74.0, name: 'Ujście rzeki Hudson (Nowy Jork - 1609)' },
+                    { lat: 42.6, lon: -73.7, name: 'Rzeka Hudson (Albany)' },
+                    { lat: 53.0, lon: -56.0, name: 'Wybrzeże Labradoru' },
+                    { lat: 62.2, lon: -72.0, name: 'Cieśnina Hudsona (1610)' },
+                    { lat: 58.0, lon: -82.0, name: 'Zatoka Hudsona' },
+                    { lat: 52.0, lon: -80.0, name: 'Zatoka Jamesa' }
+                ]
+            },
+            {
+                id: 'champlain',
+                name: 'Samuel de Champlain',
+                years: '1603–1615 r.',
+                country: 'Francja',
+                category: 'ladowe',
+                color: '#7c3aed',
+                summary: '„Ojciec Nowej Francji”. Założyciel miasta Quebec (1608) i odkrywca Wielkich Jezior.',
+                details: '<strong>Kluczowe osiągnięcia:</strong><br>• 1608: Założenie stałej osady i twierdzy <strong>Quebec</strong> nad Rzeką Św. Wawrzyńca.<br>• Odkrycie Jeziora Champlain, rzeki Ottawa oraz dotarcie do Wielkich Jezior: <strong>Jeziora Huron</strong> i <strong>Jeziora Ontario</strong>.<br>• Sporządzenie pierwszych precyzyjnych map kartograficznych wschodniej Kanady.',
+                examTip: 'Tytułowany „Ojcem Nowej Francji” (Père de la Nouvelle-France). Założył Quebec – najstarsze miasto Kanady.',
+                points: [
+                    { lat: 48.1, lon: -69.7, name: 'Tadoussac' },
+                    { lat: 46.8, lon: -71.2, name: 'Założenie Quebecu (1608)' },
+                    { lat: 45.5, lon: -73.5, name: 'Montreal' },
+                    { lat: 44.5, lon: -73.3, name: 'Jezioro Champlain (1609)' },
+                    { lat: 45.4, lon: -75.7, name: 'Rzeka Ottawa' },
+                    { lat: 46.3, lon: -79.5, name: 'Jezioro Nipissing' },
+                    { lat: 45.3, lon: -80.5, name: 'Zatoka Georgian Bay' },
+                    { lat: 44.8, lon: -81.5, name: 'Jezioro Huron' },
+                    { lat: 43.7, lon: -78.0, name: 'Jezioro Ontario' }
+                ]
+            },
+            {
+                id: 'bering',
+                name: 'Vitus Bering i Aleksiej Czirikow',
+                years: '1741 r.',
+                country: 'Imperium Rosyjskie (Wielka Ekspedycja Północna)',
+                category: 'morskie',
+                color: '#0891b2',
+                summary: 'Potwierdzili rozdzielenie Azji od Ameryki. Odkryli Alaskę i Wyspy Aleuckie.',
+                details: '<strong>Kluczowe odkrycia:</strong><br>• Przepłynięcie <strong>Cieśniny Beringa</strong> łączącej Ocean Spokojny z Oceanem Arktycznym.<br>• Dotarcie do Alaski (masyw Góry Świętego Eliasza), odkrycie Zatoki Alaska, Wysp Aleuckich i Wysp Komandorskich.<br>• Początek kolonizacji rosyjskiej w Ameryce Północnej (Rosyjska Ameryka – sprzedana USA w 1867 r.).',
+                examTip: 'Cieśnina Beringa oddziela Azję (Rosję) od Ameryki Północnej (USA/Alaska). Granica międzykontynentalna i linia zmiany daty.',
+                points: [
+                    { lat: 53.0, lon: 158.6, name: 'Pietropawłowsk Kamczacki (Start)' },
+                    { lat: 58.0, lon: 175.0, name: 'Morze Beringa' },
+                    { lat: 65.8, lon: -168.5, name: 'Cieśnina Beringa' },
+                    { lat: 54.0, lon: -166.0, name: 'Wyspy Aleuckie (Unalaska)' },
+                    { lat: 58.0, lon: -150.0, name: 'Zatoka Alaska' },
+                    { lat: 59.5, lon: -140.0, name: 'Góra Św. Eliasza (Alaska)' },
+                    { lat: 57.0, lon: -135.3, name: 'Wyspa Baranowa (Sitka)' }
+                ]
+            },
+            {
+                id: 'mackenzie',
+                name: 'Alexander Mackenzie',
+                years: '1789, 1793 r.',
+                country: 'Wielka Brytania (Kompania Północno-Zachodnia)',
+                category: 'ladowe',
+                color: '#d97706',
+                summary: 'Dotarł do Oceanu Arktycznego oraz jako pierwszy przebył lądem Kanadę do Oceanu Spokojnego.',
+                details: '<strong>Dwie monumentalne wyprawy:</strong><br>• 1789: Z Wielkiego Jeziora Niewolniczego rzeką <strong>Mackenzie</strong> (najdłuższa rzeka Kanady) do Morza Beauforta (Ocean Arktyczny).<br>• 1793: Rzeką Peace, przez Kordyliery do Pacyfiku (Bella Coola). Pierwsze udokumentowane przejście Ameryki Płn. lądem na północ od Meksyku (12 lat przed Lewisem i Clarkiem!).',
+                examTip: 'Rzeka Mackenzie jest najdłuższą rzeką Kanady (ok. 4241 km w systemie z rzekami Peace i Finlay) i uchodzi do M. Beauforta.',
+                points: [
+                    { lat: 58.7, lon: -111.0, name: 'Fort Chipewyan (Jezioro Athabaska)' },
+                    { lat: 61.5, lon: -115.5, name: 'Wielkie Jezioro Niewolnicze' },
+                    { lat: 61.8, lon: -121.3, name: 'Fort Simpson (Rzeka Mackenzie)' },
+                    { lat: 65.3, lon: -126.8, name: 'Norman Wells' },
+                    { lat: 69.3, lon: -134.0, name: 'Delta Mackenzie (Ocean Arktyczny - 1789)' },
+                    { lat: 56.0, lon: -122.0, name: 'Kanion Rzeki Peace (1793)' },
+                    { lat: 54.5, lon: -123.0, name: 'Przekroczenie Gór Skalistych' },
+                    { lat: 52.4, lon: -126.7, name: 'Bella Coola (Pacyfik - 1793)' }
+                ]
+            },
+            {
+                id: 'lewis_clark',
+                name: 'Ekspedycja Lewisa i Clarka',
+                years: '1804–1806 r.',
+                country: 'USA (zlecenie prezydenta Thomasa Jeffersona)',
+                category: 'ladowe',
+                color: '#16a34a',
+                summary: 'Kluczowa wyprawa USA (Corps of Discovery) badająca ziemie Zakupu Luizjany aż do Pacyfiku.',
+                details: '<strong>Dokładny przebieg trasy:</strong><br>• Start: St. Louis u ujścia rzeki Missouri do Missisipi.<br>• W górę rzeki <strong>Missouri</strong>, przez Wielkie Równiny i Góry Skaliste (Przełęcz Lolo).<br>• Spływ rzeką <strong>Columbia</strong> aż do ujścia do Pacyfiku (Fort Clatsop w dzisiejszym stanie Oregon).<br>• Zbadanie hydrografii, flory, fauny i plemion rdzennych (z pomocą przewodniczki Sacagawei).',
+                examTip: 'Wyprawa Lewisa i Clarka otworzyła drogę do zasiedlenia Dzikiego Zachodu i utrwaliła granice USA od Atlantyku po Pacyfik.',
+                points: [
+                    { lat: 38.6, lon: -90.2, name: 'St. Louis (Start Maj 1804)' },
+                    { lat: 41.2, lon: -95.9, name: 'Council Bluffs (Rzeka Missouri)' },
+                    { lat: 47.1, lon: -101.3, name: 'Fort Mandan (Dakota Płn. - Zima 1804/05)' },
+                    { lat: 47.5, lon: -111.3, name: 'Great Falls (Wielkie Wodospady Missouri)' },
+                    { lat: 45.9, lon: -111.5, name: 'Three Forks (Źródła Missouri)' },
+                    { lat: 46.8, lon: -114.6, name: 'Przełęcz Lolo (Góry Skaliste)' },
+                    { lat: 46.4, lon: -117.0, name: 'Rzeka Clearwater / Snake' },
+                    { lat: 45.7, lon: -121.5, name: 'Przełom Rzeki Columbia (Kaskady)' },
+                    { lat: 46.2, lon: -124.0, name: 'Fort Clatsop (Pacyfik - Listopad 1805)' }
+                ]
+            },
+            {
+                id: 'northwest_passage',
+                name: 'Przejście Północno-Zachodnie (Franklin / Amundsen)',
+                years: '1845 / 1903–1906 r.',
+                country: 'Wielka Brytania / Norwegia',
+                category: 'arktyka',
+                color: '#9333ea',
+                summary: 'Morski szlak łączący Atlantyk z Pacyfikiem przez lodowy Archipelag Arktyczny Kanady.',
+                details: '<strong>Kluczowe ekspedycje:</strong><br>• 1845: Tragiczna ekspedycja Johna Franklina (statki <em>HMS Erebus</em> i <em>HMS Terror</em> – uwięzione w lodach w rejonie Wyspy Króla Williama).<br>• 1903–1906: <strong>Roald Amundsen</strong> na statku <em>Gjøa</em> jako pierwszy człowiek w historii przepływa całe Przejście Północno-Zachodnie drogą morską.',
+                examTip: 'Przejście Północno-Zachodnie biegnie przez wody terytorialne Kanady (Archipelag Arktyczny) i łączy Ocean Atlantycki z Oceanem Spokojnym.',
+                points: [
+                    { lat: 60.0, lon: -50.0, name: 'Cieśnina Davisa' },
+                    { lat: 69.0, lon: -53.5, name: 'Zatoka Disko (Grenlandia)' },
+                    { lat: 74.2, lon: -80.0, name: 'Cieśnina Lancastera (Wrota Arktyki)' },
+                    { lat: 74.2, lon: -93.0, name: 'Cieśnina Barrowa' },
+                    { lat: 71.5, lon: -95.5, name: 'Cieśnina Franklina (Peel Sound)' },
+                    { lat: 68.6, lon: -95.9, name: 'Wyspa Króla Williama (Gjøa Haven - Zima)' },
+                    { lat: 68.0, lon: -102.0, name: 'Zatoka Królowej Maud' },
+                    { lat: 69.0, lon: -118.0, name: 'Zatoka Amundsena' },
+                    { lat: 70.0, lon: -139.0, name: 'Morze Beauforta (Wyspa Herschel)' },
+                    { lat: 71.3, lon: -156.7, name: 'Przylądek Barrow (Alaska)' },
+                    { lat: 65.5, lon: -168.0, name: 'Cieśnina Beringa (Pacyfik - 1906)' }
+                ]
+            }
+        ];
+
+        /* =========================================================================
+           2. BAZA PYTAŃ QUIZOWYCH (KONKURS PRZEDMIOTOWY)
+           ========================================================================= */
+        const QUIZ_QUESTIONS = [
+            {
+                q: "Który z odkrywców jako pierwszy wpłynął do Rzeki Świętego Wawrzyńca i spopularyzował nazwę 'Kanada'?",
+                options: ["Jacques Cartier", "John Cabot", "Samuel de Champlain", "Henry Hudson"],
+                correct: 0,
+                expId: "cartier",
+                expl: "Jacques Cartier w latach 1534–1542 wpłynął do Rzeki Św. Wawrzyńca i zapisał słowo 'kanata' (irokeska nazwa osady)."
+            },
+            {
+                q: "Wyprawa Lewisa i Clarka (1804–1806) wyruszyła ze St. Louis i podążała głównie wzdłuż rzek:",
+                options: ["Hudson i Świętego Wawrzyńca", "Missouri i Columbia", "Mackenzie i Jukon", "Kolorado i Rio Grande"],
+                correct: 1,
+                expId: "lewis_clark",
+                expl: "Ekspedycja płynęła pod prąd rzeki Missouri, przekroczyła Kordyliery i spłynęła rzeką Columbia do Oceanu Spokojnego."
+            },
+            {
+                q: "Kraina nazwana w sagach wikińskich 'Markland' odpowiada dzisiejszemu obszarowi:",
+                options: ["Nowej Fundlandii", "Półwyspu Floryda", "Półwyspu Labrador", "Ziemi Baffina"],
+                correct: 2,
+                expId: "erikson",
+                expl: "Helluland to Ziemia Baffina, Markland (Kraina Lasów) to Labrador, a Winlandia to Nowa Fundlandia (L'Anse aux Meadows)."
+            },
+            {
+                q: "Wyprawa Johna Cabota (1497) w służbie króla Anglii doprowadziła do odkrycia:",
+                options: ["Cieśniny Beringa", "Ujścia rzeki Missisipi", "Bogatej w ryby Nowej Fundlandii", "Jeziora Górnego"],
+                correct: 2,
+                expId: "cabot",
+                expl: "Cabot odkrył Nową Fundlandię oraz słynne Wielkie Ławice Nowofundlandzkie – jedno z najbogatszych łowisk dorsza."
+            },
+            {
+                q: "Kto jako pierwszy w historii pokonał w całości drogą morską Przejście Północno-Zachodnie (1903–1906)?",
+                options: ["John Franklin", "Roald Amundsen", "Henry Hudson", "Alexander Mackenzie"],
+                correct: 1,
+                expId: "northwest_passage",
+                expl: "Norweski polarnik Roald Amundsen na małym statku 'Gjøa' jako pierwszy pokonał cały ten szlak arktyczny."
+            },
+            {
+                q: "Alexander Mackenzie w 1789 roku spłynął rzeką nazwaną później jego imieniem do:",
+                options: ["Zatoki Meksykańskiej", "Oceanu Spokojnego", "Oceanu Arktycznego (M. Beauforta)", "Zatoki Hudsona"],
+                correct: 2,
+                expId: "mackenzie",
+                expl: "Rzeka Mackenzie wypływa z Wielkiego Jeziora Niewolniczego i uchodzi do Morza Beauforta (Ocean Arktyczny)."
+            },
+            {
+                q: "Który podróżnik założył w 1608 roku miasto Quebec i jest nazywany 'Ojcem Nowej Francji'?",
+                options: ["Samuel de Champlain", "Jacques Cartier", "Francis Drake", "Vitus Bering"],
+                correct: 0,
+                expId: "champlain",
+                expl: "Samuel de Champlain założył Quebec i zbadał jeziora Huron, Ontario oraz Jezioro Champlain."
+            },
+            {
+                q: "Cieśnina Beringa, zbadana przez Vitusa Beringa w 1741 roku, oddziela od siebie:",
+                options: ["Grenlandię od Kanady", "Azję (Rosję) od Ameryki Północnej (Alaski)", "Nową Fundlandię od Labradoru", "Alaskę od Archipelagu Arktycznego"],
+                correct: 1,
+                expId: "bering",
+                expl: "Cieśnina Beringa łączy Morze Beringa z Morzem Czukockim i rozdziela Półwysep Czukocki (Azja) od Półwyspu Seward (Ameryka Płn.)."
+            },
+            {
+                q: "Sir Francis Drake podczas wyprawy dookoła świata w 1579 roku wylądował na zachodnim wybrzeżu Ameryki Płn. i nazwał ten obszar:",
+                options: ["Nową Francją", "Nowym Albionem (Nova Albion)", "Nową Anglią", "Ziemią Ruperta"],
+                correct: 1,
+                expId: "drake",
+                expl: "Drake wylądował w Kalifornii (Drakes Bay) i ogłosił te tereny własnością Elżbiety I pod nazwą Nowy Albion."
+            }
+        ];
+
+        /* =========================================================================
+           3. THREE.JS ENGINE & GEODEZJA TRAS NA GLOBIE I MAPIE
+           ========================================================================= */
+        let scene, camera, renderer, controls;
+        let globeGroup, mapGroup;
+        let viewMode = 'globe';
+        let currentTextureStyle = 'hyp';
+        let currentExplorerIndex = 0;
+        let routeCurves = {};
+        let routeMarkers = {};
+        let routeWaypointObjects = {};
+        let animProgress = 0;
+
+        let globeMesh, mapMesh;
+        let loadedTextures = {};
+
+        const GLOBE_RADIUS = 100;
+        const MAP_WIDTH = 270;
+        const MAP_HEIGHT = 160;
+
+        function init3D() {
+            const container = document.getElementById('canvas-container');
+
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x060b15);
+
+            camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 2500);
+            camera.position.set(0, 50, 280);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            renderer.toneMappingExposure = 1.15;
+            container.appendChild(renderer.domElement);
+
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.06;
+            controls.minDistance = 115;
+            controls.maxDistance = 550;
+
+            // Oświetlenie - Ciepłe światło słoneczne
+            const ambient = new THREE.AmbientLight(0xfff7ed, 1.15);
+            scene.add(ambient);
+
+            const sun = new THREE.DirectionalLight(0xffffff, 1.4);
+            sun.position.set(220, 180, 180);
+            scene.add(sun);
+
+            const sideSun = new THREE.DirectionalLight(0x93c5fd, 0.45);
+            sideSun.position.set(-220, 80, -180);
+            scene.add(sideSun);
+
+            // Gwiezdne tło
+            buildStarfield();
+
+            // Grupy obiektów
+            globeGroup = new THREE.Group();
+            mapGroup = new THREE.Group();
+            mapGroup.visible = false;
+
+            scene.add(globeGroup);
+            scene.add(mapGroup);
+
+            // Ładowanie tekstur lokalnych
+            loadAllTextures();
+
+            // Tworzenie siatki globu i mapy
+            buildPhysicalGlobe();
+            buildSchoolWallMap();
+            buildRoutes();
+
+            renderSidebar();
+            selectExplorer(0);
+
+            window.addEventListener('resize', onResize);
+            animate();
+        }
+
+        /* Ładowanie lokalnych tekstur wysokiej jakości */
+        function loadAllTextures() {
+            const loader = new THREE.TextureLoader();
+            
+            // 1. Szkolna Mapa Fizyczna (Natural Earth Hypsometric)
+            loader.load('earth_hypsometric.png', (tex) => {
+                tex.wrapS = THREE.RepeatWrapping;
+                tex.wrapT = THREE.ClampToEdgeWrapping;
+                loadedTextures['hyp'] = tex;
+                applyTextureToMeshes('hyp');
+            }, undefined, (err) => {
+                loader.load('earth_physical.jpg', (fallbackTex) => {
+                    loadedTextures['hyp'] = fallbackTex;
+                    applyTextureToMeshes('hyp');
+                });
+            });
+
+            // 2. Topograficzno-Satelitarna Mapa (NASA)
+            loader.load('earth_physical.jpg', (tex) => {
+                tex.wrapS = THREE.RepeatWrapping;
+                tex.wrapT = THREE.ClampToEdgeWrapping;
+                loadedTextures['sat'] = tex;
+            });
+
+            // 3. Mapa Wypukłości (Normal Map)
+            loader.load('earth_normal.jpg', (normTex) => {
+                normTex.wrapS = THREE.RepeatWrapping;
+                normTex.wrapT = THREE.ClampToEdgeWrapping;
+                loadedTextures['norm'] = normTex;
+                if (globeMesh) globeMesh.material.normalMap = normTex;
+            });
+        }
+
+        function applyTextureToMeshes(type) {
+            const tex = loadedTextures[type];
+            if (!tex) return;
+
+            // Aplikacja na globus
+            if (globeMesh) {
+                globeMesh.material.map = tex;
+                globeMesh.material.needsUpdate = true;
+            }
+
+            // Aplikacja na mapę ścienną (wycięcie i kadrowanie na Amerykę Północną)
+            if (mapMesh) {
+                const mapTex = tex.clone();
+                mapTex.offset.set(0.015, 0.18);
+                mapTex.repeat.set(0.48, 0.58);
+                mapTex.needsUpdate = true;
+                mapMesh.material.map = mapTex;
+                mapMesh.material.needsUpdate = true;
+            }
+        }
+
+        function switchTextureStyle(type) {
+            currentTextureStyle = type;
+            document.getElementById('tex-hyp').classList.toggle('active', type === 'hyp');
+            document.getElementById('tex-sat').classList.toggle('active', type === 'sat');
+            applyTextureToMeshes(type);
+        }
+
+        /* Gwiezdny pył */
+        function buildStarfield() {
+            const starGeo = new THREE.BufferGeometry();
+            const count = 1200;
+            const pos = new Float32Array(count * 3);
+            for (let i = 0; i < count * 3; i += 3) {
+                pos[i] = (Math.random() - 0.5) * 1600;
+                pos[i + 1] = (Math.random() - 0.5) * 1600;
+                pos[i + 2] = (Math.random() - 0.5) * 1600;
+            }
+            starGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+            const starMat = new THREE.PointsMaterial({ color: 0x7dd3fc, size: 2.0, transparent: true, opacity: 0.45 });
+            const stars = new THREE.Points(starGeo, starMat);
+            scene.add(stars);
+        }
+
+        /* Tworzenie Globu Fizycznego */
+        function buildPhysicalGlobe() {
+            const geo = new THREE.SphereGeometry(GLOBE_RADIUS, 96, 96);
+
+            const mat = new THREE.MeshStandardMaterial({
+                color: 0xffffff,
+                roughness: 0.65,
+                metalness: 0.05
+            });
+            globeMesh = new THREE.Mesh(geo, mat);
+            globeGroup.add(globeMesh);
+
+            // Poświata atmosferyczna
+            const atmosGeo = new THREE.SphereGeometry(GLOBE_RADIUS * 1.02, 64, 64);
+            const atmosMat = new THREE.MeshBasicMaterial({
+                color: 0x38bdf8,
+                transparent: true,
+                opacity: 0.14,
+                side: THREE.BackSide
+            });
+            globeGroup.add(new THREE.Mesh(atmosGeo, atmosMat));
+
+            // Siatka współrzędnych geograficznych (delikatna siatka kartograficzna)
+            const grid = new THREE.PolarGridHelper(GLOBE_RADIUS * 1.006, 16, 8, 64, 0x0284c7, 0x0f172a);
+            grid.rotation.x = Math.PI / 2;
+            grid.material.opacity = 0.25;
+            grid.material.transparent = true;
+            globeGroup.add(grid);
+        }
+
+        /* Tworzenie Tradycyjnej Szkolnej Mapy Ściennej 3D z listwami */
+        function buildSchoolWallMap() {
+            const mapGeo = new THREE.PlaneGeometry(MAP_WIDTH, MAP_HEIGHT, 96, 96);
+
+            const mapMat = new THREE.MeshStandardMaterial({
+                color: 0xffffff,
+                roughness: 0.58,
+                metalness: 0.05,
+                side: THREE.DoubleSide
+            });
+            mapMesh = new THREE.Mesh(mapGeo, mapMat);
+            mapMesh.rotation.x = -Math.PI / 3.2;
+            mapGroup.add(mapMesh);
+
+            // 1. Biała podkładka marginesowa ze szkolnej mapy ściennej
+            const marginGeo = new THREE.PlaneGeometry(MAP_WIDTH + 14, MAP_HEIGHT + 14);
+            const marginMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.8 });
+            const marginMesh = new THREE.Mesh(marginGeo, marginMat);
+            marginMesh.position.z = -0.6;
+            marginMesh.rotation.x = -Math.PI / 3.2;
+            mapGroup.add(marginMesh);
+
+            // 2. Górna i dolna listwa ścienna (drewniane wałki montażowe)
+            const rodGeo = new THREE.CylinderGeometry(2.5, 2.5, MAP_WIDTH + 20, 32);
+            rodGeo.rotateZ(Math.PI / 2);
+            const rodMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.4, metalness: 0.3 });
+
+            // Górna listwa
+            const topRod = new THREE.Mesh(rodGeo, rodMat);
+            topRod.position.set(0, (MAP_HEIGHT / 2 + 7) * Math.cos(Math.PI / 3.2), ((MAP_HEIGHT / 2 + 7) * Math.sin(Math.PI / 3.2)));
+            topRod.rotation.x = -Math.PI / 3.2;
+            mapGroup.add(topRod);
+
+            // Dolna listwa
+            const bottomRod = new THREE.Mesh(rodGeo, rodMat);
+            bottomRod.position.set(0, -(MAP_HEIGHT / 2 + 7) * Math.cos(Math.PI / 3.2), -((MAP_HEIGHT / 2 + 7) * Math.sin(Math.PI / 3.2)));
+            bottomRod.rotation.x = -Math.PI / 3.2;
+            mapGroup.add(bottomRod);
+        }
+
+        /* Konwersja współrzędnych [lat, lon] do 3D na sferze */
+        function latLonToGlobe(lat, lon, r = GLOBE_RADIUS) {
+            const phi = (90 - lat) * (Math.PI / 180);
+            const theta = (lon + 180) * (Math.PI / 180);
+            const x = -(r * Math.sin(phi) * Math.cos(theta));
+            const z = (r * Math.sin(phi) * Math.sin(theta));
+            const y = (r * Math.cos(phi));
+            return new THREE.Vector3(x, y, z);
+        }
+
+        /* Konwersja współrzędnych [lat, lon] na płaską mapę regionalną */
+        function latLonToMap(lat, lon) {
+            // Normalizacja długości geograficznej dla Kamczatki/Azji (np. 158.6E -> -201.4W)
+            let normLon = lon;
+            if (normLon > 100) normLon -= 360;
+
+            // Zakres dla Ameryki Północnej z Atlantykiem i Pacyfikiem
+            const nx = (normLon - (-205)) / 210;
+            const ny = (lat - 10) / 72;
+            const x = (nx - 0.5) * MAP_WIDTH;
+            const y = (ny - 0.5) * MAP_HEIGHT;
+            const z = 2.4;
+            return new THREE.Vector3(x, y, z);
+        }
+
+        /* =========================================================================
+           ALGORYTM GEODEZJI: RYSOWANIE TRAS CAŁKOWICIE NA POWIERZCHNI KULI ZIEMSKIEJ
+           ========================================================================= */
+        function getGreatCircleInterpolatedPoints(waypoints, segmentsPerLeg = 20, radius = GLOBE_RADIUS + 1.8) {
+            const densePoints = [];
+
+            for (let i = 0; i < waypoints.length - 1; i++) {
+                const p1 = waypoints[i];
+                const p2 = waypoints[i + 1];
+
+                const v1 = latLonToGlobe(p1.lat, p1.lon, 1.0);
+                const v2 = latLonToGlobe(p2.lat, p2.lon, 1.0);
+
+                for (let j = 0; j < segmentsPerLeg; j++) {
+                    const t = j / segmentsPerLeg;
+                    // Interpolacja sferyczna (SLERP) - rzutujemy każdy punkt dokładnie na promień kuli
+                    const v = new THREE.Vector3().lerpVectors(v1, v2, t).normalize().multiplyScalar(radius);
+                    densePoints.push(v);
+                }
+            }
+
+            // Ostatni punkt
+            const lastP = waypoints[waypoints.length - 1];
+            densePoints.push(latLonToGlobe(lastP.lat, lastP.lon, radius));
+
+            return densePoints;
+        }
+
+        function getFlatMapInterpolatedPoints(waypoints, segmentsPerLeg = 16) {
+            const densePoints = [];
+
+            for (let i = 0; i < waypoints.length - 1; i++) {
+                const p1 = waypoints[i];
+                const p2 = waypoints[i + 1];
+
+                const v1 = latLonToMap(p1.lat, p1.lon);
+                const v2 = latLonToMap(p2.lat, p2.lon);
+
+                for (let j = 0; j < segmentsPerLeg; j++) {
+                    const t = j / segmentsPerLeg;
+                    densePoints.push(new THREE.Vector3().lerpVectors(v1, v2, t));
+                }
+            }
+
+            const lastP = waypoints[waypoints.length - 1];
+            densePoints.push(latLonToMap(lastP.lat, lastP.lon));
+
+            return densePoints;
+        }
+
+        /* Rysowanie tras 3D */
+        function buildRoutes() {
+            EXPLORERS.forEach((exp, idx) => {
+                // 1. Globusowa geodezyjna trasa 3D (pełna i ciągła na powierzchni Ziemi)
+                const gDensePts = getGreatCircleInterpolatedPoints(exp.points, 24, GLOBE_RADIUS + 1.6);
+                const gCurve = new THREE.CatmullRomCurve3(gDensePts);
+                const gGeo = new THREE.TubeGeometry(gCurve, gDensePts.length * 3, 0.75, 8, false);
+                const gMat = new THREE.MeshStandardMaterial({
+                    color: new THREE.Color(exp.color),
+                    emissive: new THREE.Color(exp.color),
+                    emissiveIntensity: 0.95,
+                    roughness: 0.15
+                });
+                const gMesh = new THREE.Mesh(gGeo, gMat);
+                globeGroup.add(gMesh);
+
+                // Waypointy na globie - tylko dla punktów kluczowych
+                const gWaypoints = [];
+                exp.points.forEach((pt) => {
+                    const dotGeo = new THREE.SphereGeometry(1.6, 16, 16);
+                    const dotMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+                    const dot = new THREE.Mesh(dotGeo, dotMat);
+                    dot.position.copy(latLonToGlobe(pt.lat, pt.lon, GLOBE_RADIUS + 2.0));
+                    dot.visible = false;
+                    globeGroup.add(dot);
+                    gWaypoints.push(dot);
+                });
+
+                // 2. Mapa Płaska
+                const mDensePts = getFlatMapInterpolatedPoints(exp.points, 18);
+                const mCurve = new THREE.CatmullRomCurve3(mDensePts);
+                const mGeo = new THREE.TubeGeometry(mCurve, mDensePts.length * 2, 0.85, 8, false);
+                const mMat = gMat.clone();
+                const mMesh = new THREE.Mesh(mGeo, mMat);
+                mMesh.rotation.x = -Math.PI / 3.2;
+                mapGroup.add(mMesh);
+
+                // Znacznik statku/wyprawy (stożek/kompas zorientowany wzdłuż trasy)
+                const markerGeo = new THREE.ConeGeometry(2.4, 6.0, 8);
+                markerGeo.rotateX(Math.PI / 2);
+                const markerMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+                const markerGlobe = new THREE.Mesh(markerGeo, markerMat);
+                globeGroup.add(markerGlobe);
+
+                routeCurves[exp.id] = { gCurve, mCurve, gMesh, mMesh };
+                routeMarkers[exp.id] = markerGlobe;
+                routeWaypointObjects[exp.id] = gWaypoints;
+            });
+        }
+
+        /* =========================================================================
+           5. INTERFEJS I PRZEŁĄCZANIE WIDOKÓW
+           ========================================================================= */
+        function switchView(mode) {
+            viewMode = mode;
+            document.getElementById('tab-globe').classList.toggle('active', mode === 'globe');
+            document.getElementById('tab-map').classList.toggle('active', mode === 'map');
+
+            if (mode === 'globe') {
+                globeGroup.visible = true;
+                mapGroup.visible = false;
+                focusOnExplorer(EXPLORERS[currentExplorerIndex]);
+            } else {
+                globeGroup.visible = false;
+                mapGroup.visible = true;
+                new TWEEN.Tween(camera.position)
+                    .to({ x: 0, y: -45, z: 250 }, 800)
+                    .easing(TWEEN.Easing.Cubic.Out)
+                    .start();
+                controls.target.set(0, 0, 0);
+            }
+        }
+
+        function renderSidebar(filteredList = EXPLORERS) {
+            const container = document.getElementById('explorerListContainer');
+            container.innerHTML = '';
+            document.getElementById('route-count-badge').innerText = `${filteredList.length} tras`;
+
+            filteredList.forEach(exp => {
+                const globalIdx = EXPLORERS.findIndex(e => e.id === exp.id);
+                const card = document.createElement('div');
+                card.className = `explorer-card ${globalIdx === currentExplorerIndex ? 'active' : ''}`;
+                card.id = `exp-card-${globalIdx}`;
+                card.onclick = () => selectExplorer(globalIdx);
+                card.innerHTML = `
+                    <div class="card-row-1">
+                        <span class="card-name">
+                            <span class="color-dot" style="background:${exp.color}; color:${exp.color};"></span>
+                            ${exp.name}
+                        </span>
+                        <span class="card-years">${exp.years}</span>
+                    </div>
+                    <div class="card-desc-brief">${exp.country}</div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function filterExplorers(cat, btn) {
+            document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+            btn.classList.add('active');
+
+            if (cat === 'all') {
+                renderSidebar(EXPLORERS);
+            } else {
+                const filtered = EXPLORERS.filter(e => e.category === cat);
+                renderSidebar(filtered);
+            }
+        }
+
+        function selectExplorer(idx) {
+            currentExplorerIndex = idx;
+            const exp = EXPLORERS[idx];
+
+            document.querySelectorAll('.explorer-card').forEach(c => c.classList.remove('active'));
+            const activeCard = document.getElementById(`exp-card-${idx}`);
+            if (activeCard) activeCard.classList.add('active');
+
+            // Aktualizacja fiszki
+            document.getElementById('expCountryBadge').innerHTML = `<i class="fa-solid fa-flag"></i> ${exp.country}`;
+            document.getElementById('expHeaderTitle').innerText = exp.name;
+            document.getElementById('expMainSummary').innerText = exp.summary;
+            document.getElementById('expRouteGeoDetails').innerHTML = `<strong>Odkryte obiekty i szlak:</strong><br>${exp.details}`;
+            document.getElementById('expExamTipContent').innerText = exp.examTip;
+
+            // Podświetlenie aktywnej trasy w 3D
+            EXPLORERS.forEach((e, i) => {
+                const item = routeCurves[e.id];
+                const marker = routeMarkers[e.id];
+                const waypoints = routeWaypointObjects[e.id] || [];
+                const isSelected = (i === idx);
+
+                if (item) {
+                    item.gMesh.material.opacity = isSelected ? 1.0 : 0.18;
+                    item.gMesh.material.transparent = !isSelected;
+                    item.mMesh.material.opacity = isSelected ? 1.0 : 0.18;
+                    item.mMesh.material.transparent = !isSelected;
+                }
+                if (marker) marker.visible = isSelected;
+                
+                // Waypointy widoczne wyłącznie dla wybranej trasy
+                waypoints.forEach(w => {
+                    w.visible = isSelected;
+                });
+            });
+
+            if (viewMode === 'globe') {
+                focusOnExplorer(exp);
+            }
+        }
+
+        function focusOnExplorer(exp) {
+            const mid = exp.points[Math.floor(exp.points.length / 2)];
+            let normLon = mid.lon;
+            if (normLon > 100) normLon -= 360;
+            const target = latLonToGlobe(mid.lat, normLon, GLOBE_RADIUS + 140);
+
+            new TWEEN.Tween(camera.position)
+                .to({ x: target.x * 1.35, y: target.y * 1.35, z: target.z * 1.35 }, 1000)
+                .easing(TWEEN.Easing.Cubic.Out)
+                .start();
+        }
+
+        /* Lektor mowy (Web Speech API) */
+        function speakCurrentInfo() {
+            if (!('speechSynthesis' in window)) {
+                alert('Twoja przeglądarka nie obsługuje syntezy mowy.');
+                return;
+            }
+            window.speechSynthesis.cancel();
+            const exp = EXPLORERS[currentExplorerIndex];
+            const text = `${exp.name}. ${exp.years}. ${exp.country}. ${exp.summary}. Pewniak na konkursie: ${exp.examTip}`;
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'pl-PL';
+            utterance.rate = 1.05;
+            window.speechSynthesis.speak(utterance);
+        }
+
+        /* =========================================================================
+           6. TRYB QUIZU KONKURSOWEGO
+           ========================================================================= */
+        let isQuizMode = false;
+        let quizIdx = 0;
+        let quizScore = 0;
+        let quizAttempts = 0;
+
+        function toggleMode() {
+            isQuizMode = !isQuizMode;
+            document.getElementById('study-container').style.display = isQuizMode ? 'none' : 'block';
+            document.getElementById('quiz-container').style.display = isQuizMode ? 'flex' : 'none';
+            document.getElementById('mode-label').innerText = isQuizMode ? 'Tryb Nauki' : 'Tryb Quizu';
+            document.getElementById('btn-mode-toggle').classList.toggle('quiz-active', isQuizMode);
+
+            if (isQuizMode) {
+                quizIdx = 0;
+                quizScore = 0;
+                quizAttempts = 0;
+                loadQuestion(0);
+            }
+        }
+
+        function loadQuestion(i) {
+            const q = QUIZ_QUESTIONS[i];
+            document.getElementById('quizQuestionText').innerText = `${i + 1}. ${q.q}`;
+            document.getElementById('quizFeedbackBox').style.display = 'none';
+            document.getElementById('quizNextBtn').style.display = 'none';
+
+            const container = document.getElementById('quizAnswersBox');
+            container.innerHTML = '';
+
+            q.options.forEach((opt, optIndex) => {
+                const btn = document.createElement('button');
+                btn.className = 'quiz-opt';
+                btn.innerText = opt;
+                btn.onclick = () => checkAnswer(optIndex);
+                container.appendChild(btn);
+            });
+
+            // Podświetlenie odpowiedniej trasy
+            const targetExpIdx = EXPLORERS.findIndex(e => e.id === q.expId);
+            if (targetExpIdx !== -1) {
+                selectExplorer(targetExpIdx);
+            }
+        }
+
+        function checkAnswer(chosenIndex) {
+            const q = QUIZ_QUESTIONS[quizIdx];
+            const buttons = document.querySelectorAll('.quiz-opt');
+            buttons.forEach(b => b.disabled = true);
+
+            quizAttempts++;
+            const isCorrect = (chosenIndex === q.correct);
+            if (isCorrect) {
+                buttons[chosenIndex].classList.add('correct');
+                quizScore++;
+            } else {
+                buttons[chosenIndex].classList.add('wrong');
+                buttons[q.correct].classList.add('correct');
+            }
+
+            const pct = Math.round((quizScore / quizAttempts) * 100);
+            document.getElementById('quizScoreText').innerText = `Punkty: ${quizScore} / ${quizAttempts}`;
+            document.getElementById('quizAccuracyText').innerText = `Skuteczność: ${pct}%`;
+
+            const feedback = document.getElementById('quizFeedbackBox');
+            feedback.innerHTML = `<strong>${isCorrect ? '✅ Doskonale!' : '❌ Wyjaśnienie:'}</strong> ${q.expl}`;
+            feedback.style.display = 'block';
+
+            document.getElementById('quizNextBtn').style.display = 'flex';
+        }
+
+        function loadNextQuestion() {
+            quizIdx = (quizIdx + 1) % QUIZ_QUESTIONS.length;
+            loadQuestion(quizIdx);
+        }
+
+        /* =========================================================================
+           7. PĘTLA RENDEROWANIA I ANIMACJE
+           ========================================================================= */
+        function onResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function animate(time) {
+            requestAnimationFrame(animate);
+
+            TWEEN.update();
+            controls.update();
+
+            // Animacja znacznika wyprawy
+            animProgress = (animProgress + 0.0020) % 1;
+            const exp = EXPLORERS[currentExplorerIndex];
+            const item = routeCurves[exp.id];
+            const marker = routeMarkers[exp.id];
+
+            if (item && marker) {
+                const curve = (viewMode === 'globe') ? item.gCurve : item.mCurve;
+                const pos = curve.getPointAt(animProgress);
+                const tangent = curve.getTangentAt(animProgress);
+                marker.position.copy(pos);
+                marker.lookAt(pos.clone().add(tangent));
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        window.addEventListener('DOMContentLoaded', init3D);
+    </script>
+</body>
+</html>
