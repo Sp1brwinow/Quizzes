@@ -423,6 +423,7 @@
                 <input type="password" id="gemini-key-input" class="api-input" placeholder="Wklej tutaj swój klucz API (np. AIzaSy...)">
                 <button type="button" class="api-btn api-btn-sec" onclick="toggleKeyVisibility()" id="toggle-vis-btn">👁️ Pokaż</button>
                 <button type="button" class="api-btn api-btn-save" onclick="saveGeminiKey()">💾 Zapisz klucz</button>
+                <button type="button" class="api-btn api-btn-sec" onclick="detectAvailableModels()" title="Pobiera z Google dokładną listę aktywnych modeli dla Twojego klucza">🔍 Wykryj modele</button>
                 <button type="button" class="api-btn api-btn-del" onclick="removeGeminiKey()">🗑️ Usuń</button>
             </div>
 
@@ -433,14 +434,22 @@
                 </label>
                 <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
                     <select id="gemini-model-select" onchange="saveSelectedModel()" style="flex: 1; min-width: 250px; background: #0b1120; color: #ffffff; border: 1px solid #475569; padding: 9px 12px; border-radius: 8px; font-size: 0.95rem; cursor: pointer;">
-                        <option value="gemini-2.5-flash" selected>⚡ Gemini 2.5 Flash (Domyślny – Najnowszy, błyskawiczny)</option>
-                        <option value="gemini-2.0-flash">🚀 Gemini 2.0 Flash (Nowa generacja 2.0 – Osobny limit)</option>
-                        <option value="gemini-1.5-flash">🛡️ Gemini 1.5 Flash (Sprawdzony 1.5 Flash – Osobny limit)</option>
+                        <option value="gemini-2.0-flash" selected>🚀 Gemini 2.0 Flash (Zalecany – Szybki, stabilny i bezpłatny)</option>
+                        <option value="gemini-2.0-flash-lite">⚡ Gemini 2.0 Flash-Lite (Super szybki – wyższy limit zapytań)</option>
+                        <option value="gemini-3.7-flash">🌟 Gemini 3.7 Flash (Najnowsza generacja 3.7)</option>
+                        <option value="gemini-3.6-flash">🔮 Gemini 3.6 Flash</option>
+                        <option value="gemini-3.1-flash">✨ Gemini 3.1 Flash</option>
+                        <option value="gemini-3-flash">💎 Gemini 3.0 Flash</option>
+                        <option value="gemini-2.5-flash">⚡ Gemini 2.5 Flash</option>
+                        <option value="gemini-2.5-pro">🧠 Gemini 2.5 Pro (Zaawansowane wnioskowanie)</option>
+                        <option value="gemini-1.5-flash">🛡️ Gemini 1.5 Flash (Klasyczny 1.5 Flash)</option>
+                        <option value="gemini-1.5-pro">📚 Gemini 1.5 Pro</option>
+                        <option value="auto">🤖 Tryb automatyczny (Wybiera najlepszy dostępny model)</option>
                     </select>
                     <span id="model-saved-indicator" style="font-size: 0.85rem; color: #4ade80; display: none;">✅ Zapisano</span>
                 </div>
                 <p style="font-size: 0.82rem; color: #94a3b8; margin: 7px 0 0 0; line-height: 1.4;">
-                    💡 <em>Wskazówka: Jeśli wykorzystasz darmowy limit zapytań na jednym modelu (np. 15 zapytań/min), po prostu przełącz model na inny, aby móc dalej rozmawiać bez przerw.</em>
+                    💡 <em>Wskazówka: Jeśli model zwróci błąd lub wykorzystasz darmowy limit zapytań (np. 15 zapytań/min), przełącz na inny model (np. Gemini 2.0 Flash lub Gemini 3.x), aby móc dalej swobodnie korzystać.</em>
                 </p>
             </div>
 
@@ -694,7 +703,7 @@
 
             // Przywrócenie wybranego modelu z pamięci
             if (selectEl) {
-                const savedModel = localStorage.getItem('gemini_selected_model') || 'gemini-2.5-flash';
+                const savedModel = localStorage.getItem('gemini_selected_model') || 'gemini-2.0-flash';
                 selectEl.value = savedModel;
             }
 
@@ -722,6 +731,69 @@
             localStorage.setItem('gemini_api_key', input);
             updateKeyStatusDisplay();
             alert('Klucz Gemini API został pomyślnie zapisany w przeglądarce!\nWszystkie quizy i gry AI będą teraz z niego automatycznie korzystać.');
+        }
+
+        async function detectAvailableModels() {
+            const apiKey = localStorage.getItem('gemini_api_key') || document.getElementById('gemini-key-input').value.trim();
+            const selectEl = document.getElementById('gemini-model-select');
+            
+            if (!apiKey || apiKey.length < 10) {
+                alert('Wprowadź i zapisz najpierw swój klucz API Gemini!');
+                return;
+            }
+
+            const btn = event.target;
+            const originalText = btn.innerText;
+            btn.innerText = '⏳ Pobieram...';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+                if (!res.ok) {
+                    const err = await res.json().catch(() => ({}));
+                    throw new Error(err?.error?.message || `Błąd serwera (${res.status})`);
+                }
+
+                const data = await res.json();
+                const available = (data.models || [])
+                    .filter(m => m.supportedGenerationMethods && m.supportedGenerationMethods.includes('generateContent'))
+                    .map(m => m.name.replace(/^models\//, ''));
+
+                if (available.length === 0) {
+                    alert('Twój klucz jest poprawny, ale Google nie zwrócił żadnych modeli tekstowych.');
+                    return;
+                }
+
+                const currentVal = selectEl.value;
+                selectEl.innerHTML = '';
+
+                // Dodaj znalezione modele
+                available.forEach(m => {
+                    const opt = document.createElement('option');
+                    opt.value = m;
+                    opt.innerText = (m.includes('flash') ? '⚡ ' : '🧠 ') + m;
+                    if (m === currentVal) opt.selected = true;
+                    selectEl.appendChild(opt);
+                });
+
+                // Dodaj tryb automatyczny
+                const autoOpt = document.createElement('option');
+                autoOpt.value = 'auto';
+                autoOpt.innerText = '🤖 Tryb automatyczny (Zalecany)';
+                selectEl.appendChild(autoOpt);
+
+                if (!selectEl.value && available.length > 0) {
+                    selectEl.value = available.find(m => m.includes('flash')) || available[0];
+                }
+
+                saveSelectedModel();
+                alert(`✅ Wykryto ${available.length} aktywnych modeli dla Twojego klucza:\n\n${available.join('\n')}\n\nLista wyboru została automatycznie zaktualizowana!`);
+            } catch (err) {
+                alert('⚠️ Nie udało się pobrać listy modeli: ' + err.message);
+            } finally {
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }
         }
 
         function removeGeminiKey() {

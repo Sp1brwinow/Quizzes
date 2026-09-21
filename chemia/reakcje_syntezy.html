@@ -562,6 +562,240 @@
             margin-bottom: 4px;
         }
 
+        /* Karta Informacji o Powstałej Substancji */
+        .substance-card {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.9) 100%);
+            border: 2px solid #38bdf8;
+            border-radius: 16px;
+            padding: 22px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(56, 189, 248, 0.2);
+            animation: fadeIn 0.35s ease;
+        }
+
+        .substance-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+            padding-bottom: 10px;
+        }
+
+        .substance-title {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .badges-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .badge-stability {
+            font-size: 0.85rem;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .badge-stable {
+            background: rgba(34, 197, 94, 0.2);
+            border: 1px solid #22c55e;
+            color: #86efac;
+        }
+
+        .badge-unstable {
+            background: rgba(244, 63, 94, 0.2);
+            border: 1px solid #f43f5e;
+            color: #fca5a5;
+        }
+
+        .badge-state {
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid #38bdf8;
+            color: #7dd3fc;
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 999px;
+        }
+
+        .substance-details {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            font-size: 0.95rem;
+            line-height: 1.55;
+            color: #cbd5e1;
+        }
+
+        .detail-row {
+            background: rgba(15, 23, 42, 0.6);
+            border-left: 3px solid #38bdf8;
+            padding: 8px 14px;
+            border-radius: 6px;
+        }
+
+        .detail-row strong {
+            color: #f1f5f9;
+        }
+
+        /* Sekcja Gemini AI */
+        .gemini-ai-section {
+            background: linear-gradient(135deg, rgba(88, 28, 135, 0.3) 0%, rgba(15, 23, 42, 0.8) 100%);
+            border: 1px solid rgba(168, 85, 247, 0.4);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .gemini-ai-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .gemini-ai-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #d8b4fe;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .gemini-btn {
+            background: linear-gradient(135deg, #9333ea 0%, #7e22ce 100%);
+            color: #ffffff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 4px 12px rgba(147, 51, 234, 0.3);
+        }
+
+        .gemini-btn:hover {
+            background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(168, 85, 247, 0.45);
+        }
+
+        .gemini-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .gemini-chat-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .gemini-input {
+            flex: 1;
+            min-width: 240px;
+            background: #0b1120;
+            border: 1px solid #475569;
+            border-radius: 8px;
+            padding: 8px 12px;
+            color: #ffffff;
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        .gemini-input:focus {
+            border-color: #c084fc;
+        }
+
+        .gemini-response-box {
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid rgba(168, 85, 247, 0.5);
+            border-radius: 12px;
+            padding: 16px 20px;
+            font-size: 0.96rem;
+            line-height: 1.65;
+            color: #f8fafc !important;
+            display: none;
+            animation: fadeIn 0.3s ease;
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
+        }
+
+        .gemini-response-box p,
+        .gemini-response-box li,
+        .gemini-response-box span,
+        .gemini-response-box div {
+            color: #f8fafc;
+        }
+
+        .gemini-response-box strong,
+        .gemini-response-box b {
+            color: #38bdf8 !important;
+            font-weight: 700;
+        }
+
+        .gemini-response-box em,
+        .gemini-response-box i {
+            color: #cbd5e1 !important;
+        }
+
+        .gemini-response-box h1,
+        .gemini-response-box h2,
+        .gemini-response-box h3,
+        .gemini-response-box h4 {
+            color: #d8b4fe !important;
+            margin-top: 10px;
+            margin-bottom: 6px;
+            font-weight: 700;
+        }
+
+        .gemini-response-box ul,
+        .gemini-response-box ol {
+            margin: 8px 0 8px 22px;
+            color: #f8fafc;
+        }
+
+        .gemini-response-box li {
+            margin-bottom: 6px;
+            color: #f8fafc;
+        }
+
+        .gemini-key-missing-hint {
+            font-size: 0.84rem;
+            color: #cbd5e1;
+            background: rgba(30, 41, 59, 0.8);
+            padding: 8px 12px;
+            border-radius: 8px;
+            border-left: 3px solid #fbbf24;
+        }
+
+        .gemini-key-missing-hint a {
+            color: #38bdf8;
+            text-decoration: underline;
+        }
+
         /* Ściągawka Dydaktyczna / Reguła Krzyżowa */
         .cheatsheet-card {
             background: rgba(15, 23, 42, 0.85);
@@ -706,10 +940,16 @@
                     <span class="valence-hint">Wpisz liczbę rzymską (np. I, II, III, IV...) lub arabską (1, 2, 3...)</span>
                 </div>
 
-                <div style="display: flex; justify-content: space-around; flex-wrap: wrap; gap: 14px;">
+                <div style="display: flex; justify-content: space-around; align-items: flex-end; flex-wrap: wrap; gap: 14px;">
                     <div class="val-input-container">
                         <span class="val-label">Wiązania 1. pierwiastka</span>
                         <input type="text" id="val1" class="chem-input input-val" maxlength="4" placeholder="I / 1" oninput="handleInputUpdate()" title="Liczba wiązań pierwszego pierwiastka">
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: flex-end;">
+                        <button type="button" class="btn-small" style="background: linear-gradient(135deg, #d97706 0%, #b45309 100%); color: #ffffff; border: none; padding: 9px 18px; font-weight: 700; border-radius: 8px; box-shadow: 0 4px 12px rgba(217, 119, 6, 0.35); cursor: pointer;" onclick="checkValencesOnly()">
+                            🔍 Sprawdź wiązania
+                        </button>
                     </div>
 
                     <div class="val-input-container">
@@ -717,6 +957,9 @@
                         <input type="text" id="val2" class="chem-input input-val" maxlength="4" placeholder="II / 2" oninput="handleInputUpdate()" title="Liczba wiązań drugiego pierwiastka">
                     </div>
                 </div>
+
+                <!-- Komunikat weryfikacji samych wiązań -->
+                <div id="val-feedback" style="display: none; padding: 12px 16px; border-radius: 10px; font-size: 0.92rem; line-height: 1.5; margin-top: 8px; animation: fadeIn 0.3s ease;"></div>
             </div>
 
             <!-- Formularz Równania: Substrat 1 + Substrat 2 -> Produkt -->
@@ -797,6 +1040,56 @@
                 <div id="feedback-body"></div>
             </div>
 
+            <!-- Karta Informacji o Powstałej Substancji (Lokalny JS + Gemini AI) -->
+            <div id="substance-info-card" class="substance-card" style="display: none;">
+                <div class="substance-header">
+                    <div class="substance-title">
+                        <span>🧪 Powstała substancja:</span>
+                        <span id="sub-card-name" style="color: #38bdf8;">-</span>
+                    </div>
+                    <div class="badges-row">
+                        <span id="sub-card-stability" class="badge-stability badge-stable">✅ Stabilna</span>
+                        <span id="sub-card-state" class="badge-state">Ciało stałe</span>
+                    </div>
+                </div>
+
+                <div class="substance-details">
+                    <div class="detail-row">
+                        <strong>🏷️ Wzór i nazwy:</strong> <span id="sub-card-formula-names">-</span>
+                    </div>
+                    <div class="detail-row">
+                        <strong>🏭 Zastosowanie w życiu i przemyśle:</strong> <span id="sub-card-uses">-</span>
+                    </div>
+                    <div class="detail-row">
+                        <strong>💡 Ciekawostka chemiczna:</strong> <span id="sub-card-curiosity">-</span>
+                    </div>
+                </div>
+
+                <!-- Sekcja Gemini AI -->
+                <div class="gemini-ai-section">
+                    <div class="gemini-ai-header">
+                        <span class="gemini-ai-title">🤖 Inteligentny Asystent Chemiczny (Gemini AI)</span>
+                        <button type="button" class="gemini-btn" id="gemini-ask-btn" onclick="askGeminiAboutCompound()">
+                            ✨ Zapytaj Gemini AI o ten związek
+                        </button>
+                    </div>
+
+                    <div class="gemini-chat-row">
+                        <input type="text" id="gemini-custom-question" class="gemini-input" placeholder="Zadaj własne pytanie o tę substancję (np. czy rozpuszcza się w wodzie, czy jest palna?)..." onkeydown="if(event.key==='Enter') askGeminiAboutCompound()">
+                        <button type="button" class="btn-small" onclick="askGeminiAboutCompound()">💬 Zapytaj</button>
+                    </div>
+
+                    <div id="gemini-ai-response" class="gemini-response-box">
+                        <!-- Odpowiedź AI -->
+                    </div>
+
+                    <div id="gemini-missing-key-note" class="gemini-key-missing-hint" style="display: none;">
+                        🔑 <em>Chcesz odblokować nielimitowane analizy AI dla dowolnych związków? Skonfiguruj darmowy klucz Google Gemini w <a href="../pomocnicze.html">Bazie Quizów</a>.</em>
+                    </div>
+                </div>
+
+            </div>
+
         </div>
 
         <!-- Ściągawka Dydaktyczna -->
@@ -846,7 +1139,7 @@
             'I':  { name: 'jod', valences: [1, 3, 5, 7], diatomic: true, metal: false },
             'S':  { name: 'siarka', valences: [2, 4, 6], diatomic: false, metal: false },
             'C':  { name: 'węgiel', valences: [2, 4], diatomic: false, metal: false },
-            'P':  { name: 'fosfor', valences: [3, 5], diatomic: false, metal: false }, // cząsteczka P4 lub P
+            'P':  { name: 'fosfor', valences: [3, 5], diatomic: false, metal: false },
             'Na': { name: 'sód', valences: [1], diatomic: false, metal: true },
             'K':  { name: 'potas', valences: [1], diatomic: false, metal: true },
             'Li': { name: 'lit', valences: [1], diatomic: false, metal: true },
@@ -859,6 +1152,315 @@
             'Zn': { name: 'cynk', valences: [2], diatomic: false, metal: true },
             'Pb': { name: 'ołów', valences: [2, 4], diatomic: false, metal: true },
             'Ag': { name: 'srebro', valences: [1], diatomic: false, metal: true }
+        };
+
+        // BAZA WIEDZY O POWSTAŁYCH SUBSTANCJACH CHEMICZNYCH (Lokalny JS)
+        const COMPOUNDS_DB = {
+            // Tlenki
+            'H2O': {
+                name: 'Woda (Tlenek wodoru)',
+                common: 'Woda destylowana, lód, para wodna',
+                stable: true,
+                state: 'Ciecz (w temp. pokojowej)',
+                uses: 'Główny składnik organizmów żywych (60-70% masy człowieka), uniwersalny rozpuszczalnik chemiczny, chłodziwo reaktorów i silników.',
+                curiosity: 'Jako jedna z nielicznych substancji na Ziemi rozszerza się podczas zamarzania (lód pływa po powierzchni wody, co umożliwia rybom przetrwanie zimy pod lodem).'
+            },
+            'H2O2': {
+                name: 'Nadtlenek wodoru',
+                common: 'Woda utleniona (roztwór 3%), perhydrol (30%)',
+                stable: true,
+                state: 'Ciecz',
+                uses: 'Środek odkażający rany, wybielacz w przemyśle tekstylnym i fryzjerstwie, składnik paliwa rakietowego.',
+                curiosity: 'Samorzutnie rozkłada się na wodę i tlen pod wpływem światła lub enzymu katalazy zawartego we krwi (dlatego woda utleniona pieni się na ranie).'
+            },
+            'CO2': {
+                name: 'Tlenek węgla(IV)',
+                common: 'Dwutlenek węgla, suchy lód (stan stały)',
+                stable: true,
+                state: 'Gaz (bezbarwny, bezwonny)',
+                uses: 'Nasycanie napojów gazowanych, napełnianie gaśnic śniegowych, suchy lód do mrożenia żywności, fotosynteza roślin.',
+                curiosity: 'Jest ok. 1,5 raza cięższy od powietrza, dlatego gromadzi się w jaskiniach i piwnicach wypierając tlen. Nie pali się i gasi płomień.'
+            },
+            'CO': {
+                name: 'Tlenek węgla(II)',
+                common: 'Czad',
+                stable: true,
+                state: 'Gaz (silnie toksyczny, bezbarwny, bezwonny)',
+                uses: 'Reduktor w hutnictwie do wytopu żelaza z rud w wielkich piecach, synteza chemiczna.',
+                curiosity: 'Jest śmiertelnie niebezpieczny, ponieważ łączy się z hemoglobiną we krwi ponad 200 razy silniej niż tlen, powodując szybkie niedotlenienie organizmu.'
+            },
+            'NaCl': {
+                name: 'Chlorek sodu',
+                common: 'Sól kuchenna, sól kamienna, halit',
+                stable: true,
+                state: 'Ciało stałe (białe kryształki)',
+                uses: 'Przyprawa i naturalny konserwant żywności, zimowe odladzanie dróg, surowiec do produkcji chloru i wodorotlenku sodu.',
+                curiosity: 'Tworzy regularną sieć krystaliczną, w której każdy jon sodu Na⁺ jest otoczony przez 6 jonów chloru Cl⁻.'
+            },
+            'Al2O3': {
+                name: 'Tlenek glinu',
+                common: 'Korund, glinka; z domieszkami: rubin (czerwony) i szafir (niebieski)',
+                stable: true,
+                state: 'Ciało stałe (bardzo twardy biały proszek/kryształ)',
+                uses: 'Materiały ścierne (papiery ścierne, tarcze szlifierskie), produkcja metalicznego aluminium, lasery rubinowe, jubilerstwo.',
+                curiosity: 'Zajmuje 9. miejsce w 10-stopniowej skali twardości Mohsa – twardszy od niego w przyrodzie jest niemal wyłącznie diament!'
+            },
+            'MgO': {
+                name: 'Tlenek magnezu',
+                common: 'Magnezja palona',
+                stable: true,
+                state: 'Ciało stałe (biały proszek)',
+                uses: 'Cegły ogniotrwałe do pieców hutniczych (odporne do 2800°C), magnezja dla gimnastyków i wspinaczy (pochłania pot), leki zobojętniające kwas żołądkowy.',
+                curiosity: 'Powstaje podczas spalania magnezu z wydzieleniem oślepiająco jasnego, białego światła (dawniej używanego jako flesz fotograficzny).'
+            },
+            'CaO': {
+                name: 'Tlenek wapnia',
+                common: 'Wapno palone',
+                stable: true,
+                state: 'Ciało stałe (biały proszek/bryły)',
+                uses: 'Produkcja zapraw murarskich i cementu w budownictwie, odkwaszanie gleb rolniczych, oczyszczanie spalin z tlenków siarki.',
+                curiosity: 'W kontakcie z wodą gwałtownie reaguje (tzw. gaszenie wapna), wydzielając tak olbrzymią ilość ciepła, że woda może się zagotować!'
+            },
+            'Fe2O3': {
+                name: 'Tlenek żelaza(III)',
+                common: 'Rdza, hematyt (ruda żelaza), czerwień żelazowa',
+                stable: true,
+                state: 'Ciało stałe (czerwonobrunatny proszek)',
+                uses: 'Główna ruda żelaza do produkcji stali, trwały pigment malarski i budowlany, nośnik w dawnych taśmach magnetycznych.',
+                curiosity: 'To właśnie obecność tego tlenku nadaje Marsowi charakterystyczny rdzawy kolor, przez co nazywamy go Czerwoną Planetą.'
+            },
+            'FeO': {
+                name: 'Tlenek żelaza(II)',
+                common: 'Wustyt',
+                stable: true,
+                state: 'Ciało stałe (czarny proszek)',
+                uses: 'Składnik pigmentów ceramicznych, produkcja szkła pochłaniającego ciepło.',
+                curiosity: 'Jest nietrwały na wolnym powietrzu i łatwo utlenia się dalej do tlenku żelaza(III).'
+            },
+            'Fe3O4': {
+                name: 'Tlenek żelaza(II,III)',
+                common: 'Magnetyt',
+                stable: true,
+                state: 'Ciało stałe (czarny, magnetyczny minerał)',
+                uses: 'Wytop żelaza, tonery do drukarek laserowych, nośniki danych.',
+                curiosity: 'Jest naturalnym magnesem trwałym – to z niego starożytni żeglarze wytwarzali pierwsze igły magnetyczne do kompasów.'
+            },
+            'SO2': {
+                name: 'Tlenek siarki(IV)',
+                common: 'Dwutlenek siarki',
+                stable: true,
+                state: 'Gaz (duszący zapach palącej się siarki)',
+                uses: 'Konserwant suszonych owoców i win (E220 - hamuje rozwój bakterii), bielenie wełny i papieru, produkcja kwasu siarkowego.',
+                curiosity: 'Wypuszczany do atmosfery ze spalinami węgla reaguje z parą wodną, tworząc tzw. kwaśne deszcze niszczące lasy i elewacje zabytków.'
+            },
+            'SO3': {
+                name: 'Tlenek siarki(VI)',
+                common: 'Bezwodnik kwasu siarkowego',
+                stable: true,
+                state: 'Ciało stałe / lotna ciecz',
+                uses: 'Kluczowy półprodukt do produkcji kwasu siarkowego(VI) – najważniejszego kwasu przemysłowego na świecie.',
+                curiosity: 'Gwałtownie pochłania wilgoć z powietrza, tworząc gęstą mgłę kwasu siarkowego.'
+            },
+            'NO': {
+                name: 'Tlenek azotu(II)',
+                common: 'Monotlenek azotu',
+                stable: true,
+                state: 'Gaz (bezbarwny)',
+                uses: 'Przemysłowa produkcja kwasu azotowego(V).',
+                curiosity: 'W organizmie człowieka działa jako ważny neuroprzekaźnik rozszerzający naczynia krwionośne i regulujący ciśnienie krwi (Nagroda Nobla w 1998 r.).'
+            },
+            'NO2': {
+                name: 'Tlenek azotu(IV)',
+                common: 'Dwutlenek azotu',
+                stable: true,
+                state: 'Gaz (brunatny, ostry duszący zapach)',
+                uses: 'Silny utleniacz paliw rakietowych, produkcja nawozów azotowych i materiałów wybuchowych.',
+                curiosity: 'Odpowiada za charakterystyczny rudo-brunatny kolor smogu fotochemicznego nad wielkimi miastami w upalne dni.'
+            },
+            'N2O': {
+                name: 'Tlenek azotu(I)',
+                common: 'Gaz rozweselający, podtlenek azotu',
+                stable: true,
+                state: 'Gaz (słodkawy zapach)',
+                uses: 'Środek znieczulający w stomatologii i chirurgii, gaz nośny w bitej śmietanie w sprayu, podtlenek azotu do doładowania silników (nitro).',
+                curiosity: 'Wdychanie małych ilości wywołuje stan euforii, rozluźnienie i niekontrolowany śmiech.'
+            },
+            'N2O5': {
+                name: 'Tlenek azotu(V)',
+                common: 'Bezwodnik kwasu azotowego',
+                stable: true,
+                state: 'Ciało stałe (białe niestabilne kryształy)',
+                uses: 'Zaawansowana synteza organiczna, silny utleniacz.',
+                curiosity: 'W temperaturze pokojowej łatwo ulega powolnemu samorzutnemu rozkładowi na NO₂ i tlen.'
+            },
+            'P4O10': {
+                name: 'Tlenek fosforu(V)',
+                common: 'Bezwodnik fosforowy, dziesięciotlenek tetrafosforu (często zapisywany uproszczeniem P₂O₅)',
+                stable: true,
+                state: 'Ciało stałe (śnieżnobiały proszek)',
+                uses: 'Jeden z najpotężniejszych środków odwadniających w laboratoriach chemicznych, produkcja kwasu fosforowego i nawozów.',
+                curiosity: 'Pochłania wodę tak zachłannie, że potrafi odebrać atomy wodoru i tlenu z innych cząsteczek chemicznych.'
+            },
+            'P2O5': {
+                name: 'Tlenek fosforu(V) (wzór empiryczny)',
+                common: 'Wzór rzeczywisty cząsteczki to P₄O₁₀',
+                stable: true,
+                state: 'Ciało stałe (biały proszek)',
+                uses: 'Suszenie gazów i cieczy w chemii, produkcja nawozów superfosfatowych.',
+                curiosity: 'Wzór P₂O₅ jest tradycyjnym zapisem empirycznym stosowanym w podręcznikach szkolnych.'
+            },
+            'FeS': {
+                name: 'Siarczek żelaza(II)',
+                common: 'Piryt / troilit',
+                stable: true,
+                state: 'Ciało stałe (szaroczarne kryształy)',
+                uses: 'Laboratoryjne źródło siarkowodoru (reakcja z kwasami), hutnictwo.',
+                curiosity: 'Często powstaje w warunkach beztlenowych na dnie bagien i w osadach dennych rzek w wyniku działalności bakterii siarkowych.'
+            },
+            'Fe2S3': {
+                name: 'Siarczek żelaza(III)',
+                common: 'Trisiarczek diżelaza',
+                stable: false,
+                state: 'Ciało stałe (czarny proszek, rozkłada się w wilgoci)',
+                uses: 'Oczyszczanie gazów przemysłowych z siarkowodoru.',
+                curiosity: 'W obecności wilgoci i tlenu szybko rozkłada się do tlenków żelaza i wolnej siarki.'
+            },
+            'Cu2S': {
+                name: 'Siarczek miedzi(I)',
+                common: 'Chalkozyn (cenna ruda miedzi)',
+                stable: true,
+                state: 'Ciało stałe (ołowianoszare bryły o metalicznym połysku)',
+                uses: 'Podstawowa ruda do przemysłowego wytopu metalicznej miedzi elektrolitycznej (np. w polskich kopalniach KGHM).',
+                curiosity: 'Zawiera aż 79,8% czystej miedzi w swojej masie.'
+            },
+            'CuS': {
+                name: 'Siarczek miedzi(II)',
+                common: 'Kowelin',
+                stable: true,
+                state: 'Ciało stałe (niebieskoczarny proszek)',
+                uses: 'Półprzewodniki, ogniwa fotowoltaiczne, farby przeciwporostowe.',
+                curiosity: 'Wykazuje zjawisko nadprzewodnictwa w bardzo niskich temperaturach.'
+            },
+            'CuO': {
+                name: 'Tlenek miedzi(II)',
+                common: 'Tenoryt (czarny tlenek miedzi)',
+                stable: true,
+                state: 'Ciało stałe (czarny proszek)',
+                uses: 'Barwienie szkła i ceramiki na kolor zielony i niebieski, katalizator reakcji utleniania.',
+                curiosity: 'Ogrzany z wodorem łatwo redukuje się do czystej, lśniącej różowej miedzi metalicznej.'
+            },
+            'Cu2O': {
+                name: 'Tlenek miedzi(I)',
+                common: 'Kupryt (czerwony tlenek miedzi)',
+                stable: true,
+                state: 'Ciało stałe (czerwony/ceglasty proszek)',
+                uses: 'Farby zabezpieczające kadłuby statków przed porastaniem glonami i pąklami, próba Fehlinga i Trommera na obecność cukrów.',
+                curiosity: 'Ceglasty osad Cu₂O jest dowodem obecności glukozy np. w analizie medycznej.'
+            },
+            'AlCl3': {
+                name: 'Chlorek glinu',
+                common: 'Trójchlorek glinu',
+                stable: true,
+                state: 'Ciało stałe (białożółte kryształy)',
+                uses: 'Aktywny składnik antyperspirantów (blokuje ujścia gruczołów potowych), niezastąpiony katalizator Friedela-Craftsa w chemii organicznej.',
+                curiosity: 'Sublimuje (przechodzi ze stanu stałego od razu w gaz) już w temperaturze 180°C.'
+            },
+            'FeCl3': {
+                name: 'Chlorek żelaza(III)',
+                common: 'Chlorek żelazowy',
+                stable: true,
+                state: 'Ciało stałe (brunatnoczarne kryształy)',
+                uses: 'Wytrawianie miedzianych płytek obwodów drukowanych (elektronika PCB), koagulant do oczyszczania ścieków komunalnych.',
+                curiosity: 'Reaguje z rodankami tworząc krwistoczerwony roztwór, dawniej używany w kinie i teatrze jako sztuczna krew.'
+            },
+            'HCl': {
+                name: 'Chlorowodór (w roztworze: Kwas solny)',
+                common: 'Kwas solny, duch soli',
+                stable: true,
+                state: 'Gaz (po rozpuszczeniu w wodzie ciecz)',
+                uses: 'Trawienie stali i metali, synteza tworzyw sztucznych (PVC), kwas żołądkowy (stężenie ok. 0,5% trawi białka i zabija bakterie w żołądku).',
+                curiosity: 'Czysty gazowy chlorowodór dymi na wilgotnym powietrzu, natychmiast łącząc się z parą wodną w mikroskopijne kropelki kwasu.'
+            },
+            'KCl': {
+                name: 'Chlorek potasu',
+                common: 'Sylwin',
+                stable: true,
+                state: 'Ciało stałe (białe kryształki)',
+                uses: 'Podstawowy nawóz potasowy w rolnictwie, substytut soli kuchennej dla osób z nadciśnieniem tętniczym.',
+                curiosity: 'Barwi płomień palnika na piękny, fioletowo-różowy kolor.'
+            },
+            'CaCl2': {
+                name: 'Chlorek wapnia',
+                common: 'Chlorek wapniowy',
+                stable: true,
+                state: 'Ciało stałe (białe granulki)',
+                uses: 'Pochłaniacze wilgoci w domach i szafach, zimowe odśnieżanie dróg (działa nawet przy -30°C), dodatek do serowarstwa (E509).',
+                curiosity: 'Jest tak silnie higroskopijny, że pozostawiony na stole w pokoju po kilku godzinach sam zamieni się w kałużę roztworu!'
+            },
+            'MgCl2': {
+                name: 'Chlorek magnezu',
+                common: 'Nigari (tradycyjny japoński koagulant)',
+                stable: true,
+                state: 'Ciało stałe (płatki/kryształy)',
+                uses: 'Ścinanie mleka sojowego do produkcji tofu, ekologiczne odladzanie dróg, kąpiele magnezowe i suplementacja.',
+                curiosity: 'Drugi po chlorku sodu najobficiej występujący związek w wodzie morskiej.'
+            },
+            'Na2S': {
+                name: 'Siarczek sodu',
+                common: 'Siarczek sodowy',
+                stable: true,
+                state: 'Ciało stałe (żółtawe kryształy)',
+                uses: 'Garbarstwo (usuwanie sierści ze skór bydlęcych), bielenie papieru celulozowego, produkcja barwników siarkowych.',
+                curiosity: 'W kontakcie z kwasami natychmiast wydziela trujący siarkowodór o odrażającym zapachu.'
+            },
+            'K2S': {
+                name: 'Siarczek potasu',
+                common: 'Wątroba siarczana (mieszanina polisiarczków)',
+                stable: true,
+                state: 'Ciało stałe',
+                uses: 'Składnik czarnego prochu strzeleckiego, patynowanie i postarzanie wyrobów z brązu i miedzi.',
+                curiosity: 'Może ulec samozapłonowi w przypadku szybkiego tarcia lub uderzenia.'
+            },
+            'H2S': {
+                name: 'Siarkowodór',
+                common: 'Kwas siarkowodorowy (w wodzie)',
+                stable: true,
+                state: 'Gaz (duszący, zapach zepsutych jaj)',
+                uses: 'Odczynnik analityczny w laboratoriach, synteza związków siarki.',
+                curiosity: 'W małych stężeniach intensywnie śmierdzi, ale w wyższych szybko paraliżuje nerw węchowy, przez co człowiek przestaje go czuć, co czyni go śmiertelną pułapką.'
+            },
+            'ZnS': {
+                name: 'Siarczek cynku',
+                common: 'Sfaleryt (główna ruda cynku)',
+                stable: true,
+                state: 'Ciało stałe (biały/żółtawy proszek)',
+                uses: 'Luminofor w świecących w ciemności tarczach zegarków i zabawkach, biały pigment (litopon), ekrany rentgenowskie.',
+                curiosity: 'Pod wpływem naświetlenia światłem UV emituje zielonkawe światło przez wiele minut (zjawisko fosforescencji).'
+            },
+            'ZnO': {
+                name: 'Tlenek cynku',
+                common: 'Biel cynkowa',
+                stable: true,
+                state: 'Ciało stałe (biały proszek)',
+                uses: 'Maści cynkowe na trądzik i odparzenia (działa antybakteryjnie i ściągająco), mineralne filtry UV w kremach do opalania, wulkanizacja gumy.',
+                curiosity: 'Podczas ogrzewania zmienia kolor z białego na intensywnie żółty, a po ostygnięciu znów staje się biały (termomutacja).'
+            },
+            'CH4': {
+                name: 'Metan (Wodorek węgla(IV))',
+                common: 'Gaz ziemny, gaz błotny, gaz kopalniany',
+                stable: true,
+                state: 'Gaz (bezbarwny, bezwonny, palny)',
+                uses: 'Ogrzewanie domów, paliwo do kuchenek gazowych i elektrowni, produkcja wodoru i tworzyw sztucznych.',
+                curiosity: 'Ponieważ jest bezwonny, dodaje się do niego specjalną substancję zapachową (t-butylomerkaptan), aby każdy natychmiast wyczuł nawet mały wyciek gazu.'
+            },
+            'NH3': {
+                name: 'Amoniak (Wodorek azotu(III))',
+                common: 'Woda amoniakalna (roztwór)',
+                stable: true,
+                state: 'Gaz (o niezwykle ostrym, gryzącym zapachu)',
+                uses: 'Produkcja nawozów sztucznych (saletra amonowa), chłodnictwo przemysłowe (lodowiska, chłodnie), produkcja kwasu azotowego.',
+                curiosity: 'Syntetyzowany metodą Habera-Boscha z azotu z powietrza i wodoru. Szacuje się, że bez tej reakcji Ziemia nie byłaby w stanie wykarmić połowy obecnej ludzkości.'
+            }
         };
 
         // Baza przygotowanych zadań dydaktycznych dla uczniów klas 7-8
@@ -975,6 +1577,8 @@
 
         let currentMode = 'tasks';
         let currentTaskIndex = 0;
+        let lastCheckedFormula = '';
+        let lastCheckedCompoundInfo = null;
 
         // Pomocnicze funkcje konwersji liczb rzymskich / arabskich
         function parseValence(valStr) {
@@ -1172,6 +1776,12 @@
             handleInputUpdate();
             hideFeedback();
             clearFieldStyles();
+            document.getElementById('substance-info-card').style.display = 'none';
+            document.getElementById('gemini-ai-response').style.display = 'none';
+            document.getElementById('gemini-custom-question').value = '';
+            
+            const valFb = document.getElementById('val-feedback');
+            if (valFb) valFb.style.display = 'none';
         }
 
         function clearFieldStyles() {
@@ -1184,6 +1794,91 @@
         function hideFeedback() {
             const fb = document.getElementById('feedback-panel');
             fb.style.display = 'none';
+        }
+
+        // WERYFIKACJA SAMYCH WIĄZAŃ (WARTOŚCIOWOŚCI) PRZED UKŁADANIEM RÓWNANIA
+        function checkValencesOnly() {
+            const data = getEquationData();
+            const valFb = document.getElementById('val-feedback');
+            const errors = [];
+            const successMsgs = [];
+
+            document.getElementById('val1').classList.remove('field-valid', 'field-invalid');
+            document.getElementById('val2').classList.remove('field-valid', 'field-invalid');
+
+            if (!data.elem1 || !data.elem2) {
+                valFb.style.display = 'block';
+                valFb.style.background = 'rgba(244, 63, 94, 0.15)';
+                valFb.style.border = '1px solid #f43f5e';
+                valFb.style.color = '#fca5a5';
+                valFb.innerHTML = '⚠️ <strong>Wpisz najpierw symbole pierwiastków</strong> w polach substratów poniżej (lub kliknij <em>„Wstaw tylko substraty”</em>), aby sprawdzić ich wiązania!';
+                return;
+            }
+
+            const info1 = ELEMENTS_DB[data.elem1];
+            const info2 = ELEMENTS_DB[data.elem2];
+
+            if (!info1) {
+                errors.push(`Nie rozpoznano symbolu pierwszego pierwiastka: <strong>${data.elem1}</strong>.`);
+                document.getElementById('elem1').classList.add('field-invalid');
+            }
+            if (!info2) {
+                errors.push(`Nie rozpoznano symbolu drugiego pierwiastka: <strong>${data.elem2}</strong>.`);
+                document.getElementById('elem2').classList.add('field-invalid');
+            }
+
+            // Sprawdzenie wartościowości dla pierwiastka 1
+            if (!data.val1) {
+                errors.push(`Wpisz liczbę wiązań dla <strong>${data.elem1}</strong> (np. ${info1 ? info1.valences.map(toRoman).join(', ') : 'I, II...'}) w ramce nad symbolem.`);
+                document.getElementById('val1').classList.add('field-invalid');
+            } else if (info1 && !info1.valences.includes(data.val1)) {
+                errors.push(`Liczba wiązań dla <strong>${data.elem1}</strong> (${toRoman(data.val1)}) jest niepoprawna. Z układu okresowego ${data.elem1} tworzy: <strong>${info1.valences.map(toRoman).join(' lub ')}</strong> wiązań.`);
+                document.getElementById('val1').classList.add('field-invalid');
+            } else {
+                document.getElementById('val1').classList.add('field-valid');
+                successMsgs.push(`Pierwiastek <strong>${data.elem1}</strong> (${info1?.name || ''}): ${toRoman(data.val1)} (${data.val1}) wiązania – <strong>poprawnie!</strong>`);
+            }
+
+            // Sprawdzenie wartościowości dla pierwiastka 2
+            if (!data.val2) {
+                errors.push(`Wpisz liczbę wiązań dla <strong>${data.elem2}</strong> (np. ${info2 ? info2.valences.map(toRoman).join(', ') : 'I, II...'}) w ramce nad symbolem.`);
+                document.getElementById('val2').classList.add('field-invalid');
+            } else if (info2 && !info2.valences.includes(data.val2)) {
+                errors.push(`Liczba wiązań dla <strong>${data.elem2}</strong> (${toRoman(data.val2)}) jest niepoprawna. Z układu okresowego ${data.elem2} tworzy: <strong>${info2.valences.map(toRoman).join(' lub ')}</strong> wiązań.`);
+                document.getElementById('val2').classList.add('field-invalid');
+            } else {
+                document.getElementById('val2').classList.add('field-valid');
+                successMsgs.push(`Pierwiastek <strong>${data.elem2}</strong> (${info2?.name || ''}): ${toRoman(data.val2)} (${data.val2}) wiązania – <strong>poprawnie!</strong>`);
+            }
+
+            valFb.style.display = 'block';
+            if (errors.length > 0) {
+                valFb.style.background = 'rgba(244, 63, 94, 0.15)';
+                valFb.style.border = '1px solid #f43f5e';
+                valFb.style.color = '#fca5a5';
+                valFb.innerHTML = `
+                    <div style="font-weight: 700; margin-bottom: 4px;">⚠️ Błąd w liczbie wiązań:</div>
+                    <ul style="margin: 4px 0 0 18px;">${errors.map(e => `<li>${e}</li>`).join('')}</ul>
+                `;
+            } else {
+                valFb.style.background = 'rgba(34, 197, 94, 0.15)';
+                valFb.style.border = '1px solid #22c55e';
+                valFb.style.color = '#86efac';
+                
+                let vA = data.val1;
+                let vB = data.val2;
+                let s1 = vB / gcd(vA, vB);
+                let s2 = vA / gcd(vA, vB);
+                let expectedFormula = `${data.elem1}${s1 > 1 ? `<sub>${s1}</sub>` : ''}${data.elem2}${s2 > 1 ? `<sub>${s2}</sub>` : ''}`;
+
+                valFb.innerHTML = `
+                    <div style="font-weight: 700; margin-bottom: 4px;">✅ Liczba wiązań jest w 100% poprawna!</div>
+                    <div>${successMsgs.join('<br>')}</div>
+                    <div style="margin-top: 6px; font-size: 0.88rem; color: #cbd5e1;">
+                        💡 <strong>Kolejny krok:</strong> Zastosuj regułę krzyżową – przenieś wiązania na indeksy i utwórz wzór produktu: <strong>${expectedFormula}</strong>, a następnie zbilansuj całe równanie!
+                    </div>
+                `;
+            }
         }
 
         function showFeedback(isSuccess, title, messages) {
@@ -1223,6 +1918,7 @@
 
             if (errors.length > 0) {
                 showFeedback(false, 'Uzupełnij brakujące dane', errors);
+                document.getElementById('substance-info-card').style.display = 'none';
                 return;
             }
 
@@ -1387,14 +2083,210 @@
                 }
             }
 
-            // 6. Prezentacja wyników
+            // 6. Prezentacja wyników i karty substancji
             if (errors.length > 0) {
                 showFeedback(false, 'Znaleziono elementy do poprawy:', errors);
+                document.getElementById('substance-info-card').style.display = 'none';
             } else {
                 successPoints.push('Wartościowości (liczby wiązań) wpisane poprawnie.');
                 successPoints.push('Wzór sumaryczny cząsteczki produktu ustalony prawidłowo z reguły krzyżowej.');
                 successPoints.push('Równanie reakcji jest idealnie zbilansowane pod względem stechiometrii.');
                 showFeedback(true, 'Gratulacje! Twoje równanie reakcji jest w 100% poprawne!', successPoints);
+
+                // WYŚWIETLENIE KARTY INFORMACYJNEJ O POWSTAŁEJ SUBSTANCJI
+                displaySubstanceInfo(data);
+            }
+        }
+
+        // Wyświetlanie karty informacji o powstałej substancji (Punkt 1 & Punkt 2)
+        function displaySubstanceInfo(data) {
+            const card = document.getElementById('substance-info-card');
+            const nameEl = document.getElementById('sub-card-name');
+            const stabilityEl = document.getElementById('sub-card-stability');
+            const stateEl = document.getElementById('sub-card-state');
+            const formulaNamesEl = document.getElementById('sub-card-formula-names');
+            const usesEl = document.getElementById('sub-card-uses');
+            const curiosityEl = document.getElementById('sub-card-curiosity');
+            const missingKeyNote = document.getElementById('gemini-missing-key-note');
+
+            // Zbudowanie znormalizowanego wzoru cząsteczki
+            const s1 = data.prodSub1 > 1 ? data.prodSub1 : '';
+            const s2 = data.prodSub2 > 1 ? data.prodSub2 : '';
+            const formula = `${data.prodElem1}${s1}${data.prodElem2}${s2}`;
+            const altFormula = `${data.prodElem2}${s2}${data.prodElem1}${s1}`;
+
+            lastCheckedFormula = formula;
+
+            // Sprawdzenie w lokalnej bazie JavaScript (Punkt 1)
+            const info = COMPOUNDS_DB[formula] || COMPOUNDS_DB[altFormula];
+            lastCheckedCompoundInfo = info;
+
+            if (info) {
+                nameEl.innerText = info.name;
+                
+                if (info.stable) {
+                    stabilityEl.className = 'badge-stability badge-stable';
+                    stabilityEl.innerHTML = '✅ Związek stabilny';
+                } else {
+                    stabilityEl.className = 'badge-stability badge-unstable';
+                    stabilityEl.innerHTML = '⚠️ Związek nietrwały / rozkłada się';
+                }
+
+                stateEl.innerText = info.state || 'Ciało stałe';
+                formulaNamesEl.innerHTML = `<strong>${formula}</strong> – ${info.name} ${info.common ? `<em>(Zwyczajowo: ${info.common})</em>` : ''}`;
+                usesEl.innerText = info.uses || 'Brak danych w podręczniku.';
+                curiosityEl.innerText = info.curiosity || 'Ciekawy związek chemiczny o specyficznych właściwościach.';
+            } else {
+                // Jeśli uczeń ułożył nietypowy związek w trybie piaskownicy
+                nameEl.innerText = `Związek ${data.prodElem1}-${data.prodElem2} (${formula})`;
+                stabilityEl.className = 'badge-stability badge-stable';
+                stabilityEl.innerHTML = '🔍 Analiza AI...';
+                stateEl.innerText = 'Baza rozszerzona';
+                formulaNamesEl.innerHTML = `<strong>${formula}</strong> <em>(Nietypowy lub rzadki związek)</em>`;
+                usesEl.innerText = 'Związek spoza podstawowej listy szkolnej. Użyj asystenta Gemini AI poniżej, aby poznać jego stabilność i zastosowania!';
+                curiosityEl.innerText = 'Możesz zapytać sztuczną inteligencję o dokładną strukturę i energię wiązań tej cząsteczki.';
+            }
+
+            // Sprawdzenie obecności klucza Gemini API w localStorage
+            const apiKey = localStorage.getItem('gemini_api_key');
+            if (!apiKey || apiKey.trim().length < 10) {
+                missingKeyNote.style.display = 'block';
+            } else {
+                missingKeyNote.style.display = 'none';
+            }
+
+            document.getElementById('gemini-ai-response').style.display = 'none';
+            card.style.display = 'flex';
+        }
+
+        // Pomocnicza funkcja wykrywająca aktywny model dla danego klucza API
+        async function getWorkingGeminiModel(apiKey, preferredModel) {
+            try {
+                const listUrl = `https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`;
+                const res = await fetch(listUrl);
+                if (res.ok) {
+                    const data = await res.json();
+                    const available = (data.models || [])
+                        .filter(m => m.supportedGenerationMethods && m.supportedGenerationMethods.includes('generateContent'))
+                        .map(m => m.name.replace(/^models\//, ''));
+                    
+                    if (preferredModel && available.includes(preferredModel)) {
+                        return preferredModel;
+                    }
+
+                    // Lista preferencji
+                    const order = [
+                        'gemini-2.0-flash',
+                        'gemini-2.5-flash',
+                        'gemini-2.0-flash-lite',
+                        'gemini-1.5-flash',
+                        'gemini-1.5-flash-latest',
+                        'gemini-2.5-pro',
+                        'gemini-1.5-pro'
+                    ];
+
+                    for (let opt of order) {
+                        if (available.includes(opt)) return opt;
+                    }
+
+                    const anyFlash = available.find(m => m.includes('flash') && !m.includes('image') && !m.includes('audio'));
+                    return anyFlash || available[0] || 'gemini-2.0-flash';
+                }
+            } catch (e) {
+                console.warn('Nie udało się pobrać listy modeli:', e);
+            }
+            return (preferredModel && preferredModel !== 'auto') ? preferredModel : 'gemini-2.0-flash';
+        }
+
+        // Integracja z Google Gemini API (Punkt 2)
+        async function askGeminiAboutCompound() {
+            const data = getEquationData();
+            const formula = lastCheckedFormula || `${data.prodElem1}${data.prodSub1 > 1 ? data.prodSub1 : ''}${data.prodElem2}${data.prodSub2 > 1 ? data.prodSub2 : ''}`;
+            const customQ = document.getElementById('gemini-custom-question').value.trim();
+            const responseBox = document.getElementById('gemini-ai-response');
+            const askBtn = document.getElementById('gemini-ask-btn');
+
+            const apiKey = localStorage.getItem('gemini_api_key');
+            let userModel = localStorage.getItem('gemini_selected_model') || 'gemini-2.0-flash';
+
+            if (!apiKey || apiKey.trim().length < 10) {
+                responseBox.className = 'gemini-response-box';
+                responseBox.style.display = 'block';
+                responseBox.innerHTML = `
+                    <div style="color: #fca5a5; font-weight: 700; margin-bottom: 6px;">❌ Brak zapisanego klucza Gemini API</div>
+                    <div>Aby rozmawiać z asystentem AI o dowolnych substancjach chemicznych, wejdź na stronę <a href="../pomocnicze.html" style="color:#38bdf8; text-decoration:underline;">Bazy Quizów</a> i wklej swój bezpłatny klucz API Google AI Studio.</div>
+                `;
+                return;
+            }
+
+            // Wskaźnik ładowania
+            askBtn.disabled = true;
+            askBtn.innerText = '⏳ Gemini myśli...';
+            responseBox.style.display = 'block';
+            responseBox.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 8px; color: #c084fc;">
+                    <span>✨</span>
+                    <span>Sztuczna inteligencja analizuje cząsteczkę <strong>${formula}</strong>...</span>
+                </div>
+            `;
+
+            let promptText = '';
+            if (customQ) {
+                promptText = `Jesteś życzliwym, mądrym nauczycielem chemii w polskiej szkole podstawowej. Uczeń zadał pytanie o substancję chemiczną o wzorze ${formula} (powstałą z ${data.elem1} i ${data.elem2}):
+                "${customQ}".
+                Odpowiedz konkretnie, ciekawie, po polsku i w sposób zrozumiały dla 13-14 latka (maksymalnie 3-5 zwięzłych zdań).`;
+            } else {
+                promptText = `Jesteś inspirującym nauczycielem chemii w szkole podstawowej. Uczeń poprawnie ułożył reakcję powstawania substancji dwupierwiastkowej: ${formula} (z pierwiastków ${data.elem1} o wartościowości ${data.val1 || '?'} oraz ${data.elem2} o wartościowości ${data.val2 || '?'}).
+                
+                Napisz krótką, atrakcyjną notatkę dydaktyczną (w punktach lub zwięzłych akapitach):
+                1. Pełna polska nazwa systemowa oraz nazwy zwyczajowe / handlowe (jeśli istnieją).
+                2. Czy ten związek jest stabilny i czy istnieje w warunkach normalnych? (Jeśli nie, krótko wyjaśnij dlaczego).
+                3. Stan skupienia i wygląd w temperaturze pokojowej.
+                4. 2-3 praktyczne i ciekawe zastosowania w życiu codziennym, medycynie lub przemyśle.
+                5. Jedna zaskakująca ciekawostka chemiczna.
+                
+                Odpowiedz wyłącznie po polsku, w formacie przejrzystego HTML (możesz używać <strong>, <em>, <ul>, <li>).`;
+            }
+
+            try {
+                // Wykrycie działającego modelu dla Twojego klucza
+                const model = await getWorkingGeminiModel(apiKey, userModel);
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+                
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: promptText }] }]
+                    })
+                });
+
+                if (!res.ok) {
+                    const errData = await res.json().catch(() => ({}));
+                    throw new Error(errData?.error?.message || `Błąd serwera (${res.status}) dla modelu ${model}`);
+                }
+
+                const json = await res.json();
+                let aiText = json?.candidates?.[0]?.content?.parts?.[0]?.text || 'Brak odpowiedzi od modelu.';
+                
+                // Usunięcie ewentualnych znaczników markdown ```html ... ```
+                aiText = aiText.replace(/```html/gi, '').replace(/```/g, '').trim();
+
+                responseBox.innerHTML = `
+                    <div style="font-weight: 700; color: #d8b4fe; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px; border-bottom: 1px solid rgba(168, 85, 247, 0.35); padding-bottom: 6px;">
+                        <span style="color: #e9d5ff;">🤖 Odpowiedź Gemini AI dla <strong style="color: #38bdf8;">${formula}</strong>:</span>
+                        <span style="font-size: 0.8rem; color: #94a3b8; font-weight: normal; background: rgba(30, 41, 59, 0.8); padding: 2px 8px; border-radius: 6px; border: 1px solid #475569;">Model: ${model}</span>
+                    </div>
+                    <div style="line-height: 1.65; font-size: 0.95rem; color: #f8fafc;">${aiText}</div>
+                `;
+            } catch (err) {
+                responseBox.innerHTML = `
+                    <div style="color: #fca5a5; font-weight: 700; margin-bottom: 6px; font-size: 1rem;">⚠️ Nie udało się połączyć z Gemini API</div>
+                    <div style="font-size: 0.92rem; color: #f1f5f9; line-height: 1.5;">${err.message || 'Sprawdź swoje połączenie z internetem oraz poprawność klucza API.'}</div>
+                `;
+            } finally {
+                askBtn.disabled = false;
+                askBtn.innerText = '✨ Zapytaj Gemini AI o ten związek';
             }
         }
 

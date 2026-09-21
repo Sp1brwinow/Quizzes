@@ -57,15 +57,16 @@ class WizardOrpheus {
 
         // Szukamy najlepszego modelu w kolejności preferencji
         const preferred = [
-          'gemini-2.5-flash',
+          'gemini-3.7-flash',
+          'gemini-3.6-flash',
+          'gemini-3.1-flash',
+          'gemini-3-flash',
           'gemini-2.0-flash',
+          'gemini-2.0-flash-lite',
+          'gemini-2.5-flash',
+          'gemini-2.5-pro',
           'gemini-1.5-flash',
           'gemini-1.5-flash-latest',
-          'gemini-1.5-flash-001',
-          'gemini-1.5-flash-002',
-          'gemini-2.0-flash-exp',
-          'gemini-2.5-pro',
-          'gemini-1.5-pro-latest',
           'gemini-1.5-pro',
           'gemini-pro'
         ];
@@ -79,10 +80,14 @@ class WizardOrpheus {
         }
 
         const flashModel = available.find(m => m.includes('flash'));
-        this.discoveredModel = flashModel || available[0] || 'gemini-2.5-flash';
+        this.discoveredModel = flashModel || available[0] || 'gemini-2.0-flash';
         return this.discoveredModel;
       }
     } catch (e) {
+      console.warn('Nie udało się pobrać listy modeli, używam domyślnego gemini-2.0-flash:', e);
+      this.discoveredModel = 'gemini-2.0-flash';
+      return this.discoveredModel;
+    }
       console.warn('Nie udało się pobrać listy modeli, używam domyślnego:', e);
     }
 
