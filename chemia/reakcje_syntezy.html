@@ -1094,7 +1094,7 @@
 
         <!-- Ściągawka Dydaktyczna -->
         <details class="cheatsheet-card" open>
-            <summary>📖 Ściągawka: Jak tworzyć wzory i równania reakcji? (Kliknij, aby rozwinąć)</summary>
+            <summary>📖 Ściągawka: Jak ustalać wartościowości z Układu Okresowego i tworzyć równania? (Kliknij, aby rozwinąć)</summary>
             <div class="cheatsheet-content">
                 
                 <div class="steps-grid">
@@ -1114,6 +1114,28 @@
                         <strong>4. Bilansowanie (Współczynniki)</strong>
                         Liczba atomów każdego pierwiastka po lewej stronie (w substratach) musi być dokładnie równa liczbie atomów po prawej stronie (w produktach).
                     </div>
+
+                    <!-- Szczegółowe zasady odczytywania wartościowości z Układu Okresowego -->
+                    <div class="step-box" style="grid-column: 1 / -1; background: rgba(30, 41, 59, 0.85); border: 1px solid rgba(251, 191, 36, 0.4); padding: 14px 18px; border-radius: 12px;">
+                        <strong style="color: #fbbf24; font-size: 1.02rem; margin-bottom: 8px;">⚡ Jak odczytać wartościowość (liczbę wiązań) z Układu Okresowego Pierwiastków?</strong>
+                        <ul style="margin: 6px 0 0 20px; line-height: 1.65; color: #f1f5f9;">
+                            <li><strong>Grupa 1 (litowce: H, Li, Na, K...):</strong> 1 elektron walencyjny &rarr; stała wartościowość <strong>I</strong>.</li>
+                            <li><strong>Grupa 2 (berylowce: Be, Mg, Ca, Ba...):</strong> 2 elektrony walencyjne &rarr; stała wartościowość <strong>II</strong>.</li>
+                            <li><strong>Grupy 13–17 (w tlenkach / maksymalna wartościowość):</strong> równa <em>(numer grupy &minus; 10)</em>:
+                                <br>&bull; Gr. 13 (Al, B, Ga) &rarr; <strong>III</strong>
+                                <br>&bull; Gr. 14 (C, Si) &rarr; <strong>IV</strong> (oraz II)
+                                <br>&bull; Gr. 15 (N, P) &rarr; <strong>V</strong> (oraz I, II, III, IV)
+                                <br>&bull; Gr. 16 (S) &rarr; <strong>VI</strong> (oraz IV, II; tlen <strong>O</strong> ma zawsze <strong>II</strong>)
+                                <br>&bull; Gr. 17 (Cl, Br, I) &rarr; <strong>VII</strong> (oraz I, III, V; fluor <strong>F</strong> ma zawsze <strong>I</strong>).
+                            </li>
+                            <li><strong>Grupy 15–17 (w wodorkach i z metalami: siarczki, chlorki):</strong> równa <em>(18 &minus; numer grupy)</em>:
+                                <br>&bull; Gr. 15 z wodorem/metalami &rarr; 18 &minus; 15 = <strong>III</strong> (np. w amoniaku NH<sub>3</sub>)
+                                <br>&bull; Gr. 16 z wodorem/metalami &rarr; 18 &minus; 16 = <strong>II</strong> (np. w H<sub>2</sub>S, FeS, Na<sub>2</sub>S)
+                                <br>&bull; Gr. 17 z wodorem/metalami &rarr; 18 &minus; 17 = <strong>I</strong> (np. w HCl, NaCl, KBr).
+                            </li>
+                            <li><strong>Metale przejściowe (grupy 3–12, np. Fe, Cu, Cr, Mn):</strong> mają zmienną wartościowość, która w chemii jest podawana cyfrą rzymską w nazwie (np. tlenek żelaza(III) &rarr; Fe<sup>III</sup>, tlenek chromu(III) &rarr; Cr<sup>III</sup>).</li>
+                        </ul>
+                    </div>
                 </div>
 
                 <div class="diatomic-note">
@@ -1130,124 +1152,124 @@
     <script>
         // Baza wszystkich 118 pierwiastków Układu Okresowego (Ptable) z polskimi nazwami, wartościowościami i typem
         const ELEMENTS_DB = {
-            'H':  { name: 'wodór', valences: [1], diatomic: true, metal: false },
-            'He': { name: 'hel', valences: [0], diatomic: false, metal: false },
-            'Li': { name: 'lit', valences: [1], diatomic: false, metal: true },
-            'Be': { name: 'beryl', valences: [2], diatomic: false, metal: true },
-            'B':  { name: 'bor', valences: [3], diatomic: false, metal: false },
-            'C':  { name: 'węgiel', valences: [2, 4], diatomic: false, metal: false },
-            'N':  { name: 'azot', valences: [1, 2, 3, 4, 5], diatomic: true, metal: false },
-            'O':  { name: 'tlen', valences: [2], diatomic: true, metal: false },
-            'F':  { name: 'fluor', valences: [1], diatomic: true, metal: false },
-            'Ne': { name: 'neon', valences: [0], diatomic: false, metal: false },
-            'Na': { name: 'sód', valences: [1], diatomic: false, metal: true },
-            'Mg': { name: 'magnez', valences: [2], diatomic: false, metal: true },
-            'Al': { name: 'glin', valences: [3], diatomic: false, metal: true },
-            'Si': { name: 'krzem', valences: [2, 4], diatomic: false, metal: false },
-            'P':  { name: 'fosfor', valences: [3, 5], diatomic: false, metal: false },
-            'S':  { name: 'siarka', valences: [2, 4, 6], diatomic: false, metal: false },
-            'Cl': { name: 'chlor', valences: [1, 3, 5, 7], diatomic: true, metal: false },
-            'Ar': { name: 'argon', valences: [0], diatomic: false, metal: false },
-            'K':  { name: 'potas', valences: [1], diatomic: false, metal: true },
-            'Ca': { name: 'wapń', valences: [2], diatomic: false, metal: true },
-            'Sc': { name: 'skand', valences: [3], diatomic: false, metal: true },
-            'Ti': { name: 'tytan', valences: [2, 3, 4], diatomic: false, metal: true },
-            'V':  { name: 'wanad', valences: [2, 3, 4, 5], diatomic: false, metal: true },
-            'Cr': { name: 'chrom', valences: [2, 3, 4, 6], diatomic: false, metal: true },
-            'Mn': { name: 'mangan', valences: [2, 3, 4, 6, 7], diatomic: false, metal: true },
-            'Fe': { name: 'żelazo', valences: [2, 3, 6], diatomic: false, metal: true },
-            'Co': { name: 'kobalt', valences: [2, 3], diatomic: false, metal: true },
-            'Ni': { name: 'nikiel', valences: [2, 3], diatomic: false, metal: true },
-            'Cu': { name: 'miedź', valences: [1, 2], diatomic: false, metal: true },
-            'Zn': { name: 'cynk', valences: [2], diatomic: false, metal: true },
-            'Ga': { name: 'gal', valences: [1, 3], diatomic: false, metal: true },
-            'Ge': { name: 'german', valences: [2, 4], diatomic: false, metal: false },
-            'As': { name: 'arsen', valences: [3, 5], diatomic: false, metal: false },
-            'Se': { name: 'selen', valences: [2, 4, 6], diatomic: false, metal: false },
-            'Br': { name: 'brom', valences: [1, 3, 5, 7], diatomic: true, metal: false },
-            'Kr': { name: 'krypton', valences: [2], diatomic: false, metal: false },
-            'Rb': { name: 'rubid', valences: [1], diatomic: false, metal: true },
-            'Sr': { name: 'stront', valences: [2], diatomic: false, metal: true },
-            'Y':  { name: 'itr', valences: [3], diatomic: false, metal: true },
-            'Zr': { name: 'cyrkon', valences: [2, 3, 4], diatomic: false, metal: true },
-            'Nb': { name: 'niob', valences: [2, 3, 4, 5], diatomic: false, metal: true },
-            'Mo': { name: 'molibden', valences: [2, 3, 4, 5, 6], diatomic: false, metal: true },
-            'Tc': { name: 'technet', valences: [4, 7], diatomic: false, metal: true },
-            'Ru': { name: 'ruten', valences: [2, 3, 4, 6, 8], diatomic: false, metal: true },
-            'Rh': { name: 'rod', valences: [2, 3, 4], diatomic: false, metal: true },
-            'Pd': { name: 'pallad', valences: [2, 4], diatomic: false, metal: true },
-            'Ag': { name: 'srebro', valences: [1, 2], diatomic: false, metal: true },
-            'Cd': { name: 'kadm', valences: [2], diatomic: false, metal: true },
-            'In': { name: 'ind', valences: [1, 3], diatomic: false, metal: true },
-            'Sn': { name: 'cyna', valences: [2, 4], diatomic: false, metal: true },
-            'Sb': { name: 'antymon', valences: [3, 5], diatomic: false, metal: false },
-            'Te': { name: 'tellur', valences: [2, 4, 6], diatomic: false, metal: false },
-            'I':  { name: 'jod', valences: [1, 3, 5, 7], diatomic: true, metal: false },
-            'Xe': { name: 'ksenon', valences: [2, 4, 6, 8], diatomic: false, metal: false },
-            'Cs': { name: 'cez', valences: [1], diatomic: false, metal: true },
-            'Ba': { name: 'bar', valences: [2], diatomic: false, metal: true },
-            'La': { name: 'lantan', valences: [3], diatomic: false, metal: true },
-            'Ce': { name: 'cer', valences: [3, 4], diatomic: false, metal: true },
-            'Pr': { name: 'prazeodym', valences: [3, 4], diatomic: false, metal: true },
-            'Nd': { name: 'neodym', valences: [3], diatomic: false, metal: true },
-            'Pm': { name: 'promet', valences: [3], diatomic: false, metal: true },
-            'Sm': { name: 'samar', valences: [2, 3], diatomic: false, metal: true },
-            'Eu': { name: 'europ', valences: [2, 3], diatomic: false, metal: true },
-            'Gd': { name: 'gadolin', valences: [3], diatomic: false, metal: true },
-            'Tb': { name: 'terb', valences: [3, 4], diatomic: false, metal: true },
-            'Dy': { name: 'dysproz', valences: [3], diatomic: false, metal: true },
-            'Ho': { name: 'holm', valences: [3], diatomic: false, metal: true },
-            'Er': { name: 'erb', valences: [3], diatomic: false, metal: true },
-            'Tm': { name: 'tul', valences: [3], diatomic: false, metal: true },
-            'Yb': { name: 'iterb', valences: [2, 3], diatomic: false, metal: true },
-            'Lu': { name: 'lutet', valences: [3], diatomic: false, metal: true },
-            'Hf': { name: 'hafn', valences: [4], diatomic: false, metal: true },
-            'Ta': { name: 'tantal', valences: [3, 4, 5], diatomic: false, metal: true },
-            'W':  { name: 'wolfram', valences: [2, 3, 4, 5, 6], diatomic: false, metal: true },
-            'Re': { name: 'ren', valences: [2, 4, 6, 7], diatomic: false, metal: true },
-            'Os': { name: 'osm', valences: [2, 3, 4, 6, 8], diatomic: false, metal: true },
-            'Ir': { name: 'iryd', valences: [2, 3, 4, 6], diatomic: false, metal: true },
-            'Pt': { name: 'platyna', valences: [2, 4, 6], diatomic: false, metal: true },
-            'Au': { name: 'złoto', valences: [1, 3], diatomic: false, metal: true },
-            'Hg': { name: 'rtęć', valences: [1, 2], diatomic: false, metal: true },
-            'Tl': { name: 'tal', valences: [1, 3], diatomic: false, metal: true },
-            'Pb': { name: 'ołów', valences: [2, 4], diatomic: false, metal: true },
-            'Bi': { name: 'bizmut', valences: [3, 5], diatomic: false, metal: true },
-            'Po': { name: 'polon', valences: [2, 4], diatomic: false, metal: true },
-            'At': { name: 'astat', valences: [1, 3, 5, 7], diatomic: true, metal: false },
-            'Rn': { name: 'radon', valences: [2], diatomic: false, metal: false },
-            'Fr': { name: 'frans', valences: [1], diatomic: false, metal: true },
-            'Ra': { name: 'rad', valences: [2], diatomic: false, metal: true },
-            'Ac': { name: 'aktyn', valences: [3], diatomic: false, metal: true },
-            'Th': { name: 'tor', valences: [4], diatomic: false, metal: true },
-            'Pa': { name: 'protaktyn', valences: [4, 5], diatomic: false, metal: true },
-            'U':  { name: 'uran', valences: [3, 4, 5, 6], diatomic: false, metal: true },
-            'Np': { name: 'neptun', valences: [3, 4, 5, 6], diatomic: false, metal: true },
-            'Pu': { name: 'pluton', valences: [3, 4, 5, 6], diatomic: false, metal: true },
-            'Am': { name: 'ameryk', valences: [3, 4, 5, 6], diatomic: false, metal: true },
-            'Cm': { name: 'kiur', valences: [3, 4], diatomic: false, metal: true },
-            'Bk': { name: 'berkel', valences: [3, 4], diatomic: false, metal: true },
-            'Cf': { name: 'kaliforn', valences: [3], diatomic: false, metal: true },
-            'Es': { name: 'einstein', valences: [3], diatomic: false, metal: true },
-            'Fm': { name: 'ferm', valences: [3], diatomic: false, metal: true },
-            'Md': { name: 'mendelew', valences: [2, 3], diatomic: false, metal: true },
-            'No': { name: 'nobel', valences: [2, 3], diatomic: false, metal: true },
-            'Lr': { name: 'lorens', valences: [3], diatomic: false, metal: true },
-            'Rf': { name: 'rutherford', valences: [4], diatomic: false, metal: true },
-            'Db': { name: 'dubn', valences: [5], diatomic: false, metal: true },
-            'Sg': { name: 'seaborg', valences: [6], diatomic: false, metal: true },
-            'Bh': { name: 'bohr', valences: [7], diatomic: false, metal: true },
-            'Hs': { name: 'has', valences: [8], diatomic: false, metal: true },
-            'Mt': { name: 'meitner', valences: [3, 4], diatomic: false, metal: true },
-            'Ds': { name: 'darmsztadt', valences: [2, 4], diatomic: false, metal: true },
-            'Rg': { name: 'roentgen', valences: [3], diatomic: false, metal: true },
-            'Cn': { name: 'kopernik', valences: [2], diatomic: false, metal: true },
-            'Nh': { name: 'nihon', valences: [1, 3], diatomic: false, metal: true },
-            'Fl': { name: 'flerow', valences: [2, 4], diatomic: false, metal: true },
-            'Mc': { name: 'moskow', valences: [1, 3], diatomic: false, metal: true },
-            'Lv': { name: 'liwermor', valences: [2, 4], diatomic: false, metal: true },
-            'Ts': { name: 'tenes', valences: [1, 3, 5], diatomic: true, metal: false },
-            'Og': { name: 'oganeson', valences: [2, 4], diatomic: false, metal: false }
+            'H':  { name: 'wodór', group: 1, valences: [1], diatomic: true, metal: false },
+            'He': { name: 'hel', group: 18, valences: [0], diatomic: false, metal: false },
+            'Li': { name: 'lit', group: 1, valences: [1], diatomic: false, metal: true },
+            'Be': { name: 'beryl', group: 2, valences: [2], diatomic: false, metal: true },
+            'B':  { name: 'bor', group: 13, valences: [3], diatomic: false, metal: false },
+            'C':  { name: 'węgiel', group: 14, valences: [2, 4], diatomic: false, metal: false },
+            'N':  { name: 'azot', group: 15, valences: [1, 2, 3, 4, 5], diatomic: true, metal: false },
+            'O':  { name: 'tlen', group: 16, valences: [2], diatomic: true, metal: false },
+            'F':  { name: 'fluor', group: 17, valences: [1], diatomic: true, metal: false },
+            'Ne': { name: 'neon', group: 18, valences: [0], diatomic: false, metal: false },
+            'Na': { name: 'sód', group: 1, valences: [1], diatomic: false, metal: true },
+            'Mg': { name: 'magnez', group: 2, valences: [2], diatomic: false, metal: true },
+            'Al': { name: 'glin', group: 13, valences: [3], diatomic: false, metal: true },
+            'Si': { name: 'krzem', group: 14, valences: [2, 4], diatomic: false, metal: false },
+            'P':  { name: 'fosfor', group: 15, valences: [3, 5], diatomic: false, metal: false },
+            'S':  { name: 'siarka', group: 16, valences: [2, 4, 6], diatomic: false, metal: false },
+            'Cl': { name: 'chlor', group: 17, valences: [1, 3, 5, 7], diatomic: true, metal: false },
+            'Ar': { name: 'argon', group: 18, valences: [0], diatomic: false, metal: false },
+            'K':  { name: 'potas', group: 1, valences: [1], diatomic: false, metal: true },
+            'Ca': { name: 'wapń', group: 2, valences: [2], diatomic: false, metal: true },
+            'Sc': { name: 'skand', group: 3, valences: [3], diatomic: false, metal: true },
+            'Ti': { name: 'tytan', group: 4, valences: [2, 3, 4], diatomic: false, metal: true },
+            'V':  { name: 'wanad', group: 5, valences: [2, 3, 4, 5], diatomic: false, metal: true },
+            'Cr': { name: 'chrom', group: 6, valences: [2, 3, 4, 6], diatomic: false, metal: true },
+            'Mn': { name: 'mangan', group: 7, valences: [2, 3, 4, 6, 7], diatomic: false, metal: true },
+            'Fe': { name: 'żelazo', group: 8, valences: [2, 3, 6], diatomic: false, metal: true },
+            'Co': { name: 'kobalt', group: 9, valences: [2, 3], diatomic: false, metal: true },
+            'Ni': { name: 'nikiel', group: 10, valences: [2, 3], diatomic: false, metal: true },
+            'Cu': { name: 'miedź', group: 11, valences: [1, 2], diatomic: false, metal: true },
+            'Zn': { name: 'cynk', group: 12, valences: [2], diatomic: false, metal: true },
+            'Ga': { name: 'gal', group: 13, valences: [1, 3], diatomic: false, metal: true },
+            'Ge': { name: 'german', group: 14, valences: [2, 4], diatomic: false, metal: false },
+            'As': { name: 'arsen', group: 15, valences: [3, 5], diatomic: false, metal: false },
+            'Se': { name: 'selen', group: 16, valences: [2, 4, 6], diatomic: false, metal: false },
+            'Br': { name: 'brom', group: 17, valences: [1, 3, 5, 7], diatomic: true, metal: false },
+            'Kr': { name: 'krypton', group: 18, valences: [2], diatomic: false, metal: false },
+            'Rb': { name: 'rubid', group: 1, valences: [1], diatomic: false, metal: true },
+            'Sr': { name: 'stront', group: 2, valences: [2], diatomic: false, metal: true },
+            'Y':  { name: 'itr', group: 3, valences: [3], diatomic: false, metal: true },
+            'Zr': { name: 'cyrkon', group: 4, valences: [2, 3, 4], diatomic: false, metal: true },
+            'Nb': { name: 'niob', group: 5, valences: [2, 3, 4, 5], diatomic: false, metal: true },
+            'Mo': { name: 'molibden', group: 6, valences: [2, 3, 4, 5, 6], diatomic: false, metal: true },
+            'Tc': { name: 'technet', group: 7, valences: [4, 7], diatomic: false, metal: true },
+            'Ru': { name: 'ruten', group: 8, valences: [2, 3, 4, 6, 8], diatomic: false, metal: true },
+            'Rh': { name: 'rod', group: 9, valences: [2, 3, 4], diatomic: false, metal: true },
+            'Pd': { name: 'pallad', group: 10, valences: [2, 4], diatomic: false, metal: true },
+            'Ag': { name: 'srebro', group: 11, valences: [1, 2], diatomic: false, metal: true },
+            'Cd': { name: 'kadm', group: 12, valences: [2], diatomic: false, metal: true },
+            'In': { name: 'ind', group: 13, valences: [1, 3], diatomic: false, metal: true },
+            'Sn': { name: 'cyna', group: 14, valences: [2, 4], diatomic: false, metal: true },
+            'Sb': { name: 'antymon', group: 15, valences: [3, 5], diatomic: false, metal: false },
+            'Te': { name: 'tellur', group: 16, valences: [2, 4, 6], diatomic: false, metal: false },
+            'I':  { name: 'jod', group: 17, valences: [1, 3, 5, 7], diatomic: true, metal: false },
+            'Xe': { name: 'ksenon', group: 18, valences: [2, 4, 6, 8], diatomic: false, metal: false },
+            'Cs': { name: 'cez', group: 1, valences: [1], diatomic: false, metal: true },
+            'Ba': { name: 'bar', group: 2, valences: [2], diatomic: false, metal: true },
+            'La': { name: 'lantan', group: 3, valences: [3], diatomic: false, metal: true },
+            'Ce': { name: 'cer', group: 3, valences: [3, 4], diatomic: false, metal: true },
+            'Pr': { name: 'prazeodym', group: 3, valences: [3, 4], diatomic: false, metal: true },
+            'Nd': { name: 'neodym', group: 3, valences: [3], diatomic: false, metal: true },
+            'Pm': { name: 'promet', group: 3, valences: [3], diatomic: false, metal: true },
+            'Sm': { name: 'samar', group: 3, valences: [2, 3], diatomic: false, metal: true },
+            'Eu': { name: 'europ', group: 3, valences: [2, 3], diatomic: false, metal: true },
+            'Gd': { name: 'gadolin', group: 3, valences: [3], diatomic: false, metal: true },
+            'Tb': { name: 'terb', group: 3, valences: [3, 4], diatomic: false, metal: true },
+            'Dy': { name: 'dysproz', group: 3, valences: [3], diatomic: false, metal: true },
+            'Ho': { name: 'holm', group: 3, valences: [3], diatomic: false, metal: true },
+            'Er': { name: 'erb', group: 3, valences: [3], diatomic: false, metal: true },
+            'Tm': { name: 'tul', group: 3, valences: [3], diatomic: false, metal: true },
+            'Yb': { name: 'iterb', group: 3, valences: [2, 3], diatomic: false, metal: true },
+            'Lu': { name: 'lutet', group: 3, valences: [3], diatomic: false, metal: true },
+            'Hf': { name: 'hafn', group: 4, valences: [4], diatomic: false, metal: true },
+            'Ta': { name: 'tantal', group: 5, valences: [3, 4, 5], diatomic: false, metal: true },
+            'W':  { name: 'wolfram', group: 6, valences: [2, 3, 4, 5, 6], diatomic: false, metal: true },
+            'Re': { name: 'ren', group: 7, valences: [2, 4, 6, 7], diatomic: false, metal: true },
+            'Os': { name: 'osm', group: 8, valences: [2, 3, 4, 6, 8], diatomic: false, metal: true },
+            'Ir': { name: 'iryd', group: 9, valences: [2, 3, 4, 6], diatomic: false, metal: true },
+            'Pt': { name: 'platyna', group: 10, valences: [2, 4, 6], diatomic: false, metal: true },
+            'Au': { name: 'złoto', group: 11, valences: [1, 3], diatomic: false, metal: true },
+            'Hg': { name: 'rtęć', group: 12, valences: [1, 2], diatomic: false, metal: true },
+            'Tl': { name: 'tal', group: 13, valences: [1, 3], diatomic: false, metal: true },
+            'Pb': { name: 'ołów', group: 14, valences: [2, 4], diatomic: false, metal: true },
+            'Bi': { name: 'bizmut', group: 15, valences: [3, 5], diatomic: false, metal: true },
+            'Po': { name: 'polon', group: 16, valences: [2, 4], diatomic: false, metal: true },
+            'At': { name: 'astat', group: 17, valences: [1, 3, 5, 7], diatomic: true, metal: false },
+            'Rn': { name: 'radon', group: 18, valences: [2], diatomic: false, metal: false },
+            'Fr': { name: 'frans', group: 1, valences: [1], diatomic: false, metal: true },
+            'Ra': { name: 'rad', group: 2, valences: [2], diatomic: false, metal: true },
+            'Ac': { name: 'aktyn', group: 3, valences: [3], diatomic: false, metal: true },
+            'Th': { name: 'tor', group: 3, valences: [4], diatomic: false, metal: true },
+            'Pa': { name: 'protaktyn', group: 3, valences: [4, 5], diatomic: false, metal: true },
+            'U':  { name: 'uran', group: 3, valences: [3, 4, 5, 6], diatomic: false, metal: true },
+            'Np': { name: 'neptun', group: 3, valences: [3, 4, 5, 6], diatomic: false, metal: true },
+            'Pu': { name: 'pluton', group: 3, valences: [3, 4, 5, 6], diatomic: false, metal: true },
+            'Am': { name: 'ameryk', group: 3, valences: [3, 4, 5, 6], diatomic: false, metal: true },
+            'Cm': { name: 'kiur', group: 3, valences: [3, 4], diatomic: false, metal: true },
+            'Bk': { name: 'berkel', group: 3, valences: [3, 4], diatomic: false, metal: true },
+            'Cf': { name: 'kaliforn', group: 3, valences: [3], diatomic: false, metal: true },
+            'Es': { name: 'einstein', group: 3, valences: [3], diatomic: false, metal: true },
+            'Fm': { name: 'ferm', group: 3, valences: [3], diatomic: false, metal: true },
+            'Md': { name: 'mendelew', group: 3, valences: [2, 3], diatomic: false, metal: true },
+            'No': { name: 'nobel', group: 3, valences: [2, 3], diatomic: false, metal: true },
+            'Lr': { name: 'lorens', group: 3, valences: [3], diatomic: false, metal: true },
+            'Rf': { name: 'rutherford', group: 4, valences: [4], diatomic: false, metal: true },
+            'Db': { name: 'dubn', group: 5, valences: [5], diatomic: false, metal: true },
+            'Sg': { name: 'seaborg', group: 6, valences: [6], diatomic: false, metal: true },
+            'Bh': { name: 'bohr', group: 7, valences: [7], diatomic: false, metal: true },
+            'Hs': { name: 'has', group: 8, valences: [8], diatomic: false, metal: true },
+            'Mt': { name: 'meitner', group: 9, valences: [3, 4], diatomic: false, metal: true },
+            'Ds': { name: 'darmsztadt', group: 10, valences: [2, 4], diatomic: false, metal: true },
+            'Rg': { name: 'roentgen', group: 11, valences: [3], diatomic: false, metal: true },
+            'Cn': { name: 'kopernik', group: 12, valences: [2], diatomic: false, metal: true },
+            'Nh': { name: 'nihon', group: 13, valences: [1, 3], diatomic: false, metal: true },
+            'Fl': { name: 'flerow', group: 14, valences: [2, 4], diatomic: false, metal: true },
+            'Mc': { name: 'moskow', group: 15, valences: [1, 3], diatomic: false, metal: true },
+            'Lv': { name: 'liwermor', group: 16, valences: [2, 4], diatomic: false, metal: true },
+            'Ts': { name: 'tenes', group: 17, valences: [1, 3, 5], diatomic: true, metal: false },
+            'Og': { name: 'oganeson', group: 18, valences: [2, 4], diatomic: false, metal: false }
         };
 
         // BAZA WIEDZY O POWSTAŁYCH SUBSTANCJACH CHEMICZNYCH (Lokalny JS)
@@ -1798,6 +1820,63 @@
             return b === 0 ? a : gcd(b, a % b);
         }
 
+        // Funkcja dydaktyczna: Generuje przypomnienie reguły z układu okresowego dla danego pierwiastka
+        function getValenceRuleExplanation(elemSymbol) {
+            const info = ELEMENTS_DB[elemSymbol];
+            if (!info) return '';
+
+            const name = info.name;
+            const group = info.group;
+            const valStr = info.valences.map(toRoman).join(', ');
+
+            if (elemSymbol === 'H') {
+                return `Wodór (<strong>H</strong>) leży w <strong>1. grupie</strong> i ma 1 elektron walencyjny &rarr; tworzy zawsze <strong>I wiązanie (wartościowość I)</strong>.`;
+            }
+            if (elemSymbol === 'O') {
+                return `Tlen (<strong>O</strong>) leży w <strong>16. grupie</strong> &rarr; w cząsteczkach tworzy niemal zawsze <strong>II wiązania (wartościowość II)</strong>.`;
+            }
+            if (elemSymbol === 'F') {
+                return `Fluor (<strong>F</strong>) leży w <strong>17. grupie</strong> i jest najbardziej elektroujemnym pierwiastkiem &rarr; tworzy zawsze <strong>I wiązanie (wartościowość I)</strong>.`;
+            }
+            if (group === 1) {
+                return `<strong>${elemSymbol}</strong> (${name}) należy do litowców (<strong>1. grupa</strong>, 1 elektron walencyjny) &rarr; tworzy zawsze <strong>I wiązanie (wartościowość I)</strong>.`;
+            }
+            if (group === 2) {
+                return `<strong>${elemSymbol}</strong> (${name}) należy do berylowców (<strong>2. grupa</strong>, 2 elektrony walencyjne) &rarr; tworzy zawsze <strong>II wiązania (wartościowość II)</strong>.`;
+            }
+            if (group === 13) {
+                return `<strong>${elemSymbol}</strong> (${name}) leży w <strong>13. grupie</strong> (13 &minus; 10 = 3 elektrony walencyjne) &rarr; jego podstawowa wartościowość to <strong>III</strong>${(elemSymbol === 'Ga' || elemSymbol === 'In' || elemSymbol === 'Tl') ? ' (dla cięższych borowców spotykana bywa także I)' : ''}.`;
+            }
+            if (group === 14) {
+                return `<strong>${elemSymbol}</strong> (${name}) leży w <strong>14. grupie</strong> (14 &minus; 10 = 4 elektrony walencyjne) &rarr; maksymalna wartościowość wynosi <strong>IV</strong> (w tlenkach i solach często także <strong>II</strong>, np. CO i CO₂).`;
+            }
+            if (group === 15) {
+                return `<strong>${elemSymbol}</strong> (${name}) leży w <strong>15. grupie</strong> &rarr; w związkach z wodorem i metalami ma wartościowość 18 &minus; 15 = <strong>III</strong> (np. NH₃, PH₃), a w tlenkach do 15 &minus; 10 = <strong>V</strong> (oraz pośrednie: ${valStr}).`;
+            }
+            if (group === 16) {
+                return `<strong>${elemSymbol}</strong> (${name}) leży w <strong>16. grupie</strong> &rarr; w siarczkach i z wodorem ma wartościowość 18 &minus; 16 = <strong>II</strong> (np. H₂S, FeS), a w tlenkach przyjmuje <strong>IV</strong> oraz maksymalnie 16 &minus; 10 = <strong>VI</strong> (np. SO₂, SO₃).`;
+            }
+            if (group === 17) {
+                return `<strong>${elemSymbol}</strong> (${name}) leży w <strong>17. grupie</strong> (fluorowce) &rarr; w solach beztlenowych i z wodorem ma wartościowość 18 &minus; 17 = <strong>I</strong> (np. HCl, NaCl), a w tlenkach do 17 &minus; 10 = <strong>VII</strong> (${valStr}).`;
+            }
+            if (group === 18) {
+                return `<strong>${elemSymbol}</strong> (${name}) to gaz szlachetny (<strong>18. grupa</strong>) z trwałym oktetem elektronowym &rarr; w chemii szkolnej nie tworzy wiązań (wartościowość <strong>0</strong>).`;
+            }
+            if (elemSymbol === 'Zn' || elemSymbol === 'Cd') {
+                return `Cynk (Zn) i kadm (Cd) są metalami o stałej wartościowości <strong>II</strong>.`;
+            }
+            if (elemSymbol === 'Ag') {
+                return `Srebro (Ag) w związkach chemicznych przyjmuje stałą wartościowość <strong>I</strong>.`;
+            }
+            if (elemSymbol === 'Sc') {
+                return `Skand (Sc) ma stałą wartościowość <strong>III</strong>.`;
+            }
+            if (info.metal) {
+                return `<strong>${elemSymbol}</strong> (${name}) to metal przejściowy (grupy 3–12) o zmiennej wartościowości: <strong>${valStr}</strong>. Wartościowość metalu przejściowego jest w zadaniach i nazwach związków podawana cyfrą rzymską w nawiasie (np. tlenek ${name === 'chrom' ? 'chromu' : name === 'żelazo' ? 'żelaza' : name + 'u'}(${toRoman(info.valences[0])})).`;
+            }
+            return `Z układu okresowego dla <strong>${elemSymbol}</strong> (${name}) poprawne liczby wiązań to: <strong>${valStr}</strong>.`;
+        }
+
         // Pobieranie wartości z pól formularza z domyślną 1 dla pustych współczynników/indeksów
         function getEquationData() {
             const val1Raw = document.getElementById('val1').value.trim();
@@ -2006,20 +2085,22 @@
             const info2 = ELEMENTS_DB[data.elem2];
 
             if (!info1) {
-                errors.push(`Nie rozpoznano symbolu pierwszego pierwiastka: <strong>${data.elem1}</strong>.`);
+                errors.push(`Nie rozpoznano symbolu pierwszego pierwiastka: <strong>${data.elem1}</strong>. Sprawdź układ okresowy.`);
                 document.getElementById('elem1').classList.add('field-invalid');
             }
             if (!info2) {
-                errors.push(`Nie rozpoznano symbolu drugiego pierwiastka: <strong>${data.elem2}</strong>.`);
+                errors.push(`Nie rozpoznano symbolu drugiego pierwiastka: <strong>${data.elem2}</strong>. Sprawdź układ okresowy.`);
                 document.getElementById('elem2').classList.add('field-invalid');
             }
 
             // Sprawdzenie wartościowości dla pierwiastka 1
             if (!data.val1) {
-                errors.push(`Wpisz liczbę wiązań dla <strong>${data.elem1}</strong> (np. ${info1 ? info1.valences.map(toRoman).join(', ') : 'I, II...'}) w ramce nad symbolem.`);
+                const rule1 = getValenceRuleExplanation(data.elem1);
+                errors.push(`Wpisz liczbę wiązań dla <strong>${data.elem1}</strong> (np. ${info1 ? info1.valences.map(toRoman).join(', ') : 'I, II...'}) w ramce nad symbolem.${rule1 ? `<div style="margin-top: 4px; font-size: 0.86rem; color: #cbd5e1;">💡 <strong>Reguła z układu okresowego:</strong> ${rule1}</div>` : ''}`);
                 document.getElementById('val1').classList.add('field-invalid');
             } else if (info1 && !info1.valences.includes(data.val1)) {
-                errors.push(`Liczba wiązań dla <strong>${data.elem1}</strong> (${toRoman(data.val1)}) jest niepoprawna. Z układu okresowego ${data.elem1} tworzy: <strong>${info1.valences.map(toRoman).join(' lub ')}</strong> wiązań.`);
+                const rule1 = getValenceRuleExplanation(data.elem1);
+                errors.push(`Liczba wiązań dla <strong>${data.elem1}</strong> (${toRoman(data.val1)}) jest niepoprawna. Z układu okresowego ${data.elem1} tworzy: <strong>${info1.valences.map(toRoman).join(' lub ')}</strong> wiązań.<div style="margin-top: 4px; font-size: 0.86rem; color: #cbd5e1;">💡 <strong>Reguła z układu okresowego:</strong> ${rule1}</div>`);
                 document.getElementById('val1').classList.add('field-invalid');
             } else {
                 document.getElementById('val1').classList.add('field-valid');
@@ -2028,10 +2109,12 @@
 
             // Sprawdzenie wartościowości dla pierwiastka 2
             if (!data.val2) {
-                errors.push(`Wpisz liczbę wiązań dla <strong>${data.elem2}</strong> (np. ${info2 ? info2.valences.map(toRoman).join(', ') : 'I, II...'}) w ramce nad symbolem.`);
+                const rule2 = getValenceRuleExplanation(data.elem2);
+                errors.push(`Wpisz liczbę wiązań dla <strong>${data.elem2}</strong> (np. ${info2 ? info2.valences.map(toRoman).join(', ') : 'I, II...'}) w ramce nad symbolem.${rule2 ? `<div style="margin-top: 4px; font-size: 0.86rem; color: #cbd5e1;">💡 <strong>Reguła z układu okresowego:</strong> ${rule2}</div>` : ''}`);
                 document.getElementById('val2').classList.add('field-invalid');
             } else if (info2 && !info2.valences.includes(data.val2)) {
-                errors.push(`Liczba wiązań dla <strong>${data.elem2}</strong> (${toRoman(data.val2)}) jest niepoprawna. Z układu okresowego ${data.elem2} tworzy: <strong>${info2.valences.map(toRoman).join(' lub ')}</strong> wiązań.`);
+                const rule2 = getValenceRuleExplanation(data.elem2);
+                errors.push(`Liczba wiązań dla <strong>${data.elem2}</strong> (${toRoman(data.val2)}) jest niepoprawna. Z układu okresowego ${data.elem2} tworzy: <strong>${info2.valences.map(toRoman).join(' lub ')}</strong> wiązań.<div style="margin-top: 4px; font-size: 0.86rem; color: #cbd5e1;">💡 <strong>Reguła z układu okresowego:</strong> ${rule2}</div>`);
                 document.getElementById('val2').classList.add('field-invalid');
             } else {
                 document.getElementById('val2').classList.add('field-valid');
@@ -2130,20 +2213,24 @@
 
             // 2. Sprawdzenie wartościowości / liczby wiązań
             if (!data.val1) {
-                errors.push(`Wpisz poprawną wartość wiązań (wartościowość) dla <strong>${data.elem1}</strong> (np. ${info1 ? info1.valences.map(toRoman).join(', ') : 'I, II...'}) w linii nad symbolem.`);
+                const rule1 = getValenceRuleExplanation(data.elem1);
+                errors.push(`Wpisz poprawną wartość wiązań (wartościowość) dla <strong>${data.elem1}</strong> (np. ${info1 ? info1.valences.map(toRoman).join(', ') : 'I, II...'}) w linii nad symbolem.${rule1 ? `<div style="margin-top: 4px; font-size: 0.86rem; color: #cbd5e1;">💡 <strong>Reguła z układu okresowego:</strong> ${rule1}</div>` : ''}`);
                 document.getElementById('val1').classList.add('field-invalid');
             } else if (info1 && !info1.valences.includes(data.val1)) {
-                errors.push(`Podana wartościowość dla <strong>${data.elem1}</strong> (${toRoman(data.val1)}) nie zgadza się z układem okresowym. Typowe wartościowości to: ${info1.valences.map(toRoman).join(', ')}.`);
+                const rule1 = getValenceRuleExplanation(data.elem1);
+                errors.push(`Podana wartościowość dla <strong>${data.elem1}</strong> (${toRoman(data.val1)}) nie zgadza się z układem okresowym. Typowe wartościowości to: ${info1.valences.map(toRoman).join(', ')}.<div style="margin-top: 4px; font-size: 0.86rem; color: #cbd5e1;">💡 <strong>Reguła z układu okresowego:</strong> ${rule1}</div>`);
                 document.getElementById('val1').classList.add('field-invalid');
             } else {
                 document.getElementById('val1').classList.add('field-valid');
             }
 
             if (!data.val2) {
-                errors.push(`Wpisz poprawną wartość wiązań (wartościowość) dla <strong>${data.elem2}</strong> (np. ${info2 ? info2.valences.map(toRoman).join(', ') : 'I, II...'}) w linii nad symbolem.`);
+                const rule2 = getValenceRuleExplanation(data.elem2);
+                errors.push(`Wpisz poprawną wartość wiązań (wartościowość) dla <strong>${data.elem2}</strong> (np. ${info2 ? info2.valences.map(toRoman).join(', ') : 'I, II...'}) w linii nad symbolem.${rule2 ? `<div style="margin-top: 4px; font-size: 0.86rem; color: #cbd5e1;">💡 <strong>Reguła z układu okresowego:</strong> ${rule2}</div>` : ''}`);
                 document.getElementById('val2').classList.add('field-invalid');
             } else if (info2 && !info2.valences.includes(data.val2)) {
-                errors.push(`Podana wartościowość dla <strong>${data.elem2}</strong> (${toRoman(data.val2)}) nie zgadza się z układem okresowym. Typowe wartościowości to: ${info2.valences.map(toRoman).join(', ')}.`);
+                const rule2 = getValenceRuleExplanation(data.elem2);
+                errors.push(`Podana wartościowość dla <strong>${data.elem2}</strong> (${toRoman(data.val2)}) nie zgadza się z układem okresowym. Typowe wartościowości to: ${info2.valences.map(toRoman).join(', ')}.<div style="margin-top: 4px; font-size: 0.86rem; color: #cbd5e1;">💡 <strong>Reguła z układu okresowego:</strong> ${rule2}</div>`);
                 document.getElementById('val2').classList.add('field-invalid');
             } else {
                 document.getElementById('val2').classList.add('field-valid');
