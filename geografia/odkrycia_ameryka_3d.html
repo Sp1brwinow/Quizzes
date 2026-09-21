@@ -208,7 +208,7 @@
             top: 80px;
             left: 20px;
             bottom: 24px;
-            width: 320px;
+            width: 330px;
             background: var(--panel-bg);
             border: 1px solid var(--panel-border);
             border-radius: 18px;
@@ -222,20 +222,67 @@
         }
 
         .sidebar-title {
-            padding: 14px 18px;
+            padding: 12px 16px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 0.9rem;
+            font-size: 0.88rem;
             font-weight: 800;
             color: #fff;
         }
 
-        .sidebar-filter {
-            padding: 8px 12px;
+        /* Przełącznik Zagadnień Konkursowych */
+        .sidebar-topic-selector {
             display: flex;
-            gap: 6px;
+            background: rgba(0, 0, 0, 0.45);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 5px;
+            gap: 4px;
+        }
+
+        .topic-tab-btn {
+            flex: 1;
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-muted);
+            padding: 7px 4px;
+            border-radius: 8px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: center;
+            line-height: 1.25;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .topic-tab-btn:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .topic-tab-btn.active {
+            background: rgba(56, 189, 248, 0.18);
+            color: #fff;
+            border-color: rgba(56, 189, 248, 0.45);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .topic-tab-btn .badge-pill {
+            font-size: 0.64rem;
+            opacity: 0.8;
+            font-weight: 600;
+        }
+
+        .sidebar-filter {
+            padding: 6px 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.06);
             background: rgba(0,0,0,0.25);
         }
@@ -244,8 +291,8 @@
             background: transparent;
             border: 1px solid rgba(255,255,255,0.1);
             color: var(--text-muted);
-            font-size: 0.72rem;
-            padding: 4px 8px;
+            font-size: 0.70rem;
+            padding: 3px 7px;
             border-radius: 6px;
             cursor: pointer;
             font-weight: 600;
@@ -627,8 +674,8 @@
                 <i class="fa-solid fa-arrow-left"></i> Powrót do Geografii
             </a>
             <div class="title-badge">
-                <h1><i class="fa-solid fa-mountain-sun" style="color:#10b981"></i> Szkolna Mapa Fizyczna 3D: <span class="highlight">USA i Kanada</span></h1>
-                <p>Klasyczna hipsometria i batymetria • Rzeźba terenu • Szlaki odkrywców</p>
+                <h1 id="mainHeaderTitle"><i class="fa-solid fa-mountain-sun" style="color:#10b981"></i> Szkolna Mapa Fizyczna 3D: <span class="highlight">Odkrycia w Ameryce Północnej</span></h1>
+                <p id="mainHeaderSubtitle">Klasyczna hipsometria i batymetria • Rzeźba terenu • Szlaki odkrywców</p>
             </div>
         </div>
 
@@ -663,13 +710,31 @@
     <!-- Lewy Panel: Lista Odkrywców i Filtry -->
     <aside id="explorer-sidebar">
         <div class="sidebar-title">
-            <span><i class="fa-solid fa-route" style="color:var(--primary)"></i> Wyprawy i Odkrywcy</span>
-            <span id="route-count-badge" style="font-size:0.75rem; color:var(--text-muted)">10 tras</span>
+            <span><i class="fa-solid fa-compass" style="color:var(--primary)"></i> Szlaki Odkryć</span>
+            <span id="route-count-badge" style="font-size:0.75rem; color:var(--text-muted)">16 tras</span>
         </div>
+
+        <!-- Przełącznik Zagadnień Konkursowych -->
+        <div class="sidebar-topic-selector">
+            <button class="topic-tab-btn active" id="topic-all" onclick="selectTopic('all', this)">
+                <span>🌐 Wszystkie</span>
+                <span class="badge-pill">16 tras</span>
+            </button>
+            <button class="topic-tab-btn" id="topic-usa-canada" onclick="selectTopic('usa_canada', this)">
+                <span>🇨🇦 1. USA i Kanada</span>
+                <span class="badge-pill">10 tras</span>
+            </button>
+            <button class="topic-tab-btn" id="topic-rio-grande" onclick="selectTopic('rio_grande', this)">
+                <span>🏜️ 2. N od Rio Grande</span>
+                <span class="badge-pill">6 tras</span>
+            </button>
+        </div>
+
         <div class="sidebar-filter">
             <button class="filter-chip active" onclick="filterExplorers('all', this)">Wszystkie</button>
             <button class="filter-chip" onclick="filterExplorers('morskie', this)">Morskie</button>
             <button class="filter-chip" onclick="filterExplorers('ladowe', this)">Lądowe & Rzeczne</button>
+            <button class="filter-chip" onclick="filterExplorers('poludnie', this)">Południe / Dziki Zachód</button>
             <button class="filter-chip" onclick="filterExplorers('arktyka', this)">Arktyka</button>
         </div>
         <div class="explorer-list" id="explorerListContainer"></div>
@@ -759,6 +824,7 @@
                 years: 'ok. 1000 r.',
                 country: 'Wikingowie (Norwegia / Grenlandia)',
                 category: 'morskie',
+                topic: 'usa_canada',
                 color: '#38bdf8',
                 summary: 'Około 1000 roku wyruszył z Grenlandii na zachód, docierając do wschodnich wybrzeży Kanady (Winlandia).',
                 details: '<strong>Szlak wikiński i nazwy z sag:</strong><br>• <strong>Początek:</strong> Wikingowie z Norwegii i Islandii osiedlili się na Grenlandii (Brattahlid).<br>• <em>Helluland</em> (Ziemia Płaskich Kamieni) – Ziemia Baffina.<br>• <em>Markland</em> (Ziemia Lasów) – Półwysep Labrador.<br>• <em>Winlandia</em> (Kraina Winorośli) – osada <strong>L\'Anse aux Meadows</strong> na północy Nowej Fundlandii.<br>• Powrót na Grenlandię z drewnem i winogronami.',
@@ -795,6 +861,7 @@
                 years: '1497 r.',
                 country: 'Anglia (pod banderą Henryka VII Tudora)',
                 category: 'morskie',
+                topic: 'usa_canada',
                 color: '#ec4899',
                 summary: 'Włoski żeglarz w służbie Anglii. Na statku Matthew przebył Atlantyk i dopłynął do Nowej Fundlandii.',
                 details: '<strong>Przebieg wyprawy z 1497 r.:</strong><br>• <strong>Start:</strong> Wypłynięcie z portu <strong>Bristol</strong> w maju 1497 r. na małym okręcie <em>Matthew</em>.<br>• Przejście przez burzliwy Północny Atlantyk.<br>• <strong>Lądowanie:</strong> Odkrycie Nowej Fundlandii (Przylądek Bonavista) oraz Wyspy Przylądka Bretońskiego.<br>• <strong>Wielkie odkrycie gospodarcze:</strong> Odkrycie <strong>Wielkich Ławic Nowofundlandzkich</strong> (niezwykle obfite łowiska dorsza na szelfie kontynentalnym).<br>• Triumfalny powrót do Bristolu w sierpniu 1497 r.',
@@ -827,6 +894,7 @@
                 years: '1534–1542 r.',
                 country: 'Francja (Franciszek I)',
                 category: 'morskie',
+                topic: 'usa_canada',
                 color: '#2563eb',
                 summary: 'Odkrywca i badacz Rzeki i Zatoki Świętego Wawrzyńca. Dał początek Nowej Francji i nazwie „Kanada”.',
                 details: '<strong>Trzy wielkie wyprawy (1534, 1535, 1541):</strong><br>• <strong>Start:</strong> Saint-Malo (Bretania, Francja).<br>• Przepłynięcie Cieśniny Belle Isle i wpłynięcie do Zatoki Św. Wawrzyńca.<br>• Wzniesienie drewnianego krzyża z herbem Francji w Zatoce Gaspé (1534).<br>• Wpłynięcie w głąb potężnej <strong>Rzeki Świętego Wawrzyńca</strong>, dotarcie do wiosek <em>Stadacona</em> (Quebec) oraz <em>Hochelaga</em> (Montreal / wzgórze Mont-Royal).<br>• Zapisanie irokeskiego słowa <em>kanata</em> (osada), od którego pochodzi nazwa <strong>Kanada</strong>.',
@@ -864,6 +932,7 @@
                 years: '1577–1580 r. (1579)',
                 country: 'Anglia (Elżbieta I)',
                 category: 'morskie',
+                topic: 'usa_canada',
                 color: '#ea580c',
                 summary: 'Drugie w historii (i pierwsze angielskie) opłynięcie Ziemi na flagowym galeonie „Golden Hind”. Odkrył Nowy Albion (Kalifornia) i Cieśninę Drake\'a.',
                 details: '<strong>Pełna trasa wyprawy dookoła świata (1577–1580):</strong><br>• <strong>Wypłynięcie:</strong> Plymouth (Anglia) w grudniu 1577 r. na statku <em>Pelican</em> (przemianowanym na <em>Golden Hind</em> / Złota Łania).<br>• <strong>Atlantyk i Ameryka Płd.:</strong> Przez Wyspy Zielonego Przylądka, ujście Rio de la Plata, zimowanie w Port San Julián i przejście <strong>Cieśniny Magellana</strong>.<br>• <strong>Cieśnina Drake’a:</strong> Sztorm zepchnął go na południe od Ziemi Ognistej – odkrył otwarte morze łączące oceany (Cieśnina Drake\'a).<br>• <strong>Pacyfik i Ameryka Północna (1579):</strong> Rajd na hiszpańskie porty (Chile, Peru – zdobycie galeonu ze skarbami <em>Cacafuego</em>) i żegluga na północ aż do wybrzeży Kalifornii i Oregonu (poszukiwanie Przejścia Północno-Zachodniego). Lądował w <strong>Nowym Albionie</strong> (<em>Nova Albion</em> / Zatoka Drakes Bay k. San Francisco), ogłaszając te ziemie posiadłością Anglii.<br>• <strong>Pacyfik, Azja i powrót:</strong> Przeprawa przez Pacyfik na zachód, Wyspy Karolińskie, <strong>Moluki</strong> (Ternate – traktat z sułtanem, 6 ton goździków), wyspę Jawę, Ocean Indyjski, opłynięcie <strong>Przylądka Dobrej Nadziei</strong> (RPA) i powrót do Plymouth (Anglia).<br>• Królowa Elżbieta I osobiście pasowała Drake’a na rycerza na pokładzie jego statku.',
@@ -920,6 +989,7 @@
                 years: '1609–1611 r.',
                 country: 'Holandia (1609) / Anglia (1610)',
                 category: 'morskie',
+                topic: 'usa_canada',
                 color: '#059669',
                 summary: 'Poszukiwacz Przejścia Północno-Zachodniego. Odkrył rzekę Hudson oraz Zatokę Hudsona.',
                 details: '<strong>Dwie monumentalne wyprawy:</strong><br>• <strong>1609 r. (dla Holandii na statku <em>Halve Maen</em>):</strong> Wypłynięcie z Amsterdamu, dotarcie do wybrzeży Ameryki (Przylądek Cod), wpłynięcie do ujścia <strong>rzeki Hudson</strong> (wyspa Manhattan / dzisiejszy Nowy Jork) i dotarcie w górę rzeki do rejonu Albany (podwaliny pod Nowy Amsterdam).<br>• <strong>1610–1611 r. (dla Anglii na statku <em>Discovery</em>):</strong> Wypłynięcie z Londynu, wpłynięcie przez Cieśninę Hudsona do gigantycznej <strong>Zatoki Hudsona</strong> i Zatoki Jamesa. Uwięziony przez lody zimą 1610/11 – zginął w wyniku buntu załogi.',
@@ -955,6 +1025,7 @@
                 years: '1603–1615 r.',
                 country: 'Francja',
                 category: 'ladowe',
+                topic: 'usa_canada',
                 color: '#7c3aed',
                 summary: '„Ojciec Nowej Francji”. Założyciel miasta Quebec (1608) i odkrywca Wielkich Jezior (Huron, Ontario).',
                 details: '<strong>Kluczowe osiągnięcia i etapy ekspedycji:</strong><br>• <strong>Start:</strong> Port Honfleur (Francja) – rejs przez Atlantyk do Kanady.<br>• <strong>1608:</strong> Założenie stałej osady, twierdzy i stolicy <strong>Quebec</strong> nad Rzeką Św. Wawrzyńca.<br>• <strong>1609:</strong> Odkrycie i zbadanie <strong>Jeziora Champlain</strong>.<br>• <strong>1613–1615:</strong> Wyprawa rzeką Ottawa, przez Jezioro Nipissing i Zatokę Georgian Bay – dotarcie do <strong>Jeziora Huron</strong> oraz <strong>Jeziora Ontario</strong>.<br>• Sporządzenie pierwszych precyzyjnych map geograficznych Kanady.',
@@ -993,6 +1064,7 @@
                 years: '1741 r.',
                 country: 'Imperium Rosyjskie (Wielka Ekspedycja Północna)',
                 category: 'morskie',
+                topic: 'usa_canada',
                 color: '#0891b2',
                 summary: 'Potwierdzili rozdzielenie Azji od Ameryki. Odkryli Alaskę i Wyspy Aleuckie.',
                 details: '<strong>Druga Ekspedycja Kamczacka (1741 r.):</strong><br>• <strong>Start:</strong> Pietropawłowsk Kamczacki na okrętach <em>Św. Piotr</em> (Bering) i <em>Św. Paweł</em> (Czirikow).<br>• Przepłynięcie i potwierdzenie natury <strong>Cieśniny Beringa</strong> rozdzielającej Eurazję od Ameryki Płn.<br>• <strong>Odkrycie Alaski:</strong> Zauważenie potężnego masywu Góry Świętego Eliasza, odkrycie Zatoki Alaska, Wyspy Kodiak oraz Wysp Aleuckich.<br>• Aleksiej Czirikow wylądował na Wyspie Baranowa (Sitka).<br>• W drodze powrotnej statek Beringa rozbił się na Wyspie Beringa (Wyspy Komandorskie), gdzie dowódca zmarł z wycieńczenia.',
@@ -1028,6 +1100,7 @@
                 years: '1789, 1793 r.',
                 country: 'Wielka Brytania (Kompania Północno-Zachodnia)',
                 category: 'ladowe',
+                topic: 'usa_canada',
                 color: '#d97706',
                 summary: 'Dotarł do Oceanu Arktycznego (1789) oraz jako pierwszy przebył lądem Kanadę do Oceanu Spokojnego (1793).',
                 details: '<strong>Dwie przełomowe wyprawy lądowe:</strong><br>• <strong>1789 r. (Wyprawa do Oceanu Arktycznego):</strong> Start z Fort Chipewyan (Jezioro Athabaska), przez Wielkie Jezioro Niewolnicze i spływ rzeką <strong>Mackenzie</strong> (najdłuższą rzeką Kanady) aż do jej delty w Morzu Beauforta (Ocean Arktyczny).<br>• <strong>1793 r. (Pierwsze przejście do Pacyfiku):</strong> Wyprawa w górę rzeki Peace, pokonanie Kordylierów (Gór Skalistych) i spływ rzeką Bella Coola do Oceanu Spokojnego.<br>• Wyrył słynny napis na skale nad Pacyfikiem: <em>„Alex Mackenzie / from Canada / by land / 22d July 1793”</em> (12 lat przed Lewisem i Clarkiem!).',
@@ -1065,6 +1138,7 @@
                 years: '1804–1806 r.',
                 country: 'USA (zlecenie prezydenta Thomasa Jeffersona)',
                 category: 'ladowe',
+                topic: 'usa_canada',
                 color: '#16a34a',
                 summary: 'Kluczowa wyprawa USA (Corps of Discovery) badająca terytorium Zakupu Luizjany aż do Pacyfiku.',
                 details: '<strong>Pełna trasa transkontynentalna (1804–1806):</strong><br>• <strong>Start:</strong> St. Louis (Maj 1804 r.) u ujścia Missouri do Missisipi.<br>• Żegluga w górę rzeki <strong>Missouri</strong> przez Wielkie Równiny.<br>• <strong>Fort Mandan:</strong> Zimowanie 1804/05 w Dakocie Północnej i dołączenie przewodniczki <strong>Sacagawei</strong> z plemienia Szoszonów.<br>• Pokonanie Wielkich Wodospadów Missouri (Great Falls) i źródeł rzeki (Three Forks).<br>• Przejście przez <strong>Góry Skaliste</strong> (Przełęcz Lolo / Góry Bitterroot).<br>• Spływ rzekami Clearwater, Snake i potężną rzeką <strong>Columbia</strong> aż do ujścia do Pacyfiku (Fort Clatsop w Oregonie – Zima 1805/06).<br>• Powrót w 1806 r. z podziałem na grupy badające rzekę Yellowstone (Clark) i rzekę Marias (Lewis) i triumfalny wjazd do St. Louis we wrześniu 1806 r.',
@@ -1106,6 +1180,7 @@
                 years: '1845 / 1903–1906 r.',
                 country: 'Wielka Brytania / Norwegia',
                 category: 'arktyka',
+                topic: 'usa_canada',
                 color: '#9333ea',
                 summary: 'Morski szlak łączący Ocean Atlantycki z Oceanem Spokojnym przez lodowy Archipelag Arktyczny Kanady.',
                 details: '<strong>Dwie kluczowe ekspedycje w historii Arktyki:</strong><br>• <strong>1845 r. (Wyprawa Sir Johna Franklina):</strong> Statki <em>HMS Erebus</em> i <em>HMS Terror</em> wpłynęły w Cieśninę Lancastera i uwięzione w lodach k. Wyspy Króla Williama zostały zmiażdżone – cała 129-osobowa załoga zginęła.<br>• <strong>1903–1906 r. (Triumf Roalda Amundsena):</strong> Wypłynięcie z Christianii (Oslo) w Norwegii na małym kutrze motorowo-żaglowym <em>Gjøa</em> (zaledwie 47 ton). Przejście przez Cieśninę Lancastera, dwuletnie zimowanie w <strong>Gjøa Haven</strong> (Wyspa Króla Williama – wyznaczenie położenia Północnego Bieguna Magnetycznego), pokonanie płytkich cieśnin wzdłuż wybrzeża Kanady i wpłynięcie w sierpniu 1906 r. do Cieśniny Beringa i Nome na Alasce.',
@@ -1143,6 +1218,237 @@
                     { lat: 71.3, lon: -156.5, name: 'Przylądek Barrow' },
                     { lat: 65.5, lon: -168.0, name: 'Cieśnina Beringa' },
                     { lat: 64.5, lon: -165.4, name: 'Nome (Alaska 1906)' }
+                ]
+            },
+            /* =========================================================================
+               ZAGADNIENIE 2: ODKRYCIA W AMERYCE PÓŁNOCNEJ NA PÓŁNOC OD RIO GRANDE
+               ========================================================================= */
+            {
+                id: 'ponce_de_leon',
+                name: 'Juan Ponce de León',
+                years: '1513 r. (1521)',
+                country: 'Hiszpania (Korona Kastylijska)',
+                category: 'poludnie',
+                topic: 'rio_grande',
+                color: '#ef4444',
+                summary: 'Pierwszy Europejczyk na Florydzie. Odkrywca i twórca nazwy „La Florida” oraz odkrywca Prądu Zatokowego (Golfstromu).',
+                details: '<strong>Przebieg wyprawy na Florydę (1513 r.):</strong><br>• <strong>Start:</strong> Wypłynięcie z San Juan (Portoryko) na 3 okrętach w poszukiwaniu żyznej ziemi Bimini i mitycznego Źródła Wiecznej Młodości.<br>• <strong>Odkrycie Florydy (Kwiecień 1513):</strong> Lądowanie k. dzisiejszego St. Augustine. Nazwał tę ziemię <em>La Florida</em> (od hiszpańskiej nazwy Niedzieli Palmowej/Wielkanocnej: <em>Pascua Florida</em>).<br>• <strong>Odkrycie Golfstromu:</strong> Opływając południowy kraniec Florydy (archipelag Florida Keys), jako pierwszy zaobserwował potężny ciepły prąd morski płynący na północ. Stał się on kluczowym szlakiem powrotnym dla hiszpańskich flot.<br>• Odkrycie archipelagu Florida Keys (<em>Los Martires</em>) i wysp Dry Tortugas.',
+                examTip: 'Ponce de León nadał nazwę Florydzie i jako pierwszy opisał Prąd Zatokowy (Golfstrom) – najważniejszy prąd morski północnego Atlantyku.',
+                focusTarget: { lat: 27.0, lon: -81.0 },
+                points: [
+                    { lat: 18.5, lon: -66.1, name: 'San Juan, Portoryko (Start – Marzec 1513)' },
+                    { lat: 24.1, lon: -74.5, name: 'San Salvador / Bahamy' },
+                    { lat: 26.5, lon: -78.0, name: 'Wielka Bahama' },
+                    { lat: 29.9, lon: -81.3, name: 'St. Augustine / Wybrzeże Florydy (Odkrycie La Florida – 2 Kwietnia 1513)' },
+                    { lat: 28.4, lon: -80.5, name: 'Przylądek Canaveral' },
+                    { lat: 25.8, lon: -80.0, name: 'Cieśnina Florydzka (Odkrycie Prądu Zatokowego / Golfstromu)' },
+                    { lat: 24.5, lon: -81.8, name: 'Florida Keys / Key West (Los Martires)' },
+                    { lat: 24.6, lon: -82.9, name: 'Dry Tortugas (Wyspy Żółwie)' },
+                    { lat: 26.6, lon: -82.0, name: 'Zatoka Charlotte Harbor (Zachodnia Floryda)' },
+                    { lat: 23.1, lon: -82.4, name: 'Hawana, Kuba (Powrót)' }
+                ],
+                mapPoints: [
+                    { lat: 18.5, lon: -66.1, name: 'Portoryko' },
+                    { lat: 24.1, lon: -74.5, name: 'Bahamy' },
+                    { lat: 29.9, lon: -81.3, name: 'St. Augustine (La Florida)' },
+                    { lat: 28.4, lon: -80.5, name: 'Przylądek Canaveral' },
+                    { lat: 25.8, lon: -80.0, name: 'Golfstrom' },
+                    { lat: 24.5, lon: -81.8, name: 'Florida Keys' },
+                    { lat: 24.6, lon: -82.9, name: 'Dry Tortugas' },
+                    { lat: 26.6, lon: -82.0, name: 'Zatoka Charlotte Harbor' },
+                    { lat: 23.1, lon: -82.4, name: 'Kuba' }
+                ]
+            },
+            {
+                id: 'de_soto',
+                name: 'Hernando de Soto',
+                years: '1539–1542 r.',
+                country: 'Hiszpania (Karol V)',
+                category: 'poludnie',
+                topic: 'rio_grande',
+                color: '#f97316',
+                summary: 'Pierwszy Europejczyk, który dotarł w głąb lądu do potężnej rzeki Missisipi. Przemierzył cały południowy wschód USA.',
+                details: '<strong>Wielka ekspedycja przez 10 stanów USA:</strong><br>• <strong>Start:</strong> Maj 1539 r. z Hawany (Kuba) na 9 okrętach z ponad 600 zbrojnymi, lądowanie w Zatoce Tampa (Floryda).<br>• Marsz przez Georgię, Karoliny, Alabamę (krwawa bitwa pod Mabila) i stan Missisipi.<br>• <strong>Odkrycie Rzeki Missisipi (Maj 1541):</strong> W rejonie dzisiejszego Memphis dotarł do rzeki Missisipi (<em>Río del Espíritu Santo</em>), budując tratwy do jej pokonania.<br>• <strong>Pochówek w Missisipi (Maj 1542):</strong> Zmarł na febrę w Arkansas – jego ciało zatopiono nocą w nurcie rzeki.<br>• Ocalali pod wodzą Moscoso zbudowali łodzie, spłynęli całą Missisipi do Zatoki Meksykańskiej i dotarli do Meksyku (Pánuco).',
+                examTip: 'Hernando de Soto jako pierwszy Europejczyk dotarł do rzeki Missisipi (1541 r.) i został pochowany w jej wodach.',
+                focusTarget: { lat: 33.5, lon: -88.0 },
+                points: [
+                    { lat: 23.1, lon: -82.4, name: 'Hawana, Kuba (Start floty – Maj 1539)' },
+                    { lat: 27.8, lon: -82.5, name: 'Zatoka Tampa, Floryda (Lądowanie 600 żołnierzy)' },
+                    { lat: 30.4, lon: -84.3, name: 'Anhaica (Tallahassee – Zima 1539/40)' },
+                    { lat: 33.5, lon: -82.0, name: 'Kofitachequi (Georgia / Karolina Płd.)' },
+                    { lat: 35.0, lon: -85.3, name: 'Góry Blue Ridge / Tennessee' },
+                    { lat: 32.4, lon: -87.0, name: 'Mabila, Alabama (Bitwa z wodzem Tuscaloosą)' },
+                    { lat: 33.6, lon: -88.8, name: 'Chicaza (Stan Missisipi – Zima 1540/41)' },
+                    { lat: 35.1, lon: -90.0, name: 'Odkrycie Rzeki Missisipi k. Memphis (8 Maja 1541)' },
+                    { lat: 34.5, lon: -93.0, name: 'Gorące Źródła / Góry Ouachita (Arkansas)' },
+                    { lat: 31.3, lon: -91.8, name: 'Śmierć i pochówek De Soto w nurcie Missisipi (Maj 1542)' },
+                    { lat: 29.2, lon: -89.3, name: 'Ujście Missisipi do Zatoki Meksykańskiej (Spływ na łodziach)' },
+                    { lat: 26.0, lon: -97.2, name: 'Zatoka Meksykańska' },
+                    { lat: 22.2, lon: -97.8, name: 'Pánuco / Veracruz, Meksyk (Koniec wyprawy – Wrzesień 1543)' }
+                ],
+                mapPoints: [
+                    { lat: 23.1, lon: -82.4, name: 'Hawana' },
+                    { lat: 27.8, lon: -82.5, name: 'Zatoka Tampa' },
+                    { lat: 30.4, lon: -84.3, name: 'Tallahassee' },
+                    { lat: 33.5, lon: -82.0, name: 'Georgia' },
+                    { lat: 32.4, lon: -87.0, name: 'Mabila (Alabama)' },
+                    { lat: 35.1, lon: -90.0, name: 'Odkrycie Missisipi (1541)' },
+                    { lat: 34.5, lon: -93.0, name: 'Arkansas' },
+                    { lat: 31.3, lon: -91.8, name: 'Pochówek w rzece' },
+                    { lat: 29.2, lon: -89.3, name: 'Delta Missisipi' },
+                    { lat: 22.2, lon: -97.8, name: 'Pánuco (Meksyk)' }
+                ]
+            },
+            {
+                id: 'coronado',
+                name: 'Francisco Vázquez de Coronado',
+                years: '1540–1542 r.',
+                country: 'Hiszpania (Wicekrólestwo Nowej Hiszpanii)',
+                category: 'poludnie',
+                topic: 'rio_grande',
+                color: '#eab308',
+                summary: 'Poszukiwacz Złotych Miast Cíboli. Wyprawa odkryła Wielki Kanion Kolorado i zbadała Wielkie Równiny aż po Kansas.',
+                details: '<strong>Eksploracja południowego zachodu i Wielkich Równin:</strong><br>• <strong>Start:</strong> Wyruszył z Composteli (Meksyk) w 1540 r. z 400 zbrojnymi w poszukiwaniu mitycznych *Siedmiu Złotych Miast Ciboli*.<br>• <strong>Cibola (Hawikuh):</strong> Zdobycie osad Indian Zuni w Nowym Meksyku (zamiast złota znaleziono kukurydzę i glinę).<br>• <strong>Odkrycie Wielkiego Kanionu Kolorado:</strong> Oficer García López de Cárdenas jako pierwszy Europejczyk dotarł do krawędzi <strong>Wielkiego Kanionu Kolorado</strong> (<em>Grand Canyon</em>).<br>• <strong>Wielkie Równiny i Bizony:</strong> Zimowanie nad rzeką Rio Grande (puebla Tiguex), wejście na Wielkie Równiny i pierwsze opisy gigantycznych stad bizonów.<br>• Dotarcie do mitycznej krainy Quivira w Kansas (lipiec 1541 r.).',
+                examTip: 'Wyprawa Coronado doprowadziła do odkrycia Wielkiego Kanionu Kolorado (García López de Cárdenas) oraz zbadania dorzecza Rio Grande i Wielkich Równin.',
+                focusTarget: { lat: 35.0, lon: -106.0 },
+                points: [
+                    { lat: 21.2, lon: -104.9, name: 'Compostela / Guadalajara, Meksyk (Start – Luty 1540)' },
+                    { lat: 24.8, lon: -107.4, name: 'Culiacán (Baza zaopatrzeniowa)' },
+                    { lat: 29.0, lon: -110.9, name: 'Rzeka Sonora' },
+                    { lat: 32.2, lon: -110.0, name: 'Rzeka San Pedro (Arizona)' },
+                    { lat: 35.0, lon: -108.9, name: 'Pueblo Zuni / Hawikuh (Mityczna Cibola – Nowy Meksyk)' },
+                    { lat: 36.0, lon: -112.1, name: 'Wielki Kanion Kolorado (Odkrycie Cárdenasa – Wrzesień 1540)' },
+                    { lat: 35.3, lon: -106.5, name: 'Tiguex nad rzeką Rio Grande (Zima 1540/41)' },
+                    { lat: 35.5, lon: -105.7, name: 'Pecos Pueblo (Przejście na Wielkie Równiny)' },
+                    { lat: 35.2, lon: -101.8, name: 'Kanion Palo Duro / Teksas (Stada bizonów)' },
+                    { lat: 38.3, lon: -98.6, name: 'Quivira nad rzeką Arkansas (Kansas – Lipiec 1541)' },
+                    { lat: 35.3, lon: -106.5, name: 'Dolina Rio Grande (Powrót)' },
+                    { lat: 19.4, lon: -99.1, name: 'Miasto Meksyk (Wiosna 1542)' }
+                ],
+                mapPoints: [
+                    { lat: 21.2, lon: -104.9, name: 'Meksyk' },
+                    { lat: 29.0, lon: -110.9, name: 'Sonora' },
+                    { lat: 32.2, lon: -110.0, name: 'Arizona' },
+                    { lat: 35.0, lon: -108.9, name: 'Cibola (Zuni)' },
+                    { lat: 36.0, lon: -112.1, name: 'Wielki Kanion Kolorado' },
+                    { lat: 35.3, lon: -106.5, name: 'Rio Grande (Tiguex)' },
+                    { lat: 35.2, lon: -101.8, name: 'Teksas (Bizony)' },
+                    { lat: 38.3, lon: -98.6, name: 'Quivira (Kansas)' },
+                    { lat: 19.4, lon: -99.1, name: 'Powrót do Meksyku' }
+                ]
+            },
+            {
+                id: 'marquette_jolliet',
+                name: 'Jacques Marquette i Louis Jolliet',
+                years: '1673 r.',
+                country: 'Nowa Francja (Francja)',
+                category: 'ladowe',
+                topic: 'rio_grande',
+                color: '#06b6d4',
+                summary: 'Odkrywcy szlaku wodnego z Wielkich Jezior do rzeki Missisipi. Otworzyli wnętrze kontynentu dla Nowej Francji.',
+                details: '<strong>Eksploracja hydrograficzna Missisipi:</strong><br>• <strong>Start:</strong> Misja St. Ignace (Cieśnina Mackinac) w czółnach z kory brzozowej.<br>• Przepłynięcie Zatoki Green Bay, rzeki Fox i lądowej przenoski w Portage (Wisconsin) do rzeki Wisconsin.<br>• <strong>Wpłynięcie do Missisipi (17 Czerwca 1673):</strong> Potwierdzili, że rzeka płynie na południe ku Zatoce Meksykańskiej.<br>• Zbadanie ujścia rzek Missouri i Ohio, dotarcie do ujścia rzeki Arkansas (34°N).<br>• Powrót rzeką Illinois przez przenoskę Chicago do Jeziora Michigan.',
+                examTip: 'Marquette i Jolliet odkryli połączenie dorzecza Wielkich Jezior z rzeką Missisipi (przez rzekę Wisconsin i Illinois).',
+                focusTarget: { lat: 41.0, lon: -90.0 },
+                points: [
+                    { lat: 45.8, lon: -84.7, name: 'Misja St. Ignace / Cieśnina Mackinac (Start – Maj 1673)' },
+                    { lat: 44.5, lon: -88.0, name: 'Zatoka Green Bay (Jezioro Michigan)' },
+                    { lat: 43.7, lon: -88.5, name: 'Rzeka Fox / Jezioro Winnebago' },
+                    { lat: 43.5, lon: -89.4, name: 'Portage, Wisconsin (Lądowa przenoska czółen)' },
+                    { lat: 43.0, lon: -91.1, name: 'Wpłynięcie rzeką Wisconsin do Missisipi (17 Czerwca 1673)' },
+                    { lat: 38.8, lon: -90.1, name: 'Ujście rzeki Missouri (Pekitanoui)' },
+                    { lat: 37.0, lon: -89.1, name: 'Ujście rzeki Ohio (Kraina Illinois)' },
+                    { lat: 33.9, lon: -91.1, name: 'Ujście rzeki Arkansas (Najdalszy punkt – Lipiec 1673)' },
+                    { lat: 40.0, lon: -90.5, name: 'Rzeka Illinois (Kurs powrotny)' },
+                    { lat: 41.8, lon: -87.6, name: 'Przenoska Chicago / Jezioro Michigan' },
+                    { lat: 44.5, lon: -88.0, name: 'Misja św. Franciszka Ksawerego (Green Bay)' }
+                ],
+                mapPoints: [
+                    { lat: 45.8, lon: -84.7, name: 'St. Ignace' },
+                    { lat: 44.5, lon: -88.0, name: 'Green Bay' },
+                    { lat: 43.5, lon: -89.4, name: 'Portage' },
+                    { lat: 43.0, lon: -91.1, name: 'Rzeka Missisipi (1673)' },
+                    { lat: 38.8, lon: -90.1, name: 'Ujście Missouri' },
+                    { lat: 37.0, lon: -89.1, name: 'Ujście Ohio' },
+                    { lat: 33.9, lon: -91.1, name: 'Ujście Arkansas' },
+                    { lat: 41.8, lon: -87.6, name: 'Chicago' },
+                    { lat: 44.5, lon: -88.0, name: 'Green Bay' }
+                ]
+            },
+            {
+                id: 'la_salle',
+                name: 'René-Robert Cavelier de La Salle',
+                years: '1679–1682 r.',
+                country: 'Nowa Francja (Francja / Ludwik XIV)',
+                category: 'ladowe',
+                topic: 'rio_grande',
+                color: '#3b82f6',
+                summary: 'Przepłynął całą rzekę Missisipi do Zatoki Meksykańskiej. Ogłosił dorzecze własnością Francji pod nazwą „Luizjana”.',
+                details: '<strong>Wielka proklamacja Luizjany (1682 r.):</strong><br>• <strong>Start:</strong> Fort Frontenac nad Jeziorem Ontario. Zbudował nad rzeką Niagara pierwszy żaglowiec <em>Le Griffon</em>.<br>• Spływ rzeką Illinois (Fort Crèvecoeur) i wpłynięcie na rzekę Missisipi w lutym 1682 r.<br>• <strong>9 Kwietnia 1682 r. – Ujście Missisipi:</strong> Dotarł do Zatoki Meksykańskiej, wzniósł krzyż i herb Francji, ogłaszając całe dorzecze Missisipi (od Wielkich Jezior po Zatokę) posiadłością króla Ludwika XIV pod nazwą <strong>Luizjana</strong> (<em>La Louisiane</em>).<br>• Stworzył podstawy pod gigantyczną francuską prowincję kolonialną (sprzedaną USA w 1803 r. jako <em>Zakup Luizjany</em>).',
+                examTip: 'La Salle spłynął całą rzeką Missisipi do ujścia i nadał terytorium nazwę „Luizjana” na cześć króla Francji Ludwika XIV.',
+                focusTarget: { lat: 35.0, lon: -89.0 },
+                points: [
+                    { lat: 44.2, lon: -76.5, name: 'Fort Frontenac (Jezioro Ontario – Baza startowa)' },
+                    { lat: 43.1, lon: -79.0, name: 'Rzeka Niagara (Budowa żaglowca Le Griffon – 1679)' },
+                    { lat: 42.0, lon: -82.5, name: 'Jezioro Erie' },
+                    { lat: 45.8, lon: -84.7, name: 'Cieśnina Mackinac / Jezioro Huron' },
+                    { lat: 42.0, lon: -86.5, name: 'Rzeka St. Joseph / Jezioro Michigan' },
+                    { lat: 41.3, lon: -89.0, name: 'Rzeka Illinois (Fort Crèvecoeur)' },
+                    { lat: 38.9, lon: -90.4, name: 'Wpłynięcie na rzekę Missisipi (Luty 1682)' },
+                    { lat: 35.2, lon: -90.0, name: 'Fort Prudhomme (Memphis, Tennessee)' },
+                    { lat: 33.9, lon: -91.1, name: 'Rzeka Arkansas' },
+                    { lat: 31.6, lon: -91.4, name: 'Kraj Indian Natchez' },
+                    { lat: 29.2, lon: -89.3, name: 'Delta Missisipi / Zatoka Meksykańska (9 Kwietnia 1682 – Proklamacja Luizjany)' },
+                    { lat: 41.8, lon: -87.6, name: 'Powrót szlakiem rzecznym ku Wielkim Jeziorom' }
+                ],
+                mapPoints: [
+                    { lat: 44.2, lon: -76.5, name: 'Jezioro Ontario' },
+                    { lat: 43.1, lon: -79.0, name: 'Niagara' },
+                    { lat: 42.0, lon: -82.5, name: 'Jezioro Erie' },
+                    { lat: 45.8, lon: -84.7, name: 'Jezioro Huron' },
+                    { lat: 41.3, lon: -89.0, name: 'Rzeka Illinois' },
+                    { lat: 38.9, lon: -90.4, name: 'Rzeka Missisipi' },
+                    { lat: 35.2, lon: -90.0, name: 'Memphis' },
+                    { lat: 31.6, lon: -91.4, name: 'Natchez' },
+                    { lat: 29.2, lon: -89.3, name: 'Ujście Missisipi (Luizjana 1682)' }
+                ]
+            },
+            {
+                id: 'pike',
+                name: 'Zebulon Pike',
+                years: '1806–1807 r.',
+                country: 'USA (Thomas Jefferson)',
+                category: 'poludnie',
+                topic: 'rio_grande',
+                color: '#10b981',
+                summary: 'Odkrywca południowych Gór Skalistych (Pikes Peak) oraz źródeł rzek Arkansas i Rio Grande na pograniczu z Meksykiem.',
+                details: '<strong>Ekspedycja na południowo-zachodnie rubieże USA:</strong><br>• <strong>Start:</strong> St. Louis (Lipiec 1806 r.) w górę rzek Missouri, Osage i Arkansas w celu zbadania granicy Zakupu Luizjany z hiszpańskim Meksykiem.<br>• <strong>Pikes Peak (Kolorado):</strong> W listopadzie 1806 r. dotarł do Gór Skalistych i podjął próbę wejścia na słynny szczyt <strong>Pikes Peak</strong> (4302 m n.p.m.).<br>• <strong>Przekroczenie Rio Grande:</strong> Zbudował fort w dolinie San Luis nad <strong>rzeką Rio Grande</strong> (terytorium hiszpańskie), gdzie został aresztowany przez hiszpański garnizon.<br>• Przewieziony pod eskortą do Santa Fe i Chihuahua (Meksyk), a następnie odesłany przez Teksas do USA.<br>• Opublikowane przez niego mapy otworzyły szlak handlowy <em>Santa Fe Trail</em>.',
+                examTip: 'Zebulon Pike badał południowe rubieże Gór Skalistych (szczyt Pikes Peak) oraz górny bieg rzeki Rio Grande.',
+                focusTarget: { lat: 37.0, lon: -105.0 },
+                points: [
+                    { lat: 38.8, lon: -90.2, name: 'St. Louis (Start – Lipiec 1806)' },
+                    { lat: 38.3, lon: -92.5, name: 'Rzeka Osage (Missouri)' },
+                    { lat: 38.5, lon: -97.0, name: 'Rzeka Arkansas / Wioski Paunisów (Kansas)' },
+                    { lat: 38.2, lon: -103.0, name: 'Wzdłuż rzeki Arkansas (Kolorado)' },
+                    { lat: 38.8, lon: -105.0, name: 'Pikes Peak (4302 m n.p.m. – Front Range, Kolorado)' },
+                    { lat: 38.5, lon: -106.0, name: 'Górny bieg rzeki Arkansas (Góry Skaliste)' },
+                    { lat: 37.3, lon: -105.8, name: 'Fort Pike nad rzeką Rio Grande (Dolina San Luis)' },
+                    { lat: 35.7, lon: -105.9, name: 'Santa Fe (Aresztowanie przez Hiszpanów)' },
+                    { lat: 31.7, lon: -106.4, name: 'El Paso del Norte (Przeprawa przez Rio Grande)' },
+                    { lat: 28.6, lon: -106.1, name: 'Chihuahua, Meksyk (Eskorta hiszpańska)' },
+                    { lat: 29.3, lon: -101.0, name: 'Rzeka Rio Grande (Przekroczenie granicy ku Teksasowi)' },
+                    { lat: 29.4, lon: -98.5, name: 'San Antonio, Teksas' },
+                    { lat: 31.7, lon: -93.1, name: 'Natchitoches, Luizjana (Powrót do USA – Lipiec 1807)' }
+                ],
+                mapPoints: [
+                    { lat: 38.8, lon: -90.2, name: 'St. Louis' },
+                    { lat: 38.5, lon: -97.0, name: 'Rzeka Arkansas' },
+                    { lat: 38.8, lon: -105.0, name: 'Pikes Peak (Kolorado)' },
+                    { lat: 37.3, lon: -105.8, name: 'Fort Pike (Rio Grande)' },
+                    { lat: 35.7, lon: -105.9, name: 'Santa Fe' },
+                    { lat: 31.7, lon: -106.4, name: 'El Paso' },
+                    { lat: 28.6, lon: -106.1, name: 'Chihuahua (Meksyk)' },
+                    { lat: 29.4, lon: -98.5, name: 'San Antonio' },
+                    { lat: 31.7, lon: -93.1, name: 'Natchitoches (USA)' }
                 ]
             }
         ];
@@ -1213,6 +1519,48 @@
                 correct: 1,
                 expId: "drake",
                 expl: "Drake wylądował w Kalifornii (Drakes Bay) i ogłosił te tereny własnością Elżbiety I pod nazwą Nowy Albion."
+            },
+            {
+                q: "Który hiszpański konkwistador jako pierwszy Europejczyk dotarł do rzeki Missisipi w 1541 roku?",
+                options: ["Hernando de Soto", "Francisco de Coronado", "Juan Ponce de León", "Álvar Núñez Cabeza de Vaca"],
+                correct: 0,
+                expId: "de_soto",
+                expl: "Hernando de Soto w maju 1541 r. dotarł do rzeki Missisipi w rejonie dzisiejszego Memphis. Zmarł nad jej brzegiem i został zatopiony w jej nurcie."
+            },
+            {
+                q: "Wyprawa Francisco de Coronado (1540–1542) w poszukiwaniu Siedmiu Złotych Miast Ciboli doprowadziła do odkrycia przez Europejczyków:",
+                options: ["Wodospadu Niagara", "Wielkiego Kanionu Kolorado", "Źródeł rzeki Missisipi", "Zatoki Hudsona"],
+                correct: 1,
+                expId: "coronado",
+                expl: "Oficer z wyprawy Coronado, García López de Cárdenas, jako pierwszy Europejczyk dotarł do krawędzi Wielkiego Kanionu rzeki Kolorado w 1540 r."
+            },
+            {
+                q: "Kto w 1682 roku spłynął całą rzeką Missisipi do Zatoki Meksykańskiej i ogłosił ten obszar posiadłością Francji pod nazwą 'Luizjana'?",
+                options: ["Samuel de Champlain", "Jacques Cartier", "René-Robert Cavelier de La Salle", "Louis Jolliet"],
+                correct: 2,
+                expId: "la_salle",
+                expl: "La Salle spłynął całą Missisipi do jej ujścia i nadał całemu dorzeczu nazwę Luizjana na cześć króla Francji Ludwika XIV."
+            },
+            {
+                q: "Juan Ponce de León w 1513 roku odkrył półwysep Floryda oraz zaobserwował kluczowy dla żeglugi:",
+                options: ["Prąd Zatokowy (Golfstrom)", "Zimny Prąd Labradorski", "Prąd Kalifornijski", "Prąd Peruański (Humboldta)"],
+                correct: 0,
+                expId: "ponce_de_leon",
+                expl: "Ponce de León opływając południe Florydy odkrył potężny Prąd Zatokowy (Golfstrom), który wynosił hiszpańskie statki na północny Atlantyk."
+            },
+            {
+                q: "Jacques Marquette i Louis Jolliet w 1673 roku odkryli szlak wodny łączący:",
+                options: ["Zatokę Hudsona z Oceanem Arktycznym", "Dorzecze Wielkich Jezior z rzeką Missisipi", "Rzekę Rio Grande z Oceanem Spokojnym", "Rzekę Kolorado z Pacyfikiem"],
+                correct: 1,
+                expId: "marquette_jolliet",
+                expl: "Marquette i Jolliet przeszli z Jeziora Michigan rzeką Fox i rzeką Wisconsin wprost do Missisipi, otwierając serce Ameryki Płn. dla Francuzów."
+            },
+            {
+                q: "Zebulon Pike podczas wyprawy w latach 1806–1807 badał południowe Góry Skaliste oraz dotarł do górnego biegu rzeki:",
+                options: ["Jukon", "Rio Grande", "Świętego Wawrzyńca", "Mackenzie"],
+                correct: 1,
+                expId: "pike",
+                expl: "Pike badał szczyt Pikes Peak w Kolorado, a następnie przekroczył granicę hiszpańską i zbudował fort nad rzeką Rio Grande w dolinie San Luis."
             }
         ];
 
@@ -1289,7 +1637,7 @@
             buildSchoolWallMap();
             buildRoutes();
 
-            renderSidebar();
+            applyFilters(false);
             selectExplorer(0);
 
             window.addEventListener('resize', onResize);
@@ -1592,10 +1940,80 @@
             }
         }
 
+        let currentTopicFilter = 'all';
+        let currentCategoryFilter = 'all';
+
+        function selectTopic(topic, btn) {
+            currentTopicFilter = topic;
+            
+            // Styl aktywny dla zakładek zagadnień
+            document.querySelectorAll('.topic-tab-btn').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+
+            // Reset filtrów kategorii do "Wszystkie"
+            currentCategoryFilter = 'all';
+            document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+            const firstChip = document.querySelector('.filter-chip');
+            if (firstChip) firstChip.classList.add('active');
+
+            // Aktualizacja nagłówka strony
+            const headerTitle = document.getElementById('mainHeaderTitle');
+            const headerSub = document.getElementById('mainHeaderSubtitle');
+            if (topic === 'usa_canada') {
+                if (headerTitle) headerTitle.innerHTML = `<i class="fa-solid fa-mountain-sun" style="color:#10b981"></i> Szkolna Mapa Fizyczna 3D: <span class="highlight">1. USA i Kanada</span>`;
+                if (headerSub) headerSub.innerText = `10 kluczowych wypraw • Atlantyk, Arktyka, Kordyliery, Pacyfik • Konkurs Przedmiotowy`;
+            } else if (topic === 'rio_grande') {
+                if (headerTitle) headerTitle.innerHTML = `<i class="fa-solid fa-mountain-sun" style="color:#10b981"></i> Szkolna Mapa Fizyczna 3D: <span class="highlight">2. Na północ od Rio Grande</span>`;
+                if (headerSub) headerSub.innerText = `6 kluczowych wypraw • Floryda, Missisipi, Wielki Kanion Kolorado, Dziki Zachód • Konkurs Przedmiotowy`;
+            } else {
+                if (headerTitle) headerTitle.innerHTML = `<i class="fa-solid fa-mountain-sun" style="color:#10b981"></i> Szkolna Mapa Fizyczna 3D: <span class="highlight">Wszystkie Odkrycia w Ameryce Płn.</span>`;
+                if (headerSub) headerSub.innerText = `16 tras • Klasyczna hipsometria i batymetria • Rzeźba terenu • Szlaki odkrywców`;
+            }
+
+            applyFilters(true);
+
+            // Jeśli tryb quizu jest aktywny, zresetuj quiz do pytań z wybranego tematu
+            if (isQuizMode) {
+                quizIdx = 0;
+                quizScore = 0;
+                quizAttempts = 0;
+                loadQuestion(0);
+            }
+        }
+
+        function filterExplorers(cat, btn) {
+            currentCategoryFilter = cat;
+            document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+            applyFilters(false);
+        }
+
+        function applyFilters(autoSelectFirst = false) {
+            let list = EXPLORERS;
+            if (currentTopicFilter !== 'all') {
+                list = list.filter(e => e.topic === currentTopicFilter);
+            }
+            if (currentCategoryFilter !== 'all') {
+                list = list.filter(e => e.category === currentCategoryFilter);
+            }
+            renderSidebar(list);
+
+            const isCurrentInList = list.some((e) => EXPLORERS.findIndex(x => x.id === e.id) === currentExplorerIndex);
+            if (list.length > 0 && (!isCurrentInList || autoSelectFirst)) {
+                const firstGlobalIdx = EXPLORERS.findIndex(x => x.id === list[0].id);
+                selectExplorer(firstGlobalIdx);
+            }
+        }
+
         function renderSidebar(filteredList = EXPLORERS) {
             const container = document.getElementById('explorerListContainer');
             container.innerHTML = '';
             document.getElementById('route-count-badge').innerText = `${filteredList.length} tras`;
+
+            if (filteredList.length === 0) {
+                container.innerHTML = `<div style="padding:15px; text-align:center; color:var(--text-muted); font-size:0.8rem;">Brak tras spełniających wybrane kryteria.</div>`;
+                return;
+            }
 
             filteredList.forEach(exp => {
                 const globalIdx = EXPLORERS.findIndex(e => e.id === exp.id);
@@ -1615,18 +2033,6 @@
                 `;
                 container.appendChild(card);
             });
-        }
-
-        function filterExplorers(cat, btn) {
-            document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
-            btn.classList.add('active');
-
-            if (cat === 'all') {
-                renderSidebar(EXPLORERS);
-            } else {
-                const filtered = EXPLORERS.filter(e => e.category === cat);
-                renderSidebar(filtered);
-            }
         }
 
         function selectExplorer(idx) {
@@ -1705,6 +2111,13 @@
         let quizScore = 0;
         let quizAttempts = 0;
 
+        function getActiveQuizQuestions() {
+            if (currentTopicFilter === 'all') return QUIZ_QUESTIONS;
+            const validExpIds = new Set(EXPLORERS.filter(e => e.topic === currentTopicFilter).map(e => e.id));
+            const filtered = QUIZ_QUESTIONS.filter(q => validExpIds.has(q.expId));
+            return filtered.length > 0 ? filtered : QUIZ_QUESTIONS;
+        }
+
         function toggleMode() {
             isQuizMode = !isQuizMode;
             document.getElementById('study-container').style.display = isQuizMode ? 'none' : 'block';
@@ -1721,8 +2134,11 @@
         }
 
         function loadQuestion(i) {
-            const q = QUIZ_QUESTIONS[i];
-            document.getElementById('quizQuestionText').innerText = `${i + 1}. ${q.q}`;
+            const activeQuestions = getActiveQuizQuestions();
+            if (i >= activeQuestions.length) i = 0;
+            quizIdx = i;
+            const q = activeQuestions[i];
+            document.getElementById('quizQuestionText').innerText = `${i + 1}/${activeQuestions.length}. ${q.q}`;
             document.getElementById('quizFeedbackBox').style.display = 'none';
             document.getElementById('quizNextBtn').style.display = 'none';
 
@@ -1745,7 +2161,8 @@
         }
 
         function checkAnswer(chosenIndex) {
-            const q = QUIZ_QUESTIONS[quizIdx];
+            const activeQuestions = getActiveQuizQuestions();
+            const q = activeQuestions[quizIdx];
             const buttons = document.querySelectorAll('.quiz-opt');
             buttons.forEach(b => b.disabled = true);
 
@@ -1771,7 +2188,8 @@
         }
 
         function loadNextQuestion() {
-            quizIdx = (quizIdx + 1) % QUIZ_QUESTIONS.length;
+            const activeQuestions = getActiveQuizQuestions();
+            quizIdx = (quizIdx + 1) % activeQuestions.length;
             loadQuestion(quizIdx);
         }
 
