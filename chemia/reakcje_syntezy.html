@@ -1,0 +1,1445 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chemia – Kreator i Trenażer Reakcji Chemicznych (Substancje Dwupierwiastkowe)</title>
+
+    <!-- Google Analytics Tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZP827DTZJ5"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-ZP827DTZJ5');
+    </script>
+
+    <link rel="stylesheet" href="../style.css" />
+
+    <style>
+        :root {
+            --bg-dark: #070d18;
+            --card-bg: rgba(15, 23, 42, 0.9);
+            --card-border: rgba(56, 189, 248, 0.28);
+            --primary: #38bdf8;
+            --primary-hover: #0284c7;
+            --accent-val: #fbbf24;
+            --accent-succ: #22c55e;
+            --accent-err: #f43f5e;
+            --accent-warn: #fb923c;
+            --accent-info: #a855f7;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            padding: 24px 16px 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 1050px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+        }
+
+        /* Górna belka nawigacji */
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .nav-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            color: #38bdf8;
+            text-decoration: none;
+            padding: 9px 16px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.92rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            backdrop-filter: blur(8px);
+        }
+
+        .nav-link:hover {
+            background: #0284c7;
+            color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.35);
+        }
+
+        .nav-link-ptable {
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.25) 0%, rgba(56, 189, 248, 0.25) 100%);
+            border: 1px solid #a855f7;
+            color: #e9d5ff;
+            font-weight: 700;
+        }
+
+        .nav-link-ptable:hover {
+            background: linear-gradient(135deg, #a855f7 0%, #0284c7 100%);
+            color: #ffffff;
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.45);
+        }
+
+        /* Główny nagłówek */
+        .header-card {
+            text-align: center;
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.85) 100%);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 24px 28px;
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(12px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #38bdf8, #a855f7, #22c55e);
+        }
+
+        .header-card h1 {
+            font-size: 1.95rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 0%, #38bdf8 60%, #c084fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .header-card p {
+            color: var(--text-muted);
+            font-size: 0.98rem;
+            line-height: 1.5;
+            max-width: 850px;
+            margin: 0 auto;
+        }
+
+        /* Pasek wyboru trybu */
+        .mode-selector {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .mode-btn {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            color: #cbd5e1;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .mode-btn:hover {
+            border-color: #38bdf8;
+            color: #ffffff;
+        }
+
+        .mode-btn.active {
+            background: rgba(2, 132, 199, 0.35);
+            border: 2px solid #38bdf8;
+            color: #ffffff;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+        }
+
+        /* Karta zadania */
+        .task-card {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(168, 85, 247, 0.35);
+            border-radius: 16px;
+            padding: 18px 22px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .task-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #e9d5ff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .task-desc {
+            font-size: 1.05rem;
+            color: #f8fafc;
+            background: rgba(30, 41, 59, 0.7);
+            padding: 12px 18px;
+            border-radius: 10px;
+            border-left: 4px solid #a855f7;
+            line-height: 1.5;
+        }
+
+        .task-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-small {
+            background: #334155;
+            color: #e2e8f0;
+            border: 1px solid #64748b;
+            padding: 7px 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-small:hover {
+            background: #475569;
+            color: #ffffff;
+        }
+
+        /* Główny Panel Kreatora Reakcji */
+        .reaction-board {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 28px 24px;
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+            backdrop-filter: blur(12px);
+        }
+
+        /* Linia wartościowości / liczby wiązań */
+        .valence-row-wrapper {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px dashed rgba(251, 191, 36, 0.4);
+            border-radius: 14px;
+            padding: 14px 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .valence-header {
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: var(--accent-val);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .valence-hint {
+            font-size: 0.82rem;
+            color: #cbd5e1;
+            font-weight: 400;
+        }
+
+        /* Siatka pól równania */
+        .equation-layout {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 14px 10px;
+            padding: 16px 8px;
+            background: rgba(11, 17, 32, 0.85);
+            border-radius: 16px;
+            border: 1px solid rgba(56, 189, 248, 0.2);
+        }
+
+        .reactant-block, .product-block {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+        }
+
+        .compound-inputs {
+            display: flex;
+            align-items: flex-end;
+            gap: 4px;
+        }
+
+        /* Etykiety nad polami wartościowości */
+        .val-input-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .val-label {
+            font-size: 0.75rem;
+            color: var(--accent-val);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Style pól formularza */
+        .chem-input {
+            background: #0f172a;
+            border: 2px solid #334155;
+            color: #ffffff;
+            border-radius: 8px;
+            text-align: center;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-weight: 700;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .chem-input:focus {
+            border-color: #38bdf8;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+            background: #1e293b;
+        }
+
+        /* Pole wartościowości / liczby wiązań */
+        .input-val {
+            width: 58px;
+            height: 36px;
+            font-size: 1.05rem;
+            color: var(--accent-val);
+            border-color: rgba(251, 191, 36, 0.5);
+            background: rgba(251, 191, 36, 0.08);
+        }
+
+        .input-val:focus {
+            border-color: var(--accent-val);
+            box-shadow: 0 0 12px rgba(251, 191, 36, 0.4);
+        }
+
+        /* Pole współczynnika (duża liczba przed symbolem) */
+        .input-coeff {
+            width: 52px;
+            height: 48px;
+            font-size: 1.45rem;
+            color: #38bdf8;
+            border-color: rgba(56, 189, 248, 0.5);
+        }
+
+        /* Pole symbolu pierwiastka */
+        .input-elem {
+            width: 62px;
+            height: 48px;
+            font-size: 1.35rem;
+            letter-spacing: 1px;
+            color: #ffffff;
+        }
+
+        /* Pole indeksu (mała cyfra dolna) */
+        .input-sub {
+            width: 38px;
+            height: 32px;
+            font-size: 0.95rem;
+            color: #93c5fd;
+            margin-bottom: 2px;
+            border-color: #475569;
+        }
+
+        /* Symbole matematyczne/chemiczne w równaniu */
+        .eq-symbol {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #94a3b8;
+            padding: 0 6px;
+            user-select: none;
+        }
+
+        .eq-arrow {
+            color: #38bdf8;
+            font-size: 2.2rem;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Podgląd na żywo */
+        .live-preview-box {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            border-radius: 12px;
+            padding: 14px 20px;
+            text-align: center;
+        }
+
+        .live-preview-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+
+        .live-equation-text {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            color: #ffffff;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            min-height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+
+        .live-coeff {
+            color: #38bdf8;
+        }
+
+        .live-sub {
+            font-size: 0.95rem;
+            vertical-align: sub;
+            color: #93c5fd;
+            margin-left: 1px;
+        }
+
+        .live-val-tag {
+            font-size: 0.75rem;
+            color: var(--accent-val);
+            margin-left: 2px;
+            vertical-align: super;
+            font-weight: bold;
+        }
+
+        /* Przyciski akcji */
+        .actions-row {
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-main {
+            border: none;
+            padding: 13px 28px;
+            border-radius: 12px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-check {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            color: #ffffff;
+        }
+
+        .btn-check:hover {
+            background: linear-gradient(135deg, #0369a1 0%, #075985 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(2, 132, 199, 0.45);
+        }
+
+        .btn-reset {
+            background: #334155;
+            color: #cbd5e1;
+            border: 1px solid #64748b;
+        }
+
+        .btn-reset:hover {
+            background: #475569;
+            color: #ffffff;
+        }
+
+        .btn-hint {
+            background: rgba(168, 85, 247, 0.2);
+            color: #e9d5ff;
+            border: 1px solid #a855f7;
+        }
+
+        .btn-hint:hover {
+            background: #a855f7;
+            color: #ffffff;
+        }
+
+        /* Panel Informacji Zwrotnej (Wynik Sprawdzenia) */
+        .feedback-panel {
+            border-radius: 14px;
+            padding: 18px 22px;
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            line-height: 1.5;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .feedback-success {
+            background: rgba(34, 197, 94, 0.15);
+            border: 1px solid #22c55e;
+            color: #86efac;
+        }
+
+        .feedback-error {
+            background: rgba(244, 63, 94, 0.15);
+            border: 1px solid #f43f5e;
+            color: #fca5a5;
+        }
+
+        .feedback-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feedback-list {
+            margin: 6px 0 0 20px;
+            font-size: 0.95rem;
+        }
+
+        .feedback-list li {
+            margin-bottom: 4px;
+        }
+
+        /* Ściągawka Dydaktyczna / Reguła Krzyżowa */
+        .cheatsheet-card {
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            border-radius: 16px;
+            padding: 20px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .cheatsheet-card summary {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #38bdf8;
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .cheatsheet-content {
+            margin-top: 12px;
+            font-size: 0.92rem;
+            color: #cbd5e1;
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+        }
+
+        .step-box {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(56, 189, 248, 0.15);
+            border-radius: 10px;
+            padding: 12px 14px;
+        }
+
+        .step-box strong {
+            color: #ffffff;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .diatomic-note {
+            background: rgba(168, 85, 247, 0.15);
+            border-left: 4px solid #a855f7;
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-size: 0.88rem;
+        }
+
+        /* Stylizacja błędnych / poprawnych pól */
+        .field-valid {
+            border-color: #22c55e !important;
+            background: rgba(34, 197, 94, 0.1) !important;
+        }
+
+        .field-invalid {
+            border-color: #f43f5e !important;
+            background: rgba(244, 63, 94, 0.1) !important;
+        }
+
+        @media (max-width: 768px) {
+            .header-card h1 { font-size: 1.55rem; }
+            .equation-layout { gap: 10px 6px; padding: 12px 4px; }
+            .input-coeff { width: 44px; height: 42px; font-size: 1.25rem; }
+            .input-elem { width: 52px; height: 42px; font-size: 1.15rem; }
+            .input-sub { width: 34px; height: 30px; font-size: 0.88rem; }
+            .input-val { width: 50px; height: 32px; font-size: 0.95rem; }
+            .eq-symbol { font-size: 1.4rem; padding: 0 2px; }
+            .eq-arrow { font-size: 1.6rem; }
+            .live-equation-text { font-size: 1.25rem; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <!-- Górna belka nawigacji -->
+        <div class="top-nav">
+            <div class="nav-group">
+                <a href="../pomocnicze.html" class="nav-link">← Powrót do bazy quizów</a>
+                <a href="../index.html" class="nav-link">🏠 Strona główna</a>
+            </div>
+            <div class="nav-group">
+                <a href="https://ptable.com/?lang=pl" target="_blank" rel="noopener noreferrer" class="nav-link nav-link-ptable" title="Otwórz układ okresowy w nowym oknie">
+                    🪐 Otwórz Układ Okresowy Pierwiastków (Ptable) ↗
+                </a>
+            </div>
+        </div>
+
+        <!-- Nagłówek -->
+        <header class="header-card">
+            <h1>Kreator i Trenażer Reakcji Chemicznych</h1>
+            <p>
+                Naucz się tworzyć cząsteczki dwupierwiastkowe! Ustalaj <strong>liczbę wiązań (wartościowość)</strong>,
+                stosuj <strong>regułę krzyżową</strong> do wyznaczania indeksów i <strong>bilansuj współczynniki</strong> reakcji chemicznej.
+            </p>
+        </header>
+
+        <!-- Wybór trybu -->
+        <div class="mode-selector">
+            <button type="button" class="mode-btn active" id="mode-tasks-btn" onclick="setMode('tasks')">
+                🎯 Tryb Zadań i Ćwiczeń
+            </button>
+            <button type="button" class="mode-btn" id="mode-sandbox-btn" onclick="setMode('sandbox')">
+                🧪 Tryb Swobodny (Piaskownica)
+            </button>
+        </div>
+
+        <!-- Karta zadania (dla trybu zadań) -->
+        <div class="task-card" id="task-card">
+            <div class="task-header">
+                <span class="task-title">🎯 Twoje Zadanie:</span>
+                <div class="task-buttons">
+                    <button type="button" class="btn-small" onclick="nextRandomTask()">🎲 Losuj inne zadanie</button>
+                    <button type="button" class="btn-small" onclick="fillTaskSubstrates()">📝 Wstaw tylko substraty</button>
+                </div>
+            </div>
+            <div class="task-desc" id="task-instruction">
+                Ładowanie zadania...
+            </div>
+        </div>
+
+        <!-- Główny Kreator Reakcji -->
+        <div class="reaction-board">
+
+            <!-- Linia wartościowości / Liczba wiązań -->
+            <div class="valence-row-wrapper">
+                <div class="valence-header">
+                    <span>⚡ LICZBA WIĄZAŃ (WARTOŚCIOWOŚĆ Z UKŁADU OKRESOWEGO)</span>
+                    <span class="valence-hint">Wpisz liczbę rzymską (np. I, II, III, IV...) lub arabską (1, 2, 3...)</span>
+                </div>
+
+                <div style="display: flex; justify-content: space-around; flex-wrap: wrap; gap: 14px;">
+                    <div class="val-input-container">
+                        <span class="val-label">Wiązania 1. pierwiastka</span>
+                        <input type="text" id="val1" class="chem-input input-val" maxlength="4" placeholder="I / 1" oninput="handleInputUpdate()" title="Liczba wiązań pierwszego pierwiastka">
+                    </div>
+
+                    <div class="val-input-container">
+                        <span class="val-label">Wiązania 2. pierwiastka</span>
+                        <input type="text" id="val2" class="chem-input input-val" maxlength="4" placeholder="II / 2" oninput="handleInputUpdate()" title="Liczba wiązań drugiego pierwiastka">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formularz Równania: Substrat 1 + Substrat 2 -> Produkt -->
+            <div class="equation-layout">
+
+                <!-- SUBSTRAT 1 -->
+                <div class="reactant-block">
+                    <div class="compound-inputs">
+                        <!-- Pole 1: współczynnik -->
+                        <input type="text" id="coeff1" class="chem-input input-coeff" maxlength="2" placeholder="1" oninput="handleInputUpdate()" title="Współczynnik stechiometryczny (domyślnie 1)">
+                        <!-- Pole 2: symbol -->
+                        <input type="text" id="elem1" class="chem-input input-elem" maxlength="3" placeholder="H" oninput="handleInputUpdate()" title="Symbol 1. pierwiastka (np. H, Na, Al, Fe)">
+                        <!-- Pole 3: indeks dolny -->
+                        <input type="text" id="sub1" class="chem-input input-sub" maxlength="2" placeholder="1" oninput="handleInputUpdate()" title="Indeks cząsteczki substratu (np. 2 dla H2, O2, Cl2; domyślnie 1)">
+                    </div>
+                </div>
+
+                <!-- ZNAK + -->
+                <div class="eq-symbol">+</div>
+
+                <!-- SUBSTRAT 2 -->
+                <div class="reactant-block">
+                    <div class="compound-inputs">
+                        <!-- Pole 4: współczynnik -->
+                        <input type="text" id="coeff2" class="chem-input input-coeff" maxlength="2" placeholder="1" oninput="handleInputUpdate()" title="Współczynnik stechiometryczny (domyślnie 1)">
+                        <!-- Pole 5: symbol -->
+                        <input type="text" id="elem2" class="chem-input input-elem" maxlength="3" placeholder="O" oninput="handleInputUpdate()" title="Symbol 2. pierwiastka (np. O, Cl, S)">
+                        <!-- Pole 6: indeks dolny -->
+                        <input type="text" id="sub2" class="chem-input input-sub" maxlength="2" placeholder="1" oninput="handleInputUpdate()" title="Indeks cząsteczki substratu (np. 2 dla O2, Cl2; domyślnie 1)">
+                    </div>
+                </div>
+
+                <!-- STRZAŁKA -> -->
+                <div class="eq-symbol eq-arrow">➔</div>
+
+                <!-- PRODUKT DWUPIERWIASTKOWY -->
+                <div class="product-block">
+                    <div class="compound-inputs">
+                        <!-- Pole 7: współczynnik produktu -->
+                        <input type="text" id="coeffProd" class="chem-input input-coeff" maxlength="2" placeholder="1" oninput="handleInputUpdate()" title="Współczynnik stechiometryczny produktu (domyślnie 1)">
+                        <!-- Pole 8a: symbol 1 w produkcie -->
+                        <input type="text" id="prodElem1" class="chem-input input-elem" maxlength="3" placeholder="H" oninput="handleInputUpdate()" title="Symbol 1. pierwiastka w produkcie">
+                        <!-- Pole 8b: indeks 1 w produkcie (z reguły krzyżowej) -->
+                        <input type="text" id="prodSub1" class="chem-input input-sub" maxlength="2" placeholder="1" oninput="handleInputUpdate()" title="Indeks 1. pierwiastka w produkcie (z reguły krzyżowej; domyślnie 1)">
+                        <!-- Pole 9a: symbol 2 w produkcie -->
+                        <input type="text" id="prodElem2" class="chem-input input-elem" maxlength="3" placeholder="O" oninput="handleInputUpdate()" title="Symbol 2. pierwiastka w produkcie">
+                        <!-- Pole 9b: indeks 2 w produkcie (z reguły krzyżowej) -->
+                        <input type="text" id="prodSub2" class="chem-input input-sub" maxlength="2" placeholder="1" oninput="handleInputUpdate()" title="Indeks 2. pierwiastka w produkcie (z reguły krzyżowej; domyślnie 1)">
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Podgląd na żywo -->
+            <div class="live-preview-box">
+                <div class="live-preview-label">Podgląd zapisu chemicznego na żywo (puste pola = 1)</div>
+                <div class="live-equation-text" id="live-equation">
+                    <!-- Dynamicznie generowany zapis -->
+                </div>
+            </div>
+
+            <!-- Przyciski akcji -->
+            <div class="actions-row">
+                <button type="button" class="btn-main btn-check" onclick="checkReaction()">
+                    ✅ Sprawdź równanie
+                </button>
+                <button type="button" class="btn-main btn-hint" onclick="showHint()">
+                    💡 Podpowiedź krok po kroku
+                </button>
+                <button type="button" class="btn-main btn-reset" onclick="clearAllFields()">
+                    🧹 Wyczyść pola
+                </button>
+            </div>
+
+            <!-- Panel Informacji Zwrotnej -->
+            <div class="feedback-panel" id="feedback-panel">
+                <div class="feedback-title" id="feedback-title"></div>
+                <div id="feedback-body"></div>
+            </div>
+
+        </div>
+
+        <!-- Ściągawka Dydaktyczna -->
+        <details class="cheatsheet-card" open>
+            <summary>📖 Ściągawka: Jak tworzyć wzory i równania reakcji? (Kliknij, aby rozwinąć)</summary>
+            <div class="cheatsheet-content">
+                
+                <div class="steps-grid">
+                    <div class="step-box">
+                        <strong>1. Wartościowość (Liczba wiązań)</strong>
+                        Sprawdź w układzie okresowym, ile wiązań tworzy dany pierwiastek (np. H &rarr; I, O &rarr; II, Na &rarr; I, Al &rarr; III).
+                    </div>
+                    <div class="step-box">
+                        <strong>2. Reguła Krzyżowa</strong>
+                        Wpisz wartościowości nad symbolami. Wartościowość pierwszego pierwiastka staje się indeksem dolnym drugiego i na odwrót!
+                    </div>
+                    <div class="step-box">
+                        <strong>3. Skracanie Indeksów</strong>
+                        Jeśli oba indeksy dzielą się przez tę samą liczbę, skróć je (np. C<sup>IV</sup>O<sup>II</sup> &rarr; C<sub>2</sub>O<sub>4</sub> &rarr; CO<sub>2</sub>; Mg<sup>II</sup>O<sup>II</sup> &rarr; MgO).
+                    </div>
+                    <div class="step-box">
+                        <strong>4. Bilansowanie (Współczynniki)</strong>
+                        Liczba atomów każdego pierwiastka po lewej stronie (w substratach) musi być dokładnie równa liczbie atomów po prawej stronie (w produktach).
+                    </div>
+                </div>
+
+                <div class="diatomic-note">
+                    ⚠️ <strong>Ważna reguła chemiczna:</strong> Gazy i niektóre niemetale w stanie wolnym (jako substraty) występują zawsze w cząsteczkach <strong>dwuatomowych</strong>: 
+                    H<sub>2</sub>, O<sub>2</sub>, N<sub>2</sub>, Cl<sub>2</sub>, F<sub>2</sub>, Br<sub>2</sub>, I<sub>2</sub>. Metale zapisujemy jako pojedyncze atomy (np. Na, Mg, Fe, Al).
+                </div>
+
+            </div>
+        </details>
+
+    </div>
+
+    <!-- Logika aplikacji JS -->
+    <script>
+        // Baza pierwiastków z typowymi wartościowościami i postaciami naturalnymi
+        const ELEMENTS_DB = {
+            'H':  { name: 'wodór', valences: [1], diatomic: true, metal: false },
+            'O':  { name: 'tlen', valences: [2], diatomic: true, metal: false },
+            'N':  { name: 'azot', valences: [1, 2, 3, 4, 5], diatomic: true, metal: false },
+            'Cl': { name: 'chlor', valences: [1, 3, 5, 7], diatomic: true, metal: false },
+            'F':  { name: 'fluor', valences: [1], diatomic: true, metal: false },
+            'Br': { name: 'brom', valences: [1, 3, 5, 7], diatomic: true, metal: false },
+            'I':  { name: 'jod', valences: [1, 3, 5, 7], diatomic: true, metal: false },
+            'S':  { name: 'siarka', valences: [2, 4, 6], diatomic: false, metal: false },
+            'C':  { name: 'węgiel', valences: [2, 4], diatomic: false, metal: false },
+            'P':  { name: 'fosfor', valences: [3, 5], diatomic: false, metal: false }, // cząsteczka P4 lub P
+            'Na': { name: 'sód', valences: [1], diatomic: false, metal: true },
+            'K':  { name: 'potas', valences: [1], diatomic: false, metal: true },
+            'Li': { name: 'lit', valences: [1], diatomic: false, metal: true },
+            'Mg': { name: 'magnez', valences: [2], diatomic: false, metal: true },
+            'Ca': { name: 'wapń', valences: [2], diatomic: false, metal: true },
+            'Ba': { name: 'bar', valences: [2], diatomic: false, metal: true },
+            'Al': { name: 'glin', valences: [3], diatomic: false, metal: true },
+            'Fe': { name: 'żelazo', valences: [2, 3], diatomic: false, metal: true },
+            'Cu': { name: 'miedź', valences: [1, 2], diatomic: false, metal: true },
+            'Zn': { name: 'cynk', valences: [2], diatomic: false, metal: true },
+            'Pb': { name: 'ołów', valences: [2, 4], diatomic: false, metal: true },
+            'Ag': { name: 'srebro', valences: [1], diatomic: false, metal: true }
+        };
+
+        // Baza przygotowanych zadań dydaktycznych dla uczniów klas 7-8
+        const TASKS = [
+            {
+                title: 'Synteza wody',
+                desc: 'Ułóż równanie reakcji powstawania <strong>wody (tlenku wodoru)</strong> z <strong>wodoru</strong> i <strong>tlenu</strong>.',
+                elem1: 'H', val1: 1, sub1: 2,
+                elem2: 'O', val2: 2, sub2: 2,
+                coeff1: 2, coeff2: 1, coeffProd: 2,
+                prodElem1: 'H', prodSub1: 2,
+                prodElem2: 'O', prodSub2: 1
+            },
+            {
+                title: 'Synteza tlenku magnezu',
+                desc: 'Ułóż równanie reakcji syntezy <strong>tlenku magnezu</strong> ze spalania <strong>magnezu</strong> w <strong>tlenie</strong>.',
+                elem1: 'Mg', val1: 2, sub1: 1,
+                elem2: 'O', val2: 2, sub2: 2,
+                coeff1: 2, coeff2: 1, coeffProd: 2,
+                prodElem1: 'Mg', prodSub1: 1,
+                prodElem2: 'O', prodSub2: 1
+            },
+            {
+                title: 'Synteza chlorku sodu',
+                desc: 'Ułóż równanie reakcji powstawania <strong>chlorku sodu (soli kuchennej)</strong> z metalicznego <strong>sodu</strong> i gazowego <strong>chloru</strong>.',
+                elem1: 'Na', val1: 1, sub1: 1,
+                elem2: 'Cl', val2: 1, sub2: 2,
+                coeff1: 2, coeff2: 1, coeffProd: 2,
+                prodElem1: 'Na', prodSub1: 1,
+                prodElem2: 'Cl', prodSub2: 1
+            },
+            {
+                title: 'Synteza tlenku glinu',
+                desc: 'Ułóż równanie reakcji syntezy <strong>tlenku glinu</strong> z <strong>glinu</strong> (wartościowość III) i <strong>tlenu</strong>.',
+                elem1: 'Al', val1: 3, sub1: 1,
+                elem2: 'O', val2: 2, sub2: 2,
+                coeff1: 4, coeff2: 3, coeffProd: 2,
+                prodElem1: 'Al', prodSub1: 2,
+                prodElem2: 'O', prodSub2: 3
+            },
+            {
+                title: 'Synteza tlenku węgla(IV)',
+                desc: 'Ułóż równanie całkowitego spalania <strong>węgla</strong> o wartościowości IV w <strong>tlenie</strong> z utworzeniem dwutlenku węgla (tlenku węgla(IV)). Pamiętaj o skróceniu indeksów!',
+                elem1: 'C', val1: 4, sub1: 1,
+                elem2: 'O', val2: 2, sub2: 2,
+                coeff1: 1, coeff2: 1, coeffProd: 1,
+                prodElem1: 'C', prodSub1: 1,
+                prodElem2: 'O', prodSub2: 2
+            },
+            {
+                title: 'Synteza siarczku żelaza(III)',
+                desc: 'Ułóż równanie reakcji syntezy <strong>siarczku żelaza(III)</strong> z <strong>żelaza</strong> o wartościowości III oraz <strong>siarki</strong> (w siarczkach siarka ma wartościowość II).',
+                elem1: 'Fe', val1: 3, sub1: 1,
+                elem2: 'S', val2: 2, sub2: 1,
+                coeff1: 2, coeff2: 3, coeffProd: 1,
+                prodElem1: 'Fe', prodSub1: 2,
+                prodElem2: 'S', prodSub2: 3
+            },
+            {
+                title: 'Synteza siarczku miedzi(I)',
+                desc: 'Ułóż równanie reakcji syntezy <strong>siarczku miedzi(I)</strong> z <strong>miedzi</strong> o wartościowości I oraz <strong>siarki</strong> (wartościowość II).',
+                elem1: 'Cu', val1: 1, sub1: 1,
+                elem2: 'S', val2: 2, sub2: 1,
+                coeff1: 2, coeff2: 1, coeffProd: 1,
+                prodElem1: 'Cu', prodSub1: 2,
+                prodElem2: 'S', prodSub2: 1
+            },
+            {
+                title: 'Synteza chlorku glinu',
+                desc: 'Ułóż równanie reakcji syntezy <strong>chlorku glinu</strong> z metalicznego <strong>glinu</strong> (wartościowość III) i <strong>chloru</strong> (w chlorkach chlor ma wartościowość I).',
+                elem1: 'Al', val1: 3, sub1: 1,
+                elem2: 'Cl', val2: 1, sub2: 2,
+                coeff1: 2, coeff2: 3, coeffProd: 2,
+                prodElem1: 'Al', prodSub1: 1,
+                prodElem2: 'Cl', prodSub2: 3
+            },
+            {
+                title: 'Synteza tlenku azotu(V)',
+                desc: 'Ułóż równanie reakcji syntezy <strong>tlenku azotu(V)</strong> z gazowego <strong>azotu</strong> (wartościowość V) i gazowego <strong>tlenu</strong>.',
+                elem1: 'N', val1: 5, sub1: 2,
+                elem2: 'O', val2: 2, sub2: 2,
+                coeff1: 2, coeff2: 5, coeffProd: 2,
+                prodElem1: 'N', prodSub1: 2,
+                prodElem2: 'O', prodSub2: 5
+            },
+            {
+                title: 'Synteza siarczku potasu',
+                desc: 'Ułóż równanie reakcji syntezy <strong>siarczku potasu</strong> z <strong>potasu</strong> (wartościowość I) i <strong>siarki</strong> (wartościowość II).',
+                elem1: 'K', val1: 1, sub1: 1,
+                elem2: 'S', val2: 2, sub2: 1,
+                coeff1: 2, coeff2: 1, coeffProd: 1,
+                prodElem1: 'K', prodSub1: 2,
+                prodElem2: 'S', prodSub2: 1
+            },
+            {
+                title: 'Synteza chlorku wapnia',
+                desc: 'Ułóż równanie reakcji syntezy <strong>chlorku wapnia</strong> z <strong>wapnia</strong> (wartościowość II) i gazowego <strong>chloru</strong> (wartościowość I).',
+                elem1: 'Ca', val1: 2, sub1: 1,
+                elem2: 'Cl', val2: 1, sub2: 2,
+                coeff1: 1, coeff2: 1, coeffProd: 1,
+                prodElem1: 'Ca', prodSub1: 1,
+                prodElem2: 'Cl', prodSub2: 2
+            },
+            {
+                title: 'Synteza chlorowodoru',
+                desc: 'Ułóż równanie reakcji syntezy gazowego <strong>chlorowodoru</strong> z gazowego <strong>wodoru</strong> (wartościowość I) i gazowego <strong>chloru</strong> (wartościowość I).',
+                elem1: 'H', val1: 1, sub1: 2,
+                elem2: 'Cl', val2: 1, sub2: 2,
+                coeff1: 1, coeff2: 1, coeffProd: 2,
+                prodElem1: 'H', prodSub1: 1,
+                prodElem2: 'Cl', prodSub2: 1
+            }
+        ];
+
+        let currentMode = 'tasks';
+        let currentTaskIndex = 0;
+
+        // Pomocnicze funkcje konwersji liczb rzymskich / arabskich
+        function parseValence(valStr) {
+            if (!valStr) return null;
+            valStr = valStr.trim().toUpperCase();
+            
+            // Cyfra arabska
+            const num = parseInt(valStr, 10);
+            if (!isNaN(num) && num >= 1 && num <= 8) {
+                return num;
+            }
+
+            // Liczby rzymskie
+            const romanMap = {
+                'I': 1, 'II': 2, 'III': 3, 'IV': 4, 'V': 5,
+                'VI': 6, 'VII': 7, 'VIII': 8
+            };
+            return romanMap[valStr] || null;
+        }
+
+        function toRoman(num) {
+            const romanMap = {
+                1: 'I', 2: 'II', 3: 'III', 4: 'IV', 5: 'V',
+                6: 'VI', 7: 'VII', 8: 'VIII'
+            };
+            return romanMap[num] || num.toString();
+        }
+
+        function gcd(a, b) {
+            return b === 0 ? a : gcd(b, a % b);
+        }
+
+        // Pobieranie wartości z pól formularza z domyślną 1 dla pustych współczynników/indeksów
+        function getEquationData() {
+            const val1Raw = document.getElementById('val1').value.trim();
+            const val2Raw = document.getElementById('val2').value.trim();
+
+            const elem1Raw = document.getElementById('elem1').value.trim();
+            const elem2Raw = document.getElementById('elem2').value.trim();
+
+            const coeff1Raw = document.getElementById('coeff1').value.trim();
+            const coeff2Raw = document.getElementById('coeff2').value.trim();
+            const sub1Raw = document.getElementById('sub1').value.trim();
+            const sub2Raw = document.getElementById('sub2').value.trim();
+
+            const coeffProdRaw = document.getElementById('coeffProd').value.trim();
+            const prodElem1Raw = document.getElementById('prodElem1').value.trim();
+            const prodSub1Raw = document.getElementById('prodSub1').value.trim();
+            const prodElem2Raw = document.getElementById('prodElem2').value.trim();
+            const prodSub2Raw = document.getElementById('prodSub2').value.trim();
+
+            // Formatowanie symboli chemicznych (Pierwsza wielka, druga mała)
+            const formatElem = (s) => {
+                if (!s) return '';
+                return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+            };
+
+            const elem1 = formatElem(elem1Raw);
+            const elem2 = formatElem(elem2Raw);
+            const prodElem1 = formatElem(prodElem1Raw);
+            const prodElem2 = formatElem(prodElem2Raw);
+
+            // Współczynniki i indeksy: puste = 1
+            const parseNum = (s) => {
+                if (!s) return 1;
+                const n = parseInt(s, 10);
+                return isNaN(n) ? 1 : n;
+            };
+
+            return {
+                val1Raw, val2Raw,
+                val1: parseValence(val1Raw),
+                val2: parseValence(val2Raw),
+                elem1, elem2,
+                coeff1: parseNum(coeff1Raw),
+                coeff2: parseNum(coeff2Raw),
+                sub1: parseNum(sub1Raw),
+                sub2: parseNum(sub2Raw),
+                coeffProd: parseNum(coeffProdRaw),
+                prodElem1, prodElem2,
+                prodSub1: parseNum(prodSub1Raw),
+                prodSub2: parseNum(prodSub2Raw),
+                raw: {
+                    coeff1Raw, coeff2Raw, sub1Raw, sub2Raw,
+                    coeffProdRaw, prodSub1Raw, prodSub2Raw
+                }
+            };
+        }
+
+        // Aktualizacja podglądu na żywo
+        function handleInputUpdate() {
+            // Automatyczna korekta wielkości liter w symbolach
+            const elemFields = ['elem1', 'elem2', 'prodElem1', 'prodElem2'];
+            elemFields.forEach(id => {
+                const input = document.getElementById(id);
+                if (input && input.value) {
+                    const caret = input.selectionStart;
+                    const val = input.value;
+                    const formatted = val.charAt(0).toUpperCase() + val.slice(1).toLowerCase();
+                    if (val !== formatted && /^[a-zA-Z]+$/.test(val)) {
+                        input.value = formatted;
+                        input.setSelectionRange(caret, caret);
+                    }
+                }
+            });
+
+            renderLiveEquation();
+            clearFieldStyles();
+        }
+
+        function renderLiveEquation() {
+            const data = getEquationData();
+            const liveEl = document.getElementById('live-equation');
+
+            const renderCompound = (coeff, elem, sub, val) => {
+                if (!elem) return '<span style="color:#64748b;">[ ? ]</span>';
+                let html = '';
+                if (coeff > 1) html += `<span class="live-coeff">${coeff}</span>`;
+                html += `<span>${elem}</span>`;
+                if (sub > 1) html += `<span class="live-sub">${sub}</span>`;
+                if (val) html += `<span class="live-val-tag">(${toRoman(val)})</span>`;
+                return html;
+            };
+
+            const renderProduct = (coeff, e1, s1, e2, s2) => {
+                if (!e1 && !e2) return '<span style="color:#64748b;">[ ? ]</span>';
+                let html = '';
+                if (coeff > 1) html += `<span class="live-coeff">${coeff}</span>`;
+                if (e1) html += `<span>${e1}</span>`;
+                if (s1 > 1) html += `<span class="live-sub">${s1}</span>`;
+                if (e2) html += `<span>${e2}</span>`;
+                if (s2 > 1) html += `<span class="live-sub">${s2}</span>`;
+                return html;
+            };
+
+            const part1 = renderCompound(data.coeff1, data.elem1, data.sub1, data.val1);
+            const part2 = renderCompound(data.coeff2, data.elem2, data.sub2, data.val2);
+            const partProd = renderProduct(data.coeffProd, data.prodElem1, data.prodSub1, data.prodElem2, data.prodSub2);
+
+            liveEl.innerHTML = `${part1} &nbsp;+&nbsp; ${part2} &nbsp;<span style="color:#38bdf8;">➔</span>&nbsp; ${partProd}`;
+        }
+
+        // Zmiana trybu pracy (Zadania vs Piaskownica)
+        function setMode(mode) {
+            currentMode = mode;
+            document.getElementById('mode-tasks-btn').classList.toggle('active', mode === 'tasks');
+            document.getElementById('mode-sandbox-btn').classList.toggle('active', mode === 'sandbox');
+            
+            const taskCard = document.getElementById('task-card');
+            if (mode === 'tasks') {
+                taskCard.style.display = 'flex';
+                loadCurrentTask();
+            } else {
+                taskCard.style.display = 'none';
+                clearAllFields();
+                hideFeedback();
+            }
+        }
+
+        function loadCurrentTask() {
+            const task = TASKS[currentTaskIndex];
+            document.getElementById('task-instruction').innerHTML = `
+                <div style="font-weight: 700; color: #38bdf8; margin-bottom: 4px;">${task.title}</div>
+                <div>${task.desc}</div>
+            `;
+            clearAllFields();
+            hideFeedback();
+        }
+
+        function nextRandomTask() {
+            let nextIndex = Math.floor(Math.random() * TASKS.length);
+            if (nextIndex === currentTaskIndex && TASKS.length > 1) {
+                nextIndex = (nextIndex + 1) % TASKS.length;
+            }
+            currentTaskIndex = nextIndex;
+            loadCurrentTask();
+        }
+
+        function fillTaskSubstrates() {
+            const task = TASKS[currentTaskIndex];
+            document.getElementById('elem1').value = task.elem1;
+            document.getElementById('elem2').value = task.elem2;
+            handleInputUpdate();
+        }
+
+        function clearAllFields() {
+            const fields = [
+                'val1', 'val2', 'coeff1', 'elem1', 'sub1',
+                'coeff2', 'elem2', 'sub2',
+                'coeffProd', 'prodElem1', 'prodSub1', 'prodElem2', 'prodSub2'
+            ];
+            fields.forEach(id => {
+                document.getElementById(id).value = '';
+            });
+            handleInputUpdate();
+            hideFeedback();
+            clearFieldStyles();
+        }
+
+        function clearFieldStyles() {
+            const inputs = document.querySelectorAll('.chem-input');
+            inputs.forEach(el => {
+                el.classList.remove('field-valid', 'field-invalid');
+            });
+        }
+
+        function hideFeedback() {
+            const fb = document.getElementById('feedback-panel');
+            fb.style.display = 'none';
+        }
+
+        function showFeedback(isSuccess, title, messages) {
+            const fb = document.getElementById('feedback-panel');
+            const titleEl = document.getElementById('feedback-title');
+            const bodyEl = document.getElementById('feedback-body');
+
+            fb.className = 'feedback-panel ' + (isSuccess ? 'feedback-success' : 'feedback-error');
+            titleEl.innerHTML = (isSuccess ? '🌟 ' : '⚠️ ') + title;
+
+            let html = '<ul class="feedback-list">';
+            messages.forEach(msg => {
+                html += `<li>${msg}</li>`;
+            });
+            html += '</ul>';
+            bodyEl.innerHTML = html;
+            fb.style.display = 'flex';
+            fb.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // GŁÓWNA LOGIKA WERYFIKACJI REAKCJI CHEMICZNEJ
+        function checkReaction() {
+            clearFieldStyles();
+            const data = getEquationData();
+            const errors = [];
+            const successPoints = [];
+
+            // 1. Sprawdzenie, czy wpisano symbole pierwiastków
+            if (!data.elem1) {
+                errors.push('Wpisz symbol pierwszego pierwiastka w substratach.');
+                document.getElementById('elem1').classList.add('field-invalid');
+            }
+            if (!data.elem2) {
+                errors.push('Wpisz symbol drugiego pierwiastka w substratach.');
+                document.getElementById('elem2').classList.add('field-invalid');
+            }
+
+            if (errors.length > 0) {
+                showFeedback(false, 'Uzupełnij brakujące dane', errors);
+                return;
+            }
+
+            // Sprawdzenie czy symbole istnieją w bazie
+            const info1 = ELEMENTS_DB[data.elem1];
+            const info2 = ELEMENTS_DB[data.elem2];
+
+            if (!info1) {
+                errors.push(`Nie rozpoznano symbolu pierwszego pierwiastka: <strong>${data.elem1}</strong>. Sprawdź zapis w układzie okresowym.`);
+                document.getElementById('elem1').classList.add('field-invalid');
+            }
+            if (!info2) {
+                errors.push(`Nie rozpoznano symbolu drugiego pierwiastka: <strong>${data.elem2}</strong>. Sprawdź zapis w układzie okresowym.`);
+                document.getElementById('elem2').classList.add('field-invalid');
+            }
+
+            if (data.elem1 === data.elem2) {
+                errors.push('Reakcja syntezy substancji dwupierwiastkowej wymaga dwóch <strong>różnych</strong> pierwiastków.');
+                document.getElementById('elem1').classList.add('field-invalid');
+                document.getElementById('elem2').classList.add('field-invalid');
+            }
+
+            // 2. Sprawdzenie wartościowości / liczby wiązań
+            if (!data.val1) {
+                errors.push(`Wpisz poprawną wartość wiązań (wartościowość) dla <strong>${data.elem1}</strong> (np. ${info1 ? info1.valences.map(toRoman).join(', ') : 'I, II...'}) w linii nad symbolem.`);
+                document.getElementById('val1').classList.add('field-invalid');
+            } else if (info1 && !info1.valences.includes(data.val1)) {
+                errors.push(`Podana wartościowość dla <strong>${data.elem1}</strong> (${toRoman(data.val1)}) nie zgadza się z układem okresowym. Typowe wartościowości to: ${info1.valences.map(toRoman).join(', ')}.`);
+                document.getElementById('val1').classList.add('field-invalid');
+            } else {
+                document.getElementById('val1').classList.add('field-valid');
+            }
+
+            if (!data.val2) {
+                errors.push(`Wpisz poprawną wartość wiązań (wartościowość) dla <strong>${data.elem2}</strong> (np. ${info2 ? info2.valences.map(toRoman).join(', ') : 'I, II...'}) w linii nad symbolem.`);
+                document.getElementById('val2').classList.add('field-invalid');
+            } else if (info2 && !info2.valences.includes(data.val2)) {
+                errors.push(`Podana wartościowość dla <strong>${data.elem2}</strong> (${toRoman(data.val2)}) nie zgadza się z układem okresowym. Typowe wartościowości to: ${info2.valences.map(toRoman).join(', ')}.`);
+                document.getElementById('val2').classList.add('field-invalid');
+            } else {
+                document.getElementById('val2').classList.add('field-valid');
+            }
+
+            // 3. Sprawdzenie cząsteczek dwuatomowych substratów (H2, O2, N2, Cl2, Br2, I2, F2)
+            if (info1) {
+                if (info1.diatomic && data.sub1 !== 2) {
+                    errors.push(`Pierwiastek <strong>${data.elem1}</strong> (${info1.name}) w stanie wolnym tworzy cząsteczki dwuatomowe – indeks w substratach powinien wynosić <strong>2</strong> (${data.elem1}₂).`);
+                    document.getElementById('sub1').classList.add('field-invalid');
+                } else if (!info1.diatomic && data.sub1 !== 1) {
+                    errors.push(`Pierwiastek <strong>${data.elem1}</strong> (${info1.name}) w równaniach szkolnych zapisujemy jako pojedynczy atom (indeks 1 lub puste pole).`);
+                    document.getElementById('sub1').classList.add('field-invalid');
+                } else {
+                    document.getElementById('sub1').classList.add('field-valid');
+                }
+            }
+
+            if (info2) {
+                if (info2.diatomic && data.sub2 !== 2) {
+                    errors.push(`Pierwiastek <strong>${data.elem2}</strong> (${info2.name}) w stanie wolnym tworzy cząsteczki dwuatomowe – indeks w substratach powinien wynosić <strong>2</strong> (${data.elem2}₂).`);
+                    document.getElementById('sub2').classList.add('field-invalid');
+                } else if (!info2.diatomic && data.sub2 !== 1) {
+                    errors.push(`Pierwiastek <strong>${data.elem2}</strong> (${info2.name}) w równaniach szkolnych zapisujemy jako pojedynczy atom (indeks 1 lub puste pole).`);
+                    document.getElementById('sub2').classList.add('field-invalid');
+                } else {
+                    document.getElementById('sub2').classList.add('field-valid');
+                }
+            }
+
+            // 4. Sprawdzenie produktu
+            if (!data.prodElem1 || !data.prodElem2) {
+                errors.push('Uzupełnij oba symbole pierwiastków w cząsteczce produktu.');
+                if (!data.prodElem1) document.getElementById('prodElem1').classList.add('field-invalid');
+                if (!data.prodElem2) document.getElementById('prodElem2').classList.add('field-invalid');
+            } else {
+                // Czy pierwiastki w produkcie to te same co w substratach?
+                const setSubs = new Set([data.elem1, data.elem2]);
+                const setProds = new Set([data.prodElem1, data.prodElem2]);
+                
+                if (setSubs.size === 2 && (setSubs.size !== setProds.size || ![...setSubs].every(x => setProds.has(x)))) {
+                    errors.push(`Produkt musi składać się z tych samych pierwiastków co substraty (${data.elem1} oraz ${data.elem2}).`);
+                    document.getElementById('prodElem1').classList.add('field-invalid');
+                    document.getElementById('prodElem2').classList.add('field-invalid');
+                } else if (data.val1 && data.val2) {
+                    // Wyznaczenie poprawnych indeksów z reguły krzyżowej z uwzględnieniem kolejności w produkcie
+                    let vA = (data.prodElem1 === data.elem1) ? data.val1 : data.val2;
+                    let vB = (data.prodElem2 === data.elem2) ? data.val2 : data.val1;
+
+                    let expectedSub1 = vB / gcd(vA, vB);
+                    let expectedSub2 = vA / gcd(vA, vB);
+
+                    // Sprawdzenie kolejności pierwiastków w produkcie (metal przed niemetalem)
+                    const pInfo1 = ELEMENTS_DB[data.prodElem1];
+                    const pInfo2 = ELEMENTS_DB[data.prodElem2];
+                    if (pInfo1 && pInfo2 && !pInfo1.metal && pInfo2.metal) {
+                        errors.push(`Zwyczajowo we wzorze związku chemicznego najpierw zapisujemy metal, a potem niemetal (np. <strong>${data.prodElem2}${data.prodElem1}</strong> zamiast ${data.prodElem1}${data.prodElem2}).`);
+                        document.getElementById('prodElem1').classList.add('field-invalid');
+                        document.getElementById('prodElem2').classList.add('field-invalid');
+                    }
+
+                    if (data.prodSub1 !== expectedSub1 || data.prodSub2 !== expectedSub2) {
+                        // Sprawdź czy uczeń zapomniał skrócić
+                        if (data.prodSub1 === vB && data.prodSub2 === vA && gcd(vA, vB) > 1) {
+                            errors.push(`Pamiętaj o <strong>skróceniu indeksów</strong>! Wartościowości ${toRoman(vA)} i ${toRoman(vB)} dają po skróceniu przez ${gcd(vA, vB)} indeksy <strong>${expectedSub1 === 1 ? '1 (brak)' : expectedSub1}</strong> i <strong>${expectedSub2 === 1 ? '1 (brak)' : expectedSub2}</strong>.`);
+                        } else {
+                            errors.push(`Błędne indeksy w produkcie z reguły krzyżowej. Dla wartościowości ${toRoman(vA)} i ${toRoman(vB)} poprawny wzór to: <strong>${data.prodElem1}${expectedSub1 > 1 ? expectedSub1 : ''}${data.prodElem2}${expectedSub2 > 1 ? expectedSub2 : ''}</strong>.`);
+                        }
+                        document.getElementById('prodSub1').classList.add('field-invalid');
+                        document.getElementById('prodSub2').classList.add('field-invalid');
+                    } else {
+                        document.getElementById('prodElem1').classList.add('field-valid');
+                        document.getElementById('prodElem2').classList.add('field-valid');
+                        document.getElementById('prodSub1').classList.add('field-valid');
+                        document.getElementById('prodSub2').classList.add('field-valid');
+                    }
+                }
+            }
+
+            // 5. Sprawdzenie bilansu stechiometrycznego (zachowania masy / liczby atomów)
+            if (errors.length === 0) {
+                // Obliczenie liczby atomów pierwiastka 1 po lewej i prawej stronie
+                let leftAtoms1 = data.coeff1 * data.sub1;
+                let leftAtoms2 = data.coeff2 * data.sub2;
+
+                // Odnalezienie w produkcie
+                let prodSubForElem1 = (data.prodElem1 === data.elem1) ? data.prodSub1 : data.prodSub2;
+                let prodSubForElem2 = (data.prodElem2 === data.elem2) ? data.prodSub2 : data.prodSub1;
+
+                let rightAtoms1 = data.coeffProd * prodSubForElem1;
+                let rightAtoms2 = data.coeffProd * prodSubForElem2;
+
+                let balanceError = false;
+
+                if (leftAtoms1 !== rightAtoms1) {
+                    errors.push(`Niezbilansowane atomy pierwiastka <strong>${data.elem1}</strong>: po lewej stronie masz ${leftAtoms1} atomów (${data.coeff1} · ${data.sub1}), a po prawej ${rightAtoms1} (${data.coeffProd} · ${prodSubForElem1}).`);
+                    document.getElementById('coeff1').classList.add('field-invalid');
+                    document.getElementById('coeffProd').classList.add('field-invalid');
+                    balanceError = true;
+                } else {
+                    document.getElementById('coeff1').classList.add('field-valid');
+                }
+
+                if (leftAtoms2 !== rightAtoms2) {
+                    errors.push(`Niezbilansowane atomy pierwiastka <strong>${data.elem2}</strong>: po lewej stronie masz ${leftAtoms2} atomów (${data.coeff2} · ${data.sub2}), a po prawej ${rightAtoms2} (${data.coeffProd} · ${prodSubForElem2}).`);
+                    document.getElementById('coeff2').classList.add('field-invalid');
+                    document.getElementById('coeffProd').classList.add('field-invalid');
+                    balanceError = true;
+                } else {
+                    document.getElementById('coeff2').classList.add('field-valid');
+                }
+
+                if (!balanceError) {
+                    // Sprawdzenie czy współczynniki nie są zbędnie powielone (np. 4 H2 + 2 O2 -> 4 H2O zamiast 2, 1, 2)
+                    let commonCoeffGcd = gcd(gcd(data.coeff1, data.coeff2), data.coeffProd);
+                    if (commonCoeffGcd > 1) {
+                        errors.push(`Współczynniki stechiometryczne są poprawne pod względem bilansu, ale można je jeszcze skrócić przez <strong>${commonCoeffGcd}</strong>. Zgodnie z zasadami chemii podajemy najmniejsze liczby całkowite.`);
+                        document.getElementById('coeff1').classList.add('field-invalid');
+                        document.getElementById('coeff2').classList.add('field-invalid');
+                        document.getElementById('coeffProd').classList.add('field-invalid');
+                    } else {
+                        document.getElementById('coeffProd').classList.add('field-valid');
+                    }
+                }
+            }
+
+            // 6. Prezentacja wyników
+            if (errors.length > 0) {
+                showFeedback(false, 'Znaleziono elementy do poprawy:', errors);
+            } else {
+                successPoints.push('Wartościowości (liczby wiązań) wpisane poprawnie.');
+                successPoints.push('Wzór sumaryczny cząsteczki produktu ustalony prawidłowo z reguły krzyżowej.');
+                successPoints.push('Równanie reakcji jest idealnie zbilansowane pod względem stechiometrii.');
+                showFeedback(true, 'Gratulacje! Twoje równanie reakcji jest w 100% poprawne!', successPoints);
+            }
+        }
+
+        // Funkcja podpowiedzi krok po kroku
+        function showHint() {
+            const data = getEquationData();
+            const hintMsgs = [];
+
+            if (!data.elem1 || !data.elem2) {
+                if (currentMode === 'tasks') {
+                    const task = TASKS[currentTaskIndex];
+                    hintMsgs.push(`W tym zadaniu łączysz <strong>${task.elem1}</strong> (${ELEMENTS_DB[task.elem1]?.name}) oraz <strong>${task.elem2}</strong> (${ELEMENTS_DB[task.elem2]?.name}).`);
+                    hintMsgs.push('Kliknij przycisk <em>„Wstaw tylko substraty”</em>, aby automatycznie uzupełnić lewą stronę.');
+                } else {
+                    hintMsgs.push('Najpierw wpisz symbole dwóch pierwiastków w polach substratów (np. H i O, Na i Cl, Al i O).');
+                }
+            } else {
+                const info1 = ELEMENTS_DB[data.elem1];
+                const info2 = ELEMENTS_DB[data.elem2];
+
+                if (info1 && info2) {
+                    hintMsgs.push(`<strong>Krok 1 (Wartościowości):</strong> Sprawdź w układzie okresowym: ${data.elem1} tworzy zazwyczaj wiązania o wartościowości ${info1.valences.map(toRoman).join(' lub ')}, a ${data.elem2}: ${info2.valences.map(toRoman).join(' lub ')}.`);
+                    hintMsgs.push(`<strong>Krok 2 (Substraty):</strong> Pamiętaj, że ${info1.diatomic ? data.elem1 + '₂' : data.elem1} oraz ${info2.diatomic ? data.elem2 + '₂' : data.elem2}.`);
+                    
+                    let v1 = data.val1 || info1.valences[0];
+                    let v2 = data.val2 || info2.valences[0];
+                    let s1 = v2 / gcd(v1, v2);
+                    let s2 = v1 / gcd(v1, v2);
+                    
+                    hintMsgs.push(`<strong>Krok 3 (Produkt):</strong> Z reguły krzyżowej wzór produktu to <strong>${data.elem1}${s1 > 1 ? s1 : ''}${data.elem2}${s2 > 1 ? s2 : ''}</strong>.`);
+                    hintMsgs.push(`<strong>Krok 4 (Bilans):</strong> Policz atomy po obu stronach i dopasuj duże cyfry (współczynniki) na początku każdego związku.`);
+                } else {
+                    hintMsgs.push('Upewnij się, że wpisane symbole pierwiastków istnieją w układzie okresowym.');
+                }
+            }
+
+            showFeedback(false, 'Podpowiedź dydaktyczna krok po kroku:', hintMsgs);
+        }
+
+        // Inicjalizacja po załadowaniu strony
+        document.addEventListener('DOMContentLoaded', () => {
+            setMode('tasks');
+            handleInputUpdate();
+        });
+    </script>
+</body>
+
+</html>
