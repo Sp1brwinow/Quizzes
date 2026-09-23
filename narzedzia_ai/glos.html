@@ -37,7 +37,7 @@
         <textarea id="input"
             placeholder="Wpisz tutaj tekst do przeczytania przez lektora...">Cześć! Jestem Twoim asystentem głosowym. Jak mogę Ci dzisiaj pomóc w nauce?</textarea>
 
-        <!-- Pasek wyboru głosu, prefiksu testowego i parametrów zapisu MP3 -->
+        <!-- Pasek wyboru głosu i parametrów zapisu MP3 -->
         <div style="display: flex; flex-direction: column; gap: 14px; background: rgba(15, 23, 42, 0.6); padding: 16px; border-radius: 14px; border: 1px solid rgba(56, 189, 248, 0.25);">
             <!-- Rząd 1: Wybór głosu -->
             <div style="display: flex; gap: 16px; align-items: center; flex-wrap: wrap;">
@@ -58,15 +58,7 @@
                 </div>
             </div>
 
-            <!-- Rząd 2: Prefiks testowy -->
-            <div style="display: flex; align-items: center; gap: 8px; font-size: 0.88rem; color: #cbd5e1; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 10px; flex-wrap: wrap;">
-                <label for="prefix-input" style="font-weight: 600; color: #38bdf8;">🧪 Prefiks przed każdym zdaniem:</label>
-                <input type="text" id="prefix-input" placeholder="np. A lub A jak ty to lub ... (lub puste)" value="A " style="flex: 1; min-width: 160px; background: #0b1120; color: #f8fafc; border: 1.5px solid #38bdf8; border-radius: 8px; padding: 6px 10px; font-size: 0.9rem;">
-                <button type="button" onclick="document.getElementById('prefix-input').value='A '" style="padding: 5px 10px; font-size: 0.8rem; background: #1e293b; border: 1px solid #475569; border-radius: 6px; cursor: pointer;">Ustaw „A ”</button>
-                <button type="button" onclick="document.getElementById('prefix-input').value=''" style="padding: 5px 10px; font-size: 0.8rem; background: #334155; border: 1px solid #475569; border-radius: 6px; cursor: pointer;">Wyczyść</button>
-            </div>
-
-            <!-- Rząd 3: Nazwa pliku MP3 i źródło audio -->
+            <!-- Rząd 2: Nazwa pliku MP3 i źródło audio -->
             <div style="display: flex; align-items: center; gap: 12px; font-size: 0.88rem; color: #cbd5e1; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 10px; flex-wrap: wrap;">
                 <label for="filename-input" style="font-weight: 600; color: #10b981;">📁 Nazwa pliku MP3:</label>
                 <div style="display: flex; align-items: center; gap: 4px; flex: 1; min-width: 180px;">
@@ -447,7 +439,7 @@
             return new Blob([buffer], { type: 'audio/wav' });
         }
 
-        // 5. Główna funkcja czytania przeglądarkowego z prefiksem i buforem
+        // 5. Główna funkcja czytania przeglądarkowego
         async function speak(message, isMale, pitch = 1.0, rate = 1.0) {
             const synth = window.speechSynthesis;
             if (!synth) {
@@ -487,9 +479,6 @@
                 }
             }
 
-            const prefixEl = document.getElementById('prefix-input');
-            const customPrefix = prefixEl ? prefixEl.value : '';
-
             setStatus('Inicjalizacja dźwięku...', '⏳');
             await new Promise(r => setTimeout(r, 200));
             if (sessionId !== currentSpeechSession) return;
@@ -500,22 +489,15 @@
                 }
 
                 const currentSentence = sentences[i];
-
-                let ttsText = currentSentence;
-                if (customPrefix) {
-                    const prefixWithSpace = customPrefix.endsWith(' ') ? customPrefix : (customPrefix + ' ');
-                    ttsText = prefixWithSpace + currentSentence;
-                }
-
                 const recIcon = isRecordingActive ? '🔴' : '🔊';
-                setStatus(`Czytam [${i + 1}/${sentences.length}]: "${ttsText}"`, recIcon);
+                setStatus(`Czytam [${i + 1}/${sentences.length}]: "${currentSentence}"`, recIcon);
 
                 await new Promise((resolve) => {
                     if (sessionId !== currentSpeechSession) {
                         return resolve();
                     }
 
-                    const utterance = new SpeechSynthesisUtterance(ttsText);
+                    const utterance = new SpeechSynthesisUtterance(currentSentence);
                     
                     utterance.lang = 'pl-PL';
                     if (chosenVoice) {
