@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gry – HACK CLUB</title>
+
+    <link rel="stylesheet" href="../style.css" />
+
+    <style>
+        :root {
+            --bg-dark: #070d18;
+            --card-bg: rgba(15, 23, 42, 0.85);
+            --card-border: rgba(56, 189, 248, 0.25);
+            --primary: #38bdf8;
+            --accent-drone: #00e5ff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: #f1f5f9;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 30px 16px 50px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Canvas z gwiazdami w tle */
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .main-container {
+            max-width: 900px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 28px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Przycisk powrotu */
+        .back-nav {
+            width: 100%;
+            display: flex;
+            justify-content: flex-start;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 600;
+            padding: 8px 16px;
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            border-radius: 999px;
+            backdrop-filter: blur(8px);
+            transition: all 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #38bdf8;
+            border-color: #38bdf8;
+            transform: translateX(-4px);
+        }
+
+        /* Nagłówek */
+        .hero-header {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .badge-club {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px;
+            background: rgba(0, 229, 255, 0.12);
+            border: 1px solid rgba(0, 229, 255, 0.35);
+            border-radius: 999px;
+            color: #00e5ff;
+            font-size: 0.9rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            box-shadow: 0 0 15px rgba(0, 229, 255, 0.2);
+            backdrop-filter: blur(8px);
+        }
+
+        .hero-title {
+            font-size: 2.3rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #ffffff 0%, #00e5ff 50%, #818cf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+            text-shadow: 0 0 30px rgba(0, 229, 255, 0.3);
+        }
+
+        .hero-subtitle {
+            font-size: 1.05rem;
+            color: #94a3b8;
+            max-width: 600px;
+            line-height: 1.5;
+            text-align: center;
+        }
+
+        /* Główna sekcja Drone */
+        .section-drone {
+            width: 100%;
+            background: var(--card-bg);
+            border: 1px solid rgba(0, 229, 255, 0.35);
+            border-radius: 20px;
+            padding: 32px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 25px rgba(0, 229, 255, 0.15);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .section-drone::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #00e5ff, #818cf8);
+        }
+
+        .drone-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .drone-icon {
+            font-size: 2.8rem;
+            background: rgba(0, 229, 255, 0.12);
+            border: 1px solid rgba(0, 229, 255, 0.4);
+            border-radius: 16px;
+            width: 70px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 20px rgba(0, 229, 255, 0.25);
+            flex-shrink: 0;
+        }
+
+        .drone-title-group h2 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+
+        .drone-title-group p {
+            color: #00e5ff;
+            font-size: 0.9rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .drone-desc {
+            color: #cbd5e1;
+            font-size: 0.98rem;
+            line-height: 1.6;
+        }
+
+        .drone-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+            margin-top: 5px;
+        }
+
+        .feature-item {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-size: 0.88rem;
+            color: #94a3b8;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-item span {
+            color: #00e5ff;
+            font-weight: bold;
+        }
+
+        /* Przycisk uruchomienia drona */
+        .drone-launch-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            background: linear-gradient(135deg, #00e5ff 0%, #0284c7 100%);
+            color: #000;
+            font-size: 1.1rem;
+            font-weight: 800;
+            padding: 16px 32px;
+            border-radius: 12px;
+            text-decoration: none;
+            box-shadow: 0 0 25px rgba(0, 229, 255, 0.4);
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            align-self: flex-start;
+        }
+
+        .drone-launch-btn:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 0 35px rgba(0, 229, 255, 0.7);
+            background: linear-gradient(135deg, #38bdf8 0%, #0369a1 100%);
+            color: #ffffff;
+        }
+
+        /* Stopka */
+        .footer-section {
+            margin-top: 20px;
+            color: #64748b;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        @media (max-width: 640px) {
+            .hero-title { font-size: 1.8rem; }
+            .section-drone { padding: 22px; }
+            .drone-header { flex-direction: column; text-align: center; }
+            .drone-launch-btn { width: 100%; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <canvas id="bg-canvas"></canvas>
+
+    <div class="main-container">
+        <!-- Powrót do strony głównej -->
+        <nav class="back-nav">
+            <a href="../index.html" class="back-link">
+                <span>←</span>
+                <span>Wróć do strony głównej</span>
+            </a>
+        </nav>
+
+        <!-- Nagłówek -->
+        <header class="hero-header">
+            <div class="badge-club">🎮 HACK CLUB GAMES</div>
+            <h1 class="hero-title">Strefa Gier</h1>
+            <p class="hero-subtitle">Symulacje 3D i interaktywne gry zręcznościowo-edukacyjne</p>
+        </header>
+
+        <!-- Sekcja: Drone -->
+        <section class="section-drone">
+            <div class="drone-header">
+                <div class="drone-icon">🛸</div>
+                <div class="drone-title-group">
+                    <h2>Drone</h2>
+                    <p>AERO-X QUADCOPTER 6DOF FLIGHT SIMULATOR</p>
+                </div>
+            </div>
+
+            <p class="drone-desc">
+                Zasiądź za sterami profesjonalnego drona wyścigowego i obserwacyjnego w silniku <strong>Babylon.js</strong>. 
+                Poczuj realistyczną wektorową fizykę lotu, kwaterniony eliminujące Gimbal Lock, opór aerodynamiczny (Linear Drag) oraz zaawansowane kamery: pościgową, FPV i zwiadowczo-celowniczą.
+            </p>
+
+            <div class="drone-features">
+                <div class="feature-item"><span>🛸</span> Fizyka wektorowa 6DOF</div>
+                <div class="feature-item"><span>🎮</span> Tryby Angle & Acro / Rate</div>
+                <div class="feature-item"><span>🎥</span> Kamery: Chase, FPV i Zwiad</div>
+                <div class="feature-item"><span>📊</span> OSD & Sztuczny horyzont</div>
+            </div>
+
+            <a href="drone/dron.html" class="drone-launch-btn">
+                <span>Uruchom Symulator Drona</span>
+                <span>→</span>
+            </a>
+        </section>
+
+        <!-- Stopka -->
+        <footer class="footer-section">
+            <p>© HACK CLUB – Szkoła Podstawowa nr 1 w Brwinowie</p>
+        </footer>
+    </div>
+
+    <!-- Tło z gwiazdami -->
+    <script>
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let stars = [];
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            initStars();
+        }
+
+        function initStars() {
+            stars = [];
+            const numStars = Math.floor((canvas.width * canvas.height) / 8000);
+            for (let i = 0; i < numStars; i++) {
+                stars.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    radius: Math.random() * 1.5 + 0.5,
+                    alpha: Math.random() * 0.7 + 0.3,
+                    speed: Math.random() * 0.4 + 0.1
+                });
+            }
+        }
+
+        function animateStars() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let star of stars) {
+                star.y -= star.speed;
+                if (star.y < 0) {
+                    star.y = canvas.height;
+                    star.x = Math.random() * canvas.width;
+                }
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(0, 229, 255, ${star.alpha})`;
+                ctx.shadowBlur = star.radius * 4;
+                ctx.shadowColor = '#00e5ff';
+                ctx.fill();
+            }
+            requestAnimationFrame(animateStars);
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+        animateStars();
+    </script>
+</body>
+
+</html>

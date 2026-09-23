@@ -1,0 +1,1357 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aero-X Combat Drone Sim - FPV & Bomber (Xbox Pad Supported)</title>
+    <!-- Babylon.js CDN -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <script src="https://cdn.babylonjs.com/gui/babylon.gui.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #050811;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #fff;
+        }
+
+        #renderCanvas {
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+            display: block;
+        }
+
+        /* OSD / HUD Stylizacja */
+        #hud-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 16px 20px;
+        }
+
+        .hud-glass {
+            background: rgba(8, 16, 30, 0.85);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 229, 255, 0.35);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6);
+            color: #e0f7fa;
+            pointer-events: auto;
+        }
+
+        /* Górna belka */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 18px;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .brand-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 800;
+            font-size: 1.1rem;
+            letter-spacing: 1.2px;
+            color: #00e5ff;
+            text-transform: uppercase;
+        }
+
+        .pad-status-badge {
+            background: rgba(255, 255, 255, 0.1);
+            color: #90a4ae;
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-weight: 700;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .pad-status-badge.connected {
+            background: rgba(0, 230, 118, 0.2);
+            border-color: #00e676;
+            color: #69f0ae;
+            box-shadow: 0 0 10px rgba(0, 230, 118, 0.4);
+        }
+
+        .drone-type-select, .camera-select, .flight-modes {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .mode-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #b0bec5;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .mode-btn:hover {
+            background: rgba(0, 229, 255, 0.2);
+            color: #fff;
+        }
+
+        .mode-btn.active {
+            background: rgba(0, 229, 255, 0.25);
+            border-color: #00e5ff;
+            color: #00e5ff;
+            box-shadow: 0 0 12px rgba(0, 229, 255, 0.4);
+        }
+
+        .mode-btn.drone-active {
+            background: rgba(255, 61, 0, 0.25);
+            border-color: #ff3d00;
+            color: #ff6e40;
+            box-shadow: 0 0 14px rgba(255, 61, 0, 0.4);
+        }
+
+        .mode-btn.bomber-active {
+            background: rgba(0, 230, 118, 0.25);
+            border-color: #00e676;
+            color: #69f0ae;
+            box-shadow: 0 0 14px rgba(0, 230, 118, 0.4);
+        }
+
+        .btn-bomb-drop {
+            background: linear-gradient(135deg, #ff1744 0%, #b71c1c 100%);
+            border: 1px solid #ff5252;
+            color: #ffffff;
+            font-weight: 800;
+            padding: 6px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            animation: pulse-bomb 1.5s infinite alternate;
+            display: none;
+        }
+
+        @keyframes pulse-bomb {
+            from { box-shadow: 0 0 8px rgba(255, 23, 68, 0.5); }
+            to { box-shadow: 0 0 18px rgba(255, 23, 68, 0.9); }
+        }
+
+        #crosshair-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 320px;
+            height: 320px;
+            pointer-events: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #horizon-canvas {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+        }
+
+        .bottom-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 16px;
+        }
+
+        .telemetry-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+            padding: 10px 18px;
+        }
+
+        .telem-box {
+            text-align: center;
+            min-width: 75px;
+        }
+
+        .telem-label {
+            font-size: 0.68rem;
+            color: #78909c;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
+        }
+
+        .telem-val {
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #00e5ff;
+        }
+
+        .telem-val span {
+            font-size: 0.75rem;
+            color: #80deea;
+            margin-left: 2px;
+        }
+
+        .controls-panel {
+            padding: 10px 16px;
+            max-width: 360px;
+            font-size: 0.76rem;
+        }
+
+        .controls-panel h4 {
+            color: #00e5ff;
+            margin-bottom: 4px;
+            font-size: 0.82rem;
+            text-transform: uppercase;
+        }
+
+        .key-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 3px;
+            color: #cfd8dc;
+        }
+
+        .key-badge {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 1px 5px;
+            border-radius: 4px;
+            color: #fff;
+            font-family: monospace;
+            font-weight: bold;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .stick-indicators {
+            display: flex;
+            gap: 12px;
+            padding: 10px 14px;
+        }
+
+        .stick-box {
+            width: 60px;
+            height: 60px;
+            background: rgba(0,0,0,0.6);
+            border: 1px solid rgba(0,229,255,0.4);
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .stick-cross-h, .stick-cross-v {
+            position: absolute;
+            background: rgba(255,255,255,0.12);
+        }
+        .stick-cross-h { top: 50%; left: 0; width: 100%; height: 1px; }
+        .stick-cross-v { left: 50%; top: 0; width: 1px; height: 100%; }
+
+        .stick-dot {
+            width: 10px;
+            height: 10px;
+            background: #00e5ff;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 8px #00e5ff;
+        }
+
+        #status-msg {
+            position: absolute;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(20, 0, 0, 0.9);
+            border: 1px solid #ff1744;
+            color: #ff5252;
+            padding: 8px 24px;
+            border-radius: 20px;
+            font-weight: 800;
+            font-size: 0.95rem;
+            display: none;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .military-vignette {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            background: radial-gradient(circle at center, transparent 60%, rgba(0,0,0,0.75) 100%);
+        }
+
+        .thermal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            background: rgba(0, 255, 128, 0.04);
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="renderCanvas"></canvas>
+    <div class="military-vignette"></div>
+    <div class="thermal-overlay" id="thermal-filter"></div>
+
+    <div id="hud-container">
+        <!-- Górna belka -->
+        <div class="top-bar hud-glass">
+            <div class="brand-title">
+                <a href="../gry.html" class="mode-btn">← Wyjdź</a>
+                <span>⚔️ COMBAT DRONE OPS</span>
+            </div>
+
+            <!-- Wskaźnik Gamepada -->
+            <div class="pad-status-badge" id="pad-badge">
+                <span>🎮 PAD:</span>
+                <span id="pad-status-text">Wciśnij dowolny przycisk na padzie</span>
+            </div>
+
+            <!-- Wybór Maszyny -->
+            <div class="drone-type-select">
+                <span style="font-size:0.75rem; color:#90a4ae; font-weight:700;">DRON:</span>
+                <button class="mode-btn drone-active" id="btn-drone-fpv" onclick="selectDroneModel('fpv')">💥 FPV (Kamikadze)</button>
+                <button class="mode-btn" id="btn-drone-bomber" onclick="selectDroneModel('bomber')">💣 Zwiad & Bombowiec</button>
+            </div>
+
+            <!-- Tryby Lotu -->
+            <div class="flight-modes">
+                <button class="mode-btn active" id="btn-mode-angle" onclick="setFlightMode('angle')">Angle</button>
+                <button class="mode-btn" id="btn-mode-acro" onclick="setFlightMode('acro')">Acro</button>
+                <button class="mode-btn" id="btn-mode-althold" onclick="setFlightMode('althold')">AltHold</button>
+                <button class="mode-btn" id="btn-mode-poshold" onclick="setFlightMode('poshold')">⏸️ PosHold (Zwis)</button>
+            </div>
+
+            <!-- Kamery i Akcja Zrzutu -->
+            <div class="camera-select">
+                <button class="mode-btn active" id="btn-cam-chase" onclick="setCameraMode('chase')">🎥 Pościg</button>
+                <button class="mode-btn" id="btn-cam-fpv" onclick="setCameraMode('fpv')">🕶️ FPV</button>
+                <button class="mode-btn" id="btn-cam-recon" onclick="setCameraMode('recon')">🎯 Zwiad</button>
+                <button class="btn-bomb-drop" id="btn-drop-bomb" onclick="dropBomb()">💣 ZRZUĆ BOMBĘ [A / RT]</button>
+                <button class="mode-btn" onclick="resetDronePosition()">🔄 Reset [R]</button>
+            </div>
+        </div>
+
+        <div id="status-msg">⚠️ TRAFIENIE W CEL / DETONACJA!</div>
+
+        <!-- Centrum: Celownik OSD & Horyzont -->
+        <div id="crosshair-container">
+            <canvas id="horizon-canvas" width="300" height="300"></canvas>
+        </div>
+
+        <!-- Dolna belka OSD -->
+        <div class="bottom-bar">
+            <!-- Paski kontrolerów drążków -->
+            <div class="hud-glass stick-indicators">
+                <div>
+                    <div style="text-align:center; font-size:0.65rem; color:#80deea; margin-bottom:3px;">LEWY DRĄŻEK (YAW/GAZ)</div>
+                    <div class="stick-box">
+                        <div class="stick-cross-h"></div>
+                        <div class="stick-cross-v"></div>
+                        <div class="stick-dot" id="stick-left"></div>
+                    </div>
+                </div>
+                <div>
+                    <div style="text-align:center; font-size:0.65rem; color:#80deea; margin-bottom:3px;">PRAWY DRĄŻEK (PITCH/ROLL)</div>
+                    <div class="stick-box">
+                        <div class="stick-cross-h"></div>
+                        <div class="stick-cross-v"></div>
+                        <div class="stick-dot" id="stick-right"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Główna telemetria bojowa -->
+            <div class="hud-glass telemetry-grid">
+                <div class="telem-box">
+                    <div class="telem-label">Wysokość</div>
+                    <div class="telem-val" id="val-alt">0.0 <span>m</span></div>
+                </div>
+                <div class="telem-box">
+                    <div class="telem-label">Prędkość</div>
+                    <div class="telem-val" id="val-spd">0.0 <span>km/h</span></div>
+                </div>
+                <div class="telem-box">
+                    <div class="telem-label">Ciąg (THR)</div>
+                    <div class="telem-val" id="val-thr">0 <span>%</span></div>
+                </div>
+                <div class="telem-box">
+                    <div class="telem-label" id="label-payload">Głowica</div>
+                    <div class="telem-val" id="val-payload" style="color:#ff5252; font-size:1.05rem;">RPG-7</div>
+                </div>
+                <div class="telem-box">
+                    <div class="telem-label">Cele Zniszczone</div>
+                    <div class="telem-val" id="val-kills" style="color:#76ff03;">0 / 4</div>
+                </div>
+            </div>
+
+            <!-- Panel Sterowania Padem & Klawiaturą -->
+            <div class="hud-glass controls-panel">
+                <h4>🎮 Sterowanie Padem Xbox / RC</h4>
+                <div class="key-row"><span>Gaz (Ciąg):</span> <span><b class="key-badge">Lewa Gałka ↑/↓</b> lub <b class="key-badge">RT/LT</b></span></div>
+                <div class="key-row"><span>Obrót (Yaw):</span> <span><b class="key-badge">Lewa Gałka ←/→</b></span></div>
+                <div class="key-row"><span>Pochylenie / Przechył:</span> <span><b class="key-badge">Prawa Gałka (Pitch/Roll)</b></span></div>
+                <div class="key-row"><span>Bomba / Zwis:</span> <span><b class="key-badge">A</b> (Bomba) | <b class="key-badge">Menu</b> / <b class="key-badge">H</b> (Zwis)</span></div>
+                <div class="key-row"><span>Kamera / Tryb:</span> <span><b class="key-badge">Y</b> (Kamera) | <b class="key-badge">X</b> (Tryb) | <b class="key-badge">LB/RB</b> (Dron)</span></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * SYMULATOR LOTU DRONEM BOJOWYM (FPV & BOMBER)
+         * Pełna obsługa Gamepad API dla Xbox One, PS4/PS5 oraz aparatur RC USB
+         */
+
+        window.addEventListener("DOMContentLoaded", () => {
+            const canvas = document.getElementById("renderCanvas");
+            const engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
+
+            let scene, shadowGenerator;
+            let droneRoot, droneBody;
+            let currentDroneType = "fpv";
+            let propellers = [];
+            let bombsAvailable = 3;
+            let targetsDestroyed = 0;
+            let activeBombs = [];
+            let groundTargets = [];
+            let particleSystemExplosion;
+
+            let currentCameraMode = "chase";
+            let flightMode = "angle";
+            let chaseCamera, fpvCamera, reconCamera;
+            
+            let audioCtx = null;
+            let engineOsc1 = null, engineOsc2 = null, engineGain = null;
+
+            let lockedAltitude = 10.0;
+            let lockedPosition = new BABYLON.Vector3(0, 5, 0);
+
+            const padPrevButtons = {};
+
+            const inputState = {
+                throttleUp: false,
+                throttleDown: false,
+                yawLeft: false,
+                yawRight: false,
+                pitchForward: false,
+                pitchBackward: false,
+                rollLeft: false,
+                rollRight: false,
+                rawThrottle: 0.0,
+                rawPitch: 0.0,
+                rawRoll: 0.0,
+                rawYaw: 0.0
+            };
+
+            const droneConfigs = {
+                fpv: {
+                    name: "FPV Kamikaze Strike Drone",
+                    mass: 0.85,
+                    maxThrust: 34.0,
+                    linearDrag: 0.70,
+                    verticalDrag: 0.55,
+                    maxTiltAngle: Math.PI / 3,
+                    anglePID_P: 9.0,
+                    yawRate: 4.5,
+                    acroRate: 6.5
+                },
+                bomber: {
+                    name: "Heavy Recon & Bomber Hexacopter",
+                    mass: 2.8,
+                    maxThrust: 68.0,
+                    linearDrag: 1.15,
+                    verticalDrag: 0.90,
+                    maxTiltAngle: Math.PI / 5,
+                    anglePID_P: 6.0,
+                    yawRate: 2.2,
+                    acroRate: 3.5
+                }
+            };
+
+            const droneState = {
+                position: new BABYLON.Vector3(0, 0.4, 0),
+                velocity: new BABYLON.Vector3(0, 0, 0),
+                quaternion: new BABYLON.Quaternion(0, 0, 0, 1),
+                yaw: 0,
+                pitch: 0,
+                roll: 0,
+                throttlePercent: 0,
+                isGrounded: true
+            };
+
+            // --- TWORZENIE SCENY 3D ---
+            const createScene = function () {
+                scene = new BABYLON.Scene(engine);
+                scene.clearColor = new BABYLON.Color4(0.4, 0.65, 0.85, 1.0);
+
+                const sunLight = new BABYLON.DirectionalLight("SunLight", new BABYLON.Vector3(-0.4, -1, 0.5), scene);
+                sunLight.position = new BABYLON.Vector3(60, 120, -60);
+                sunLight.intensity = 1.35;
+                sunLight.diffuse = new BABYLON.Color3(1, 0.98, 0.92);
+
+                const hemiLight = new BABYLON.HemisphericLight("HemiLight", new BABYLON.Vector3(0, 1, 0), scene);
+                hemiLight.intensity = 0.55;
+
+                try {
+                    shadowGenerator = new BABYLON.ShadowGenerator(1024, sunLight);
+                    shadowGenerator.usePoissonSampling = true;
+                } catch(e) {}
+
+                createSkybox();
+                createCombatEnvironment();
+                buildDrone3D(currentDroneType);
+                setupCameras();
+                setupExplosionFX();
+
+                return scene;
+            };
+
+            function createSkybox() {
+                const skybox = BABYLON.MeshBuilder.CreateBox("skyBox", { size: 1000.0 }, scene);
+                const skyMat = new BABYLON.StandardMaterial("skyMat", scene);
+                skyMat.backFaceCulling = false;
+                skyMat.disableLighting = true;
+                skyMat.emissiveColor = new BABYLON.Color3(0.35, 0.6, 0.85);
+                skybox.material = skyMat;
+                skybox.infiniteDistance = true;
+            }
+
+            function createCombatEnvironment() {
+                const ground = BABYLON.MeshBuilder.CreateGround("ground", { width: 600, height: 600, subdivisions: 30 }, scene);
+                const groundMat = new BABYLON.StandardMaterial("groundMat", scene);
+                groundMat.diffuseColor = new BABYLON.Color3(0.24, 0.32, 0.22);
+
+                try {
+                    const groundTexture = new BABYLON.DynamicTexture("gTex", 1024, scene, false);
+                    const ctx = groundTexture.getContext();
+                    ctx.fillStyle = "#2c3b28";
+                    ctx.fillRect(0, 0, 1024, 1024);
+                    ctx.strokeStyle = "rgba(255,255,255,0.08)";
+                    ctx.lineWidth = 2;
+                    for (let i = 0; i < 1024; i += 64) {
+                        ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, 1024); ctx.stroke();
+                        ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(1024, i); ctx.stroke();
+                    }
+                    groundTexture.update();
+                    groundTexture.uScale = 30;
+                    groundTexture.vScale = 30;
+                    groundMat.diffuseTexture = groundTexture;
+                } catch(e) {}
+
+                ground.material = groundMat;
+                ground.receiveShadows = true;
+
+                const pad = BABYLON.MeshBuilder.CreateCylinder("helipad", { diameter: 10, height: 0.1, tessellation: 32 }, scene);
+                pad.position.y = 0.05;
+                const padMat = new BABYLON.StandardMaterial("padMat", scene);
+                padMat.diffuseColor = new BABYLON.Color3(0.12, 0.15, 0.18);
+                padMat.emissiveColor = new BABYLON.Color3(0.0, 0.2, 0.3);
+                pad.material = padMat;
+                pad.receiveShadows = true;
+
+                createGroundTargets();
+            }
+
+            function createGroundTargets() {
+                groundTargets = [];
+                const targetDefs = [
+                    { name: "Czołg T-72", pos: new BABYLON.Vector3(0, 0, 60), color: new BABYLON.Color3(0.3, 0.35, 0.25), size: { w: 4, h: 2, d: 7 } },
+                    { name: "BWP Bojowy", pos: new BABYLON.Vector3(-35, 0, 95), color: new BABYLON.Color3(0.28, 0.32, 0.22), size: { w: 3.5, h: 1.8, d: 6 } },
+                    { name: "Wyrzutnia Rakiet", pos: new BABYLON.Vector3(45, 0, 130), color: new BABYLON.Color3(0.35, 0.3, 0.2), size: { w: 3.8, h: 2.2, d: 8 } },
+                    { name: "Bunkier Dowodzenia", pos: new BABYLON.Vector3(-60, 0, 160), color: new BABYLON.Color3(0.4, 0.4, 0.45), size: { w: 8, h: 3, d: 8 } }
+                ];
+
+                targetDefs.forEach((t, idx) => {
+                    const targetMesh = BABYLON.MeshBuilder.CreateBox(`target_${idx}`, { width: t.size.w, height: t.size.h, depth: t.size.d }, scene);
+                    targetMesh.position = new BABYLON.Vector3(t.pos.x, t.size.h / 2, t.pos.z);
+                    const tMat = new BABYLON.StandardMaterial(`tMat_${idx}`, scene);
+                    tMat.diffuseColor = t.color;
+                    targetMesh.material = tMat;
+                    targetMesh.receiveShadows = true;
+                    if (shadowGenerator) shadowGenerator.addShadowCaster(targetMesh);
+
+                    const targetRing = BABYLON.MeshBuilder.CreateTorus(`tRing_${idx}`, { diameter: t.size.w * 2.2, thickness: 0.15, tessellation: 32 }, scene);
+                    targetRing.position = new BABYLON.Vector3(t.pos.x, 0.1, t.pos.z);
+                    const rMat = new BABYLON.StandardMaterial(`rMat_${idx}`, scene);
+                    rMat.emissiveColor = new BABYLON.Color3(1.0, 0.1, 0.1);
+                    targetRing.material = rMat;
+
+                    groundTargets.push({
+                        mesh: targetMesh,
+                        ring: targetRing,
+                        position: targetMesh.position,
+                        name: t.name,
+                        destroyed: false,
+                        radius: t.size.w * 1.2
+                    });
+                });
+            }
+
+            function setupExplosionFX() {
+                particleSystemExplosion = new BABYLON.ParticleSystem("particles", 1500, scene);
+                particleSystemExplosion.particleTexture = new BABYLON.Texture("https://assets.babylonjs.com/textures/flare.png", scene);
+                particleSystemExplosion.emitter = new BABYLON.Vector3(0, 0, 0);
+                particleSystemExplosion.minEmitBox = new BABYLON.Vector3(-1, 0, -1);
+                particleSystemExplosion.maxEmitBox = new BABYLON.Vector3(1, 0, 1);
+                particleSystemExplosion.color1 = new BABYLON.Color4(1, 0.6, 0.1, 1.0);
+                particleSystemExplosion.color2 = new BABYLON.Color4(1, 0.15, 0.05, 1.0);
+                particleSystemExplosion.colorDead = new BABYLON.Color4(0.2, 0.2, 0.2, 0.0);
+                particleSystemExplosion.minSize = 0.5;
+                particleSystemExplosion.maxSize = 2.5;
+                particleSystemExplosion.minLifeTime = 0.4;
+                particleSystemExplosion.maxLifeTime = 1.2;
+                particleSystemExplosion.emitRate = 800;
+                particleSystemExplosion.blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
+                particleSystemExplosion.gravity = new BABYLON.Vector3(0, 4, 0);
+                particleSystemExplosion.minEmitPower = 5;
+                particleSystemExplosion.maxEmitPower = 18;
+                particleSystemExplosion.updateSpeed = 0.02;
+                particleSystemExplosion.targetStopDuration = 0.4;
+            }
+
+            function triggerExplosion(pos) {
+                if (particleSystemExplosion) {
+                    particleSystemExplosion.emitter = pos.clone();
+                    particleSystemExplosion.start();
+                }
+                playExplosionSound();
+            }
+
+            function buildDrone3D(type) {
+                if (droneRoot) droneRoot.dispose();
+
+                droneRoot = new BABYLON.TransformNode("droneRoot", scene);
+                droneRoot.position = droneState.position.clone();
+                droneRoot.rotationQuaternion = new BABYLON.Quaternion(0, 0, 0, 1);
+                propellers = [];
+
+                const carbonMat = new BABYLON.StandardMaterial("carbonMat", scene);
+                carbonMat.diffuseColor = new BABYLON.Color3(0.12, 0.12, 0.15);
+
+                const motorMat = new BABYLON.StandardMaterial("motorMat", scene);
+                motorMat.diffuseColor = new BABYLON.Color3(0.85, 0.1, 0.1);
+
+                const propMat = new BABYLON.StandardMaterial("propMat", scene);
+                propMat.diffuseColor = new BABYLON.Color3(0.0, 0.85, 1.0);
+                propMat.alpha = 0.85;
+
+                const warheadMat = new BABYLON.StandardMaterial("warheadMat", scene);
+                warheadMat.diffuseColor = new BABYLON.Color3(0.3, 0.4, 0.25);
+                warheadMat.emissiveColor = new BABYLON.Color3(0.1, 0.15, 0.05);
+
+                if (type === "fpv") {
+                    droneBody = BABYLON.MeshBuilder.CreateBox("droneBody", { width: 0.32, height: 0.1, depth: 0.5 }, scene);
+                    droneBody.parent = droneRoot;
+                    droneBody.material = carbonMat;
+                    if (shadowGenerator) shadowGenerator.addShadowCaster(droneBody);
+
+                    const warhead = BABYLON.MeshBuilder.CreateCylinder("warhead", { diameter: 0.16, height: 0.65, tessellation: 20 }, scene);
+                    warhead.rotation.x = Math.PI / 2;
+                    warhead.position = new BABYLON.Vector3(0, -0.09, 0.05);
+                    warhead.parent = droneBody;
+                    warhead.material = warheadMat;
+
+                    const tip = BABYLON.MeshBuilder.CreateCylinder("tip", { diameterTop: 0.01, diameterBottom: 0.16, height: 0.2 }, scene);
+                    tip.rotation.x = Math.PI / 2;
+                    tip.position = new BABYLON.Vector3(0, -0.09, 0.45);
+                    tip.parent = droneBody;
+                    tip.material = warheadMat;
+
+                    const arms = [
+                        { id: "FL", x: -0.36, z: 0.36, dir: 1 },
+                        { id: "FR", x: 0.36, z: 0.36, dir: -1 },
+                        { id: "BL", x: -0.36, z: -0.36, dir: -1 },
+                        { id: "BR", x: 0.36, z: -0.36, dir: 1 }
+                    ];
+
+                    arms.forEach(a => createRotorArm(a.x, a.z, a.dir, carbonMat, motorMat, propMat, 0.32));
+                } else {
+                    droneBody = BABYLON.MeshBuilder.CreateCylinder("droneBody", { diameter: 0.65, height: 0.2, tessellation: 24 }, scene);
+                    droneBody.parent = droneRoot;
+                    droneBody.material = carbonMat;
+                    if (shadowGenerator) shadowGenerator.addShadowCaster(droneBody);
+
+                    const bombRack = BABYLON.MeshBuilder.CreateBox("bombRack", { width: 0.4, height: 0.15, depth: 0.5 }, scene);
+                    bombRack.position.y = -0.15;
+                    bombRack.parent = droneBody;
+                    bombRack.material = carbonMat;
+
+                    for (let i = 0; i < 3; i++) {
+                        const bombMesh = BABYLON.MeshBuilder.CreateCylinder(`rackBomb_${i}`, { diameter: 0.12, height: 0.35, tessellation: 16 }, scene);
+                        bombMesh.position = new BABYLON.Vector3((i - 1) * 0.14, -0.26, 0);
+                        bombMesh.parent = droneBody;
+                        bombMesh.material = warheadMat;
+                    }
+
+                    const hexRadius = 0.58;
+                    for (let i = 0; i < 6; i++) {
+                        const angle = (i * Math.PI) / 3;
+                        const rx = Math.cos(angle) * hexRadius;
+                        const rz = Math.sin(angle) * hexRadius;
+                        createRotorArm(rx, rz, (i % 2 === 0) ? 1 : -1, carbonMat, motorMat, propMat, 0.42);
+                    }
+                }
+            }
+
+            function createRotorArm(x, z, dir, carbonMat, motorMat, propMat, propSize) {
+                const armMesh = BABYLON.MeshBuilder.CreateCylinder("arm", { diameter: 0.035, height: Math.sqrt(x*x + z*z) }, scene);
+                armMesh.parent = droneBody;
+                armMesh.position = new BABYLON.Vector3(x * 0.5, 0, z * 0.5);
+                armMesh.rotation.z = Math.PI / 2;
+                armMesh.rotation.y = Math.atan2(x, z);
+                armMesh.material = carbonMat;
+
+                const motor = BABYLON.MeshBuilder.CreateCylinder("motor", { diameter: 0.1, height: 0.08 }, scene);
+                motor.parent = droneBody;
+                motor.position = new BABYLON.Vector3(x, 0.04, z);
+                motor.material = motorMat;
+                if (shadowGenerator) shadowGenerator.addShadowCaster(motor);
+
+                const propHub = new BABYLON.TransformNode("propHub", scene);
+                propHub.parent = droneBody;
+                propHub.position = new BABYLON.Vector3(x, 0.09, z);
+
+                const blade1 = BABYLON.MeshBuilder.CreateBox("blade1", { width: propSize, height: 0.008, depth: 0.035 }, scene);
+                blade1.parent = propHub;
+                blade1.material = propMat;
+
+                const blade2 = BABYLON.MeshBuilder.CreateBox("blade2", { width: 0.035, height: 0.008, depth: propSize }, scene);
+                blade2.parent = propHub;
+                blade2.material = propMat;
+
+                propellers.push({ node: propHub, direction: dir });
+            }
+
+            function setupCameras() {
+                chaseCamera = new BABYLON.FreeCamera("chaseCam", new BABYLON.Vector3(0, 2, -5), scene);
+                chaseCamera.minZ = 0.1;
+                chaseCamera.setTarget(new BABYLON.Vector3(0, 0.4, 0));
+
+                fpvCamera = new BABYLON.FreeCamera("fpvCam", new BABYLON.Vector3(0, 0.08, 0.3), scene);
+                fpvCamera.minZ = 0.05;
+                fpvCamera.parent = droneBody;
+                fpvCamera.rotation = new BABYLON.Vector3(-0.25, 0, 0);
+
+                reconCamera = new BABYLON.FreeCamera("reconCam", new BABYLON.Vector3(0, -0.2, 0.1), scene);
+                reconCamera.minZ = 0.1;
+                reconCamera.parent = droneBody;
+                reconCamera.rotation = new BABYLON.Vector3(Math.PI / 2.3, 0, 0);
+
+                scene.activeCamera = chaseCamera;
+            }
+
+            window.selectDroneModel = function(type) {
+                currentDroneType = type;
+                document.getElementById("btn-drone-fpv").classList.toggle("drone-active", type === "fpv");
+                document.getElementById("btn-drone-bomber").classList.toggle("bomber-active", type === "bomber");
+
+                const dropBtn = document.getElementById("btn-drop-bomb");
+                const labelPayload = document.getElementById("label-payload");
+                const valPayload = document.getElementById("val-payload");
+
+                if (type === "fpv") {
+                    dropBtn.style.display = "none";
+                    labelPayload.innerText = "Głowica";
+                    valPayload.innerText = "RPG-7";
+                    valPayload.style.color = "#ff5252";
+                    setFlightMode("angle");
+                } else {
+                    dropBtn.style.display = "inline-flex";
+                    labelPayload.innerText = "Bomby";
+                    valPayload.innerText = `${bombsAvailable} / 3`;
+                    valPayload.style.color = "#69f0ae";
+                    setFlightMode("poshold");
+                }
+
+                buildDrone3D(type);
+                setupCameras();
+            };
+
+            window.setFlightMode = function(mode) {
+                flightMode = mode;
+                ["angle", "acro", "althold", "poshold"].forEach(m => {
+                    const btn = document.getElementById(`btn-mode-${m}`);
+                    if (btn) btn.classList.toggle("active", m === mode);
+                });
+
+                if (mode === "althold") {
+                    lockedAltitude = Math.max(1.0, droneState.position.y);
+                } else if (mode === "poshold") {
+                    lockedAltitude = Math.max(1.0, droneState.position.y);
+                    lockedPosition.copyFrom(droneState.position);
+                }
+            };
+
+            window.setCameraMode = function(mode) {
+                currentCameraMode = mode;
+                document.querySelectorAll(".camera-select .mode-btn").forEach(b => b.classList.remove("active"));
+                const thermal = document.getElementById("thermal-filter");
+                
+                if (mode === "chase") {
+                    scene.activeCamera = chaseCamera;
+                    document.getElementById("btn-cam-chase").classList.add("active");
+                    if (thermal) thermal.style.display = "none";
+                } else if (mode === "fpv") {
+                    scene.activeCamera = fpvCamera;
+                    document.getElementById("btn-cam-fpv").classList.add("active");
+                    if (thermal) thermal.style.display = "none";
+                } else if (mode === "recon") {
+                    scene.activeCamera = reconCamera;
+                    document.getElementById("btn-cam-recon").classList.add("active");
+                    if (thermal) thermal.style.display = "block";
+                }
+            };
+
+            window.dropBomb = function() {
+                if (currentDroneType !== "bomber" || bombsAvailable <= 0) return;
+
+                bombsAvailable--;
+                document.getElementById("val-payload").innerText = `${bombsAvailable} / 3`;
+
+                const bomb = BABYLON.MeshBuilder.CreateCylinder("fallingBomb", { diameter: 0.18, height: 0.5, tessellation: 16 }, scene);
+                bomb.position = droneState.position.clone().add(new BABYLON.Vector3(0, -0.4, 0));
+                bomb.rotation.x = Math.PI / 2;
+
+                const bMat = new BABYLON.StandardMaterial("bMat", scene);
+                bMat.diffuseColor = new BABYLON.Color3(0.2, 0.25, 0.2);
+                bomb.material = bMat;
+
+                activeBombs.push({
+                    mesh: bomb,
+                    velocity: droneState.velocity.clone()
+                });
+            };
+
+            function initAudio() {
+                if (audioCtx) return;
+                try {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    engineOsc1 = audioCtx.createOscillator();
+                    engineOsc2 = audioCtx.createOscillator();
+                    engineGain = audioCtx.createGain();
+
+                    engineOsc1.type = "sawtooth";
+                    engineOsc2.type = "triangle";
+                    engineOsc1.frequency.setValueAtTime(80, audioCtx.currentTime);
+                    engineOsc2.frequency.setValueAtTime(160, audioCtx.currentTime);
+                    engineGain.gain.setValueAtTime(0.02, audioCtx.currentTime);
+
+                    engineOsc1.connect(engineGain);
+                    engineOsc2.connect(engineGain);
+                    engineGain.connect(audioCtx.destination);
+                    engineOsc1.start();
+                    engineOsc2.start();
+                } catch(e) {}
+            }
+
+            function playExplosionSound() {
+                if (!audioCtx) return;
+                try {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = "square";
+                    osc.frequency.setValueAtTime(120, audioCtx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(30, audioCtx.currentTime + 0.5);
+                    gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.5);
+                } catch(e) {}
+            }
+
+            function updateAudio(throttle, speedRatio) {
+                if (!audioCtx || !engineOsc1 || !engineGain) return;
+                const baseFreq = currentDroneType === "fpv" ? 110 : 70;
+                const targetFreq = baseFreq + (throttle * 360) + (speedRatio * 80);
+                engineOsc1.frequency.setTargetAtTime(targetFreq, audioCtx.currentTime, 0.05);
+                engineOsc2.frequency.setTargetAtTime(targetFreq * 1.5, audioCtx.currentTime, 0.05);
+                engineGain.gain.setTargetAtTime(0.02 + (throttle * 0.08), audioCtx.currentTime, 0.05);
+            }
+
+            // --- ZAAWANSOWANA OBSŁUGA GAMEPADA (XBOX ONE / PS / RC USB) ---
+            function pollGamepadInput(dt) {
+                const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
+                let gp = null;
+                for (let i = 0; i < gamepads.length; i++) {
+                    if (gamepads[i]) { gp = gamepads[i]; break; }
+                }
+
+                const badge = document.getElementById("pad-badge");
+                const badgeText = document.getElementById("pad-status-text");
+
+                if (!gp) {
+                    if (badge) badge.classList.remove("connected");
+                    if (badgeText) badgeText.innerText = "Nie wykryto pada (kliknij przycisk)";
+                    return false;
+                }
+
+                if (badge) badge.classList.add("connected");
+                if (badgeText) badgeText.innerText = `Połączono: ${gp.id.substring(0, 18)}...`;
+                initAudio();
+
+                const deadzone = 0.08;
+                const applyDeadzone = (val) => Math.abs(val) < deadzone ? 0 : val;
+
+                // 1. OSIE (Drążki)
+                inputState.rawYaw = applyDeadzone(gp.axes[0] || 0);
+                inputState.rawRoll = applyDeadzone(gp.axes[2] || 0);
+                inputState.rawPitch = -applyDeadzone(gp.axes[3] || 0);
+
+                // 2. GAZ / PRZEPUSTNICA:
+                const stickThrottleY = -(gp.axes[1] || 0);
+                const rtVal = gp.buttons[7] ? gp.buttons[7].value : 0;
+                const ltVal = gp.buttons[6] ? gp.buttons[6].value : 0;
+
+                if (rtVal > 0.1) {
+                    droneState.throttlePercent = Math.min(1.0, droneState.throttlePercent + rtVal * dt * 2.0);
+                } else if (ltVal > 0.1) {
+                    droneState.throttlePercent = Math.max(0.0, droneState.throttlePercent - ltVal * dt * 2.5);
+                } else if (Math.abs(stickThrottleY) > 0.15) {
+                    if (flightMode === "poshold" || flightMode === "althold") {
+                        lockedAltitude += stickThrottleY * dt * 8.0;
+                    } else {
+                        droneState.throttlePercent = Math.max(0, Math.min(1, (stickThrottleY + 1) * 0.5));
+                    }
+                }
+
+                // 3. PRZYCISKI AKCJI (Debounce)
+                const isBtnJustPressed = (btnIndex) => {
+                    const isDown = gp.buttons[btnIndex] && gp.buttons[btnIndex].pressed;
+                    const wasDown = padPrevButtons[btnIndex] || false;
+                    padPrevButtons[btnIndex] = isDown;
+                    return isDown && !wasDown;
+                };
+
+                // Przycisk A (0) lub B (1) -> Zrzut Bomby
+                if (isBtnJustPressed(0) || isBtnJustPressed(1)) {
+                    if (currentDroneType === "bomber") dropBomb();
+                }
+
+                // Przycisk Y (3) -> Zmiana Kamery
+                if (isBtnJustPressed(3)) {
+                    if (currentCameraMode === "chase") setCameraMode("fpv");
+                    else if (currentCameraMode === "fpv") setCameraMode("recon");
+                    else setCameraMode("chase");
+                }
+
+                // Przycisk X (2) -> Zmiana Trybu Lotu (Angle -> Acro -> AltHold -> PosHold)
+                if (isBtnJustPressed(2)) {
+                    const modes = ["angle", "acro", "althold", "poshold"];
+                    const nextMode = modes[(modes.indexOf(flightMode) + 1) % modes.length];
+                    setFlightMode(nextMode);
+                }
+
+                // Bumpery LB (4) / RB (5) -> Zmiana Drona (FPV <-> Bomber)
+                if (isBtnJustPressed(4) || isBtnJustPressed(5)) {
+                    selectDroneModel(currentDroneType === "fpv" ? "bomber" : "fpv");
+                }
+
+                // Przycisk Start / Menu (9) -> Zwis PosHold
+                if (isBtnJustPressed(9)) {
+                    setFlightMode(flightMode === "poshold" ? "angle" : "poshold");
+                }
+
+                // Przycisk Back / View (8) -> Reset pozycji [R]
+                if (isBtnJustPressed(8)) {
+                    resetDronePosition();
+                }
+
+                return true;
+            }
+
+            // Klawiatura
+            window.addEventListener("keydown", (e) => {
+                initAudio();
+                switch (e.code) {
+                    case "KeyW": inputState.throttleUp = true; break;
+                    case "KeyS": inputState.throttleDown = true; break;
+                    case "KeyA": inputState.yawLeft = true; break;
+                    case "KeyD": inputState.yawRight = true; break;
+                    case "ArrowUp": inputState.pitchForward = true; break;
+                    case "ArrowDown": inputState.pitchBackward = true; break;
+                    case "ArrowLeft": inputState.rollLeft = true; break;
+                    case "ArrowRight": inputState.rollRight = true; break;
+                    case "Space":
+                        if (currentDroneType === "bomber") dropBomb();
+                        else inputState.throttleUp = true;
+                        break;
+                    case "KeyB": dropBomb(); break;
+                    case "KeyH": setFlightMode(flightMode === "poshold" ? "angle" : "poshold"); break;
+                    case "KeyC":
+                        if (currentCameraMode === "chase") setCameraMode("fpv");
+                        else if (currentCameraMode === "fpv") setCameraMode("recon");
+                        else setCameraMode("chase");
+                        break;
+                    case "KeyR": resetDronePosition(); break;
+                }
+            });
+
+            window.addEventListener("keyup", (e) => {
+                switch (e.code) {
+                    case "KeyW": inputState.throttleUp = false; break;
+                    case "KeyS": inputState.throttleDown = false; break;
+                    case "KeyA": inputState.yawLeft = false; break;
+                    case "KeyD": inputState.yawRight = false; break;
+                    case "ArrowUp": inputState.pitchForward = false; break;
+                    case "ArrowDown": inputState.pitchBackward = false; break;
+                    case "ArrowLeft": inputState.rollLeft = false; break;
+                    case "ArrowRight": inputState.rollRight = false; break;
+                    case "Space":
+                        if (currentDroneType === "fpv") inputState.throttleUp = false;
+                        break;
+                }
+            });
+
+            window.resetDronePosition = function() {
+                droneState.position = new BABYLON.Vector3(0, 0.4, 0);
+                droneState.velocity = new BABYLON.Vector3(0, 0, 0);
+                droneState.quaternion = new BABYLON.Quaternion(0, 0, 0, 1);
+                droneState.yaw = 0;
+                droneState.pitch = 0;
+                droneState.roll = 0;
+                droneState.throttlePercent = 0;
+                droneState.isGrounded = true;
+                bombsAvailable = 3;
+                if (currentDroneType === "bomber") {
+                    document.getElementById("val-payload").innerText = "3 / 3";
+                }
+                const msg = document.getElementById("status-msg");
+                if (msg) msg.style.display = "none";
+            };
+
+            // --- GŁÓWNA PĘTLA FIZYKI WEKTOROWEJ I AUTOPILOTA ---
+            function updatePhysics(deltaTime) {
+                const dt = Math.min(deltaTime, 0.05);
+                const cfg = droneConfigs[currentDroneType];
+
+                // 1. Odczyt sterowania z Pada lub Klawiatury
+                const hasGamepad = pollGamepadInput(dt);
+                if (!hasGamepad) {
+                    inputState.rawYaw = (inputState.yawRight ? 1 : 0) - (inputState.yawLeft ? 1 : 0);
+                    inputState.rawPitch = (inputState.pitchForward ? 1 : 0) - (inputState.pitchBackward ? 1 : 0);
+                    inputState.rawRoll = (inputState.rollRight ? 1 : 0) - (inputState.rollLeft ? 1 : 0);
+
+                    if (flightMode === "poshold" || flightMode === "althold") {
+                        if (inputState.throttleUp) lockedAltitude += dt * 5.0;
+                        if (inputState.throttleDown) lockedAltitude = Math.max(1.0, lockedAltitude - dt * 5.0);
+                    } else {
+                        if (inputState.throttleUp) droneState.throttlePercent = Math.min(1.0, droneState.throttlePercent + dt * 1.6);
+                        else if (inputState.throttleDown) droneState.throttlePercent = Math.max(0.0, droneState.throttlePercent - dt * 2.0);
+                    }
+                }
+
+                // 2. Automatyczny Gaz w trybach AltHold / PosHold
+                if (flightMode === "poshold" || flightMode === "althold") {
+                    const altError = lockedAltitude - droneState.position.y;
+                    const targetClimbRate = altError * 1.5;
+                    const climbError = targetClimbRate - droneState.velocity.y;
+                    const hoverThrottle = (cfg.mass * 9.81) / cfg.maxThrust;
+                    droneState.throttlePercent = Math.max(0.1, Math.min(0.9, hoverThrottle + climbError * 0.1));
+                }
+
+                // 3. Orientacja Kątowa
+                if (flightMode === "poshold") {
+                    const posErrorX = lockedPosition.x - droneState.position.x;
+                    const posErrorZ = lockedPosition.z - droneState.position.z;
+
+                    if (Math.abs(inputState.rawPitch) > 0.1 || Math.abs(inputState.rawRoll) > 0.1) {
+                        lockedPosition.x = droneState.position.x;
+                        lockedPosition.z = droneState.position.z;
+                        droneState.pitch += (inputState.rawPitch * cfg.maxTiltAngle - droneState.pitch) * dt * 5.0;
+                        droneState.roll += (inputState.rawRoll * cfg.maxTiltAngle - droneState.roll) * dt * 5.0;
+                    } else {
+                        const targetTiltX = Math.max(-0.25, Math.min(0.25, posErrorX * 0.3 - droneState.velocity.x * 0.4));
+                        const targetTiltZ = Math.max(-0.25, Math.min(0.25, posErrorZ * 0.3 - droneState.velocity.z * 0.4));
+                        droneState.pitch += (-targetTiltZ - droneState.pitch) * dt * 6.0;
+                        droneState.roll += (targetTiltX - droneState.roll) * dt * 6.0;
+                    }
+
+                    droneState.yaw += inputState.rawYaw * cfg.yawRate * dt;
+                    droneState.quaternion = BABYLON.Quaternion.RotationYawPitchRoll(droneState.yaw, droneState.pitch, droneState.roll);
+
+                } else if (flightMode === "angle" || flightMode === "althold") {
+                    const targetPitch = inputState.rawPitch * cfg.maxTiltAngle;
+                    const targetRoll = inputState.rawRoll * cfg.maxTiltAngle;
+
+                    droneState.pitch += (targetPitch - droneState.pitch) * Math.min(1, dt * cfg.anglePID_P);
+                    droneState.roll += (targetRoll - droneState.roll) * Math.min(1, dt * cfg.anglePID_P);
+                    droneState.yaw += inputState.rawYaw * cfg.yawRate * dt;
+
+                    droneState.quaternion = BABYLON.Quaternion.RotationYawPitchRoll(droneState.yaw, droneState.pitch, droneState.roll);
+
+                } else if (flightMode === "acro") {
+                    const deltaYaw = inputState.rawYaw * cfg.yawRate * dt;
+                    const deltaPitch = inputState.rawPitch * cfg.acroRate * dt;
+                    const deltaRoll = inputState.rawRoll * cfg.acroRate * dt;
+
+                    const rotDelta = BABYLON.Quaternion.RotationYawPitchRoll(deltaYaw, deltaPitch, deltaRoll);
+                    droneState.quaternion = rotDelta.multiply(droneState.quaternion);
+                }
+
+                // 4. Wektor Ciągu
+                const rotMat = new BABYLON.Matrix();
+                droneState.quaternion.toRotationMatrix(rotMat);
+                const localUp = new BABYLON.Vector3(0, 1, 0);
+                const thrustDir = BABYLON.Vector3.TransformNormal(localUp, rotMat);
+
+                const thrustForce = droneState.throttlePercent * cfg.maxThrust;
+                const thrustVector = thrustDir.scale(thrustForce);
+
+                // 5. Grawitacja i Opór
+                const gravityVector = new BABYLON.Vector3(0, -9.81 * cfg.mass, 0);
+                const dragVector = new BABYLON.Vector3(
+                    -droneState.velocity.x * cfg.linearDrag,
+                    -droneState.velocity.y * cfg.verticalDrag,
+                    -droneState.velocity.z * cfg.linearDrag
+                );
+
+                const totalForce = thrustVector.add(gravityVector).add(dragVector);
+                const acceleration = totalForce.scale(1.0 / cfg.mass);
+
+                droneState.velocity.addInPlace(acceleration.scale(dt));
+                droneState.position.addInPlace(droneState.velocity.scale(dt));
+
+                // 6. Lądowanie i Detekcja Kolizji
+                const groundAlt = 0.35;
+                if (droneState.position.y <= groundAlt) {
+                    droneState.position.y = groundAlt;
+                    
+                    if (currentDroneType === "fpv" && droneState.velocity.length() > 8.0) {
+                        triggerExplosion(droneState.position);
+                        checkKamikazeTargetHit(droneState.position);
+                    }
+
+                    droneState.velocity.y = 0;
+                    droneState.velocity.x *= 0.85;
+                    droneState.velocity.z *= 0.85;
+                    droneState.isGrounded = true;
+                } else {
+                    droneState.isGrounded = false;
+                }
+
+                updateFallingBombs(dt);
+
+                droneRoot.position.copyFrom(droneState.position);
+                droneRoot.rotationQuaternion = droneState.quaternion;
+
+                const propSpeed = (0.2 + droneState.throttlePercent * 3.2) * Math.PI * 2;
+                propellers.forEach(p => {
+                    p.node.rotation.y += propSpeed * p.direction * dt * 15;
+                });
+
+                updateAudio(droneState.throttlePercent, droneState.velocity.length() * 3.6 / 100);
+            }
+
+            function updateFallingBombs(dt) {
+                for (let i = activeBombs.length - 1; i >= 0; i--) {
+                    const b = activeBombs[i];
+                    b.velocity.y -= 9.81 * dt;
+                    b.mesh.position.addInPlace(b.velocity.scale(dt));
+                    b.mesh.rotation.x = Math.atan2(b.velocity.y, Math.sqrt(b.velocity.x**2 + b.velocity.z**2));
+
+                    if (b.mesh.position.y <= 0.2) {
+                        triggerExplosion(b.mesh.position);
+                        checkBombTargetHit(b.mesh.position);
+                        b.mesh.dispose();
+                        activeBombs.splice(i, 1);
+                    }
+                }
+            }
+
+            function checkBombTargetHit(hitPos) {
+                groundTargets.forEach(t => {
+                    if (!t.destroyed) {
+                        const dist = BABYLON.Vector3.Distance(hitPos, t.position);
+                        if (dist <= t.radius) {
+                            t.destroyed = true;
+                            t.mesh.scaling = new BABYLON.Vector3(1.1, 0.2, 1.1);
+                            t.ring.dispose();
+                            targetsDestroyed++;
+                            document.getElementById("val-kills").innerText = `${targetsDestroyed} / ${groundTargets.length}`;
+                            showStatusAlert(`🎯 TRAFIENIE: ZNISZCZONO ${t.name}!`);
+                        }
+                    }
+                });
+            }
+
+            function checkKamikazeTargetHit(hitPos) {
+                groundTargets.forEach(t => {
+                    if (!t.destroyed) {
+                        const dist = BABYLON.Vector3.Distance(hitPos, t.position);
+                        if (dist <= t.radius + 1.5) {
+                            t.destroyed = true;
+                            t.mesh.scaling = new BABYLON.Vector3(1.1, 0.2, 1.1);
+                            t.ring.dispose();
+                            targetsDestroyed++;
+                            document.getElementById("val-kills").innerText = `${targetsDestroyed} / ${groundTargets.length}`;
+                            showStatusAlert(`💥 BEZPOŚREDNIE TRAFIENIE FPV: ${t.name}!`);
+                        }
+                    }
+                });
+            }
+
+            function showStatusAlert(text) {
+                const msg = document.getElementById("status-msg");
+                msg.innerText = text;
+                msg.style.display = "block";
+                setTimeout(() => { msg.style.display = "none"; }, 2500);
+            }
+
+            function updateChaseCamera(deltaTime) {
+                if (currentCameraMode !== "chase") return;
+
+                const camDist = currentDroneType === "fpv" ? 3.5 : 4.5;
+                const camHeight = currentDroneType === "fpv" ? 1.3 : 1.8;
+
+                const fwd = new BABYLON.Vector3(0, 0, 1);
+                const rotMat = new BABYLON.Matrix();
+                droneState.quaternion.toRotationMatrix(rotMat);
+                const worldFwd = BABYLON.Vector3.TransformNormal(fwd, rotMat);
+
+                const targetPos = droneState.position.subtract(worldFwd.scale(camDist));
+                targetPos.y = droneState.position.y + camHeight;
+
+                chaseCamera.position = BABYLON.Vector3.Lerp(chaseCamera.position, targetPos, Math.min(1, deltaTime * 8));
+                chaseCamera.setTarget(droneState.position.add(new BABYLON.Vector3(0, 0.4, 0)));
+            }
+
+            const horizonCanvas = document.getElementById("horizon-canvas");
+            const hCtx = horizonCanvas ? horizonCanvas.getContext("2d") : null;
+
+            function drawArtificialHorizon() {
+                if (!hCtx || !horizonCanvas) return;
+                const cx = horizonCanvas.width / 2;
+                const cy = horizonCanvas.height / 2;
+                hCtx.clearRect(0, 0, horizonCanvas.width, horizonCanvas.height);
+
+                hCtx.save();
+                hCtx.translate(cx, cy);
+                hCtx.rotate(-droneState.roll);
+
+                const pitchOffset = (droneState.pitch / (Math.PI / 4)) * 60;
+                hCtx.translate(0, pitchOffset);
+
+                hCtx.strokeStyle = currentCameraMode === "recon" ? "rgba(105, 240, 174, 0.8)" : "rgba(0, 229, 255, 0.75)";
+                hCtx.lineWidth = 2;
+
+                hCtx.beginPath();
+                hCtx.moveTo(-65, 0); hCtx.lineTo(65, 0);
+                hCtx.stroke();
+
+                [-35, -18, 18, 35].forEach(p => {
+                    hCtx.beginPath();
+                    hCtx.moveTo(-20, p); hCtx.lineTo(20, p);
+                    hCtx.stroke();
+                });
+                hCtx.restore();
+
+                if (currentCameraMode === "recon") {
+                    hCtx.strokeStyle = "#69f0ae";
+                    hCtx.lineWidth = 1.5;
+                    hCtx.strokeRect(cx - 30, cy - 30, 60, 60);
+                    hCtx.beginPath();
+                    hCtx.arc(cx, cy, 14, 0, Math.PI * 2);
+                    hCtx.moveTo(cx - 45, cy); hCtx.lineTo(cx + 45, cy);
+                    hCtx.moveTo(cx, cy - 45); hCtx.lineTo(cx + 45, cy);
+                    hCtx.stroke();
+                } else {
+                    hCtx.strokeStyle = "#00e5ff";
+                    hCtx.lineWidth = 2;
+                    hCtx.beginPath();
+                    hCtx.moveTo(cx - 28, cy); hCtx.lineTo(cx - 10, cy); hCtx.lineTo(cx - 10, cy + 5);
+                    hCtx.moveTo(cx + 28, cy); hCtx.lineTo(cx + 10, cy); hCtx.lineTo(cx + 10, cy + 5);
+                    hCtx.stroke();
+                }
+
+                hCtx.fillStyle = "#ff5252";
+                hCtx.beginPath();
+                hCtx.arc(cx, cy, 2.5, 0, Math.PI * 2);
+                hCtx.fill();
+            }
+
+            function updateHUD() {
+                const alt = Math.max(0, droneState.position.y - 0.35).toFixed(1);
+                const spd = (droneState.velocity.length() * 3.6).toFixed(1);
+                const thr = Math.round(droneState.throttlePercent * 100);
+
+                const elAlt = document.getElementById("val-alt");
+                const elSpd = document.getElementById("val-spd");
+                const elThr = document.getElementById("val-thr");
+
+                if (elAlt) elAlt.innerHTML = `${alt} <span>m</span>`;
+                if (elSpd) elSpd.innerHTML = `${spd} <span>km/h</span>`;
+                if (elThr) elThr.innerHTML = `${thr} <span>%</span>`;
+
+                const stickL = document.getElementById("stick-left");
+                const stickR = document.getElementById("stick-right");
+
+                if (stickL) {
+                    stickL.style.left = `${50 + (inputState.rawYaw * 35)}%`;
+                    stickL.style.top = `${50 - (droneState.throttlePercent - 0.5) * 60}%`;
+                }
+
+                if (stickR) {
+                    stickR.style.left = `${50 + (inputState.rawRoll * 35)}%`;
+                    stickR.style.top = `${50 - (inputState.rawPitch * 35)}%`;
+                }
+
+                drawArtificialHorizon();
+            }
+
+            createScene();
+
+            engine.runRenderLoop(() => {
+                const dt = engine.getDeltaTime() / 1000.0;
+                updatePhysics(dt);
+                updateChaseCamera(dt);
+                updateHUD();
+                scene.render();
+            });
+
+            window.addEventListener("resize", () => {
+                engine.resize();
+            });
+        });
+    </script>
+</body>
+</html>

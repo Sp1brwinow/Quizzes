@@ -27,6 +27,7 @@
             --accent-strzel: #10b981;
             --accent-rozrywka: #fbbf24;
             --accent-hack: #38bdf8;
+            --accent-gry: #00e5ff;
         }
 
         * {
@@ -289,6 +290,14 @@
             border-color: #06b6d4;
         }
 
+        .card-gry {
+            color: var(--accent-gry);
+            border-color: rgba(0, 229, 255, 0.35);
+        }
+        .card-gry:hover {
+            border-color: #00e5ff;
+        }
+
         /* Stopka i licznik */
         .footer-section {
             margin-top: 25px;
@@ -402,6 +411,21 @@
                 </div>
                 <div class="card-action">
                     <span>Zobacz Projekty</span>
+                    <span>→</span>
+                </div>
+            </a>
+
+            <!-- Karta 5: Gry (w tym Symulator Drona 3D) -->
+            <a href="games/gry.html" class="nav-card card-gry">
+                <div>
+                    <span class="card-icon">🎮</span>
+                    <h3 class="card-title">Gry</h3>
+                    <p class="card-desc">
+                        Strefa gier i symulacji! Wypróbuj zaawansowany symulator lotu dronem 3D (Aero-X Quad Sim) z fizyką wektorową i kamerami FPV.
+                    </p>
+                </div>
+                <div class="card-action">
+                    <span>Otwórz Gry</span>
                     <span>→</span>
                 </div>
             </a>
