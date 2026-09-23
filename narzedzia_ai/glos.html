@@ -27,29 +27,39 @@
             <h2>🎙️ Synteza mowy (Lektor AI)</h2>
             <p>Wpisz dowolny tekst w języku polskim i posłuchaj, jak odczytuje go wbudowany lektor przeglądarki.</p>
             <p style="font-size: 0.88rem; color: #94a3b8;">
-                💡 <em>Wskazówka: Aktywny bufor audio i pauza wybudzająca zapobiegają ucinaniu pierwszych słów przez kartę dźwiękową i słuchawki.</em>
+                💡 <em>Wskazówka: Możesz wpisać dowolny prefiks testowy (np. „A ”, „A jak ty to ”, „... ”), który zostanie automatycznie dołączony przed każdym czytanym zdaniem.</em>
             </p>
         </div>
 
         <textarea id="input"
             placeholder="Wpisz tutaj tekst do przeczytania przez lektora...">Cześć! Jestem Twoim asystentem głosowym. Jak mogę Ci dzisiaj pomóc w nauce?</textarea>
 
-        <!-- Pasek wyboru głosu i parametrów -->
-        <div style="display: flex; gap: 16px; flex-wrap: wrap; background: rgba(15, 23, 42, 0.6); padding: 12px 16px; border-radius: 12px; border: 1px solid rgba(56, 189, 248, 0.2);">
-            <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
-                <label style="display: flex; align-items: center; gap: 6px; font-size: 0.92rem; cursor: pointer;">
-                    <input type="radio" name="voice-gender" id="voice-male" value="male" onchange="onVoiceSelectionChange()"> 👨 Męski (np. Adam)
-                </label>
-                <label style="display: flex; align-items: center; gap: 6px; font-size: 0.92rem; cursor: pointer;">
-                    <input type="radio" name="voice-gender" id="voice-female" value="female" checked onchange="onVoiceSelectionChange()"> 👩 Żeński (np. Paulina)
-                </label>
+        <!-- Pasek wyboru głosu, prefiksu testowego i parametrów -->
+        <div style="display: flex; flex-direction: column; gap: 12px; background: rgba(15, 23, 42, 0.6); padding: 14px 16px; border-radius: 12px; border: 1px solid rgba(56, 189, 248, 0.2);">
+            <div style="display: flex; gap: 16px; align-items: center; flex-wrap: wrap;">
+                <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                    <label style="display: flex; align-items: center; gap: 6px; font-size: 0.92rem; cursor: pointer;">
+                        <input type="radio" name="voice-gender" id="voice-male" value="male" onchange="onVoiceSelectionChange()"> 👨 Męski (np. Adam)
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 6px; font-size: 0.92rem; cursor: pointer;">
+                        <input type="radio" name="voice-gender" id="voice-female" value="female" checked onchange="onVoiceSelectionChange()"> 👩 Żeński (np. Paulina)
+                    </label>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 8px; font-size: 0.88rem; color: #cbd5e1;">
+                    <label for="voice-select">Głos PL:</label>
+                    <select id="voice-select" onchange="onVoiceDropdownChange()" style="background: #0b1120; color: #f8fafc; border: 1px solid #475569; border-radius: 8px; padding: 4px 8px; font-size: 0.88rem;">
+                        <option value="">Wyszukiwanie głosów...</option>
+                    </select>
+                </div>
             </div>
 
-            <div style="display: flex; align-items: center; gap: 8px; font-size: 0.88rem; color: #cbd5e1;">
-                <label for="voice-select">Wszystkie głosy PL:</label>
-                <select id="voice-select" onchange="onVoiceDropdownChange()" style="background: #0b1120; color: #f8fafc; border: 1px solid #475569; border-radius: 8px; padding: 4px 8px; font-size: 0.88rem;">
-                    <option value="">Wyszukiwanie głosów...</option>
-                </select>
+            <!-- Pole testowe PREFIKSU przed każdym zdaniem -->
+            <div style="display: flex; align-items: center; gap: 8px; font-size: 0.88rem; color: #cbd5e1; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 10px; flex-wrap: wrap;">
+                <label for="prefix-input" style="font-weight: 600; color: #38bdf8;">🧪 Prefiks przed każdym zdaniem:</label>
+                <input type="text" id="prefix-input" placeholder="np. A lub A jak ty to lub ... (lub puste)" value="A " style="flex: 1; min-width: 180px; background: #0b1120; color: #f8fafc; border: 1.5px solid #38bdf8; border-radius: 8px; padding: 6px 10px; font-size: 0.9rem;">
+                <button type="button" onclick="document.getElementById('prefix-input').value='A '" style="padding: 5px 10px; font-size: 0.8rem; background: #1e293b; border: 1px solid #475569; border-radius: 6px; cursor: pointer;">Ustaw „A ”</button>
+                <button type="button" onclick="document.getElementById('prefix-input').value=''" style="padding: 5px 10px; font-size: 0.8rem; background: #334155; border: 1px solid #475569; border-radius: 6px; cursor: pointer;">Wyczyść</button>
             </div>
         </div>
 
@@ -217,7 +227,7 @@
                 .filter(s => s.length > 0 && /[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ0-9]/.test(s));
         }
 
-        // 3. Główna funkcja czytania ze stabilizacją bufora
+        // 3. Główna funkcja czytania z prefiksem i buforem
         async function speak(message, isMale, pitch = 1.0, rate = 1.0) {
             const synth = window.speechSynthesis;
             if (!synth) {
@@ -260,7 +270,11 @@
                 }
             }
 
-            // Pauza stabilizacyjna (180ms) przed pierwszą wypowiedzią, dająca DAC czas na pełne otwarcie
+            // Pobranie prefiksu testowego z pola wejściowego
+            const prefixEl = document.getElementById('prefix-input');
+            const customPrefix = prefixEl ? prefixEl.value : '';
+
+            // Pauza stabilizacyjna (180ms) przed pierwszą wypowiedzią
             setStatus('Inicjalizacja dźwięku...', '⏳');
             await new Promise(r => setTimeout(r, 180));
             if (sessionId !== currentSpeechSession) return;
@@ -271,16 +285,21 @@
                 }
 
                 const currentSentence = sentences[i];
-                setStatus(`Czytam zdanie ${i + 1} z ${sentences.length}...`, '🔊');
+
+                // Dołączenie prefiksu przed zdaniem (jeśli został wpisany)
+                let ttsText = currentSentence;
+                if (customPrefix) {
+                    const prefixWithSpace = customPrefix.endsWith(' ') ? customPrefix : (customPrefix + ' ');
+                    ttsText = prefixWithSpace + currentSentence;
+                }
+
+                setStatus(`Czytam [${i + 1}/${sentences.length}]: "${ttsText}"`, '🔊');
 
                 await new Promise((resolve) => {
                     if (sessionId !== currentSpeechSession) {
                         return resolve();
                     }
 
-                    // Prependujemy wielokropek '... ', który generuje w silniku TTS ~200ms naturalnej ciszy
-                    // w strumieniu mowy. Chroni to pierwszą zgłoskę przed jakimkolwiek ucięciem.
-                    const ttsText = '... ' + currentSentence;
                     const utterance = new SpeechSynthesisUtterance(ttsText);
                     
                     utterance.lang = 'pl-PL';
