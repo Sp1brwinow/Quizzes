@@ -27,68 +27,312 @@
             <h2>🎙️ Synteza mowy (Lektor AI)</h2>
             <p>Wpisz dowolny tekst w języku polskim i posłuchaj, jak odczytuje go wbudowany lektor przeglądarki.</p>
             <p style="font-size: 0.88rem; color: #94a3b8;">
-                💡 <em>Wskazówka: Możesz wybrać głos męski (Adam) lub żeński (Paulina) oraz dostosować ton mowy.</em>
+                💡 <em>Wskazówka: Aktywny bufor audio i pauza wybudzająca zapobiegają ucinaniu pierwszych słów przez kartę dźwiękową i słuchawki.</em>
             </p>
         </div>
 
-        <textarea id="input" placeholder="Wpisz tutaj tekst do przeczytania przez lektora...">Cześć! Jestem Twoim asystentem głosowym. Jak mogę Ci dzisiaj pomóc w nauce?</textarea>
+        <textarea id="input"
+            placeholder="Wpisz tutaj tekst do przeczytania przez lektora...">Cześć! Jestem Twoim asystentem głosowym. Jak mogę Ci dzisiaj pomóc w nauce?</textarea>
 
-        <div class="input-controls" style="margin-top: 8px;">
-            <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                <label style="display: flex; align-items: center; gap: 6px; font-size: 0.9rem; cursor: pointer;">
-                    <input type="radio" name="voice-gender" id="voice-male" value="male" checked> 👨 Głos męski
+        <!-- Pasek wyboru głosu i parametrów -->
+        <div style="display: flex; gap: 16px; flex-wrap: wrap; background: rgba(15, 23, 42, 0.6); padding: 12px 16px; border-radius: 12px; border: 1px solid rgba(56, 189, 248, 0.2);">
+            <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                <label style="display: flex; align-items: center; gap: 6px; font-size: 0.92rem; cursor: pointer;">
+                    <input type="radio" name="voice-gender" id="voice-male" value="male" onchange="onVoiceSelectionChange()"> 👨 Męski (np. Adam)
                 </label>
-                <label style="display: flex; align-items: center; gap: 6px; font-size: 0.9rem; cursor: pointer;">
-                    <input type="radio" name="voice-gender" id="voice-female" value="female"> 👩 Głos żeński
+                <label style="display: flex; align-items: center; gap: 6px; font-size: 0.92rem; cursor: pointer;">
+                    <input type="radio" name="voice-gender" id="voice-female" value="female" checked onchange="onVoiceSelectionChange()"> 👩 Żeński (np. Paulina)
                 </label>
             </div>
-            
-            <button type="button" onclick="speakText()">🔊 Przeczytaj na głos</button>
+
+            <div style="display: flex; align-items: center; gap: 8px; font-size: 0.88rem; color: #cbd5e1;">
+                <label for="voice-select">Wszystkie głosy PL:</label>
+                <select id="voice-select" onchange="onVoiceDropdownChange()" style="background: #0b1120; color: #f8fafc; border: 1px solid #475569; border-radius: 8px; padding: 4px 8px; font-size: 0.88rem;">
+                    <option value="">Wyszukiwanie głosów...</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="input-controls" style="margin-top: 4px;">
+            <div id="status-display" style="font-size: 0.88rem; color: #38bdf8; display: flex; align-items: center; gap: 6px;">
+                <span id="status-indicator">⚪</span> <span id="status-text">Gotowy</span>
+            </div>
+
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button type="button" id="btn-speak" onclick="speakText()">🔊 Przeczytaj na głos</button>
+                <button type="button" id="btn-stop" onclick="stopSpeaking()"
+                    style="background: rgba(239, 68, 68, 0.85); border: 1px solid #ef4444;">⏹️ Zatrzymaj</button>
+            </div>
         </div>
     </div>
 
     <script>
-        async function speak(message, isMale, pitch, rate) {
-            return new Promise((resolve, reject) => {
+        let currentSpeechSession = 0;
+        let audioCtx = null;
+        let keepaliveOsc = null;
+        let keepaliveGain = null;
+        let cachedVoices = [];
+
+        // 1. Aktywny bufor audio (DAC Keep-Alive)
+        // Zapobiega usypianiu wzmacniacza karty dźwiękowej i słuchawek Bluetooth
+        function startAudioKeepAlive() {
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+                if (!audioCtx) {
+                    audioCtx = new AudioCtx();
+                }
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                stopAudioKeepAlive();
+
+                // Niewykrywalny dla ucha ton o częstotliwości 50 Hz i mikro-głośności 0.001
+                keepaliveOsc = audioCtx.createOscillator();
+                keepaliveGain = audioCtx.createGain();
+                keepaliveOsc.frequency.setValueAtTime(50, audioCtx.currentTime);
+                keepaliveGain.gain.setValueAtTime(0.001, audioCtx.currentTime);
+                keepaliveOsc.connect(keepaliveGain);
+                keepaliveGain.connect(audioCtx.destination);
+                keepaliveOsc.start();
+            } catch (e) {
+                console.warn('AudioContext keep-alive notice:', e);
+            }
+        }
+
+        function stopAudioKeepAlive() {
+            if (keepaliveOsc) {
+                try {
+                    keepaliveOsc.stop();
+                    keepaliveOsc.disconnect();
+                } catch (e) {}
+                keepaliveOsc = null;
+            }
+        }
+
+        // 2. Pobieranie i inicjalizacja głosów syntezy mowy
+        function getVoicesAsync() {
+            return new Promise((resolve) => {
                 const synth = window.speechSynthesis;
-                if (!synth) {
-                    alert('Twoja przeglądarka nie obsługuje syntezy mowy.');
-                    return reject('speechSynthesis not supported');
-                }
+                if (!synth) return resolve([]);
+                let voices = synth.getVoices();
+                if (voices && voices.length > 0) return resolve(voices);
 
-                const utterance = new SpeechSynthesisUtterance(message);
-                const voices = synth.getVoices();
-                
-                const plVoices = voices.filter(v => v.lang.startsWith('pl'));
-                if (plVoices.length > 0) {
-                    if (isMale) {
-                        const maleVoice = plVoices.find(v => v.name.toLowerCase().includes('adam') || v.name.toLowerCase().includes('male')) || plVoices[0];
-                        utterance.voice = maleVoice;
-                    } else {
-                        const femaleVoice = plVoices.find(v => v.name.toLowerCase().includes('paulina') || v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('zofia') || v.name.toLowerCase().includes('agnieszka')) || plVoices[0];
-                        utterance.voice = femaleVoice;
-                    }
-                }
-
-                utterance.pitch = pitch || 1;
-                utterance.rate = rate || 1;
-                synth.cancel();
-                synth.speak(utterance);
-                utterance.onend = resolve;
-                utterance.onerror = resolve;
+                const onVoices = () => {
+                    voices = synth.getVoices();
+                    resolve(voices || []);
+                };
+                synth.addEventListener('voiceschanged', onVoices, { once: true });
+                setTimeout(() => resolve(synth.getVoices() || []), 400);
             });
+        }
+
+        async function initVoicesList() {
+            cachedVoices = await getVoicesAsync();
+            const select = document.getElementById('voice-select');
+            select.innerHTML = '';
+
+            const plVoices = cachedVoices.filter(v => v.lang && (v.lang.startsWith('pl') || v.lang.includes('PL')));
+
+            if (plVoices.length === 0) {
+                const opt = document.createElement('option');
+                opt.value = '';
+                opt.textContent = 'Domyślny głos systemowy';
+                select.appendChild(opt);
+                return;
+            }
+
+            plVoices.forEach((voice, index) => {
+                const opt = document.createElement('option');
+                opt.value = voice.name;
+                opt.textContent = `${voice.name} (${voice.lang})`;
+                if (voice.name.toLowerCase().includes('paulina') || index === 0) {
+                    opt.selected = true;
+                }
+                select.appendChild(opt);
+            });
+        }
+
+        function onVoiceSelectionChange() {
+            const isMale = document.getElementById('voice-male').checked;
+            const select = document.getElementById('voice-select');
+            const plVoices = cachedVoices.filter(v => v.lang && (v.lang.startsWith('pl') || v.lang.includes('PL')));
+
+            let match = null;
+            if (isMale) {
+                match = plVoices.find(v => /adam|male|jan|marek|mateusz/i.test(v.name));
+            } else {
+                match = plVoices.find(v => /paulina|female|zofia|agnieszka|maja|ewa|aleksandra/i.test(v.name));
+            }
+
+            if (match && select) {
+                select.value = match.name;
+            }
+        }
+
+        function onVoiceDropdownChange() {
+            const select = document.getElementById('voice-select');
+            const selectedName = select.value.toLowerCase();
+            const isMale = /adam|male|jan|marek|mateusz/i.test(selectedName);
+            document.getElementById('voice-male').checked = isMale;
+            document.getElementById('voice-female').checked = !isMale;
+        }
+
+        function setStatus(text, icon = '🔊') {
+            const statusIndicator = document.getElementById('status-indicator');
+            const statusText = document.getElementById('status-text');
+            if (statusIndicator) statusIndicator.textContent = icon;
+            if (statusText) statusText.textContent = text;
+        }
+
+        function stopSpeaking() {
+            currentSpeechSession++;
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            }
+            stopAudioKeepAlive();
+            setStatus('Zatrzymano', '⏹️');
+        }
+
+        function splitIntoSentences(text) {
+            if (!text) return [];
+
+            if (typeof Intl !== 'undefined' && Intl.Segmenter) {
+                try {
+                    const segmenter = new Intl.Segmenter('pl', { granularity: 'sentence' });
+                    const segments = Array.from(segmenter.segment(text));
+                    const sentences = segments
+                        .map(s => s.segment.trim())
+                        .filter(s => s.length > 0 && /[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ0-9]/.test(s));
+                    if (sentences.length > 0) return sentences;
+                } catch (e) {
+                    // Fallback
+                }
+            }
+
+            const matches = text.match(/[^.!?\r\n]+(?:[.!?]+|$)/g);
+            if (!matches) return [text.trim()].filter(Boolean);
+            return matches
+                .map(s => s.trim())
+                .filter(s => s.length > 0 && /[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ0-9]/.test(s));
+        }
+
+        // 3. Główna funkcja czytania ze stabilizacją bufora
+        async function speak(message, isMale, pitch = 1.0, rate = 1.0) {
+            const synth = window.speechSynthesis;
+            if (!synth) {
+                alert('Twoja przeglądarka nie obsługuje syntezy mowy.');
+                return;
+            }
+
+            // Uruchomienie ciągłego bufora audio w celu wybudzenia karty dźwiękowej
+            startAudioKeepAlive();
+            synth.cancel();
+            if (synth.paused) {
+                synth.resume();
+            }
+
+            const sessionId = ++currentSpeechSession;
+
+            // Upewnij się, że głosy są załadowane
+            if (cachedVoices.length === 0) {
+                cachedVoices = await getVoicesAsync();
+            }
+
+            const sentences = splitIntoSentences(message);
+            if (sentences.length === 0) {
+                stopAudioKeepAlive();
+                setStatus('Brak tekstu', '⚠️');
+                return;
+            }
+
+            // Wybór głosu
+            const select = document.getElementById('voice-select');
+            const selectedVoiceName = select ? select.value : '';
+            const plVoices = cachedVoices.filter(v => v.lang && (v.lang.startsWith('pl') || v.lang.includes('PL')));
+            
+            let chosenVoice = cachedVoices.find(v => v.name === selectedVoiceName);
+            if (!chosenVoice && plVoices.length > 0) {
+                if (isMale) {
+                    chosenVoice = plVoices.find(v => /adam|male|jan|marek|mateusz/i.test(v.name)) || plVoices[0];
+                } else {
+                    chosenVoice = plVoices.find(v => /paulina|female|zofia|agnieszka|maja|ewa/i.test(v.name)) || plVoices[0];
+                }
+            }
+
+            // Pauza stabilizacyjna (180ms) przed pierwszą wypowiedzią, dająca DAC czas na pełne otwarcie
+            setStatus('Inicjalizacja dźwięku...', '⏳');
+            await new Promise(r => setTimeout(r, 180));
+            if (sessionId !== currentSpeechSession) return;
+
+            for (let i = 0; i < sentences.length; i++) {
+                if (sessionId !== currentSpeechSession) {
+                    break;
+                }
+
+                const currentSentence = sentences[i];
+                setStatus(`Czytam zdanie ${i + 1} z ${sentences.length}...`, '🔊');
+
+                await new Promise((resolve) => {
+                    if (sessionId !== currentSpeechSession) {
+                        return resolve();
+                    }
+
+                    // Prependujemy wielokropek '... ', który generuje w silniku TTS ~200ms naturalnej ciszy
+                    // w strumieniu mowy. Chroni to pierwszą zgłoskę przed jakimkolwiek ucięciem.
+                    const ttsText = '... ' + currentSentence;
+                    const utterance = new SpeechSynthesisUtterance(ttsText);
+                    
+                    utterance.lang = 'pl-PL';
+                    if (chosenVoice) {
+                        utterance.voice = chosenVoice;
+                    }
+
+                    utterance.pitch = pitch || 1;
+                    utterance.rate = rate || 1;
+
+                    utterance.onend = () => resolve();
+                    utterance.onerror = (e) => {
+                        console.warn('Błąd SpeechSynthesis:', e);
+                        resolve();
+                    };
+
+                    if (synth.paused) {
+                        synth.resume();
+                    }
+                    synth.speak(utterance);
+                });
+
+                if (i < sentences.length - 1 && sessionId === currentSpeechSession) {
+                    // Naturalna pauza między zdaniami
+                    await new Promise(r => setTimeout(r, 140));
+                }
+            }
+
+            if (sessionId === currentSpeechSession) {
+                setStatus('Zakończono czytanie', '✅');
+                stopAudioKeepAlive();
+            }
         }
 
         async function speakText() {
             const text = document.getElementById('input').value.trim();
-            if (!text) return;
+            if (!text) {
+                setStatus('Wpisz tekst do przeczytania', '⚠️');
+                return;
+            }
             const isMale = document.getElementById('voice-male').checked;
             await speak(text, isMale, 1.0, 1.0).catch(console.error);
         }
 
+        // Inicjalizacja przy ładowaniu
+        window.addEventListener('DOMContentLoaded', () => {
+            initVoicesList();
+        });
+
         if ('speechSynthesis' in window) {
             window.speechSynthesis.onvoiceschanged = () => {
-                window.speechSynthesis.getVoices();
+                initVoicesList();
             };
         }
     </script>
