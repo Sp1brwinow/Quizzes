@@ -2450,13 +2450,15 @@
 
                     // Lista preferencji
                     const order = [
-                        'gemini-2.0-flash',
+                        'gemini-3.8-flash',
+                        'gemini-3.7-flash',
+                        'gemini-3.6-flash',
+                        'gemini-3.5-flash',
+                        'gemini-3.5-flash-lite',
+                        'gemini-3.1-pro-preview',
+                        'gemini-3-flash-preview',
                         'gemini-2.5-flash',
-                        'gemini-2.0-flash-lite',
-                        'gemini-1.5-flash',
-                        'gemini-1.5-flash-latest',
-                        'gemini-2.5-pro',
-                        'gemini-1.5-pro'
+                        'gemini-2.5-pro'
                     ];
 
                     for (let opt of order) {
@@ -2464,12 +2466,12 @@
                     }
 
                     const anyFlash = available.find(m => m.includes('flash') && !m.includes('image') && !m.includes('audio'));
-                    return anyFlash || available[0] || 'gemini-2.0-flash';
+                    return anyFlash || available[0] || 'gemini-3.8-flash';
                 }
             } catch (e) {
                 console.warn('Nie udało się pobrać listy modeli:', e);
             }
-            return (preferredModel && preferredModel !== 'auto') ? preferredModel : 'gemini-2.0-flash';
+            return (preferredModel && preferredModel !== 'auto') ? preferredModel : 'gemini-3.8-flash';
         }
 
         // Integracja z Google Gemini API (Punkt 2)
