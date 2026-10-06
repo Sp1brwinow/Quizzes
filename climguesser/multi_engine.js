@@ -64,11 +64,12 @@
             this.roomData = null;
             this.lastLoadedRound = 0;
 
-            // Timery
+            // Timery i synchronizacja czasu serwera
             this.timerInterval = null;
             this.timeLeft = this.defaultRoundTime;
             this.revealTimerInterval = null;
             this.currentRevealRound = null;
+            this.serverTimeOffset = 0;
 
             this.initFirebase();
         }
@@ -86,12 +87,34 @@
                         this.fbApp = firebase.app();
                     }
                     this.fbDb = firebase.database();
+
+                    // Synchronizacja przesunięcia zegara z serwerem Firebase
+                    this.fbDb.ref('.info/serverTimeOffset').on('value', (snap) => {
+                        this.serverTimeOffset = snap.val() || 0;
+                    });
                 } else {
                     console.warn("MultiEngine: SDK Firebase nie jest załadowane w oknie przeglądarki.");
                 }
             } catch (err) {
                 console.warn("MultiEngine: Błąd inicjalizacji Firebase:", err);
             }
+        }
+
+        // Pobranie zsynchronizowanego czasu serwerowego (ms)
+        getServerTime() {
+            return Date.now() + this.serverTimeOffset;
+        }
+
+        // Bezpieczne obliczenie pozostałego czasu rundy
+        getRemainingRoundTime(roundDurationSec = this.defaultRoundTime) {
+            if (!this.roomData || !this.roomData.roundStartTime) {
+                return roundDurationSec;
+            }
+            const serverNow = this.getServerTime();
+            const elapsedSec = Math.floor((serverNow - this.roomData.roundStartTime) / 1000);
+            if (elapsedSec <= 0) return roundDurationSec;
+            if (elapsedSec >= roundDurationSec) return 1;
+            return Math.max(1, roundDurationSec - elapsedSec);
         }
 
         // =========================================================================
@@ -523,6 +546,10 @@
         }
 
         startRevealTimer(durationSec = 10, roundNum = null, onTick = null, onComplete = null) {
+            if (this.revealTimerInterval && this.currentRevealRound === roundNum) {
+                // Odliczanie dla tej rundy już trwa – nie resetujemy licznika
+                return;
+            }
             this.stopRevealTimer();
             this.currentRevealRound = roundNum;
             let secLeft = durationSec;

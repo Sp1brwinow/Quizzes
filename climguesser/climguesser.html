@@ -2095,6 +2095,9 @@
         }
 
         function clearAllMapMarkers() {
+            if (map) {
+                map.closePopup();
+            }
             if (guessMarker) { map.removeLayer(guessMarker); guessMarker = null; }
             if (targetMarker) { map.removeLayer(targetMarker); targetMarker = null; }
             if (connectionLine) { map.removeLayer(connectionLine); connectionLine = null; }
@@ -2107,6 +2110,8 @@
         // =========================================================================
         // TRYB WIELOOSOBOWY (MULTIPLAYER VIA MultiEngine)
         // =========================================================================
+        let lastLoadedMpRound = 0;
+
         function initMultiplayerEngine() {
             multi = new MultiEngine({
                 storagePrefix: 'climguesser',
@@ -2152,7 +2157,8 @@
                         renderMpLobby(roomData, playersList, isHost);
                     },
                     onStatusPlaying: (roomData, playersList, currentRoundNum, isNewRound) => {
-                        if (isNewRound) {
+                        if (isNewRound || lastLoadedMpRound !== currentRoundNum) {
+                            lastLoadedMpRound = currentRoundNum;
                             startMultiplayerRound(currentRoundNum);
                         }
                         renderLiveHud(playersList, currentRoundNum);
@@ -2277,10 +2283,15 @@
             if (!multi || !multi.roomData) return;
             const roomData = multi.roomData;
             currentRound = rNum;
+            lastLoadedMpRound = rNum;
             isRoundFinished = false;
             userGuessLatLng = null;
 
             clearAllMapMarkers();
+            if (map) {
+                map.closePopup();
+                map.invalidateSize();
+            }
 
             const totalR = roomData.totalRounds || TOTAL_ROUNDS;
             const roundDuration = roomData.roundTime || 30;
@@ -2306,14 +2317,21 @@
                 : 0;
             secretLocation = LAND_WEATHER_STATIONS[placeIndex] || LAND_WEATHER_STATIONS[0];
 
-            fetchAndRenderMeteogram(secretLocation);
+            try {
+                fetchAndRenderMeteogram(secretLocation);
+            } catch (e) {
+                console.error("Meteogram render error:", e);
+            }
             map.setView([20, 0], 2);
 
-            // Synchronizacja timera z serwerem
+            // Bezpieczna synchronizacja timera z serwerem
             let remainingSec = roundDuration;
-            if (roomData.roundStartTime) {
-                const elapsedSec = Math.floor((Date.now() - roomData.roundStartTime) / 1000);
-                remainingSec = Math.max(1, roundDuration - elapsedSec);
+            if (multi && typeof multi.getRemainingRoundTime === 'function') {
+                remainingSec = multi.getRemainingRoundTime(roundDuration);
+            }
+            // Zabezpieczenie przed przedwczesnym zablokowaniem rundy
+            if (remainingSec < 5) {
+                remainingSec = roundDuration;
             }
             multi.startTimer(remainingSec);
         }
@@ -2685,6 +2703,7 @@
             showToast("👋 Powrót do trybu jednoosobowego.");
             totalNegativeKm = 0;
             roundsHistory = [];
+            lastLoadedMpRound = 0;
             document.getElementById('stat-total-score').innerText = `0 tys. km`;
             startRound(1);
         }
