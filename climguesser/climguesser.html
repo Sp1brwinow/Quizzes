@@ -22,6 +22,13 @@
     <!-- Chart.js dla wykresu klimatogramu -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+    <!-- Firebase App & Realtime Database SDK (Compat) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+
+    <!-- MultiEngine Core -->
+    <script src="multi_engine.js"></script>
+
     <style>
         :root {
             --bg-dark: #07152b;
@@ -210,6 +217,95 @@
             box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
         }
 
+        /* Przyciski Multiplayer */
+        .btn-multiplayer {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+            border: 1px solid rgba(236, 72, 153, 0.5);
+            color: #ffffff;
+            font-size: 0.88rem;
+            font-weight: 700;
+            padding: 8px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+            transition: all 0.25s ease;
+        }
+
+        .btn-multiplayer:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(236, 72, 153, 0.6);
+            filter: brightness(1.1);
+        }
+
+        .btn-mp-leave {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.5);
+            color: #fca5a5;
+            font-size: 0.82rem;
+            font-weight: 700;
+            padding: 6px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-mp-leave:hover {
+            background: rgba(239, 68, 68, 0.35);
+            color: #ffffff;
+        }
+
+        /* Licznik czasu gry w trybie MP */
+        .timer-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-family: monospace;
+            font-size: 0.95rem;
+            color: #cbd5e1;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .timer-badge b {
+            color: #38bdf8;
+            font-size: 1.15rem;
+            letter-spacing: 1px;
+        }
+
+        .timer-badge.warning {
+            border-color: #fbbf24;
+            background: rgba(251, 191, 36, 0.12);
+        }
+
+        .timer-badge.warning b {
+            color: #fbbf24;
+        }
+
+        .timer-badge.critical {
+            border-color: #ef4444;
+            background: rgba(239, 68, 68, 0.2);
+            animation: pulseCritical 0.8s infinite;
+        }
+
+        .timer-badge.critical b {
+            color: #ef4444;
+        }
+
+        @keyframes pulseCritical {
+            0%, 100% { box-shadow: 0 0 5px rgba(239, 68, 68, 0.3); }
+            50% { box-shadow: 0 0 18px rgba(239, 68, 68, 0.8); }
+        }
+
         /* Układ dwukolumnowy: Lewo = Mapa + Wyniki, Prawo = Klimatogram + Analiza */
         .game-layout {
             display: grid;
@@ -266,6 +362,49 @@
             font-family: monospace;
             color: #38bdf8;
             font-weight: bold;
+        }
+
+        /* In-Game HUD Tracker */
+        .mp-live-hud {
+            margin-top: 4px;
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(139, 92, 246, 0.35);
+            border-radius: 12px;
+            padding: 8px 14px;
+        }
+
+        .mp-hud-title {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: #cbd5e1;
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .mp-hud-pills {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .mp-hud-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            background: rgba(2, 6, 23, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #cbd5e1;
+        }
+
+        .mp-hud-pill.submitted {
+            border-color: #10b981;
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
         }
 
         /* Prawa kolumna: Karta Klimatogramu i Analizy */
@@ -337,46 +476,6 @@
             font-size: 0.9rem;
         }
 
-        /* Karta Analizy Klimatu Klikniętego Punktu */
-        .analysis-box {
-            background: rgba(15, 23, 42, 0.85);
-            border: 1px solid rgba(52, 211, 153, 0.3);
-            border-radius: 14px;
-            padding: 14px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .analysis-header {
-            font-weight: 700;
-            font-size: 0.95rem;
-            color: #34d399;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .analysis-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.86rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            padding-bottom: 6px;
-        }
-
-        .analysis-row:last-child {
-            border-bottom: none;
-            padding-bottom: 0;
-        }
-
-        .analysis-val {
-            font-family: monospace;
-            font-weight: bold;
-            color: #38bdf8;
-        }
-
         /* Wynik Rundy */
         .result-summary-box {
             background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%);
@@ -420,6 +519,119 @@
             border-radius: 999px;
             font-family: monospace;
             font-size: 1.05rem;
+        }
+
+        /* Tabela wyników rundy w trybie MP */
+        .mp-round-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            margin-top: 6px;
+        }
+
+        .mp-round-table th, .mp-round-table td {
+            padding: 6px 8px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .mp-round-table th {
+            color: #94a3b8;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+        }
+
+        /* Marker gracza na mapie Leaflet */
+        .mp-player-pin {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transform: translate(-50%, -100%);
+            pointer-events: auto;
+        }
+
+        .mp-pin-badge {
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: #ffffff;
+            white-space: nowrap;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            margin-bottom: 2px;
+        }
+
+        .mp-pin-icon {
+            font-size: 1.5rem;
+            line-height: 1;
+            filter: drop-shadow(0 2px 6px rgba(0,0,0,0.8));
+        }
+
+        /* Podium w oknie finałowym */
+        .mp-podium-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 12px;
+            margin: 18px 0 24px 0;
+            padding: 10px;
+        }
+
+        .mp-podium-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            border-radius: 12px 12px 6px 6px;
+            padding: 12px 8px 8px 8px;
+            min-width: 90px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .mp-podium-step.gold {
+            background: linear-gradient(180deg, rgba(251, 191, 36, 0.3) 0%, rgba(217, 119, 6, 0.15) 100%);
+            border: 2px solid #fbbf24;
+            height: 140px;
+            order: 2;
+        }
+
+        .mp-podium-step.silver {
+            background: linear-gradient(180deg, rgba(203, 213, 225, 0.25) 0%, rgba(148, 163, 184, 0.1) 100%);
+            border: 2px solid #cbd5e1;
+            height: 115px;
+            order: 1;
+        }
+
+        .mp-podium-step.bronze {
+            background: linear-gradient(180deg, rgba(249, 115, 22, 0.25) 0%, rgba(194, 65, 12, 0.1) 100%);
+            border: 2px solid #f97316;
+            height: 95px;
+            order: 3;
+        }
+
+        .mp-podium-medal {
+            font-size: 1.8rem;
+            margin-bottom: 2px;
+        }
+
+        .mp-podium-name {
+            font-weight: 800;
+            font-size: 0.88rem;
+            color: #ffffff;
+            max-width: 80px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .mp-podium-score {
+            font-family: monospace;
+            font-size: 0.78rem;
+            color: #f87171;
+            font-weight: 700;
+            margin-top: 4px;
         }
 
         /* Przyciski Akcji */
@@ -593,6 +805,276 @@
             color: #38bdf8;
         }
 
+        /* Modal Trybu Wieloosobowego */
+        .mp-modal-card {
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.98) 0%, rgba(10, 18, 36, 0.99) 100%);
+            border: 1px solid rgba(139, 92, 246, 0.4);
+            border-radius: 20px;
+            padding: 24px;
+            width: 100%;
+            max-width: 580px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(139, 92, 246, 0.25);
+            animation: modalFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .mp-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 18px;
+        }
+
+        .zoom-close-btn {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid #ef4444;
+            color: #f87171;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .zoom-close-btn:hover {
+            background: #ef4444;
+            color: #ffffff;
+            transform: scale(1.05);
+        }
+
+        .mp-tab-group {
+            display: flex;
+            background: rgba(2, 6, 23, 0.6);
+            padding: 4px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            margin-bottom: 20px;
+            gap: 4px;
+        }
+
+        .mp-tab-btn {
+            flex: 1;
+            padding: 10px;
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            font-weight: 700;
+            font-size: 0.9rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .mp-tab-btn.active {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .mp-form-group {
+            margin-bottom: 16px;
+        }
+
+        .mp-form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #cbd5e1;
+            margin-bottom: 6px;
+        }
+
+        .mp-form-group input, .mp-form-group select {
+            width: 100%;
+            padding: 11px 14px;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 10px;
+            color: #ffffff;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .mp-form-group input:focus, .mp-form-group select:focus {
+            border-color: #8b5cf6;
+            box-shadow: 0 0 10px rgba(139, 92, 246, 0.4);
+            background: rgba(15, 23, 42, 0.95);
+        }
+
+        .mp-btn-action {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+            border: none;
+            border-radius: 12px;
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+            transition: all 0.2s ease;
+            margin-top: 10px;
+        }
+
+        .mp-btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.6);
+            filter: brightness(1.1);
+        }
+
+        /* Widok Poczekalni Lobby */
+        .mp-room-code-banner {
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px dashed rgba(139, 92, 246, 0.6);
+            border-radius: 14px;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+        }
+
+        .mp-code-label {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            font-weight: 700;
+        }
+
+        .mp-code-val {
+            font-size: 1.8rem;
+            font-family: monospace;
+            font-weight: 900;
+            color: #38bdf8;
+            letter-spacing: 4px;
+        }
+
+        .mp-btn-copy {
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            color: #38bdf8;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .mp-btn-copy:hover {
+            background: rgba(56, 189, 248, 0.3);
+            color: #ffffff;
+        }
+
+        .mp-players-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .mp-player-card {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 10px 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s ease;
+        }
+
+        .mp-player-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            box-shadow: 0 0 8px currentColor;
+        }
+
+        .mp-player-info {
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .mp-player-name {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: #f8fafc;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .mp-player-badge {
+            font-size: 0.72rem;
+            color: #94a3b8;
+            font-weight: 600;
+        }
+
+        .mp-lobby-footer {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 16px;
+        }
+
+        .mp-btn-secondary {
+            padding: 10px 16px;
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #fca5a5;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .mp-btn-secondary:hover {
+            background: rgba(239, 68, 68, 0.3);
+            color: #ffffff;
+        }
+
+        .mp-btn-start {
+            flex: 1;
+            padding: 12px 18px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border: none;
+            color: #ffffff;
+            border-radius: 10px;
+            font-weight: 800;
+            font-size: 0.95rem;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+            transition: all 0.2s ease;
+        }
+
+        .mp-btn-start:disabled {
+            background: rgba(51, 65, 85, 0.6);
+            color: #94a3b8;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .mp-btn-start:not(:disabled):hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.6);
+        }
+
         .custom-guess-icon, .custom-target-icon {
             display: flex;
             align-items: center;
@@ -648,8 +1130,16 @@
             </div>
 
             <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                <!-- Przycisk Multiplayer -->
+                <button type="button" class="btn-multiplayer" id="btn-open-mp" onclick="openMultiplayerModal()">
+                    👥 Graj ze znajomymi (Multiplayer)
+                </button>
+                <button type="button" class="btn-mp-leave" id="btn-leave-mp" style="display:none;" onclick="leaveMultiplayerRoom()">
+                    🚪 Opuść pokój (<b id="mp-room-code-tag">----</b>)
+                </button>
+
                 <!-- Wybór trybu (Łatwy / Pełny) -->
-                <div class="mode-toggle-group">
+                <div class="mode-toggle-group" id="mode-toggle-group">
                     <span class="mode-label">Tryb:</span>
                     <button type="button" class="mode-toggle-btn active" id="btn-mode-easy" onclick="setGameDifficulty('easy')">
                         🌱 Łatwy (19 stacji)
@@ -663,6 +1153,12 @@
                     <span>Runda: <b id="stat-round">1 / 5</b></span>
                     <span>Łączny błąd: <b id="stat-total-score" class="negative">0 tys. km</b></span>
                 </div>
+
+                <!-- Licznik czasu gry w trybie wieloosobowym -->
+                <div class="timer-badge" id="timer-badge" style="display: none;">
+                    <span>⏱️ Czas:</span>
+                    <b id="game-timer">00:30</b>
+                </div>
             </div>
         </header>
 
@@ -675,6 +1171,17 @@
                 <div class="map-footer-bar">
                     <span id="map-hint">🖱️ <strong>Kliknij w dowolne miejsce na mapie</strong>, aby postawić swój strzał (pomarańczowa pinezka).</span>
                     <span class="coords-chip" id="hover-coords">Kursor: --° N, --° E</span>
+                </div>
+
+                <!-- Pasek Stanu Graczy na Żywo (Tryb Wieloosobowy) -->
+                <div id="mp-live-hud" class="mp-live-hud" style="display: none;">
+                    <div class="mp-hud-title">
+                        <span>👥 Status graczy w tej rundzie:</span>
+                        <span id="mp-hud-counter" style="color: #38bdf8;">(0/0 oddało strzał)</span>
+                    </div>
+                    <div class="mp-hud-pills" id="mp-hud-pills">
+                        <!-- Pigułki graczy -->
+                    </div>
                 </div>
             </div>
 
@@ -707,8 +1214,6 @@
                     </div>
                 </div>
 
-
-
                 <!-- 3. Wynik Rundy po Zatwierdzeniu -->
                 <div class="result-summary-box" id="result-box">
                     <div class="result-title">
@@ -724,6 +1229,22 @@
                     </div>
                     <div style="font-size: 0.88rem; color: #cbd5e1; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 6px;">
                         <span>Rzeczywiste miejsce:</span> <b id="res-target-name" style="color:#10b981;">--</b>
+                    </div>
+
+                    <!-- Wyniki Wieloosobowe dla Rundy -->
+                    <div id="mp-round-results" style="display:none; margin-top: 8px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 8px;">
+                        <div style="font-weight: bold; color: #38bdf8; margin-bottom: 6px; font-size: 0.95rem;">📊 Wyniki graczy w tej rundzie:</div>
+                        <table class="mp-round-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Gracz</th>
+                                    <th>Błąd</th>
+                                    <th>Punkty</th>
+                                </tr>
+                            </thead>
+                            <tbody id="mp-round-table-body"></tbody>
+                        </table>
                     </div>
                 </div>
 
@@ -744,11 +1265,18 @@
     <div class="modal-overlay" id="final-summary-modal">
         <div class="summary-card">
             <div class="summary-header">
-                <h2>🎉 Podsumowanie Gry (5 Rund)</h2>
-                <p>Oto zestawienie Twoich strzałów i odległości sferycznych od tajemniczych miejsc:</p>
+                <h2 id="summary-main-heading">🎉 Podsumowanie Gry (5 Rund)</h2>
+                <p id="summary-main-subheading">Oto zestawienie Twoich strzałów i odległości sferycznych od tajemniczych miejsc:</p>
             </div>
 
-            <table class="summary-table">
+            <!-- Podium Wieloosobowe (Widoczne tylko w trybie MP) -->
+            <div id="mp-final-podium-section" style="display: none;">
+                <div class="mp-podium-container" id="mp-podium-container">
+                    <!-- Dynamicznie generowane stopnie podium (1, 2, 3) -->
+                </div>
+            </div>
+
+            <table class="summary-table" id="solo-summary-table">
                 <thead>
                     <tr>
                         <th>Runda</th>
@@ -762,7 +1290,24 @@
                 </tbody>
             </table>
 
-            <div class="summary-total-banner">
+            <!-- Tabela Zbiorcza Wieloosobowa (Tryb MP) -->
+            <div id="mp-final-table-wrapper" style="display: none; margin-bottom: 15px;">
+                <table class="summary-table">
+                    <thead>
+                        <tr>
+                            <th>Miejsce</th>
+                            <th>Gracz</th>
+                            <th>Średni błąd</th>
+                            <th>Łączny wynik</th>
+                        </tr>
+                    </thead>
+                    <tbody id="mp-final-summary-body">
+                        <!-- Wiersze graczy MP -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="summary-total-banner" id="solo-total-banner">
                 <span>Łączny wynik (suma ujemna):</span>
                 <b id="final-total-score">-0 tys. km</b>
             </div>
@@ -771,9 +1316,132 @@
                 🏆 Mistrz Geoklimatologii!
             </div>
 
-            <button type="button" class="btn-submit" onclick="restartEntireGame()" style="margin-top: 4px;">
+            <button type="button" class="btn-submit" id="btn-restart-game" onclick="restartEntireGame()" style="margin-top: 4px;">
                 🎮 Zagraj Ponownie (Nowe 5 Rund)
             </button>
+        </div>
+    </div>
+
+    <!-- Modal Trybu Wieloosobowego (Lobby 2-6 osób) -->
+    <div class="modal-overlay" id="mp-modal">
+        <div class="mp-modal-card">
+            <div class="mp-modal-header">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 1.6rem;">👥</span>
+                    <div>
+                        <h2 style="margin: 0; font-size: 1.3rem; color: #f8fafc;">Tryb Wieloosobowy (2–6 Graczy)</h2>
+                        <p style="margin: 2px 0 0 0; font-size: 0.85rem; color: #94a3b8;">Grajcie na żywo na tych samych klimatogramach!</p>
+                    </div>
+                </div>
+                <button type="button" class="zoom-close-btn" onclick="closeMultiplayerModal()">✕</button>
+            </div>
+
+            <!-- Widok Menu (Tworzenie / Dołączanie) -->
+            <div id="mp-view-menu">
+                <div class="mp-tab-group">
+                    <button type="button" class="mp-tab-btn active" id="mp-tab-create" onclick="switchMpTab('create')">
+                        👑 Załóż Nowy Pokój
+                    </button>
+                    <button type="button" class="mp-tab-btn" id="mp-tab-join" onclick="switchMpTab('join')">
+                        🚪 Dołącz do Pokoju
+                    </button>
+                </div>
+
+                <div class="mp-form-content">
+                    <div class="mp-form-group">
+                        <label for="mp-input-nickname">Twój Nick / Imię:</label>
+                        <input type="text" id="mp-input-nickname" maxlength="16" placeholder="Wpisz swój nick..." />
+                    </div>
+
+                    <!-- Panel Zakładania Pokoju -->
+                    <div id="mp-panel-create">
+                        <div class="mp-form-group">
+                            <label for="mp-select-pool">Pula stacji meteorologicznych:</label>
+                            <select id="mp-select-pool" class="mp-select">
+                                <option value="easy">🌱 Łatwy (19 klasycznych stacji)</option>
+                                <option value="full">🌍 Pełny (79 stacji ze świata)</option>
+                            </select>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                            <div class="mp-form-group">
+                                <label for="mp-select-rounds">🎯 Liczba Rund:</label>
+                                <select id="mp-select-rounds" class="mp-select">
+                                    <option value="3">3 Rundy</option>
+                                    <option value="5" selected>5 Rund (Standard)</option>
+                                    <option value="7">7 Rund</option>
+                                    <option value="10">10 Rund</option>
+                                </select>
+                            </div>
+                            <div class="mp-form-group">
+                                <label for="mp-select-round-time">⏱️ Czas na Rundę:</label>
+                                <select id="mp-select-round-time" class="mp-select">
+                                    <option value="10">10 sekund ⚡</option>
+                                    <option value="15">15 sekund</option>
+                                    <option value="20">20 sekund</option>
+                                    <option value="30" selected>30 sekund (Standard)</option>
+                                    <option value="45">45 sekund</option>
+                                    <option value="60">60 sekund (1 min)</option>
+                                    <option value="90">90 sekund (1.5 min)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="button" class="mp-btn-action" onclick="createMultiplayerRoom()">
+                            🚀 Utwórz Pokój i Zaproś Znajomych
+                        </button>
+                    </div>
+
+                    <!-- Panel Dołączania do Pokoju -->
+                    <div id="mp-panel-join" style="display: none;">
+                        <div class="mp-form-group">
+                            <label for="mp-input-code">4-znakowy Kod Pokoju:</label>
+                            <input type="text" id="mp-input-code" maxlength="6" placeholder="np. WXYZ" style="text-transform: uppercase; font-family: monospace; font-size: 1.3rem; letter-spacing: 3px;" />
+                        </div>
+                        <button type="button" class="mp-btn-action" onclick="joinMultiplayerRoom()">
+                            🎮 Dołącz do Gry
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Widok Poczekalni (Lobby) -->
+            <div id="mp-view-lobby" style="display: none;">
+                <div class="mp-room-code-banner">
+                    <div>
+                        <div class="mp-code-label">KOD POKOJU:</div>
+                        <div class="mp-code-val" id="mp-lobby-code-display">----</div>
+                    </div>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <button type="button" class="mp-btn-copy" onclick="copyMpRoomCode()" title="Kopiuj sam 4-znakowy kod pokoju">
+                            📋 Kopiuj Kod Pokoju
+                        </button>
+                        <button type="button" class="mp-btn-copy" style="background: rgba(30, 58, 138, 0.4); border-color: rgba(96, 165, 250, 0.4);" onclick="copyMpRoomLink()" title="Kopiuj pełny link z adresem URL">
+                            🔗 Kopiuj Pełny Link
+                        </button>
+                    </div>
+                </div>
+
+                <div id="mp-lobby-settings-info" style="margin-bottom: 12px; padding: 8px 12px; background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 10px; font-size: 0.82rem; display: flex; gap: 10px; flex-wrap: wrap; justify-content: space-around; color: #7dd3fc;">
+                    <span>🎯 Rundy: <strong id="mp-lobby-rounds-display" style="color:#f8fafc;">5 rund</strong></span>
+                    <span>⏱️ Czas: <strong id="mp-lobby-time-display" style="color:#f8fafc;">30s</strong></span>
+                    <span>🌍 Pula: <strong id="mp-lobby-pool-display" style="color:#f8fafc;">Łatwy (19)</strong></span>
+                </div>
+
+                <div style="font-size: 0.9rem; color: #cbd5e1; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+                    <span>👥 Gracze w pokoju: <b id="mp-lobby-count">1 / 6</b></span>
+                    <span style="color: #94a3b8; font-size: 0.82rem;">Wymagane min. 2 osoby</span>
+                </div>
+
+                <div class="mp-players-grid" id="mp-lobby-players-list"></div>
+
+                <div class="mp-lobby-footer">
+                    <button type="button" class="mp-btn-secondary" onclick="leaveMultiplayerRoom()">
+                        🚪 Opuść Pokój
+                    </button>
+                    <button type="button" class="mp-btn-start" id="mp-btn-start-game" onclick="startMultiplayerGame()" disabled>
+                        ⏳ Oczekiwanie na graczy (min. 2)...
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -888,7 +1556,6 @@
 
         // =========================================================================
         // 19 NAJBARDZIEJ REPREZENTATYWNYCH STACJI (TRYB ŁATWY)
-        // Odniesienia (referencje) do obiektów z głównej tablicy LAND_WEATHER_STATIONS
         // =========================================================================
         const EASY_STATION_NAMES = [
             "Manaus (Amazonia, Brazylia)",
@@ -933,7 +1600,12 @@
         let connectionLine = null;
         let chartInstance = null;
 
-        // Przełączanie poziomu trudności
+        // Elementy trybu multiplayer
+        let multi = null;
+        let mpOtherMarkers = [];
+        let mpOtherLines = [];
+
+        // Przełączanie poziomu trudności w trybie Single Player
         function setGameDifficulty(mode) {
             if (gameDifficulty === mode) return;
             gameDifficulty = mode;
@@ -942,14 +1614,30 @@
             
             showToast(mode === 'easy' ? '🌱 Wybrano Tryb Łatwy (19 klasycznych stacji)' : '🌍 Wybrano Tryb Pełny (79 stacji ze świata)');
             
-            // Jeśli runda 1 trwa i nie zatwierdzono jeszcze odpowiedzi, resetujemy rundę
-            if (currentRound === 1 && !isRoundFinished) {
+            if (currentRound === 1 && !isRoundFinished && (!multi || !multi.isMultiplayer)) {
                 startRound(1);
             }
         }
 
         function getActiveStationPool() {
             return gameDifficulty === 'easy' ? EASY_WEATHER_STATIONS : LAND_WEATHER_STATIONS;
+        }
+
+        function generateStationIndices(count, difficulty) {
+            const poolIndices = [];
+            if (difficulty === 'easy') {
+                LAND_WEATHER_STATIONS.forEach((st, idx) => {
+                    if (EASY_STATION_NAMES.includes(st.name)) {
+                        poolIndices.push(idx);
+                    }
+                });
+            } else {
+                LAND_WEATHER_STATIONS.forEach((st, idx) => {
+                    poolIndices.push(idx);
+                });
+            }
+            const shuffled = poolIndices.sort(() => 0.5 - Math.random());
+            return shuffled.slice(0, count);
         }
 
         // =========================================================================
@@ -1002,11 +1690,12 @@
 
                 guessMarker.bindPopup(`<b>📍 Twój strzał:</b><br>${formatCoord(lat, 'lat')}, ${formatCoord(lng, 'lng')}`).openPopup();
 
-                // Analiza klimatu punktu
-                updateGuessAnalysis(lat, lng);
-
                 // Odblokowanie przycisku Zatwierdź
-                document.getElementById('btn-submit-guess').disabled = false;
+                const btnSubmit = document.getElementById('btn-submit-guess');
+                if (btnSubmit) {
+                    btnSubmit.disabled = false;
+                    btnSubmit.innerText = "🎯 Zatwierdź";
+                }
             });
 
             map.on('mousemove', function(e) {
@@ -1017,39 +1706,37 @@
         }
 
         // =========================================================================
-        // ROZPOCZĘCIE RUNDY
+        // ROZPOCZĘCIE RUNDY (SINGLE PLAYER)
         // =========================================================================
         function startRound(roundNum) {
             currentRound = roundNum;
             isRoundFinished = false;
             userGuessLatLng = null;
 
-            // Reset markerów na mapie
-            if (guessMarker) { map.removeLayer(guessMarker); guessMarker = null; }
-            if (targetMarker) { map.removeLayer(targetMarker); targetMarker = null; }
-            if (connectionLine) { map.removeLayer(connectionLine); connectionLine = null; }
+            clearAllMapMarkers();
 
-            // Aktualizacja nagłówka
             document.getElementById('stat-round').innerText = `${currentRound} / ${TOTAL_ROUNDS}`;
             document.getElementById('question-text').innerText = `Runda ${currentRound} / ${TOTAL_ROUNDS}: Zaznacz miejsce na mapie!`;
             document.getElementById('question-subtext').innerText = "Przeanalizuj poniższy klimatogram (temperatury i sumy opadów) i wskaż, skąd pochodzi ten klimat.";
 
-            document.getElementById('btn-submit-guess').style.display = 'flex';
-            document.getElementById('btn-submit-guess').disabled = true;
+            const btnSubmit = document.getElementById('btn-submit-guess');
+            btnSubmit.style.display = 'flex';
+            btnSubmit.disabled = true;
+            btnSubmit.innerText = "🎯 Zatwierdź";
+
             document.getElementById('btn-next').style.display = 'none';
             document.getElementById('result-box').style.display = 'none';
+            document.getElementById('mp-round-results').style.display = 'none';
             document.getElementById('map-hint').innerHTML = '🖱️ <strong>Kliknij w dowolne miejsce na mapie</strong>, aby postawić swój strzał (pomarańczowa pinezka).';
 
-            // Losowanie stacji z puli aktywnego trybu (Łatwy vs Pełny), unikając powtórek w grze
+            // Losowanie stacji z puli aktywnego trybu
             const pool = getActiveStationPool();
             const availableStations = pool.filter(st => !roundsHistory.some(h => h.targetName === st.name));
             const activePool = availableStations.length > 0 ? availableStations : pool;
             const randomIndex = Math.floor(Math.random() * activePool.length);
             secretLocation = activePool[randomIndex];
 
-            // Pobranie danych z Open-Meteo i narysowanie wykresu
             fetchAndRenderMeteogram(secretLocation);
-
             map.setView([20, 0], 2);
         }
 
@@ -1243,14 +1930,7 @@
         }
 
         // =========================================================================
-        // ANALIZA KLIMATU DLA STRZAŁU
-        // =========================================================================
-        function updateGuessAnalysis(lat, lng) {
-            // Sekcja analizy strzału została usunięta
-        }
-
-        // =========================================================================
-        // ZATWIERDZENIE ODPOWIEDZI
+        // ZATWIERDZENIE ODPOWIEDZI (STRZAŁ)
         // =========================================================================
         function submitGuess() {
             if (!userGuessLatLng || isRoundFinished) return;
@@ -1261,76 +1941,93 @@
             const gLat = userGuessLatLng.lat;
             const gLng = userGuessLatLng.lng;
 
-            // 1. Zaznaczenie celu na mapie (gwiazda ⭐)
-            const targetIcon = L.divIcon({
-                className: 'custom-target-icon',
-                html: '⭐',
-                iconSize: [36, 36],
-                iconAnchor: [18, 18]
-            });
-            targetMarker = L.marker([tLat, tLng], { icon: targetIcon }).addTo(map);
-            targetMarker.bindPopup(`<b>⭐ Rzeczywiste miejsce:</b><br><strong style="color:#10b981; font-size:1.05rem;">${secretLocation.name}</strong><br>Strefa: ${secretLocation.zone}<br>${formatCoord(tLat, 'lat')}, ${formatCoord(tLng, 'lng')}`).openPopup();
-
-            // 2. Linia łącząca
-            connectionLine = L.polyline([[gLat, gLng], [tLat, tLng]], {
-                color: '#fbbf24',
-                weight: 3,
-                dashArray: '8, 8',
-                opacity: 0.9
-            }).addTo(map);
-
-            // 3. Dopasowanie kamery
-            const bounds = L.latLngBounds([[gLat, gLng], [tLat, tLng]]);
-            map.fitBounds(bounds, { padding: [50, 50], maxZoom: 6 });
-
-            // 4. Obliczenie odległości sferycznej w km (Haversine)
             const distance = calculateHaversineDistance(gLat, gLng, tLat, tLng);
             const distKm = Math.round(distance);
-
-            // 5. Zaokrąglenie w tysiącach kilometrów jako liczba ujemna
             const roundedThousands = Math.round(distKm / 1000);
             const negativePenalty = -roundedThousands;
-            totalNegativeKm += negativePenalty;
 
-            // Zapis historii
-            roundsHistory.push({
-                round: currentRound,
-                targetName: secretLocation.name,
-                distKm: distKm,
-                negativePenalty: negativePenalty
-            });
+            if (multi && multi.isMultiplayer) {
+                // Tryb Wieloosobowy
+                multi.submitRoundScore(currentRound, {
+                    lat: gLat,
+                    lng: gLng,
+                    distKm: distKm,
+                    penalty: negativePenalty,
+                    submitted: true
+                });
 
-            // 6. Wyświetlenie wyników
-            document.getElementById('res-round-num').innerText = currentRound;
-            document.getElementById('res-distance').innerText = `${distKm.toLocaleString()} km`;
-            document.getElementById('res-points-negative').innerText = `${negativePenalty} tys. km`;
-            document.getElementById('res-target-name').innerText = secretLocation.name;
-            document.getElementById('result-box').style.display = 'flex';
-
-            document.getElementById('stat-total-score').innerText = `${totalNegativeKm} tys. km`;
-
-            // Zmiana przycisków
-            document.getElementById('btn-submit-guess').style.display = 'none';
-            const btnNext = document.getElementById('btn-next');
-            btnNext.style.display = 'flex';
-
-            if (currentRound < TOTAL_ROUNDS) {
-                btnNext.innerText = `🔄 Następna runda (${currentRound + 1} / ${TOTAL_ROUNDS})`;
+                document.getElementById('btn-submit-guess').disabled = true;
+                document.getElementById('btn-submit-guess').innerText = "⏳ Oczekiwanie na graczy...";
+                showToast(`🎯 Strzał zatwierdzony! Czekamy na pozostałych graczy...`);
             } else {
-                btnNext.innerText = `🏆 Zobacz Podsumowanie Gry (5 Rund)`;
-            }
+                // Tryb Jednoosobowy
+                totalNegativeKm += negativePenalty;
+                roundsHistory.push({
+                    round: currentRound,
+                    targetName: secretLocation.name,
+                    distKm: distKm,
+                    negativePenalty: negativePenalty
+                });
 
-            showToast(`📍 Błąd: ${distKm.toLocaleString()} km (${negativePenalty} tys. km)`);
+                // Zaznaczenie celu (⭐)
+                const targetIcon = L.divIcon({
+                    className: 'custom-target-icon',
+                    html: '⭐',
+                    iconSize: [36, 36],
+                    iconAnchor: [18, 18]
+                });
+                targetMarker = L.marker([tLat, tLng], { icon: targetIcon }).addTo(map);
+                targetMarker.bindPopup(`<b>⭐ Rzeczywiste miejsce:</b><br><strong style="color:#10b981; font-size:1.05rem;">${secretLocation.name}</strong><br>Strefa: ${secretLocation.zone}<br>${formatCoord(tLat, 'lat')}, ${formatCoord(tLng, 'lng')}`).openPopup();
+
+                // Linia łącząca
+                connectionLine = L.polyline([[gLat, gLng], [tLat, tLng]], {
+                    color: '#fbbf24',
+                    weight: 3,
+                    dashArray: '8, 8',
+                    opacity: 0.9
+                }).addTo(map);
+
+                map.fitBounds(L.latLngBounds([[gLat, gLng], [tLat, tLng]]), { padding: [50, 50], maxZoom: 6 });
+
+                // Wyświetlenie wyników
+                document.getElementById('res-round-num').innerText = currentRound;
+                document.getElementById('res-distance').innerText = `${distKm.toLocaleString()} km`;
+                document.getElementById('res-points-negative').innerText = `${negativePenalty} tys. km`;
+                document.getElementById('res-target-name').innerText = secretLocation.name;
+                document.getElementById('result-box').style.display = 'flex';
+                document.getElementById('mp-round-results').style.display = 'none';
+
+                document.getElementById('stat-total-score').innerText = `${totalNegativeKm} tys. km`;
+
+                document.getElementById('btn-submit-guess').style.display = 'none';
+                const btnNext = document.getElementById('btn-next');
+                btnNext.style.display = 'flex';
+
+                if (currentRound < TOTAL_ROUNDS) {
+                    btnNext.innerText = `🔄 Następna runda (${currentRound + 1} / ${TOTAL_ROUNDS})`;
+                } else {
+                    btnNext.innerText = `🏆 Zobacz Podsumowanie Gry (5 Rund)`;
+                }
+
+                showToast(`📍 Błąd: ${distKm.toLocaleString()} km (${negativePenalty} tys. km)`);
+            }
         }
 
         // =========================================================================
         // PRZEJŚCIE DO KOLEJNEGO KROKU
         // =========================================================================
         function handleNextStep() {
-            if (currentRound < TOTAL_ROUNDS) {
-                startRound(currentRound + 1);
+            if (multi && multi.isMultiplayer) {
+                if (multi.isHost) {
+                    multi.stopRevealTimer();
+                    multi.nextRound();
+                }
             } else {
-                showFinalSummary();
+                if (currentRound < TOTAL_ROUNDS) {
+                    startRound(currentRound + 1);
+                } else {
+                    showFinalSummary();
+                }
             }
         }
 
@@ -1351,7 +2048,6 @@
 
             document.getElementById('final-total-score').innerText = `${totalNegativeKm} tys. km`;
 
-            // Ranga na podstawie wyniku (im bliżej 0, tym lepiej)
             const absError = Math.abs(totalNegativeKm);
             let rankText = "";
             if (absError <= 3) {
@@ -1365,11 +2061,628 @@
             }
             document.getElementById('final-rank-title').innerText = rankText;
 
+            // Tryb solo UI
+            document.getElementById('summary-main-heading').innerText = "🎉 Podsumowanie Gry (5 Rund)";
+            document.getElementById('summary-main-subheading').innerText = "Oto zestawienie Twoich strzałów i odległości sferycznych od tajemniczych miejsc:";
+            document.getElementById('solo-summary-table').style.display = 'table';
+            document.getElementById('solo-total-banner').style.display = 'flex';
+            document.getElementById('final-rank-title').style.display = 'block';
+            document.getElementById('mp-final-podium-section').style.display = 'none';
+            document.getElementById('mp-final-table-wrapper').style.display = 'none';
+
+            const btnRestart = document.getElementById('btn-restart-game');
+            btnRestart.innerText = "🎮 Zagraj Ponownie (Nowe 5 Rund)";
+            btnRestart.disabled = false;
+
             document.getElementById('final-summary-modal').classList.add('active');
         }
 
         function restartEntireGame() {
+            if (multi && multi.isMultiplayer) {
+                if (!multi.isHost) return;
+                const totalR = (multi.roomData && multi.roomData.totalRounds) || TOTAL_ROUNDS;
+                const diff = (multi.roomData && multi.roomData.difficulty) || 'easy';
+                const newPlaces = generateStationIndices(totalR, diff);
+                document.getElementById('final-summary-modal').classList.remove('active');
+                multi.restartGame({ newRoundPlaces: newPlaces });
+            } else {
+                document.getElementById('final-summary-modal').classList.remove('active');
+                totalNegativeKm = 0;
+                roundsHistory = [];
+                document.getElementById('stat-total-score').innerText = `0 tys. km`;
+                startRound(1);
+            }
+        }
+
+        function clearAllMapMarkers() {
+            if (guessMarker) { map.removeLayer(guessMarker); guessMarker = null; }
+            if (targetMarker) { map.removeLayer(targetMarker); targetMarker = null; }
+            if (connectionLine) { map.removeLayer(connectionLine); connectionLine = null; }
+            mpOtherMarkers.forEach(m => map.removeLayer(m));
+            mpOtherMarkers = [];
+            mpOtherLines.forEach(l => map.removeLayer(l));
+            mpOtherLines = [];
+        }
+
+        // =========================================================================
+        // TRYB WIELOOSOBOWY (MULTIPLAYER VIA MultiEngine)
+        // =========================================================================
+        function initMultiplayerEngine() {
+            multi = new MultiEngine({
+                storagePrefix: 'climguesser',
+                maxPlayers: 6,
+                defaultRoundTime: 30,
+                callbacks: {
+                    onToast: (msg, type) => showToast(msg),
+                    onTimerTick: (secondsLeft, isCritical, isWarning) => {
+                        const timerBadge = document.getElementById('timer-badge');
+                        const timerVal = document.getElementById('game-timer');
+                        if (timerBadge && timerVal) {
+                            timerBadge.style.display = 'inline-flex';
+                            timerVal.innerText = MultiEngine.formatTime(secondsLeft);
+                            timerBadge.classList.toggle('critical', isCritical);
+                            timerBadge.classList.toggle('warning', isWarning);
+                        }
+                    },
+                    onTimerExpired: () => {
+                        handleMpTimeExpired();
+                    },
+                    onConnected: (code) => {
+                        document.getElementById('btn-open-mp').style.display = 'none';
+                        document.getElementById('btn-leave-mp').style.display = 'inline-flex';
+                        document.getElementById('mp-room-code-tag').innerText = code;
+                        document.getElementById('mp-lobby-code-display').innerText = code;
+                        document.getElementById('mode-toggle-group').style.display = 'none';
+                        try {
+                            const url = new URL(window.location.href);
+                            url.searchParams.set('room', code);
+                            window.history.replaceState({}, '', url);
+                        } catch (e) {}
+                    },
+                    onLeave: () => {
+                        resetMultiplayerUiToSingleplayer();
+                    },
+                    onHostLeft: () => {
+                        showToast("⚠️ Gospodarz opuścił grę. Rozgrywka została zakończona.");
+                    },
+                    onPlayerRemoved: () => {
+                        showToast("🚪 Zostałeś usunięty z pokoju.");
+                    },
+                    onStatusLobby: (roomData, playersList, isHost) => {
+                        renderMpLobby(roomData, playersList, isHost);
+                    },
+                    onStatusPlaying: (roomData, playersList, currentRoundNum, isNewRound) => {
+                        if (isNewRound) {
+                            startMultiplayerRound(currentRoundNum);
+                        }
+                        renderLiveHud(playersList, currentRoundNum);
+                    },
+                    onStatusReveal: (roomData, playersList, currentRoundNum) => {
+                        renderMultiplayerRoundReveal(playersList, currentRoundNum);
+                    },
+                    onStatusFinished: (roomData, playersList) => {
+                        renderMultiplayerFinalSummary(roomData, playersList);
+                    }
+                }
+            });
+
+            // Wczytanie zapisanego nicku
+            const savedNick = multi.getNickname();
+            if (savedNick) {
+                const input = document.getElementById('mp-input-nickname');
+                if (input) input.value = savedNick;
+            }
+
+            // Automatyczne dołączanie z linku ?room=CODE
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlRoom = urlParams.get('room');
+            if (urlRoom) {
+                openMultiplayerModal();
+                switchMpTab('join');
+                const codeInput = document.getElementById('mp-input-code');
+                if (codeInput) codeInput.value = urlRoom.toUpperCase();
+            }
+        }
+
+        function openMultiplayerModal() {
+            document.getElementById('mp-modal').classList.add('active');
+            const nickInput = document.getElementById('mp-input-nickname');
+            if (nickInput && !nickInput.value && multi) {
+                nickInput.value = multi.getNickname();
+            }
+        }
+
+        function closeMultiplayerModal() {
+            document.getElementById('mp-modal').classList.remove('active');
+        }
+
+        function switchMpTab(tab) {
+            const btnCreate = document.getElementById('mp-tab-create');
+            const btnJoin = document.getElementById('mp-tab-join');
+            const panelCreate = document.getElementById('mp-panel-create');
+            const panelJoin = document.getElementById('mp-panel-join');
+
+            if (tab === 'create') {
+                btnCreate.classList.add('active');
+                btnJoin.classList.remove('active');
+                panelCreate.style.display = 'block';
+                panelJoin.style.display = 'none';
+            } else {
+                btnJoin.classList.add('active');
+                btnCreate.classList.remove('active');
+                panelJoin.style.display = 'block';
+                panelCreate.style.display = 'none';
+            }
+        }
+
+        function validateNickname() {
+            const nickInput = document.getElementById('mp-input-nickname');
+            const nick = (nickInput ? nickInput.value : '').trim();
+            if (!nick) {
+                showToast("⚠️ Wpisz swój nick przed rozpoczęciem gry!");
+                if (nickInput) nickInput.focus();
+                return null;
+            }
+            if (multi) multi.setNickname(nick);
+            return nick;
+        }
+
+        async function createMultiplayerRoom() {
+            const nick = validateNickname();
+            if (!nick) return;
+
+            const roundsCount = parseInt(document.getElementById('mp-select-rounds').value, 10) || 5;
+            const roundTimeSec = parseInt(document.getElementById('mp-select-round-time').value, 10) || 30;
+            const difficulty = document.getElementById('mp-select-pool').value || 'easy';
+
+            const stationIndices = generateStationIndices(roundsCount, difficulty);
+
+            try {
+                await multi.createRoom({
+                    roundsCount: roundsCount,
+                    roundTimeSec: roundTimeSec,
+                    difficulty: difficulty,
+                    roundItems: stationIndices
+                });
+            } catch (e) {
+                console.error("Create room error:", e);
+            }
+        }
+
+        async function joinMultiplayerRoom() {
+            const nick = validateNickname();
+            if (!nick) return;
+
+            const codeInput = document.getElementById('mp-input-code');
+            const code = (codeInput ? codeInput.value : '').trim().toUpperCase();
+            if (!code || code.length < 3) {
+                showToast("⚠️ Wpisz poprawny kod pokoju!");
+                if (codeInput) codeInput.focus();
+                return;
+            }
+
+            try {
+                await multi.joinRoom(code, nick);
+            } catch (e) {
+                console.error("Join room error:", e);
+            }
+        }
+
+        function startMultiplayerGame() {
+            if (!multi || !multi.isHost) return;
+            multi.startGame(1);
+        }
+
+        function startMultiplayerRound(rNum) {
+            if (!multi || !multi.roomData) return;
+            const roomData = multi.roomData;
+            currentRound = rNum;
+            isRoundFinished = false;
+            userGuessLatLng = null;
+
+            clearAllMapMarkers();
+
+            const totalR = roomData.totalRounds || TOTAL_ROUNDS;
+            const roundDuration = roomData.roundTime || 30;
+
+            document.getElementById('mp-modal').classList.remove('active');
+            document.getElementById('stat-round').innerText = `${currentRound} / ${totalR}`;
+            document.getElementById('question-text').innerText = `Runda ${currentRound} / ${totalR}: Zaznacz miejsce na mapie!`;
+            document.getElementById('question-subtext').innerText = "Przeanalizuj poniższy klimatogram (temperatury i sumy opadów) i wskaż, skąd pochodzi ten klimat.";
+
+            const btnSubmit = document.getElementById('btn-submit-guess');
+            btnSubmit.style.display = 'flex';
+            btnSubmit.disabled = true;
+            btnSubmit.innerText = "🎯 Zatwierdź";
+
+            document.getElementById('btn-next').style.display = 'none';
+            document.getElementById('result-box').style.display = 'none';
+            document.getElementById('mp-round-results').style.display = 'none';
+            document.getElementById('mp-live-hud').style.display = 'block';
+
+            // Ładowanie stacji ze zsynchronizowanej puli roundPlaces
+            const placeIndex = (roomData.roundPlaces && roomData.roundPlaces[currentRound - 1] !== undefined)
+                ? roomData.roundPlaces[currentRound - 1]
+                : 0;
+            secretLocation = LAND_WEATHER_STATIONS[placeIndex] || LAND_WEATHER_STATIONS[0];
+
+            fetchAndRenderMeteogram(secretLocation);
+            map.setView([20, 0], 2);
+
+            // Synchronizacja timera z serwerem
+            let remainingSec = roundDuration;
+            if (roomData.roundStartTime) {
+                const elapsedSec = Math.floor((Date.now() - roomData.roundStartTime) / 1000);
+                remainingSec = Math.max(1, roundDuration - elapsedSec);
+            }
+            multi.startTimer(remainingSec);
+        }
+
+        function handleMpTimeExpired() {
+            if (!multi || !multi.isMultiplayer || isRoundFinished) return;
+            isRoundFinished = true;
+
+            if (userGuessLatLng) {
+                submitGuess();
+            } else {
+                const defaultPenalty = -12;
+                multi.submitRoundScore(currentRound, {
+                    lat: 0,
+                    lng: 0,
+                    distKm: 12000,
+                    penalty: defaultPenalty,
+                    submitted: true
+                });
+
+                document.getElementById('btn-submit-guess').disabled = true;
+                document.getElementById('btn-submit-guess').innerText = "⏱️ Czas minął!";
+                showToast("⏱️ Czas minął! Naliczono maksymalną karę.");
+            }
+        }
+
+        function renderMpLobby(roomData, playersList, isHost) {
+            document.getElementById('mp-view-menu').style.display = 'none';
+            document.getElementById('mp-view-lobby').style.display = 'block';
+            document.getElementById('mp-modal').classList.add('active');
+            document.getElementById('mp-live-hud').style.display = 'none';
+            document.getElementById('mp-lobby-count').innerText = `${playersList.length} / 6`;
+
+            const totalR = roomData.totalRounds || TOTAL_ROUNDS;
+            const rTime = roomData.roundTime || 30;
+            const poolName = (roomData.difficulty === 'full') ? '🌍 Pełny (79 stacji)' : '🌱 Łatwy (19 stacji)';
+
+            const roundsEl = document.getElementById('mp-lobby-rounds-display');
+            const timeEl = document.getElementById('mp-lobby-time-display');
+            const poolEl = document.getElementById('mp-lobby-pool-display');
+            if (roundsEl) roundsEl.innerText = `${totalR} rund`;
+            if (timeEl) timeEl.innerText = `${rTime}s`;
+            if (poolEl) poolEl.innerText = poolName;
+
+            const grid = document.getElementById('mp-lobby-players-list');
+            grid.innerHTML = '';
+            playersList.forEach(p => {
+                const color = MultiEngine.PLAYER_COLORS[p.slot] || MultiEngine.PLAYER_COLORS[0];
+                const card = document.createElement('div');
+                card.className = 'mp-player-card';
+                card.style.borderColor = (p.id === multi.myPlayerId) ? '#38bdf8' : 'rgba(255,255,255,0.1)';
+                card.innerHTML = `
+                    <div class="mp-player-dot" style="background:${color.hex}; color:${color.hex};"></div>
+                    <div class="mp-player-info">
+                        <div class="mp-player-name">${p.name} ${p.id === multi.myPlayerId ? '<b style="color:#38bdf8;">(Ty)</b>' : ''}</div>
+                        <div class="mp-player-badge">${p.isHost ? '👑 Gospodarz' : '🎮 Gracz'}</div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+
+            const btnStart = document.getElementById('mp-btn-start-game');
+            if (isHost) {
+                if (playersList.length >= 2) {
+                    btnStart.disabled = false;
+                    btnStart.innerText = `🚀 Rozpocznij grę (${playersList.length} graczy)`;
+                } else {
+                    btnStart.disabled = true;
+                    btnStart.innerText = `⏳ Oczekiwanie na graczy (min. 2)...`;
+                }
+            } else {
+                btnStart.disabled = true;
+                btnStart.innerText = `⏳ Oczekiwanie na rozpoczęcie przez Hosta...`;
+            }
+        }
+
+        function renderLiveHud(playersList, rNum) {
+            const container = document.getElementById('mp-hud-pills');
+            const counter = document.getElementById('mp-hud-counter');
+            if (!container || !counter) return;
+            container.innerHTML = '';
+
+            let submittedCount = 0;
+            playersList.forEach(p => {
+                const isSub = p.rounds && p.rounds[rNum] && p.rounds[rNum].submitted;
+                if (isSub) submittedCount++;
+
+                const color = MultiEngine.PLAYER_COLORS[p.slot] || MultiEngine.PLAYER_COLORS[0];
+                const pill = document.createElement('div');
+                pill.className = `mp-hud-pill ${isSub ? 'submitted' : ''}`;
+                pill.innerHTML = `
+                    <span style="color:${color.hex}; font-size: 0.9rem;">${color.icon}</span>
+                    <span>${p.name}</span>
+                    <span>${isSub ? '✓' : '⏳'}</span>
+                `;
+                container.appendChild(pill);
+            });
+
+            counter.innerText = `(${submittedCount}/${playersList.length} oddało strzał)`;
+        }
+
+        function renderMultiplayerRoundReveal(playersList, rNum) {
+            isRoundFinished = true;
+            if (multi) multi.stopTimer();
+            clearAllMapMarkers();
+
+            const tLat = secretLocation.lat;
+            const tLng = secretLocation.lng;
+
+            // 1. Gwiazda celu ⭐
+            const targetIcon = L.divIcon({
+                className: 'custom-target-icon',
+                html: '⭐',
+                iconSize: [36, 36],
+                iconAnchor: [18, 18]
+            });
+            targetMarker = L.marker([tLat, tLng], { icon: targetIcon }).addTo(map);
+            targetMarker.bindPopup(`<b>⭐ Rzeczywiste miejsce:</b><br><strong style="color:#10b981; font-size:1.05rem;">${secretLocation.name}</strong><br>Strefa: ${secretLocation.zone}<br>${formatCoord(tLat, 'lat')}, ${formatCoord(tLng, 'lng')}`).openPopup();
+
+            const boundsPoints = [[tLat, tLng]];
+            const roundResults = [];
+
+            // 2. Pinezki i linie każdego gracza
+            playersList.forEach(p => {
+                const rInfo = (p.rounds && p.rounds[rNum]) || { lat: 0, lng: 0, distKm: 12000, penalty: -12 };
+                const color = MultiEngine.PLAYER_COLORS[p.slot] || MultiEngine.PLAYER_COLORS[0];
+
+                if (rInfo.lat !== 0 || rInfo.lng !== 0) {
+                    boundsPoints.push([rInfo.lat, rInfo.lng]);
+
+                    const playerIcon = L.divIcon({
+                        className: 'mp-player-pin',
+                        html: `
+                            <div class="mp-pin-badge" style="background:${color.hex}; border-color:${color.border};">
+                                ${p.name} (${rInfo.distKm.toLocaleString()} km)
+                            </div>
+                            <div class="mp-pin-icon" style="color:${color.hex};">${color.pinEmoji}</div>
+                        `,
+                        iconSize: [120, 50],
+                        iconAnchor: [60, 48]
+                    });
+
+                    const pMarker = L.marker([rInfo.lat, rInfo.lng], { icon: playerIcon }).addTo(map);
+                    pMarker.bindPopup(`<b>${color.icon} ${p.name}:</b><br>Błąd: <strong>${rInfo.distKm.toLocaleString()} km</strong> (${rInfo.penalty} tys. km)`);
+                    mpOtherMarkers.push(pMarker);
+
+                    const pLine = L.polyline([[rInfo.lat, rInfo.lng], [tLat, tLng]], {
+                        color: color.hex,
+                        weight: (p.id === multi.myPlayerId) ? 3.5 : 2,
+                        dashArray: '6, 6',
+                        opacity: 0.85
+                    }).addTo(map);
+                    mpOtherLines.push(pLine);
+                }
+
+                roundResults.push({
+                    id: p.id,
+                    name: p.name,
+                    slot: p.slot,
+                    distKm: rInfo.distKm,
+                    penalty: rInfo.penalty,
+                    isMe: (p.id === multi.myPlayerId)
+                });
+            });
+
+            // Dopasowanie widoku mapy
+            if (boundsPoints.length > 1) {
+                map.fitBounds(L.latLngBounds(boundsPoints), { padding: [50, 50], maxZoom: 6 });
+            }
+
+            // Tabela wyników w sidebarze
+            roundResults.sort((a, b) => a.distKm - b.distKm);
+            const tableBody = document.getElementById('mp-round-table-body');
+            if (tableBody) {
+                tableBody.innerHTML = '';
+                roundResults.forEach((res, idx) => {
+                    const color = MultiEngine.PLAYER_COLORS[res.slot] || MultiEngine.PLAYER_COLORS[0];
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${idx === 0 ? '🥇' : (idx === 1 ? '🥈' : (idx === 2 ? '🥉' : `${idx + 1}.`))}</td>
+                        <td><strong style="color:${color.hex};">${color.icon} ${res.name}</strong> ${res.isMe ? '(Ty)' : ''}</td>
+                        <td style="font-family:monospace;">${res.distKm.toLocaleString()} km</td>
+                        <td style="color:#f87171; font-weight:bold; font-family:monospace;">${res.penalty} tys. km</td>
+                    `;
+                    tableBody.appendChild(tr);
+                });
+            }
+
+            // Wypełnienie panelu wynikowego
+            const myResult = roundResults.find(r => r.isMe) || { distKm: 0, penalty: 0 };
+            document.getElementById('res-round-num').innerText = currentRound;
+            document.getElementById('res-distance').innerText = `${myResult.distKm.toLocaleString()} km`;
+            document.getElementById('res-points-negative').innerText = `${myResult.penalty} tys. km`;
+            document.getElementById('res-target-name').innerText = secretLocation.name;
+
+            document.getElementById('result-box').style.display = 'flex';
+            document.getElementById('mp-round-results').style.display = 'block';
+
+            // Przycisk kolejnej rundy
+            document.getElementById('btn-submit-guess').style.display = 'none';
+            const btnNext = document.getElementById('btn-next');
+            btnNext.style.display = 'flex';
+
+            // Odliczanie 10s do kolejnej rundy
+            const totalR = (multi && multi.roomData && multi.roomData.totalRounds) || TOTAL_ROUNDS;
+            const isHost = multi && multi.isHost;
+
+            const onTick = (timeLeft) => {
+                if (isHost) {
+                    btnNext.disabled = false;
+                    if (currentRound < totalR) {
+                        btnNext.innerText = `🔄 Następna runda za ${timeLeft}s (lub kliknij)`;
+                    } else {
+                        btnNext.innerText = `🏆 Podium za ${timeLeft}s (lub kliknij)`;
+                    }
+                } else {
+                    btnNext.disabled = true;
+                    if (currentRound < totalR) {
+                        btnNext.innerText = `⏳ Następna runda za ${timeLeft}s...`;
+                    } else {
+                        btnNext.innerText = `⏳ Finałowe podium za ${timeLeft}s...`;
+                    }
+                }
+            };
+
+            const onComplete = () => {
+                if (isHost) {
+                    multi.nextRound();
+                }
+            };
+
+            multi.startRevealTimer(10, rNum, onTick, onComplete);
+        }
+
+        function renderMultiplayerFinalSummary(roomData, playersList) {
+            const totalR = (roomData && roomData.totalRounds) || TOTAL_ROUNDS;
+            const sorted = [...playersList].sort((a, b) => {
+                return (b.totalScore || 0) - (a.totalScore || 0);
+            });
+
+            document.getElementById('summary-main-heading').innerText = "🏆 Finałowe Wyniki i Podium";
+            document.getElementById('summary-main-subheading').innerText = `Zakończono ${totalR} rund w pokoju ${multi.roomId}!`;
+
+            document.getElementById('solo-summary-table').style.display = 'none';
+            document.getElementById('solo-total-banner').style.display = 'none';
+            document.getElementById('final-rank-title').style.display = 'none';
+            document.getElementById('mp-final-podium-section').style.display = 'block';
+            document.getElementById('mp-final-table-wrapper').style.display = 'block';
+
+            // Generowanie Podium (1, 2, 3)
+            const podiumBox = document.getElementById('mp-podium-container');
+            podiumBox.innerHTML = '';
+
+            if (sorted.length >= 2) {
+                const p2 = sorted[1];
+                const c2 = MultiEngine.PLAYER_COLORS[p2.slot] || MultiEngine.PLAYER_COLORS[1];
+                podiumBox.innerHTML += `
+                    <div class="mp-podium-step silver">
+                        <div class="mp-podium-medal">🥈</div>
+                        <div class="mp-podium-name" style="color:${c2.hex};">${p2.name}</div>
+                        <div class="mp-podium-score">${p2.totalScore || 0} tys. km</div>
+                    </div>
+                `;
+            }
+
+            if (sorted.length >= 1) {
+                const p1 = sorted[0];
+                const c1 = MultiEngine.PLAYER_COLORS[p1.slot] || MultiEngine.PLAYER_COLORS[0];
+                podiumBox.innerHTML += `
+                    <div class="mp-podium-step gold">
+                        <div class="mp-podium-medal">🥇</div>
+                        <div class="mp-podium-name" style="color:${c1.hex};">${p1.name}</div>
+                        <div class="mp-podium-score">${p1.totalScore || 0} tys. km</div>
+                    </div>
+                `;
+            }
+
+            if (sorted.length >= 3) {
+                const p3 = sorted[2];
+                const c3 = MultiEngine.PLAYER_COLORS[p3.slot] || MultiEngine.PLAYER_COLORS[2];
+                podiumBox.innerHTML += `
+                    <div class="mp-podium-step bronze">
+                        <div class="mp-podium-medal">🥉</div>
+                        <div class="mp-podium-name" style="color:${c3.hex};">${p3.name}</div>
+                        <div class="mp-podium-score">${p3.totalScore || 0} tys. km</div>
+                    </div>
+                `;
+            }
+
+            // Tabela graczy
+            const tableBody = document.getElementById('mp-final-summary-body');
+            tableBody.innerHTML = '';
+
+            sorted.forEach((p, idx) => {
+                const color = MultiEngine.PLAYER_COLORS[p.slot] || MultiEngine.PLAYER_COLORS[0];
+                let totalDist = 0;
+                for (let r = 1; r <= totalR; r++) {
+                    const rInfo = p.rounds && p.rounds[r];
+                    totalDist += (rInfo ? rInfo.distKm : 12000);
+                }
+                const avgDist = Math.round(totalDist / totalR);
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${idx === 0 ? '🥇 1.' : (idx === 1 ? '🥈 2.' : (idx === 2 ? '🥉 3.' : `${idx + 1}.`))}</strong></td>
+                    <td><strong style="color:${color.hex};">${color.icon} ${p.name}</strong> ${p.id === multi.myPlayerId ? '<b style="color:#38bdf8;">(Ty)</b>' : ''}</td>
+                    <td style="font-family:monospace;">śr. ${avgDist.toLocaleString()} km / rundę</td>
+                    <td style="color:#f87171; font-weight:bold; font-family:monospace; font-size:1.05rem;">${p.totalScore || 0} tys. km</td>
+                `;
+                tableBody.appendChild(tr);
+            });
+
+            const btnRestart = document.getElementById('btn-restart-game');
+            if (multi.isHost) {
+                btnRestart.innerText = `🔄 Zagraj Ponownie (Nowe ${totalR} Stacji)`;
+                btnRestart.disabled = false;
+            } else {
+                btnRestart.innerText = "⏳ Oczekiwanie na ponowną grę (Gospodarz)...";
+                btnRestart.disabled = true;
+            }
+
+            document.getElementById('final-summary-modal').classList.add('active');
+        }
+
+        function copyMpRoomCode() {
+            if (multi) multi.copyRoomCode();
+        }
+
+        function copyMpRoomLink() {
+            if (multi) multi.copyRoomLink();
+        }
+
+        function leaveMultiplayerRoom(removeFromDb = true) {
+            if (multi) {
+                multi.leaveRoom(removeFromDb);
+            } else {
+                resetMultiplayerUiToSingleplayer();
+            }
+        }
+
+        function resetMultiplayerUiToSingleplayer() {
+            closeMultiplayerModal();
             document.getElementById('final-summary-modal').classList.remove('active');
+            document.getElementById('btn-open-mp').style.display = 'inline-flex';
+            document.getElementById('btn-leave-mp').style.display = 'none';
+            document.getElementById('mode-toggle-group').style.display = 'inline-flex';
+            document.getElementById('timer-badge').style.display = 'none';
+            document.getElementById('mp-live-hud').style.display = 'none';
+            document.getElementById('mp-round-results').style.display = 'none';
+
+            // Reset widoków wewnątrz modala
+            document.getElementById('mp-view-menu').style.display = 'block';
+            document.getElementById('mp-view-lobby').style.display = 'none';
+            const codeInput = document.getElementById('mp-input-code');
+            if (codeInput) codeInput.value = '';
+            const lobbyCode = document.getElementById('mp-lobby-code-display');
+            if (lobbyCode) lobbyCode.innerText = '----';
+            const playersGrid = document.getElementById('mp-lobby-players-list');
+            if (playersGrid) playersGrid.innerHTML = '';
+            switchMpTab('create');
+
+            // Reset solo summary table
+            document.getElementById('solo-summary-table').style.display = 'table';
+            document.getElementById('solo-total-banner').style.display = 'flex';
+            document.getElementById('final-rank-title').style.display = 'block';
+            document.getElementById('mp-final-podium-section').style.display = 'none';
+            document.getElementById('mp-final-table-wrapper').style.display = 'none';
+
+            showToast("👋 Powrót do trybu jednoosobowego.");
             totalNegativeKm = 0;
             roundsHistory = [];
             document.getElementById('stat-total-score').innerText = `0 tys. km`;
@@ -1397,6 +2710,7 @@
 
         function showToast(msg) {
             const toast = document.getElementById('toast-box');
+            if (!toast) return;
             toast.innerText = msg;
             toast.classList.add('show');
             setTimeout(() => { toast.classList.remove('show'); }, 3000);
@@ -1405,6 +2719,7 @@
         // Start gry po załadowaniu
         window.addEventListener('DOMContentLoaded', () => {
             initLeafletMap();
+            initMultiplayerEngine();
         });
     </script>
 </body>
