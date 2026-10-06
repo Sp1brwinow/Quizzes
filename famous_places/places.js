@@ -218,18 +218,7 @@ const FAMOUS_PLACES_DB = [
         clue: "Piramida Cheopsa i monumentalny posąg lwa z ludzką twarzą na skraju Sahary.",
         desc: "Jedyne zachowane do dziś z siedmiu starożytnych cudów świata, grobowce faraonów sprzed 4500 lat."
     },
-    {
-        name: "Wodospady Wiktorii (Zambia / Zimbabwe)",
-        lat: -17.9243,
-        lng: 25.8572,
-        continent: "Afryka",
-        category: "Cuda Natury / Wodospad",
-        easy: false,
-        img: "img/victoria_falls.jpg",
-        license: "Unsplash / CC",
-        clue: "„Dym, który grzmi” – potężny uskok rzeki Zambezi o szerokości ponad 1,7 km.",
-        desc: "Jeden z najwspanialszych wodospadów świata na granicy Zambii i Zimbabwe na rzece Zambezi."
-    },
+
     {
         name: "Góra Stołowa (Kapsztad, RPA)",
         lat: -33.9628,
@@ -362,18 +351,7 @@ const FAMOUS_PLACES_DB = [
         clue: "Święta dla Aborygenów olbrzymia czerwona skała z piaskowca w sercu pustynnego Outbacku.",
         desc: "Monumentalna formacja skalna wznosząca się na 348 metrów ponad płaską pustynię w środkowej Australii."
     },
-    {
-        name: "Fiord Milford Sound (Nowa Zelandia)",
-        lat: -44.6414,
-        lng: 167.8975,
-        continent: "Australia i Oceania",
-        category: "Cuda Natury / Fiord",
-        easy: false,
-        img: "img/milford_sound.jpg",
-        license: "Unsplash / CC",
-        clue: "Zatoka polodowcowa z ikonicznym szczytem Mitre Peak na Wyspie Południowej Nowej Zelandii.",
-        desc: "Jeden z najbardziej deszczowych i spektakularnych fiordów świata, nazwany przez Rudyarda Kiplinga „ósmym cudem świata”."
-    },
+
     {
         name: "Kapadocja / Dolina Goreme (Turcja)",
         lat: 38.6431,
