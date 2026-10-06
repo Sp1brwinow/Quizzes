@@ -415,11 +415,13 @@
                 <div id="m3-grammar-hint" class="grammar-tag">💡 Wskazówka: Plany na najbliższą przyszłość (znany czas/miejsce) ➔ Present continuous</div>
             </div>
 
-            <div class="input-group">
-                <input type="text" id="m3-input" class="custom-input" placeholder="Wpisz zdanie po angielsku..." onkeydown="if(event.key==='Enter') checkSentenceTranslation()">
-                <button type="button" id="mic-m3-btn" class="btn-mic" onclick="toggleVoiceInput('m3-input', 'en-US', 'mic-m3-btn', () => checkSentenceTranslation())">🎤 Mów</button>
-                <button type="button" class="btn-action btn-check" onclick="checkSentenceTranslation()">✓ Sprawdź zdanie</button>
-                <button type="button" class="btn-action btn-next" onclick="nextSentence()">Następne zdanie ➔</button>
+            <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; width: 100%;">
+                <input type="text" id="m3-input" class="custom-input" style="width: 100%; box-sizing: border-box;" placeholder="Wpisz zdanie po angielsku..." onkeydown="if(event.key==='Enter') checkSentenceTranslation()">
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button type="button" id="mic-m3-btn" class="btn-mic" onclick="toggleVoiceInput('m3-input', 'en-US', 'mic-m3-btn', () => checkSentenceTranslation())">🎤 Mów</button>
+                    <button type="button" class="btn-action btn-check" onclick="checkSentenceTranslation()">✓ Sprawdź zdanie</button>
+                    <button type="button" class="btn-action btn-next" onclick="nextSentence()">Następne zdanie ➔</button>
+                </div>
             </div>
 
             <div id="m3-feedback" class="feedback-box"></div>
