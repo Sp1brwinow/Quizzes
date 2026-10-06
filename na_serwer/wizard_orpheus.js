@@ -55,17 +55,14 @@ class WizardOrpheus {
 
         console.log('Dostępne modele Gemini dla Twojego klucza:', available);
 
-        // Szukamy najlepszego modelu w kolejności preferencji
+        // Szukamy najlepszego modelu w kolejności preferencji (modele >= 3.1)
         const preferred = [
           'gemini-3.8-flash',
           'gemini-3.7-flash',
           'gemini-3.6-flash',
           'gemini-3.5-flash',
           'gemini-3.5-flash-lite',
-          'gemini-3.1-pro-preview',
-          'gemini-3-flash-preview',
-          'gemini-2.5-flash',
-          'gemini-2.5-pro'
+          'gemini-3.1-pro-preview'
         ];
 
         for (let pref of preferred) {
