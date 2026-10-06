@@ -2305,6 +2305,16 @@
             if (nickInput && !nickInput.value) {
                 nickInput.value = myPlayerName;
             }
+
+            // Jeśli gracz nie jest w aktywnym pokoju, zresetuj widok modala do menu tworzenia/dołączania
+            if (!isMultiplayer || !mpRoomId) {
+                document.getElementById('mp-view-menu').style.display = 'block';
+                document.getElementById('mp-view-lobby').style.display = 'none';
+                const codeInput = document.getElementById('mp-input-code');
+                if (codeInput) codeInput.value = '';
+                switchMpTab('create');
+            }
+
             document.getElementById('mp-modal').classList.add('active');
         }
 
@@ -2985,6 +2995,17 @@
             document.getElementById('btn-leave-mp').style.display = 'none';
             document.getElementById('mode-toggle-group').style.display = 'inline-flex';
             document.getElementById('mp-live-hud').style.display = 'none';
+
+            // Reset widoków wewnątrz modala
+            document.getElementById('mp-view-menu').style.display = 'block';
+            document.getElementById('mp-view-lobby').style.display = 'none';
+            const codeInput = document.getElementById('mp-input-code');
+            if (codeInput) codeInput.value = '';
+            const lobbyCode = document.getElementById('mp-lobby-code-display');
+            if (lobbyCode) lobbyCode.innerText = '----';
+            const playersGrid = document.getElementById('mp-lobby-players-list');
+            if (playersGrid) playersGrid.innerHTML = '';
+            switchMpTab('create');
 
             // Czyszczenie URL
             const url = new URL(window.location.href);
