@@ -257,11 +257,25 @@
             background: #10b981;
             color: white;
             flex: 1;
-            min-width: 120px;
+            min-width: 110px;
         }
 
         .btn-next:hover {
             background: #059669;
+        }
+
+        .btn-reset {
+            background: #334155;
+            color: #f1f5f9;
+            border: 1px solid #64748b;
+            flex: 0.9;
+            min-width: 95px;
+        }
+
+        .btn-reset:hover {
+            background: #475569;
+            color: #ffffff;
+            border-color: #94a3b8;
         }
 
         .btn-mic {
@@ -477,13 +491,14 @@
 
             .btn-group {
                 display: grid;
-                grid-template-columns: auto 1fr 1fr;
+                grid-template-columns: 1fr 1fr;
                 gap: 8px;
             }
 
             .btn-group .btn-mic {
-                padding: 10px 12px;
+                padding: 10px 8px;
                 font-size: 0.88rem;
+                min-width: 0;
             }
 
             .btn-group .btn-action {
@@ -606,6 +621,7 @@
                     <button type="button" id="mic-m1-btn" class="btn-mic" onclick="toggleVoiceInput('m1-input', 'pl-PL', 'mic-m1-btn', () => checkWordTranslation(1))">🎤 Mów</button>
                     <button type="button" class="btn-action btn-check" onclick="checkWordTranslation(1)">✓ Sprawdź</button>
                     <button type="button" class="btn-action btn-next" onclick="nextWord(1)">Następne ➔</button>
+                    <button type="button" class="btn-action btn-reset" onclick="resetExercise(1)" title="Zacznij od początku i wyzeruj punkty">🔄 Ponów</button>
                 </div>
             </div>
 
@@ -634,6 +650,7 @@
                     <button type="button" id="mic-m2-btn" class="btn-mic" onclick="toggleVoiceInput('m2-input', 'en-US', 'mic-m2-btn', () => checkWordTranslation(2))">🎤 Mów</button>
                     <button type="button" class="btn-action btn-check" onclick="checkWordTranslation(2)">✓ Sprawdź</button>
                     <button type="button" class="btn-action btn-next" onclick="nextWord(2)">Następne ➔</button>
+                    <button type="button" class="btn-action btn-reset" onclick="resetExercise(2)" title="Zacznij od początku i wyzeruj punkty">🔄 Ponów</button>
                 </div>
             </div>
 
@@ -663,6 +680,7 @@
                     <button type="button" id="mic-m3-btn" class="btn-mic" onclick="toggleVoiceInput('m3-input', 'en-US', 'mic-m3-btn', () => checkSentenceTranslation())">🎤 Mów</button>
                     <button type="button" class="btn-action btn-check" onclick="checkSentenceTranslation()">✓ Sprawdź zdanie</button>
                     <button type="button" class="btn-action btn-next" onclick="nextSentence()">Następne zdanie ➔</button>
+                    <button type="button" class="btn-action btn-reset" onclick="resetExercise(3)" title="Zacznij od początku (zdanie 1)">🔄 Ponów</button>
                 </div>
             </div>
 
@@ -1092,6 +1110,39 @@
         function nextSentence() {
             m3Index = (m3Index + 1) % sentencesList.length;
             loadSentenceM3();
+        }
+
+        // =========================================================
+        // RESTART / PONOWIENIE ĆWICZENIA (TRYBY 1, 2, 3)
+        // =========================================================
+        function resetExercise(mode) {
+            if (activeVoiceRecInstance) {
+                try { activeVoiceRecInstance.stop(); } catch (e) {}
+                activeVoiceRecInstance = null;
+            }
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            }
+
+            if (mode === 1) {
+                m1Index = 0;
+                m1Correct = 0;
+                m1Total = 0;
+                const scoreEl = document.getElementById('m1-score');
+                if (scoreEl) scoreEl.innerText = 'Poprawne: 0 / 0';
+                loadWordM1();
+            } else if (mode === 2) {
+                m2Index = 0;
+                m2Correct = 0;
+                m2Total = 0;
+                const scoreEl = document.getElementById('m2-score');
+                if (scoreEl) scoreEl.innerText = 'Poprawne: 0 / 0';
+                loadWordM2();
+            } else if (mode === 3) {
+                m3Index = 0;
+                m3Correct = 0;
+                loadSentenceM3();
+            }
         }
 
         // =========================================================
