@@ -12,22 +12,51 @@
     </script>
 
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Klasa 7 - Unit 2 (Clothes, Appearance, Past Simple & Past Continuous)</title>
     <link rel="stylesheet" href="../style.css" />
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: #020617;
+            color: #f8fafc;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
         .unit-container {
             max-width: 860px;
             margin: 0 auto;
-            padding: 10px 15px 40px 15px;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 14px 14px 40px 14px;
+            width: 100%;
+        }
+
+        .unit-header-title {
+            color: #38bdf8;
+            font-size: clamp(1.35rem, 4.5vw, 1.85rem);
+            margin: 0 0 6px 0;
+            font-weight: 800;
+            text-align: center;
+        }
+
+        .unit-header-sub {
+            color: #94a3b8;
+            margin: 0 0 16px 0;
+            font-size: clamp(0.9rem, 3vw, 1.02rem);
+            text-align: center;
         }
 
         .options-box {
             background: rgba(15, 23, 42, 0.95);
             border: 2px solid #0284c7;
             border-radius: 12px;
-            padding: 18px 22px;
-            margin: 15px auto 25px auto;
+            padding: 16px 18px;
+            margin: 12px auto 22px auto;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
             text-align: left;
         }
@@ -36,7 +65,7 @@
             color: #38bdf8;
             margin-top: 0;
             margin-bottom: 12px;
-            font-size: 1.15rem;
+            font-size: clamp(1.02rem, 3.5vw, 1.15rem);
             display: flex;
             align-items: center;
             gap: 8px;
@@ -44,7 +73,7 @@
 
         .options-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 10px;
         }
 
@@ -62,6 +91,8 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            min-height: 48px;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .opt-btn:hover {
@@ -81,7 +112,7 @@
             background: rgba(15, 23, 42, 0.92);
             border: 1px solid #334155;
             border-radius: 12px;
-            padding: 24px;
+            padding: 22px;
             margin-top: 15px;
             text-align: left;
             color: #f8fafc;
@@ -94,13 +125,13 @@
             align-items: center;
             flex-wrap: wrap;
             gap: 10px;
-            margin-bottom: 15px;
-            padding-bottom: 12px;
+            margin-bottom: 14px;
+            padding-bottom: 10px;
             border-bottom: 1px solid #334155;
         }
 
         .card-title {
-            font-size: 1.25rem;
+            font-size: clamp(1.05rem, 3.5vw, 1.25rem);
             color: #38bdf8;
             margin: 0;
             font-weight: bold;
@@ -113,20 +144,21 @@
             padding: 5px 14px;
             border-radius: 20px;
             font-weight: bold;
-            font-size: 0.9rem;
+            font-size: 0.88rem;
+            white-space: nowrap;
         }
 
         .prompt-box {
             background: rgba(30, 41, 59, 0.7);
             border: 1px solid #475569;
             border-left: 4px solid #0284c7;
-            padding: 16px 20px;
+            padding: 14px 18px;
             border-radius: 8px;
-            margin-bottom: 18px;
+            margin-bottom: 16px;
         }
 
         .prompt-label {
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             text-transform: uppercase;
             letter-spacing: 0.05em;
             color: #94a3b8;
@@ -135,66 +167,85 @@
         }
 
         .prompt-text {
-            font-size: 1.35rem;
+            font-size: clamp(1.15rem, 4vw, 1.35rem);
             font-weight: bold;
             color: #ffffff;
             display: flex;
             align-items: center;
             gap: 12px;
             flex-wrap: wrap;
+            word-break: break-word;
         }
 
         .grammar-tag {
-            font-size: 0.82rem;
+            font-size: 0.85rem;
             background: rgba(16, 185, 129, 0.2);
             color: #34d399;
             border: 1px solid #059669;
-            padding: 3px 8px;
+            padding: 4px 10px;
             border-radius: 4px;
             font-weight: normal;
+            display: inline-block;
+            line-height: 1.4;
+            margin-top: 4px;
         }
 
-        .input-group {
+        .input-wrapper {
             display: flex;
+            flex-direction: column;
             gap: 10px;
             margin-bottom: 12px;
-            flex-wrap: wrap;
+            width: 100%;
         }
 
         .custom-input {
-            flex: 1;
-            min-width: 250px;
-            padding: 11px 15px;
+            width: 100%;
+            min-height: 46px;
+            padding: 12px 15px;
             background: #0f172a;
             border: 1px solid #475569;
             border-radius: 8px;
             color: #ffffff;
-            font-size: 1.02rem;
+            font-size: 16px; /* 16px zapobiega auto-zoomowi na iOS Safari */
             outline: none;
-            transition: border-color 0.2s;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            box-sizing: border-box;
         }
 
         .custom-input:focus {
             border-color: #38bdf8;
-            box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+            box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.25);
         }
 
-        .btn-action {
-            padding: 10px 18px;
+        .btn-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+
+        .btn-action, .btn-mic {
+            min-height: 44px;
+            padding: 10px 16px;
             border: none;
             border-radius: 8px;
             font-weight: bold;
-            cursor: pointer;
             font-size: 0.92rem;
+            cursor: pointer;
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             gap: 6px;
             transition: all 0.2s;
+            text-decoration: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .btn-check {
             background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
             color: white;
+            flex: 1.2;
+            min-width: 120px;
         }
 
         .btn-check:hover {
@@ -205,6 +256,8 @@
         .btn-next {
             background: #10b981;
             color: white;
+            flex: 1;
+            min-width: 120px;
         }
 
         .btn-next:hover {
@@ -214,15 +267,8 @@
         .btn-mic {
             background: linear-gradient(135deg, #059669 0%, #047857 100%);
             color: white;
-            border: none;
-            padding: 10px 14px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 0.9rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
+            white-space: nowrap;
+            min-width: 90px;
         }
 
         .btn-listen {
@@ -234,6 +280,11 @@
             cursor: pointer;
             font-size: 0.85rem;
             font-weight: bold;
+            min-height: 36px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .btn-listen:hover {
@@ -241,12 +292,13 @@
         }
 
         .feedback-box {
-            margin-top: 15px;
-            padding: 14px 18px;
+            margin-top: 14px;
+            padding: 14px 16px;
             border-radius: 8px;
             line-height: 1.5;
-            font-size: 0.98rem;
+            font-size: 0.95rem;
             display: none;
+            word-break: break-word;
         }
 
         .feedback-correct {
@@ -261,26 +313,56 @@
             color: #fecaca;
         }
 
-        /* Panel czatu AI */
+        /* Panel AI Conversation */
+        .ai-controls-bar {
+            margin: 0 0 15px 0;
+            padding: 12px 14px;
+            background: rgba(30, 41, 59, 0.85);
+            border: 1px solid #475569;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .ai-controls-bar a {
+            background: #334155;
+            color: #93c5fd;
+            border: 1px solid #64748b;
+            padding: 6px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            min-height: 34px;
+        }
+
         #conversation-log {
             max-height: 380px;
             overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
             background: #0b1120;
             border: 1px solid #334155;
             border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 15px;
+            padding: 14px 12px;
+            margin-bottom: 14px;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
         }
 
         .chat-bubble {
             padding: 10px 14px;
             border-radius: 8px;
-            max-width: 85%;
-            line-height: 1.5;
+            max-width: 88%;
+            line-height: 1.45;
             font-size: 0.95rem;
+            word-break: break-word;
         }
 
         .chat-ai {
@@ -307,6 +389,43 @@
             line-height: 1.4;
         }
 
+        .chat-actions-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .bottom-nav {
+            margin-top: 35px;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            font-size: 0.92rem;
+        }
+
+        .bottom-nav a {
+            color: #38bdf8;
+            text-decoration: none;
+            padding: 7px 12px;
+            border-radius: 6px;
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid #334155;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .bottom-nav a:hover {
+            background: #334155;
+            color: #7dd3fc;
+        }
+
         .recording-pulse {
             animation: pulse-red 1.2s infinite ease-in-out;
         }
@@ -315,14 +434,133 @@
             0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
             50% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
         }
+
+        /* MEDIA QUERIES DLA TELEFONÓW (RESPONSIVE / MOBILE-FIRST) */
+        @media (max-width: 640px) {
+            .unit-container {
+                padding: 10px 10px 30px 10px;
+            }
+
+            .options-box {
+                padding: 14px 12px;
+                margin: 10px auto 18px auto;
+            }
+
+            .options-grid {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+
+            .opt-btn {
+                padding: 12px 14px;
+                font-size: 0.92rem;
+            }
+
+            .workspace-card {
+                padding: 16px 12px;
+                border-radius: 10px;
+            }
+
+            .card-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 6px;
+            }
+
+            .score-badge {
+                align-self: flex-start;
+            }
+
+            .prompt-box {
+                padding: 12px 14px;
+            }
+
+            .btn-group {
+                display: grid;
+                grid-template-columns: auto 1fr 1fr;
+                gap: 8px;
+            }
+
+            .btn-group .btn-mic {
+                padding: 10px 12px;
+                font-size: 0.88rem;
+            }
+
+            .btn-group .btn-action {
+                padding: 10px 8px;
+                font-size: 0.88rem;
+                min-width: 0;
+            }
+
+            .ai-controls-bar {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+
+            .ai-controls-bar > div {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .ai-controls-bar .nav-links {
+                display: flex;
+                width: 100%;
+                gap: 8px;
+            }
+
+            .ai-controls-bar .nav-links a {
+                flex: 1;
+                text-align: center;
+                justify-content: center;
+            }
+
+            .chat-bubble {
+                max-width: 95%;
+                font-size: 0.92rem;
+            }
+
+            .chat-actions-row {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+            }
+
+            .chat-actions-row button {
+                width: 100%;
+                min-height: 46px;
+                justify-content: center;
+            }
+
+            .bottom-nav {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .bottom-nav a {
+                width: 100%;
+                text-align: center;
+                justify-content: center;
+                padding: 10px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .btn-group {
+                grid-template-columns: 1fr 1fr;
+            }
+            .btn-group .btn-mic {
+                grid-column: span 2;
+            }
+        }
     </style>
 </head>
 
 <body>
 
     <div class="unit-container">
-        <h2>Język angielski – Klasa 7</h2>
-        <p style="color: #94a3b8; margin-top: -5px;">Unit 2: Clothes, Describing Appearance & Past Simple vs. Past Continuous</p>
+        <h2 class="unit-header-title">Język angielski – Klasa 7</h2>
+        <p class="unit-header-sub">Unit 2: Clothes, Describing Appearance & Past Simple vs. Past Continuous</p>
 
         <!-- ============================================================ -->
         <!-- BOX Z 4 OPCJAMI                                              -->
@@ -362,11 +600,13 @@
                 </div>
             </div>
 
-            <div class="input-group">
+            <div class="input-wrapper">
                 <input type="text" id="m1-input" class="custom-input" placeholder="Wpisz znaczenie po polsku..." onkeydown="if(event.key==='Enter') checkWordTranslation(1)">
-                <button type="button" id="mic-m1-btn" class="btn-mic" onclick="toggleVoiceInput('m1-input', 'pl-PL', 'mic-m1-btn', () => checkWordTranslation(1))">🎤 Mów</button>
-                <button type="button" class="btn-action btn-check" onclick="checkWordTranslation(1)">✓ Sprawdź</button>
-                <button type="button" class="btn-action btn-next" onclick="nextWord(1)">Następne ➔</button>
+                <div class="btn-group">
+                    <button type="button" id="mic-m1-btn" class="btn-mic" onclick="toggleVoiceInput('m1-input', 'pl-PL', 'mic-m1-btn', () => checkWordTranslation(1))">🎤 Mów</button>
+                    <button type="button" class="btn-action btn-check" onclick="checkWordTranslation(1)">✓ Sprawdź</button>
+                    <button type="button" class="btn-action btn-next" onclick="nextWord(1)">Następne ➔</button>
+                </div>
             </div>
 
             <div id="m1-feedback" class="feedback-box"></div>
@@ -388,11 +628,13 @@
                 </div>
             </div>
 
-            <div class="input-group">
+            <div class="input-wrapper">
                 <input type="text" id="m2-input" class="custom-input" placeholder="Wpisz tłumaczenie po angielsku..." onkeydown="if(event.key==='Enter') checkWordTranslation(2)">
-                <button type="button" id="mic-m2-btn" class="btn-mic" onclick="toggleVoiceInput('m2-input', 'en-US', 'mic-m2-btn', () => checkWordTranslation(2))">🎤 Mów</button>
-                <button type="button" class="btn-action btn-check" onclick="checkWordTranslation(2)">✓ Sprawdź</button>
-                <button type="button" class="btn-action btn-next" onclick="nextWord(2)">Następne ➔</button>
+                <div class="btn-group">
+                    <button type="button" id="mic-m2-btn" class="btn-mic" onclick="toggleVoiceInput('m2-input', 'en-US', 'mic-m2-btn', () => checkWordTranslation(2))">🎤 Mów</button>
+                    <button type="button" class="btn-action btn-check" onclick="checkWordTranslation(2)">✓ Sprawdź</button>
+                    <button type="button" class="btn-action btn-next" onclick="nextWord(2)">Następne ➔</button>
+                </div>
             </div>
 
             <div id="m2-feedback" class="feedback-box"></div>
@@ -415,9 +657,9 @@
                 <div id="m3-grammar-hint" class="grammar-tag">💡 Wskazówka: Czasownik nieregularny: buy ➔ bought (Past simple)</div>
             </div>
 
-            <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; width: 100%;">
-                <input type="text" id="m3-input" class="custom-input" style="width: 100%; box-sizing: border-box;" placeholder="Wpisz zdanie po angielsku..." onkeydown="if(event.key==='Enter') checkSentenceTranslation()">
-                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <div class="input-wrapper">
+                <input type="text" id="m3-input" class="custom-input" placeholder="Wpisz zdanie po angielsku..." onkeydown="if(event.key==='Enter') checkSentenceTranslation()">
+                <div class="btn-group">
                     <button type="button" id="mic-m3-btn" class="btn-mic" onclick="toggleVoiceInput('m3-input', 'en-US', 'mic-m3-btn', () => checkSentenceTranslation())">🎤 Mów</button>
                     <button type="button" class="btn-action btn-check" onclick="checkSentenceTranslation()">✓ Sprawdź zdanie</button>
                     <button type="button" class="btn-action btn-next" onclick="nextSentence()">Następne zdanie ➔</button>
@@ -436,24 +678,22 @@
             </div>
 
             <!-- Panel sterowania lektorem i głosem -->
-            <div style="margin: 0 0 15px 0; padding: 10px 14px; background: rgba(30, 41, 59, 0.85); border: 1px solid #475569; border-radius: 8px; font-size: 0.9rem;">
-                <div style="display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap;">
-                    <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
-                        <button id="tts-btn" type="button" onclick="toggleSpeechEnglish()" style="background: #0284c7; color: white; border: none; padding: 7px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.9rem;">
-                            🔊 Przeczytaj odpowiedź AI
-                        </button>
-                        <label style="cursor: pointer; display: flex; align-items: center; gap: 6px; color: #f1f5f9;">
-                            <input type="checkbox" id="tts-auto-read" checked> ⚡ Czytaj automatycznie odpowiedź AI
-                        </label>
-                    </div>
-                    <div style="display: flex; gap: 8px; margin-left: auto;">
-                        <a href="pytania_angielski.html" style="background: #334155; color: #93c5fd; border: 1px solid #64748b; padding: 6px 12px; border-radius: 6px; text-decoration: none; font-size: 0.85rem; display: flex; align-items: center; gap: 4px;">
-                            🎙️ Ustawienia lektora
-                        </a>
-                        <a href="../pomocnicze.html" style="background: #334155; color: #93c5fd; border: 1px solid #64748b; padding: 6px 12px; border-radius: 6px; text-decoration: none; font-size: 0.85rem; display: flex; align-items: center; gap: 4px;">
-                            🔑 Klucz API
-                        </a>
-                    </div>
+            <div class="ai-controls-bar">
+                <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                    <button id="tts-btn" type="button" onclick="toggleSpeechEnglish()" style="background: #0284c7; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.9rem;">
+                        🔊 Przeczytaj odpowiedź AI
+                    </button>
+                    <label style="cursor: pointer; display: flex; align-items: center; gap: 6px; color: #f1f5f9;">
+                        <input type="checkbox" id="tts-auto-read" checked> ⚡ Czytaj automatycznie odpowiedź AI
+                    </label>
+                </div>
+                <div class="nav-links" style="display: flex; gap: 8px;">
+                    <a href="pytania_angielski.html">
+                        🎙️ Ustawienia lektora
+                    </a>
+                    <a href="../pomocnicze.html">
+                        🔑 Klucz API
+                    </a>
                 </div>
             </div>
 
@@ -466,11 +706,11 @@
 
             <!-- Pole wprowadzania odpowiedzi -->
             <div style="margin-top: 15px;">
-                <textarea id="m4-input" class="custom-input" style="width: 100%; min-height: 75px; padding: 10px; font-size: 1rem; border-radius: 6px; box-sizing: border-box;" placeholder="Wpisz odpowiedź po angielsku lub kliknij 'Odpowiedz głosem'..." onkeydown="if(event.key==='Enter' && !event.shiftKey){ event.preventDefault(); sendChatMessage(); }"></textarea>
+                <textarea id="m4-input" class="custom-input" style="min-height: 75px; padding: 12px; font-size: 16px; border-radius: 8px;" placeholder="Wpisz odpowiedź po angielsku lub kliknij 'Odpowiedz głosem'..." onkeydown="if(event.key==='Enter' && !event.shiftKey){ event.preventDefault(); sendChatMessage(); }"></textarea>
                 
-                <div style="display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; margin-top: 8px;">
+                <div class="chat-actions-row">
                     <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                        <button id="mic-btn" type="button" onclick="toggleSpeechRecognitionChat()" style="background: linear-gradient(135deg, #059669 0%, #047857 100%); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.95rem;">
+                        <button id="mic-btn" type="button" onclick="toggleSpeechRecognitionChat()" style="background: linear-gradient(135deg, #059669 0%, #047857 100%); color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.92rem; display: inline-flex; align-items: center; gap: 6px;">
                             🎤 Odpowiedz głosem (Mów)
                         </button>
 
@@ -480,20 +720,20 @@
                         </label>
                     </div>
 
-                    <button id="send-btn" type="button" onclick="sendChatMessage()" style="background: #2563eb; color: white; border: none; padding: 8px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.95rem;">
+                    <button id="send-btn" type="button" onclick="sendChatMessage()" style="background: #2563eb; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.92rem; display: inline-flex; align-items: center; gap: 6px;">
                         📤 Wyślij wiadomość (Enter)
                     </button>
                 </div>
 
-                <div id="m4-status" style="font-size: 0.85rem; color: #38bdf8; margin-top: 6px; font-weight: bold;"></div>
+                <div id="m4-status" style="font-size: 0.85rem; color: #38bdf8; margin-top: 8px; font-weight: bold;"></div>
             </div>
         </div>
 
-        <p style="margin-top: 40px; text-align: center;">
-            <a href="pytania_angielski.html" style="color: #38bdf8; text-decoration: none; margin: 0 10px;">⬅ Powrót do menu angielskiego</a> | 
-            <a href="../pomocnicze.html" style="color: #38bdf8; text-decoration: none; margin: 0 10px;">Quizy szkolne</a> | 
-            <a href="../index.html" style="color: #38bdf8; text-decoration: none; margin: 0 10px;">Strona główna</a>
-        </p>
+        <div class="bottom-nav">
+            <a href="pytania_angielski.html">⬅ Powrót do menu angielskiego</a>
+            <a href="../pomocnicze.html">Quizy szkolne</a>
+            <a href="../index.html">Strona główna</a>
+        </div>
     </div>
 
     <!-- Skrypty lektora, rozpoznawania mowy i AI -->
