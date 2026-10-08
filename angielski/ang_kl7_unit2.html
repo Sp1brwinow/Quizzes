@@ -1279,7 +1279,7 @@
         // ROZPOZNAWANIE MOWY (SPEECH-TO-TEXT) DLA CZATU
         // =========================================================
         let isRecordingChat = false;
-        let accumulatedChatTranscript = '';
+        let initialChatTranscript = '';
         let shouldSendChatOnStop = false;
 
         function toggleSpeechRecognitionChat() {
@@ -1302,8 +1302,7 @@
 
                 speechRecognitionChat.onstart = function () {
                     isRecordingChat = true;
-                    accumulatedChatTranscript = inputField ? inputField.value.trim() : '';
-                    if (accumulatedChatTranscript.length > 0) accumulatedChatTranscript += ' ';
+                    initialChatTranscript = inputField ? inputField.value.trim() : '';
 
                     micBtn.innerHTML = '⏹️ STOP i Wyślij';
                     micBtn.classList.add('recording-pulse');
@@ -1312,22 +1311,21 @@
                 };
 
                 speechRecognitionChat.onresult = function (event) {
-                    let currentFinal = '';
-                    let currentInterim = '';
+                    let finalTranscript = '';
+                    let interimTranscript = '';
 
-                    for (let i = event.resultIndex; i < event.results.length; ++i) {
+                    for (let i = 0; i < event.results.length; ++i) {
                         if (event.results[i].isFinal) {
-                            currentFinal += event.results[i][0].transcript + ' ';
+                            finalTranscript += event.results[i][0].transcript + ' ';
                         } else {
-                            currentInterim += event.results[i][0].transcript;
+                            interimTranscript += event.results[i][0].transcript;
                         }
                     }
 
-                    if (currentFinal) {
-                        accumulatedChatTranscript += currentFinal;
+                    const combined = (initialChatTranscript ? initialChatTranscript + ' ' : '') + finalTranscript + interimTranscript;
+                    if (inputField) {
+                        inputField.value = combined.replace(/\s+/g, ' ').trim();
                     }
-
-                    inputField.value = (accumulatedChatTranscript + currentInterim).trim();
                 };
 
                 speechRecognitionChat.onerror = speechRecognitionChat.onend = function () {
@@ -1405,8 +1403,7 @@
             rec.interimResults = true;
             rec.continuous = true;
 
-            let accumulated = inputField.value.trim();
-            if (accumulated.length > 0) accumulated += ' ';
+            let initialText = inputField ? inputField.value.trim() : '';
 
             rec.onstart = function () {
                 activeVoiceRecInstance = rec;
@@ -1417,19 +1414,21 @@
             };
 
             rec.onresult = function (e) {
-                let currentFinal = '';
-                let currentInterim = '';
+                let finalTranscript = '';
+                let interimTranscript = '';
 
-                for (let i = e.resultIndex; i < e.results.length; i++) {
+                for (let i = 0; i < e.results.length; i++) {
                     if (e.results[i].isFinal) {
-                        currentFinal += e.results[i][0].transcript + ' ';
+                        finalTranscript += e.results[i][0].transcript + ' ';
                     } else {
-                        currentInterim += e.results[i][0].transcript;
+                        interimTranscript += e.results[i][0].transcript;
                     }
                 }
 
-                if (currentFinal) accumulated += currentFinal;
-                inputField.value = (accumulated + currentInterim).trim();
+                const combined = (initialText ? initialText + ' ' : '') + finalTranscript + interimTranscript;
+                if (inputField) {
+                    inputField.value = combined.replace(/\s+/g, ' ').trim();
+                }
             };
 
             rec.onerror = rec.onend = function () {

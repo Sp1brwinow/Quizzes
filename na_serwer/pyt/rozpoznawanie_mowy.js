@@ -9,7 +9,7 @@ let micBtn = null;
 let inputField = null;
 let autoSendCheckbox = null;
 let sttStatus = null;
-let accumulatedTranscript = '';
+let initialTranscript = '';
 let shouldSendOnStop = false;
 
 function initSpeechRecognition() {
@@ -34,10 +34,7 @@ function initSpeechRecognition() {
 
     recognition.onstart = function () {
         isRecording = true;
-        accumulatedTranscript = inputField ? inputField.value.trim() : '';
-        if (accumulatedTranscript.length > 0) {
-            accumulatedTranscript += ' ';
-        }
+        initialTranscript = inputField ? inputField.value.trim() : '';
 
         if (micBtn) {
             micBtn.innerHTML = '⏹️ STOP i Wyślij wypowiedź';
@@ -51,23 +48,20 @@ function initSpeechRecognition() {
     };
 
     recognition.onresult = function (event) {
-        let currentFinal = '';
-        let currentInterim = '';
+        let finalTranscript = '';
+        let interimTranscript = '';
 
-        for (let i = event.resultIndex; i < event.results.length; ++i) {
+        for (let i = 0; i < event.results.length; ++i) {
             if (event.results[i].isFinal) {
-                currentFinal += event.results[i][0].transcript + ' ';
+                finalTranscript += event.results[i][0].transcript + ' ';
             } else {
-                currentInterim += event.results[i][0].transcript;
+                interimTranscript += event.results[i][0].transcript;
             }
         }
 
-        if (currentFinal) {
-            accumulatedTranscript += currentFinal;
-        }
-
+        const combined = (initialTranscript ? initialTranscript + ' ' : '') + finalTranscript + interimTranscript;
         if (inputField) {
-            inputField.value = (accumulatedTranscript + currentInterim).trim();
+            inputField.value = combined.replace(/\s+/g, ' ').trim();
         }
     };
 
