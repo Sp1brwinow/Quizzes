@@ -1,7 +1,98 @@
 // =======================================================
-// MODUŁ ROZPOZNAWANIA MOWY (SPEECH-TO-TEXT) Z OBSŁUGĄ PRZERW I STOP/WYŚLIJ
-// Plik: rozpoznawanie_mowy.js (Web Speech API)
+// INTELIGENTNY ASSEMBLE TRANSCRIPT (ELIMINACJA DUPLIKATÓW W WEB SPEECH API)
 // =======================================================
+function assembleSpeechTranscript(results, initialText = '') {
+    function cleanWordForCompare(w) {
+        return w.toLowerCase().replace(/^[^\w\s']+|[^\w\s']+$/g, '');
+    }
+
+    function normalizeForCompare(str) {
+        return str.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?]/g, '').replace(/\s+/g, ' ').trim();
+    }
+
+    function mergePieces(pieces) {
+        let combined = '';
+        for (let rawPiece of pieces) {
+            let piece = rawPiece.trim();
+            if (!piece) continue;
+
+            if (!combined) {
+                combined = piece;
+                continue;
+            }
+
+            const normCombined = normalizeForCompare(combined);
+            const normPiece = normalizeForCompare(piece);
+
+            if (!normPiece) continue;
+
+            // 1. Jeśli nowy fragment zawiera w sobie całość dotychczasowego tekstu (kumulacja na Androidzie)
+            if (normPiece.startsWith(normCombined)) {
+                combined = piece;
+                continue;
+            }
+
+            // 2. Jeśli dotychczasowy tekst zawiera już nowy fragment
+            if (normCombined.endsWith(normPiece) || normCombined.includes(normPiece)) {
+                continue;
+            }
+
+            // 3. Sprawdź nakładanie się słów na styku fragmentów (np. "meeting with" + "with my boss")
+            const wordsCombined = combined.split(/\s+/);
+            const wordsPiece = piece.split(/\s+/);
+
+            const normWordsCombined = wordsCombined.map(cleanWordForCompare);
+            const normWordsPiece = wordsPiece.map(cleanWordForCompare);
+
+            let maxOverlap = 0;
+            const maxCheck = Math.min(normWordsCombined.length, normWordsPiece.length);
+
+            for (let k = 1; k <= maxCheck; k++) {
+                const suffix = normWordsCombined.slice(normWordsCombined.length - k).join(' ');
+                const prefix = normWordsPiece.slice(0, k).join(' ');
+                if (suffix === prefix && suffix.length > 0) {
+                    maxOverlap = k;
+                }
+            }
+
+            if (maxOverlap > 0) {
+                const nonOverlappingWords = wordsPiece.slice(maxOverlap);
+                if (nonOverlappingWords.length > 0) {
+                    combined += ' ' + nonOverlappingWords.join(' ');
+                }
+            } else {
+                combined += ' ' + piece;
+            }
+        }
+        return combined.replace(/\s+/g, ' ').trim();
+    }
+
+    let finalPieces = [];
+    let interimPieces = [];
+
+    for (let i = 0; i < results.length; i++) {
+        const transcript = results[i][0] ? results[i][0].transcript.trim() : '';
+        if (!transcript) continue;
+        if (results[i].isFinal) {
+            finalPieces.push(transcript);
+        } else {
+            interimPieces.push(transcript);
+        }
+    }
+
+    const finalCombined = mergePieces(finalPieces);
+    const interimCombined = mergePieces(interimPieces);
+
+    let sessionText = '';
+    if (finalCombined && interimCombined) {
+        sessionText = mergePieces([finalCombined, interimCombined]);
+    } else {
+        sessionText = finalCombined || interimCombined;
+    }
+
+    const fullText = (initialText ? initialText + ' ' : '') + sessionText;
+    return fullText.replace(/\s+/g, ' ').trim();
+}
 
 let recognition = null;
 let isRecording = false;
@@ -18,6 +109,7 @@ function initSpeechRecognition() {
     inputField = document.getElementById('input');
     autoSendCheckbox = document.getElementById('stt-auto-send');
     sttStatus = document.getElementById('stt-status');
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
     if (!SpeechRecognition) {
         if (micBtn) {
@@ -30,7 +122,7 @@ function initSpeechRecognition() {
     recognition = new SpeechRecognition();
     recognition.lang = 'en-US'; // Język angielski
     recognition.interimResults = true; // Podgląd w czasie rzeczywistym
-    recognition.continuous = true; // CIĄGŁE NAGRYWANIE - nie wyłącza się przy przerwach w mowie!
+    recognition.continuous = !isMobile;
 
     recognition.onstart = function () {
         isRecording = true;
@@ -42,26 +134,14 @@ function initSpeechRecognition() {
             micBtn.classList.add('recording-pulse');
         }
         if (sttStatus) {
-            sttStatus.innerText = '🔴 Nagrywam... Mów swobodnie (możesz robić przerwy). Kliknij STOP, aby zakończyć i wysłać.';
+            sttStatus.innerText = '🔴 Nagrywam... Mów swobodnie. Kliknij STOP, aby zakończyć i wysłać.';
             sttStatus.style.color = '#38bdf8';
         }
     };
 
     recognition.onresult = function (event) {
-        let finalTranscript = '';
-        let interimTranscript = '';
-
-        for (let i = 0; i < event.results.length; ++i) {
-            if (event.results[i].isFinal) {
-                finalTranscript += event.results[i][0].transcript + ' ';
-            } else {
-                interimTranscript += event.results[i][0].transcript;
-            }
-        }
-
-        const combined = (initialTranscript ? initialTranscript + ' ' : '') + finalTranscript + interimTranscript;
         if (inputField) {
-            inputField.value = combined.replace(/\s+/g, ' ').trim();
+            inputField.value = assembleSpeechTranscript(event.results, initialTranscript);
         }
     };
 

@@ -1276,6 +1276,102 @@
         }
 
         // =========================================================
+        // INTELIGENTNY ASSEMBLE TRANSCRIPT (ELIMINACJA DUPLIKATÓW W WEB SPEECH API)
+        // =========================================================
+        function assembleSpeechTranscript(results, initialText = '') {
+            function cleanWordForCompare(w) {
+                return w.toLowerCase().replace(/^[^\w\s']+|[^\w\s']+$/g, '');
+            }
+
+            function normalizeForCompare(str) {
+                return str.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?]/g, '').replace(/\s+/g, ' ').trim();
+            }
+
+            function mergePieces(pieces) {
+                let combined = '';
+                for (let rawPiece of pieces) {
+                    let piece = rawPiece.trim();
+                    if (!piece) continue;
+
+                    if (!combined) {
+                        combined = piece;
+                        continue;
+                    }
+
+                    const normCombined = normalizeForCompare(combined);
+                    const normPiece = normalizeForCompare(piece);
+
+                    if (!normPiece) continue;
+
+                    // 1. Jeśli nowy fragment zawiera w sobie całość dotychczasowego tekstu (kumulacja na Androidzie)
+                    if (normPiece.startsWith(normCombined)) {
+                        combined = piece;
+                        continue;
+                    }
+
+                    // 2. Jeśli dotychczasowy tekst zawiera już nowy fragment
+                    if (normCombined.endsWith(normPiece) || normCombined.includes(normPiece)) {
+                        continue;
+                    }
+
+                    // 3. Sprawdź nakładanie się słów na styku fragmentów (np. "meeting with" + "with my boss")
+                    const wordsCombined = combined.split(/\s+/);
+                    const wordsPiece = piece.split(/\s+/);
+
+                    const normWordsCombined = wordsCombined.map(cleanWordForCompare);
+                    const normWordsPiece = wordsPiece.map(cleanWordForCompare);
+
+                    let maxOverlap = 0;
+                    const maxCheck = Math.min(normWordsCombined.length, normWordsPiece.length);
+
+                    for (let k = 1; k <= maxCheck; k++) {
+                        const suffix = normWordsCombined.slice(normWordsCombined.length - k).join(' ');
+                        const prefix = normWordsPiece.slice(0, k).join(' ');
+                        if (suffix === prefix && suffix.length > 0) {
+                            maxOverlap = k;
+                        }
+                    }
+
+                    if (maxOverlap > 0) {
+                        const nonOverlappingWords = wordsPiece.slice(maxOverlap);
+                        if (nonOverlappingWords.length > 0) {
+                            combined += ' ' + nonOverlappingWords.join(' ');
+                        }
+                    } else {
+                        combined += ' ' + piece;
+                    }
+                }
+                return combined.replace(/\s+/g, ' ').trim();
+            }
+
+            let finalPieces = [];
+            let interimPieces = [];
+
+            for (let i = 0; i < results.length; i++) {
+                const transcript = results[i][0] ? results[i][0].transcript.trim() : '';
+                if (!transcript) continue;
+                if (results[i].isFinal) {
+                    finalPieces.push(transcript);
+                } else {
+                    interimPieces.push(transcript);
+                }
+            }
+
+            const finalCombined = mergePieces(finalPieces);
+            const interimCombined = mergePieces(interimPieces);
+
+            let sessionText = '';
+            if (finalCombined && interimCombined) {
+                sessionText = mergePieces([finalCombined, interimCombined]);
+            } else {
+                sessionText = finalCombined || interimCombined;
+            }
+
+            const fullText = (initialText ? initialText + ' ' : '') + sessionText;
+            return fullText.replace(/\s+/g, ' ').trim();
+        }
+
+        // =========================================================
         // ROZPOZNAWANIE MOWY (SPEECH-TO-TEXT) DLA CZATU
         // =========================================================
         let isRecordingChat = false;
@@ -1293,12 +1389,13 @@
             const inputField = document.getElementById('m4-input');
             const autoSendCb = document.getElementById('stt-auto-send');
             const statusEl = document.getElementById('m4-status');
+            const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
             if (!speechRecognitionChat) {
                 speechRecognitionChat = new SpeechRec();
                 speechRecognitionChat.lang = 'en-US';
                 speechRecognitionChat.interimResults = true;
-                speechRecognitionChat.continuous = true;
+                speechRecognitionChat.continuous = !isMobile;
 
                 speechRecognitionChat.onstart = function () {
                     isRecordingChat = true;
@@ -1307,24 +1404,12 @@
                     micBtn.innerHTML = '⏹️ STOP i Wyślij';
                     micBtn.classList.add('recording-pulse');
                     micBtn.style.background = 'linear-gradient(135deg, #dc2626 0%, #991b1b 100%)';
-                    if (statusEl) statusEl.innerText = '🎤 Słucham ciągle... Naciśnij STOP, aby zakończyć i wysłać.';
+                    if (statusEl) statusEl.innerText = '🎤 Słucham... Naciśnij STOP, aby zakończyć i wysłać.';
                 };
 
                 speechRecognitionChat.onresult = function (event) {
-                    let finalTranscript = '';
-                    let interimTranscript = '';
-
-                    for (let i = 0; i < event.results.length; ++i) {
-                        if (event.results[i].isFinal) {
-                            finalTranscript += event.results[i][0].transcript + ' ';
-                        } else {
-                            interimTranscript += event.results[i][0].transcript;
-                        }
-                    }
-
-                    const combined = (initialChatTranscript ? initialChatTranscript + ' ' : '') + finalTranscript + interimTranscript;
                     if (inputField) {
-                        inputField.value = combined.replace(/\s+/g, ' ').trim();
+                        inputField.value = assembleSpeechTranscript(event.results, initialChatTranscript);
                     }
                 };
 
@@ -1338,7 +1423,7 @@
 
                     if (shouldSendChatOnStop || (autoSendCb && autoSendCb.checked && wasRecording)) {
                         shouldSendChatOnStop = false;
-                        const val = inputField.value.trim();
+                        const val = inputField ? inputField.value.trim() : '';
                         if (val.length > 0) {
                             setTimeout(() => {
                                 sendChatMessage();
@@ -1381,6 +1466,7 @@
 
             const btn = document.getElementById(btnId);
             const inputField = document.getElementById(targetInputId);
+            const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
             if (activeVoiceRecInstance) {
                 try {
@@ -1392,7 +1478,7 @@
                     btn.classList.remove('recording-pulse');
                     btn.style.background = 'linear-gradient(135deg, #059669 0%, #047857 100%)';
                 }
-                if (autoSubmitCallback && inputField.value.trim().length > 0) {
+                if (autoSubmitCallback && inputField && inputField.value.trim().length > 0) {
                     setTimeout(autoSubmitCallback, 250);
                 }
                 return;
@@ -1401,7 +1487,7 @@
             const rec = new SpeechRec();
             rec.lang = lang;
             rec.interimResults = true;
-            rec.continuous = true;
+            rec.continuous = !isMobile;
 
             let initialText = inputField ? inputField.value.trim() : '';
 
@@ -1414,20 +1500,8 @@
             };
 
             rec.onresult = function (e) {
-                let finalTranscript = '';
-                let interimTranscript = '';
-
-                for (let i = 0; i < e.results.length; i++) {
-                    if (e.results[i].isFinal) {
-                        finalTranscript += e.results[i][0].transcript + ' ';
-                    } else {
-                        interimTranscript += e.results[i][0].transcript;
-                    }
-                }
-
-                const combined = (initialText ? initialText + ' ' : '') + finalTranscript + interimTranscript;
                 if (inputField) {
-                    inputField.value = combined.replace(/\s+/g, ' ').trim();
+                    inputField.value = assembleSpeechTranscript(e.results, initialText);
                 }
             };
 
