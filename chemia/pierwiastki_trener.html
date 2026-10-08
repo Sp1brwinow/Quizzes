@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <!-- Google Analytics Tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZP827DTZJ5"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-ZP827DTZJ5');
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Trener Pierwiastków Chemicznych – Symbole & Nazwy</title>
+    <link rel="stylesheet" href="../style.css" />
+    <style>
+        :root {
+            --bg-dark: #070d18;
+            --card-bg: rgba(15, 23, 42, 0.92);
+            --card-border: rgba(56, 189, 248, 0.3);
+            --primary: #38bdf8;
+            --primary-hover: #0284c7;
+            --accent-green: #22c55e;
+            --accent-red: #ef4444;
+            --accent-amber: #f59e0b;
+            --accent-purple: #a855f7;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: #f1f5f9;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            padding: 20px 14px 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 920px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Belka nawigacyjna */
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .back-link {
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            color: #38bdf8;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            backdrop-filter: blur(8px);
+        }
+
+        .back-link:hover {
+            background: #0284c7;
+            color: #ffffff;
+            transform: translateX(-2px);
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
+        }
+
+        /* Karta nagłówka */
+        .header-card {
+            text-align: center;
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.85) 100%);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            border-radius: 20px;
+            padding: 24px 20px;
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(12px);
+        }
+
+        .header-card h1 {
+            font-size: clamp(1.4rem, 4vw, 2rem);
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 0%, #38bdf8 55%, #818cf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .header-card p {
+            color: #94a3b8;
+            font-size: 0.98rem;
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.5;
+        }
+
+        /* Panel opcji i filtrów */
+        .controls-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .control-label {
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: #38bdf8;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .pills-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .pill-btn {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            color: #e2e8f0;
+            padding: 8px 14px;
+            border-radius: 999px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .pill-btn:hover {
+            border-color: #38bdf8;
+            background: rgba(56, 189, 248, 0.15);
+            transform: translateY(-1px);
+        }
+
+        .pill-btn.active {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            border-color: #38bdf8;
+            color: #ffffff;
+            box-shadow: 0 0 14px rgba(56, 189, 248, 0.4);
+        }
+
+        .pill-badge {
+            background: rgba(0, 0, 0, 0.35);
+            padding: 2px 7px;
+            border-radius: 10px;
+            font-size: 0.76rem;
+        }
+
+        /* Pasek statystyk i postępu */
+        .stats-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            border-radius: 12px;
+            padding: 12px 18px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.92rem;
+            color: #cbd5e1;
+        }
+
+        .stat-val {
+            font-weight: 800;
+            color: #ffffff;
+            font-size: 1.05rem;
+        }
+
+        .streak-badge {
+            background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
+            color: #ffffff;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 800;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
+        }
+
+        /* Główna karta pytania */
+        .quiz-card {
+            background: linear-gradient(145deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.9) 100%);
+            border: 2px solid rgba(56, 189, 248, 0.4);
+            border-radius: 20px;
+            padding: 28px 24px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Kafel Układu Okresowego dla pytania */
+        .element-display-tile {
+            width: 140px;
+            height: 140px;
+            background: radial-gradient(circle at 30% 30%, #1e293b, #0f172a);
+            border: 3px solid #38bdf8;
+            border-radius: 16px;
+            box-shadow: 0 8px 25px rgba(56, 189, 248, 0.35), inset 0 0 15px rgba(56, 189, 248, 0.15);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 10px;
+            position: relative;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .element-display-tile:hover {
+            transform: scale(1.05);
+            border-color: #7dd3fc;
+        }
+
+        .tile-atomic-num {
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: #94a3b8;
+            text-align: left;
+        }
+
+        .tile-main-text {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: #ffffff;
+            line-height: 1;
+            letter-spacing: -0.5px;
+            text-shadow: 0 0 15px rgba(56, 189, 248, 0.6);
+        }
+
+        .tile-sub-text {
+            font-size: 0.78rem;
+            color: #38bdf8;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .question-prompt {
+            font-size: clamp(1.15rem, 3.5vw, 1.45rem);
+            font-weight: 700;
+            color: #f8fafc;
+            line-height: 1.4;
+        }
+
+        .question-sub-prompt {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            margin-top: -12px;
+        }
+
+        /* Formularz wpisywania odpowiedzi */
+        .input-form {
+            width: 100%;
+            max-width: 520px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .answer-input {
+            flex: 1;
+            background: #0b1120;
+            border: 2px solid rgba(56, 189, 248, 0.4);
+            border-radius: 12px;
+            padding: 14px 18px;
+            color: #ffffff;
+            font-size: 1.15rem;
+            font-weight: 700;
+            text-align: center;
+            outline: none;
+            transition: all 0.2s;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        .answer-input:focus {
+            border-color: #38bdf8;
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
+            background: #0f172a;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            border: none;
+            color: white;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-size: 1.05rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4);
+        }
+
+        .btn-submit:hover {
+            background: linear-gradient(135deg, #0369a1 0%, #075985 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(56, 189, 248, 0.5);
+        }
+
+        /* Kafelki wyboru 4 opcji (ABCD) */
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .choice-btn {
+            background: rgba(30, 41, 59, 0.85);
+            border: 2px solid rgba(56, 189, 248, 0.25);
+            color: #f8fafc;
+            padding: 16px 14px;
+            border-radius: 14px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .choice-btn:hover {
+            border-color: #38bdf8;
+            background: rgba(56, 189, 248, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .choice-btn.correct {
+            background: rgba(22, 101, 52, 0.9) !important;
+            border-color: #4ade80 !important;
+            color: #ffffff !important;
+            box-shadow: 0 0 20px rgba(74, 222, 128, 0.5) !important;
+        }
+
+        .choice-btn.wrong {
+            background: rgba(153, 27, 27, 0.9) !important;
+            border-color: #f87171 !important;
+            color: #ffffff !important;
+            box-shadow: 0 0 20px rgba(248, 113, 113, 0.5) !important;
+        }
+
+        /* Przyciski pomocnicze: Dźwięk, Podpowiedź, Następne */
+        .aux-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 6px;
+        }
+
+        .aux-btn {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid #475569;
+            color: #cbd5e1;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .aux-btn:hover {
+            background: #334155;
+            border-color: #38bdf8;
+            color: #ffffff;
+        }
+
+        /* Panel wyniku i wyjaśnienia */
+        .feedback-box {
+            width: 100%;
+            border-radius: 14px;
+            padding: 16px 20px;
+            text-align: left;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .feedback-box.correct {
+            background: rgba(22, 101, 52, 0.25);
+            border: 2px solid #22c55e;
+            color: #dcfce7;
+        }
+
+        .feedback-box.wrong {
+            background: rgba(153, 27, 27, 0.25);
+            border: 2px solid #ef4444;
+            color: #fee2e2;
+        }
+
+        .feedback-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feedback-details {
+            font-size: 0.92rem;
+            line-height: 1.5;
+            color: #e2e8f0;
+        }
+
+        .feedback-details strong {
+            color: #38bdf8;
+        }
+
+        /* Ściągawka / Tabela pierwiastków */
+        .cheatsheet-details {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 16px 20px;
+            color: #f8fafc;
+        }
+
+        .cheatsheet-details summary {
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: #38bdf8;
+            cursor: pointer;
+            padding: 4px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            user-select: none;
+        }
+
+        .elements-table-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .elem-mini-card {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            border-radius: 10px;
+            padding: 10px;
+            text-align: center;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .elem-mini-card:hover {
+            border-color: #38bdf8;
+            background: rgba(56, 189, 248, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .elem-mini-sym {
+            font-size: 1.4rem;
+            font-weight: 900;
+            color: #ffffff;
+        }
+
+        .elem-mini-name {
+            font-size: 0.82rem;
+            color: #38bdf8;
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+        .elem-mini-group {
+            font-size: 0.72rem;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+
+        @media (max-width: 600px) {
+            .input-row {
+                flex-direction: column;
+            }
+            .btn-submit {
+                width: 100%;
+                justify-content: center;
+            }
+            .element-display-tile {
+                width: 120px;
+                height: 120px;
+            }
+            .tile-main-text {
+                font-size: 2.1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <!-- Górna belka nawigacji -->
+        <div class="top-nav">
+            <a href="../pomocnicze.html" class="back-link">← Baza Quizów i Narzędzi</a>
+            <a href="reakcje_syntezy.html" class="back-link">🧪 Kreator Reakcji Syntezy</a>
+            <a href="../index.html" class="back-link">🏠 Strona główna</a>
+        </div>
+
+        <!-- Nagłówek -->
+        <header class="header-card">
+            <h1>🧪 Trener Pierwiastków Chemicznych</h1>
+            <p>Interaktywny quiz sprawdzający znajomość symboli i polskich nazw pierwiastków w obu kierunkach. Wybierz grupę pierwiastków i trenuj!</p>
+        </header>
+
+        <!-- Panel Konfiguracji / Filtry -->
+        <div class="controls-card">
+            
+            <!-- Wybór grupy pierwiastków -->
+            <div class="control-group">
+                <span class="control-label">📑 Wybierz grupę pierwiastków:</span>
+                <div class="pills-grid" id="group-filters">
+                    <button type="button" class="pill-btn active" data-group="all" onclick="setGroupFilter('all')">
+                        <span>🌟 Wszystkie (Kolumny 1, 2, 18 i Inne)</span>
+                        <span class="pill-badge" id="count-all">35</span>
+                    </button>
+                    <button type="button" class="pill-btn" data-group="1" onclick="setGroupFilter('1')">
+                        <span>Kolumna 1 (Litowce + H)</span>
+                        <span class="pill-badge">7</span>
+                    </button>
+                    <button type="button" class="pill-btn" data-group="2" onclick="setGroupFilter('2')">
+                        <span>Kolumna 2 (Berylowce)</span>
+                        <span class="pill-badge">6</span>
+                    </button>
+                    <button type="button" class="pill-btn" data-group="1_2" onclick="setGroupFilter('1_2')">
+                        <span>Kolumny 1 i 2 razem</span>
+                        <span class="pill-badge">13</span>
+                    </button>
+                    <button type="button" class="pill-btn" data-group="18" onclick="setGroupFilter('18')">
+                        <span>Kolumna 18 (Helowce)</span>
+                        <span class="pill-badge">7</span>
+                    </button>
+                    <button type="button" class="pill-btn" data-group="other" onclick="setGroupFilter('other')">
+                        <span>Wybrane inne pierwiastki</span>
+                        <span class="pill-badge">15</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Wybór kierunku pytań -->
+            <div class="control-group">
+                <span class="control-label">🔄 Kierunek pytań:</span>
+                <div class="pills-grid" id="direction-filters">
+                    <button type="button" class="pill-btn active" data-dir="mix" onclick="setDirection('mix')">
+                        <span>🎲 W obie strony (Losowo / Mix)</span>
+                    </button>
+                    <button type="button" class="pill-btn" data-dir="sym_to_name" onclick="setDirection('sym_to_name')">
+                        <span>🔤 Symbol &rarr; Podaj nazwę (np. Fe &rarr; żelazo)</span>
+                    </button>
+                    <button type="button" class="pill-btn" data-dir="name_to_sym" onclick="setDirection('name_to_sym')">
+                        <span>🧪 Nazwa &rarr; Podaj symbol (np. Wapń &rarr; Ca)</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Format odpowiedzi -->
+            <div class="control-group">
+                <span class="control-label">🎮 Format sprawdzania:</span>
+                <div class="pills-grid" id="mode-filters">
+                    <button type="button" class="pill-btn active" data-mode="input" onclick="setAnswerMode('input')">
+                        <span>⌨️ Wpisywanie z klawiatury</span>
+                    </button>
+                    <button type="button" class="pill-btn" data-mode="choices" onclick="setAnswerMode('choices')">
+                        <span>🎴 Wybór z 4 opcji (ABCD)</span>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Pasek statystyk -->
+        <div class="stats-bar">
+            <div class="stat-item">
+                <span>Pytanie:</span>
+                <span class="stat-val" id="stat-q-num">1</span>
+                <span style="color: #64748b;">/ &infin;</span>
+            </div>
+            <div class="stat-item">
+                <span>Poprawne:</span>
+                <span class="stat-val" style="color: #4ade80;" id="stat-correct">0</span>
+            </div>
+            <div class="stat-item">
+                <span>Błędne:</span>
+                <span class="stat-val" style="color: #f87171;" id="stat-wrong">0</span>
+            </div>
+            <div class="stat-item">
+                <span>Skuteczność:</span>
+                <span class="stat-val" style="color: #38bdf8;" id="stat-pct">100%</span>
+            </div>
+            <div class="streak-badge" id="stat-streak-badge">
+                🔥 Seria: <span id="stat-streak">0</span>
+            </div>
+        </div>
+
+        <!-- Główna Karta Pytania -->
+        <div class="quiz-card" id="quiz-card">
+
+            <!-- Dynamiczny Kafel Pierwiastka -->
+            <div class="element-display-tile" id="element-tile">
+                <div class="tile-atomic-num" id="tile-z">26</div>
+                <div class="tile-main-text" id="tile-center">Fe</div>
+                <div class="tile-sub-text" id="tile-bottom">żelazo</div>
+            </div>
+
+            <!-- Treść Pytania -->
+            <div>
+                <div class="question-prompt" id="question-text">Jaka jest polska nazwa pierwiastka o symbolu Fe?</div>
+                <div class="question-sub-prompt" id="question-hint-text">Wpisz nazwę z małej lub dużej litery</div>
+            </div>
+
+            <!-- Kontener wpisywania odpowiedzi -->
+            <form class="input-form" id="input-container" onsubmit="handleInputSubmit(event)">
+                <div class="input-row">
+                    <input type="text" id="user-answer-input" class="answer-input" placeholder="Wpisz odpowiedź i naciśnij Enter..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" autofocus>
+                    <button type="submit" class="btn-submit" id="btn-submit-answer">
+                        <span>Sprawdź</span> <span>&rarr;</span>
+                    </button>
+                </div>
+            </form>
+
+            <!-- Kontener 4 opcji wyboru (ABCD) -->
+            <div class="options-grid" id="choices-container" style="display: none;">
+                <!-- Generowane dynamicznie w JS -->
+            </div>
+
+            <!-- Przyciski Pomocnicze -->
+            <div class="aux-buttons">
+                <button type="button" class="aux-btn" onclick="showHint()" id="hint-btn">
+                    💡 Podpowiedź
+                </button>
+                <button type="button" class="aux-btn" onclick="nextQuestion(true)" id="skip-btn" style="color: #94a3b8;">
+                    ⏭️ Losuj inne
+                </button>
+            </div>
+
+            <!-- Komunikat weryfikacji / Podsumowanie pytania -->
+            <div class="feedback-box" id="feedback-box">
+                <div class="feedback-title" id="feedback-title">✅ Świetnie! Poprawna odpowiedź!</div>
+                <div class="feedback-details" id="feedback-details">
+                    Symbol <strong>Fe</strong> to <strong>żelazo</strong> (łac. <em>Ferrum</em>). Leży w <strong>8. grupie</strong>, 4. okresie (liczba atomowa Z = 26).
+                </div>
+                <div style="margin-top: 14px; text-align: right;">
+                    <button type="button" class="btn-submit" onclick="nextQuestion()" id="btn-next-question" style="padding: 10px 20px; font-size: 0.95rem;">
+                        <span>Kolejne pytanie &rarr;</span>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Ściągawka / Zestawienie pierwiastków z podziałem na grupy -->
+        <details class="cheatsheet-details">
+            <summary>📖 Zobacz pełną ściągawkę pierwiastków (Kliknij, aby rozwinąć)</summary>
+            
+            <div style="margin-top: 14px;">
+                <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 12px;">
+                    Poniżej znajduje się zestawienie wszystkich pierwiastków objętych quizem (z podziałem na kolumny 1, 2, 18 oraz wybrane inne metale i niemetale):
+                </p>
+
+                <h4 style="color: #38bdf8; margin: 14px 0 6px 0; font-size: 0.95rem;">🔹 Kolumna 1 – Litowce (+ Wodór):</h4>
+                <div class="elements-table-grid" id="grid-group-1"></div>
+
+                <h4 style="color: #818cf8; margin: 18px 0 6px 0; font-size: 0.95rem;">🔹 Kolumna 2 – Berylowce:</h4>
+                <div class="elements-table-grid" id="grid-group-2"></div>
+
+                <h4 style="color: #34d399; margin: 18px 0 6px 0; font-size: 0.95rem;">🔹 Kolumna 18 – Helowce (Gazy szlachetne):</h4>
+                <div class="elements-table-grid" id="grid-group-18"></div>
+
+                <h4 style="color: #fbbf24; margin: 18px 0 6px 0; font-size: 0.95rem;">🔹 Wybrane inne pierwiastki i metale:</h4>
+                <div class="elements-table-grid" id="grid-group-other"></div>
+            </div>
+        </details>
+
+    </div>
+
+    <script>
+        // Baza pierwiastków chemicznych dokładnie według sekcji pomocnicze.html
+        const ELEMENTS = [
+            // Kolumna 1 (Litowce + H)
+            { symbol: 'H',  name: 'wodór',    latin: 'Hydrogenium', group: 1,  period: 1, z: 1,   category: '1',     type: 'niemetal / gaz' },
+            { symbol: 'Li', name: 'lit',      latin: 'Lithium',     group: 1,  period: 2, z: 3,   category: '1',     type: 'litowiec / metal' },
+            { symbol: 'Na', name: 'sód',      latin: 'Natrium',     group: 1,  period: 3, z: 11,  category: '1',     type: 'litowiec / metal' },
+            { symbol: 'K',  name: 'potas',    latin: 'Kalium',      group: 1,  period: 4, z: 19,  category: '1',     type: 'litowiec / metal' },
+            { symbol: 'Rb', name: 'rubid',    latin: 'Rubidium',    group: 1,  period: 5, z: 37,  category: '1',     type: 'litowiec / metal' },
+            { symbol: 'Cs', name: 'cez',      latin: 'Caesium',     group: 1,  period: 6, z: 55,  category: '1',     type: 'litowiec / metal' },
+            { symbol: 'Fr', name: 'frans',    latin: 'Francium',    group: 1,  period: 7, z: 87,  category: '1',     type: 'litowiec / promieniotwórczy' },
+
+            // Kolumna 2 (Berylowce)
+            { symbol: 'Be', name: 'beryl',    latin: 'Beryllium',   group: 2,  period: 2, z: 4,   category: '2',     type: 'berylowiec / metal' },
+            { symbol: 'Mg', name: 'magnez',   latin: 'Magnesium',   group: 2,  period: 3, z: 12,  category: '2',     type: 'berylowiec / metal' },
+            { symbol: 'Ca', name: 'wapń',     latin: 'Calcium',     group: 2,  period: 4, z: 20,  category: '2',     type: 'berylowiec / metal' },
+            { symbol: 'Sr', name: 'stront',   latin: 'Strontium',   group: 2,  period: 5, z: 38,  category: '2',     type: 'berylowiec / metal' },
+            { symbol: 'Ba', name: 'bar',      latin: 'Barium',      group: 2,  period: 6, z: 56,  category: '2',     type: 'berylowiec / metal' },
+            { symbol: 'Ra', name: 'rad',      latin: 'Radium',      group: 2,  period: 7, z: 88,  category: '2',     type: 'berylowiec / promieniotwórczy' },
+
+            // Kolumna 18 (Gazy szlachetne / helowce)
+            { symbol: 'He', name: 'hel',      latin: 'Helium',      group: 18, period: 1, z: 2,   category: '18',    type: 'gaz szlachetny' },
+            { symbol: 'Ne', name: 'neon',     latin: 'Neon',        group: 18, period: 2, z: 10,  category: '18',    type: 'gaz szlachetny' },
+            { symbol: 'Ar', name: 'argon',    latin: 'Argon',       group: 18, period: 3, z: 18,  category: '18',    type: 'gaz szlachetny' },
+            { symbol: 'Kr', name: 'krypton',  latin: 'Krypton',     group: 18, period: 4, z: 36,  category: '18',    type: 'gaz szlachetny' },
+            { symbol: 'Xe', name: 'ksenon',   latin: 'Xenon',       group: 18, period: 5, z: 54,  category: '18',    type: 'gaz szlachetny' },
+            { symbol: 'Rn', name: 'radon',    latin: 'Radon',       group: 18, period: 6, z: 86,  category: '18',    type: 'gaz szlachetny / promieniotwórczy' },
+            { symbol: 'Og', name: 'oganezon', latin: 'Oganesson',   group: 18, period: 7, z: 118, category: '18',    type: 'gaz szlachetny / syntetyczny' },
+
+            // Wybrane inne pierwiastki (z pierwiastki_wybrane.html + kluczowe w szkole)
+            { symbol: 'Nb', name: 'niob',     latin: 'Niobium',     group: 5,  period: 5, z: 41,  category: 'other', type: 'metal przejściowy' },
+            { symbol: 'Cr', name: 'chrom',    latin: 'Chromium',    group: 6,  period: 4, z: 24,  category: 'other', type: 'metal przejściowy' },
+            { symbol: 'Mo', name: 'molibden', latin: 'Molybdenum',  group: 6,  period: 5, z: 42,  category: 'other', type: 'metal przejściowy' },
+            { symbol: 'Fe', name: 'żelazo',   latin: 'Ferrum',      group: 8,  period: 4, z: 26,  category: 'other', type: 'metal przejściowy' },
+            { symbol: 'Ni', name: 'nikiel',   latin: 'Niccolum',    group: 10, period: 4, z: 28,  category: 'other', type: 'metal przejściowy' },
+            { symbol: 'Cu', name: 'miedź',    latin: 'Cuprum',      group: 11, period: 4, z: 29,  category: 'other', type: 'metal przejściowy' },
+            { symbol: 'Ag', name: 'srebro',   latin: 'Argentum',    group: 11, period: 5, z: 47,  category: 'other', type: 'metal szlachetny' },
+            { symbol: 'Au', name: 'złoto',    latin: 'Aurum',       group: 11, period: 6, z: 79,  category: 'other', type: 'metal szlachetny' },
+            { symbol: 'Zn', name: 'cynk',     latin: 'Zincum',      group: 12, period: 4, z: 30,  category: 'other', type: 'metal przejściowy' },
+            { symbol: 'Cd', name: 'kadm',     latin: 'Cadmium',     group: 12, period: 5, z: 48,  category: 'other', type: 'metal przejściowy' },
+            { symbol: 'Hg', name: 'rtęć',     latin: 'Hydrargyrum', group: 12, period: 6, z: 80,  category: 'other', type: 'metal ciekły' },
+            { symbol: 'Al', name: 'glin',     latin: 'Aluminium',   group: 13, period: 3, z: 13,  category: 'other', type: 'metal / borowiec' },
+            { symbol: 'Sn', name: 'cyna',     latin: 'Stannum',     group: 14, period: 5, z: 50,  category: 'other', type: 'metal / węglowiec' },
+            { symbol: 'Pb', name: 'ołów',     latin: 'Plumbum',     group: 14, period: 6, z: 82,  category: 'other', type: 'metal ciężki' },
+            { symbol: 'Bi', name: 'bizmut',   latin: 'Bismuthum',   group: 15, period: 6, z: 83,  category: 'other', type: 'metal / azotowiec' }
+        ];
+
+        // Stan gry
+        let currentGroupFilter = 'all'; // 'all', '1', '2', '1_2', '18', 'other'
+        let currentDirection = 'mix';   // 'mix', 'sym_to_name', 'name_to_sym'
+        let currentAnswerMode = 'input'; // 'input', 'choices'
+
+        let currentQuestionIndex = 0;
+        let correctCount = 0;
+        let wrongCount = 0;
+        let streak = 0;
+
+        let currentItem = null;
+        let currentAskDirection = 'sym_to_name'; // rzeczywisty kierunek w danym pytaniu
+        let isAnswered = false;
+        let questionPool = [];
+
+        // Normalizacja tekstu (usuwanie polskich znaków i znaków specjalnych do porównań)
+        function normalizeText(str) {
+            if (!str) return '';
+            return str.toLowerCase().trim()
+                .replace(/ą/g, 'a')
+                .replace(/ć/g, 'c')
+                .replace(/ę/g, 'e')
+                .replace(/ł/g, 'l')
+                .replace(/ń/g, 'n')
+                .replace(/ó/g, 'o')
+                .replace(/ś/g, 's')
+                .replace(/ź/g, 'z')
+                .replace(/ż/g, 'z');
+        }
+
+        // Filtrowanie listy pierwiastków
+        function getFilteredElements() {
+            if (currentGroupFilter === 'all') return ELEMENTS;
+            if (currentGroupFilter === '1') return ELEMENTS.filter(e => e.category === '1');
+            if (currentGroupFilter === '2') return ELEMENTS.filter(e => e.category === '2');
+            if (currentGroupFilter === '1_2') return ELEMENTS.filter(e => e.category === '1' || e.category === '2');
+            if (currentGroupFilter === '18') return ELEMENTS.filter(e => e.category === '18');
+            if (currentGroupFilter === 'other') return ELEMENTS.filter(e => e.category === 'other');
+            return ELEMENTS;
+        }
+
+        // Zmiana filtra grupy
+        function setGroupFilter(grp) {
+            currentGroupFilter = grp;
+            document.querySelectorAll('#group-filters .pill-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('data-group') === grp);
+            });
+            resetAndShufflePool();
+            nextQuestion();
+        }
+
+        // Zmiana kierunku pytań
+        function setDirection(dir) {
+            currentDirection = dir;
+            document.querySelectorAll('#direction-filters .pill-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('data-dir') === dir);
+            });
+            nextQuestion();
+        }
+
+        // Zmiana formatu odpowiedzi
+        function setAnswerMode(mode) {
+            currentAnswerMode = mode;
+            document.querySelectorAll('#mode-filters .pill-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('data-mode') === mode);
+            });
+            renderAnswerInterface();
+        }
+
+        // Resetowanie i tasowanie puli pytań
+        function resetAndShufflePool() {
+            const list = [...getFilteredElements()];
+            // Tasowanie algorytmem Fisher-Yates
+            for (let i = list.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [list[i], list[j]] = [list[j], list[i]];
+            }
+            questionPool = list;
+        }
+
+        // Pobranie kolejnego elementu z puli (lub ponowne potasowanie, gdy pula się wyczerpie)
+        function getNextElement() {
+            if (questionPool.length === 0) {
+                resetAndShufflePool();
+            }
+            return questionPool.pop();
+        }
+
+        // Generowanie kolejnego pytania
+        function nextQuestion(isSkip = false) {
+            isAnswered = false;
+            currentItem = getNextElement();
+            if (!currentItem) return;
+
+            // Ustalenie kierunku pytania
+            if (currentDirection === 'mix') {
+                currentAskDirection = Math.random() > 0.5 ? 'sym_to_name' : 'name_to_sym';
+            } else {
+                currentAskDirection = currentDirection;
+            }
+
+            // Ukrycie feedbacku
+            document.getElementById('feedback-box').style.display = 'none';
+
+            // Aktualizacja kafelka pytania
+            const tileEl = document.getElementById('element-tile');
+            const tileZ = document.getElementById('tile-z');
+            const tileCenter = document.getElementById('tile-center');
+            const tileBottom = document.getElementById('tile-bottom');
+            const qPrompt = document.getElementById('question-text');
+            const qHint = document.getElementById('question-hint-text');
+
+            tileZ.innerText = currentItem.z;
+
+            if (currentAskDirection === 'sym_to_name') {
+                tileCenter.innerText = currentItem.symbol;
+                tileBottom.innerText = 'Grupa ' + currentItem.group;
+                qPrompt.innerHTML = `Jaka jest polska nazwa pierwiastka o symbolu <strong style="color: #38bdf8; font-size: 1.25em;">${currentItem.symbol}</strong>?`;
+                qHint.innerText = `Wpisz nazwę pierwiastka po polsku (np. ${currentItem.name.length} liter)`;
+            } else {
+                tileCenter.innerText = '❓';
+                tileBottom.innerText = currentItem.name;
+                qPrompt.innerHTML = `Jaki jest symbol chemiczny pierwiastka <strong style="color: #38bdf8; font-size: 1.25em;">${currentItem.name.toUpperCase()}</strong>?`;
+                qHint.innerText = `Wpisz symbol chemiczny (np. ${currentItem.symbol.length === 1 ? 'jednoliterowy' : 'dwuliterowy'})`;
+            }
+
+            renderAnswerInterface();
+
+            if (!isSkip) {
+                currentQuestionIndex++;
+                document.getElementById('stat-q-num').innerText = currentQuestionIndex;
+            }
+        }
+
+        // Renderowanie interfejsu (wpisywanie lub 4 opcje)
+        function renderAnswerInterface() {
+            const inputContainer = document.getElementById('input-container');
+            const choicesContainer = document.getElementById('choices-container');
+            const inputField = document.getElementById('user-answer-input');
+
+            if (currentAnswerMode === 'input') {
+                inputContainer.style.display = 'flex';
+                choicesContainer.style.display = 'none';
+                inputField.value = '';
+                inputField.disabled = false;
+                setTimeout(() => { inputField.focus(); }, 100);
+            } else {
+                inputContainer.style.display = 'none';
+                choicesContainer.style.display = 'grid';
+                renderChoiceButtons();
+            }
+        }
+
+        // Generowanie 4 losowych opcji ABCD
+        function renderChoiceButtons() {
+            const container = document.getElementById('choices-container');
+            container.innerHTML = '';
+
+            const correctValue = (currentAskDirection === 'sym_to_name') ? currentItem.name : currentItem.symbol;
+            const allElements = getFilteredElements();
+
+            // Dobranie 3 błędnych dystraktorów
+            const pool = allElements.filter(e => e.symbol !== currentItem.symbol);
+            // Tasowanie dystraktorów
+            for (let i = pool.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [pool[i], pool[j]] = [pool[j], pool[i]];
+            }
+
+            const distractors = pool.slice(0, 3).map(e => (currentAskDirection === 'sym_to_name') ? e.name : e.symbol);
+            const options = [correctValue, ...distractors];
+
+            // Tasowanie 4 opcji
+            for (let i = options.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [options[i], options[j]] = [options[j], options[i]];
+            }
+
+            options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'choice-btn';
+                btn.innerText = opt;
+                btn.onclick = () => handleChoiceClick(opt, btn);
+                container.appendChild(btn);
+            });
+        }
+
+        // Obsługa wyboru z 4 opcji
+        function handleChoiceClick(selectedVal, clickedBtn) {
+            if (isAnswered) return;
+            isAnswered = true;
+
+            const correctValue = (currentAskDirection === 'sym_to_name') ? currentItem.name : currentItem.symbol;
+            const isCorrect = (selectedVal.trim().toLowerCase() === correctValue.trim().toLowerCase());
+
+            const allButtons = document.querySelectorAll('#choices-container .choice-btn');
+            allButtons.forEach(btn => {
+                btn.disabled = true;
+                if (btn.innerText.trim().toLowerCase() === correctValue.trim().toLowerCase()) {
+                    btn.classList.add('correct');
+                } else if (btn === clickedBtn && !isCorrect) {
+                    btn.classList.add('wrong');
+                }
+            });
+
+            processVerification(isCorrect, selectedVal);
+        }
+
+        // Obsługa zatwierdzenia formularza tekstowego
+        function handleInputSubmit(e) {
+            if (e) e.preventDefault();
+            if (isAnswered) return;
+
+            const inputField = document.getElementById('user-answer-input');
+            const rawVal = inputField.value.trim();
+            if (!rawVal) {
+                inputField.focus();
+                return;
+            }
+
+            isAnswered = true;
+            inputField.disabled = true;
+
+            let isCorrect = false;
+            let note = '';
+
+            if (currentAskDirection === 'sym_to_name') {
+                // Sprawdzamy nazwę (np. zelazo / żelazo)
+                const normInput = normalizeText(rawVal);
+                const normTarget = normalizeText(currentItem.name);
+
+                if (normInput === normTarget) {
+                    isCorrect = true;
+                    if (rawVal.toLowerCase() !== currentItem.name.toLowerCase()) {
+                        note = ` (Pamiętaj o polskich znakach: <strong>${currentItem.name}</strong>)`;
+                    }
+                }
+            } else {
+                // Sprawdzamy symbol (np. Fe / fe / FE)
+                if (rawVal.toLowerCase() === currentItem.symbol.toLowerCase()) {
+                    isCorrect = true;
+                    if (rawVal !== currentItem.symbol) {
+                        note = ` (Prawidłowy zapis wielkości liter: <strong>${currentItem.symbol}</strong>)`;
+                    }
+                }
+            }
+
+            processVerification(isCorrect, rawVal, note);
+        }
+
+        // Wspólne przetwarzanie wyniku (punkty, feedback, odsłonięcie kafelka)
+        function processVerification(isCorrect, userVal, note = '') {
+            // Odsłonięcie kafelka
+            const tileCenter = document.getElementById('tile-center');
+            const tileBottom = document.getElementById('tile-bottom');
+            tileCenter.innerText = currentItem.symbol;
+            tileBottom.innerText = currentItem.name;
+
+            const feedbackBox = document.getElementById('feedback-box');
+            const feedbackTitle = document.getElementById('feedback-title');
+            const feedbackDetails = document.getElementById('feedback-details');
+
+            if (isCorrect) {
+                correctCount++;
+                streak++;
+                feedbackBox.className = 'feedback-box correct';
+                feedbackTitle.innerHTML = `🎉 Brawo! Poprawna odpowiedź!${note}`;
+            } else {
+                wrongCount++;
+                streak = 0;
+                feedbackBox.className = 'feedback-box wrong';
+                feedbackTitle.innerHTML = `❌ Niepoprawnie!`;
+            }
+
+            // Statystyki
+            updateStats();
+
+            // Opis dydaktyczny
+            feedbackDetails.innerHTML = `
+                Pierwiastek: <strong>${currentItem.name}</strong> &bull; Symbol chemiczny: <strong>${currentItem.symbol}</strong><br>
+                Łacińska nazwa: <em>${currentItem.latin}</em> &bull; Typ: <strong>${currentItem.type}</strong><br>
+                Położenie w układzie: <strong>Grupa ${currentItem.group}</strong>, Okres ${currentItem.period} (Liczba atomowa Z = ${currentItem.z}).
+            `;
+
+            feedbackBox.style.display = 'block';
+
+            // Autofokus na przycisk następnego pytania
+            setTimeout(() => {
+                const nextBtn = document.getElementById('btn-next-question');
+                if (nextBtn) nextBtn.focus();
+            }, 200);
+        }
+
+        // Aktualizacja statystyk na belce
+        function updateStats() {
+            document.getElementById('stat-correct').innerText = correctCount;
+            document.getElementById('stat-wrong').innerText = wrongCount;
+            document.getElementById('stat-streak').innerText = streak;
+
+            const total = correctCount + wrongCount;
+            const pct = total > 0 ? Math.round((correctCount / total) * 100) : 100;
+            document.getElementById('stat-pct').innerText = pct + '%';
+        }
+
+        // Pokazanie podpowiedzi
+        function showHint() {
+            if (!currentItem) return;
+            let hintMsg = '';
+            if (currentAskDirection === 'sym_to_name') {
+                hintMsg = `💡 Podpowiedź: Pierwiastek leży w ${currentItem.group}. grupie, ma liczbę atomową Z = ${currentItem.z}. Pierwsza litera nazwy to: "${currentItem.name[0].toUpperCase()}..." (nazwa łacińska: ${currentItem.latin})`;
+            } else {
+                hintMsg = `💡 Podpowiedź: Symbol tego pierwiastka rozpoczyna się od litery "${currentItem.symbol[0]}", leży w ${currentItem.group}. grupie (okres ${currentItem.period}).`;
+            }
+            alert(hintMsg);
+        }
+
+        // Renderowanie ściągawki na dole strony
+        function renderCheatsheetGrids() {
+            const grp1Container = document.getElementById('grid-group-1');
+            const grp2Container = document.getElementById('grid-group-2');
+            const grp18Container = document.getElementById('grid-group-18');
+            const grpOtherContainer = document.getElementById('grid-group-other');
+
+            const createCard = (elem) => {
+                const card = document.createElement('div');
+                card.className = 'elem-mini-card';
+                card.innerHTML = `
+                    <div class="elem-mini-sym">${elem.symbol}</div>
+                    <div class="elem-mini-name">${elem.name}</div>
+                    <div class="elem-mini-group">Z=${elem.z} &bull; Gr. ${elem.group}</div>
+                `;
+                card.onclick = () => {
+                    currentItem = elem;
+                    nextQuestion(true);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                };
+                return card;
+            };
+
+            ELEMENTS.forEach(elem => {
+                if (elem.category === '1') grp1Container.appendChild(createCard(elem));
+                else if (elem.category === '2') grp2Container.appendChild(createCard(elem));
+                else if (elem.category === '18') grp18Container.appendChild(createCard(elem));
+                else if (elem.category === 'other') grpOtherContainer.appendChild(createCard(elem));
+            });
+
+            document.getElementById('count-all').innerText = ELEMENTS.length;
+        }
+
+        // Inicjalizacja przy załadowaniu strony
+        document.addEventListener('DOMContentLoaded', () => {
+            renderCheatsheetGrids();
+            resetAndShufflePool();
+            nextQuestion();
+        });
+    </script>
+</body>
+
+</html>
