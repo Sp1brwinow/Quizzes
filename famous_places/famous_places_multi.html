@@ -1535,8 +1535,8 @@
                         <div class="mp-form-group">
                             <label for="mp-select-pool">Pula miejsc zagadek:</label>
                             <select id="mp-select-pool" class="mp-select">
-                                <option value="easy">🏛️ Najsłynniejsze Miejsca Świata (25)</option>
-                                <option value="full">🌍 Wszystkie Miejsca Świata (95)</option>
+                                <option value="easy">🏛️ Najsłynniejsze Miejsca Świata</option>
+                                <option value="full">🌍 Wszystkie Miejsca Świata</option>
                             </select>
                         </div>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
@@ -1951,6 +1951,14 @@
             const easyCount = FAMOUS_PLACES_DB.filter(p => p.easy).length;
             document.getElementById('btn-mode-easy').innerHTML = `🏛️ Najsłynniejsze (${easyCount})`;
             document.getElementById('btn-mode-full').innerHTML = `🌍 Wszystkie Miejsca (${FAMOUS_PLACES_DB.length})`;
+
+            const selectPoolEl = document.getElementById('mp-select-pool');
+            if (selectPoolEl) {
+                selectPoolEl.innerHTML = `
+                    <option value="easy">🏛️ Najsłynniejsze Miejsca Świata (${easyCount})</option>
+                    <option value="full">🌍 Wszystkie Miejsca Świata (${FAMOUS_PLACES_DB.length})</option>
+                `;
+            }
 
             // Sprawdzenie parametru ?room=CODE w URL
             const urlParams = new URLSearchParams(window.location.search);
@@ -2480,11 +2488,46 @@
             roomRef = fbDb.ref('rooms/' + code);
             roomRef.on('value', onRoomUpdate);
 
-            // onDisconnect: jeśli wyjdzie Host -> status pokoju zmienia się na 'host_left'
-            if (isHost) {
-                roomRef.child('status').onDisconnect().set('host_left');
+            // Rejestracja obecności i onDisconnect
+            setupPresence(code);
+        }
+
+        // Pomocnicza funkcja konfigurująca obecność oraz onDisconnect
+        function setupPresence(code) {
+            if (!fbDb || !code) return;
+            const connectedRef = fbDb.ref('.info/connected');
+            if (window._presenceListener) {
+                connectedRef.off('value', window._presenceListener);
             }
-            roomRef.child('players/' + myPlayerId).onDisconnect().remove();
+            window._presenceListener = function(snap) {
+                if (snap.val() === true && isMultiplayer && roomRef) {
+                    if (window._evictionTimeout) {
+                        clearTimeout(window._evictionTimeout);
+                        window._evictionTimeout = null;
+                    }
+                    // Ustawienie onDisconnect po pomyślnym połączeniu
+                    if (isHost) {
+                        roomRef.child('status').onDisconnect().set('host_left');
+                    }
+                    roomRef.child('players/' + myPlayerId).onDisconnect().remove();
+
+                    // Upewnij się, że wpis gracza istnieje w pokoju (re-rejestracja w razie chwilowego zerwania)
+                    const nick = myPlayerName || validateNickname() || 'Gracz';
+                    roomRef.child('players/' + myPlayerId).transaction(currentData => {
+                        if (!currentData) {
+                            return {
+                                id: myPlayerId,
+                                name: nick,
+                                slot: mySlot,
+                                isHost: isHost,
+                                totalScore: 0
+                            };
+                        }
+                        return currentData; // jeśli istnieje, pozostaw nienaruszony
+                    });
+                }
+            };
+            connectedRef.on('value', window._presenceListener);
         }
 
         // 4. Obsługa zmian w pokoju na żywo
@@ -2508,10 +2551,41 @@
 
             const playersMap = roomData.players || {};
 
+            // Ochrona przed chwilowym brakiem wpisu gracza (np. chwilowy reconnect / onDisconnect)
             if (!playersMap[myPlayerId]) {
-                showToast("🚪 Zostałeś usunięty z pokoju.");
-                leaveMultiplayerRoom(false);
+                if (!window._evictionTimeout) {
+                    // Próba natychmiastowego przywrócenia rekordu gracza w pokoju
+                    if (roomRef && isMultiplayer) {
+                        const nick = myPlayerName || 'Gracz';
+                        roomRef.child('players/' + myPlayerId).set({
+                            id: myPlayerId,
+                            name: nick,
+                            slot: mySlot,
+                            isHost: isHost,
+                            totalScore: 0
+                        });
+                    }
+
+                    // Daj 5 sekund okresu karencji (grace period) zanim gracz zostanie definitywnie uznany za usuniętego
+                    window._evictionTimeout = setTimeout(() => {
+                        if (isMultiplayer && roomRef) {
+                            roomRef.child('players/' + myPlayerId).once('value').then(pSnap => {
+                                if (!pSnap.exists() && isMultiplayer) {
+                                    showToast("🚪 Zostałeś usunięty z pokoju.");
+                                    leaveMultiplayerRoom(false);
+                                }
+                            });
+                        }
+                        window._evictionTimeout = null;
+                    }, 5000);
+                }
                 return;
+            }
+
+            // Gracz jest obecny w pokoju - anuluj ewentualny licznik usunięcia
+            if (window._evictionTimeout) {
+                clearTimeout(window._evictionTimeout);
+                window._evictionTimeout = null;
             }
 
             mySlot = playersMap[myPlayerId].slot || 0;
@@ -2534,7 +2608,8 @@
                 // Aktualizacja podsumowania ustawień pokoju w lobby
                 const totalR = roomData.totalRounds || TOTAL_ROUNDS;
                 const rTime = roomData.roundTime || czas_zadania;
-                const poolName = (roomData.difficulty === 'full') ? 'Wszystkie (95)' : 'Najsłynniejsze (25)';
+                const easyPlacesCount = FAMOUS_PLACES_DB.filter(p => p.easy).length;
+                const poolName = (roomData.difficulty === 'full') ? `Wszystkie (${FAMOUS_PLACES_DB.length})` : `Najsłynniejsze (${easyPlacesCount})`;
                 const roundsEl = document.getElementById('mp-lobby-rounds-display');
                 const timeEl = document.getElementById('mp-lobby-time-display');
                 const poolEl = document.getElementById('mp-lobby-pool-display');
@@ -2981,6 +3056,15 @@
                 }
                 roomRef.off();
                 roomRef = null;
+            }
+
+            if (window._presenceListener && fbDb) {
+                fbDb.ref('.info/connected').off('value', window._presenceListener);
+                window._presenceListener = null;
+            }
+            if (window._evictionTimeout) {
+                clearTimeout(window._evictionTimeout);
+                window._evictionTimeout = null;
             }
 
             isMultiplayer = false;

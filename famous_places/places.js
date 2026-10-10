@@ -51,18 +51,6 @@ const FAMOUS_PLACES_DB = [
         desc: "Słynna wieża zegarowa Elizabeth Tower (potocznie Big Ben) przy siedzibie brytyjskiego parlamentu."
     },
     {
-        name: "Zamek w Malborku (Polska)",
-        lat: 54.0398,
-        lng: 19.028,
-        continent: "Europa",
-        category: "Średniowiecze / Twierdza",
-        easy: false,
-        img: "img/malbork.jpg",
-        license: "Unsplash / CC",
-        clue: "Największy zamek ceglany na świecie, dawna stolica Zakonu Krzyżackiego.",
-        desc: "Potężna twierdza krzyżacka nad rzeką Nogat, wpisana na listę światowego dziedzictwa UNESCO."
-    },
-    {
         name: "Pałac Kultury i Nauki (Warszawa, Polska)",
         lat: 52.2319,
         lng: 21.0067,
@@ -97,18 +85,6 @@ const FAMOUS_PLACES_DB = [
         license: "Unsplash / CC",
         clue: "Prehistoryczny kamienny krąg w południowej Anglii powiązany z przesileniem letnim.",
         desc: "Megalityczna budowla z epoki neolitu i brązu, składająca się z monumentalnych stojących głazów."
-    },
-    {
-        name: "Zamek Neuschwanstein (Bawaria, Niemcy)",
-        lat: 47.5576,
-        lng: 10.7498,
-        continent: "Europa",
-        category: "Architektura / Zamek",
-        easy: true,
-        img: "img/neuschwanstein.jpg",
-        license: "Unsplash / CC",
-        clue: "Bajkowy zamek króla Ludwika II w bawarskich Alpach, inspiracja dla Disneya.",
-        desc: "XIX-wieczny neoromański zamek rycerski wzniesiony na urwistej skale w południowej Bawarii."
     },
     {
         name: "Gejzer Strokkur (Islandia)",
@@ -217,19 +193,6 @@ const FAMOUS_PLACES_DB = [
         license: "Unsplash / CC",
         clue: "Piramida Cheopsa i monumentalny posąg lwa z ludzką twarzą na skraju Sahary.",
         desc: "Jedyne zachowane do dziś z siedmiu starożytnych cudów świata, grobowce faraonów sprzed 4500 lat."
-    },
-
-    {
-        name: "Góra Stołowa (Kapsztad, RPA)",
-        lat: -33.9628,
-        lng: 18.4098,
-        continent: "Afryka",
-        category: "Cuda Natury / Płaskowyż",
-        easy: false,
-        img: "img/table_mountain.jpg",
-        license: "Unsplash / CC",
-        clue: "Płaska jak stół góra z piaskowca górująca nad Zatoką Stołową w Afryce Południowej.",
-        desc: "Charakterystyczny szczyt o płaskiej wierzchowinie w Kapsztadzie, otoczony unikalną florą przylądkową."
     },
     {
         name: "Statua Wolności (Nowy Jork, USA)",

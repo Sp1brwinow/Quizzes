@@ -287,15 +287,46 @@
             this.roomRef = this.fbDb.ref('rooms/' + code);
             this.roomRef.on('value', (snap) => this.handleRoomUpdate(snap));
 
-            // onDisconnect: jeśli Host opuści pokój, status zmienia się na 'host_left'
-            if (this.isHost) {
-                this.roomRef.child('status').onDisconnect().set('host_left');
-            }
-            this.roomRef.child('players/' + this.myPlayerId).onDisconnect().remove();
+            this.setupPresence(code);
 
             if (this.callbacks.onConnected) {
                 this.callbacks.onConnected(code);
             }
+        }
+
+        setupPresence(code) {
+            if (!this.fbDb || !code) return;
+            const connectedRef = this.fbDb.ref('.info/connected');
+            if (this._presenceListener) {
+                connectedRef.off('value', this._presenceListener);
+            }
+            this._presenceListener = (snap) => {
+                if (snap.val() === true && this.isMultiplayer && this.roomRef) {
+                    if (this._evictionTimeout) {
+                        clearTimeout(this._evictionTimeout);
+                        this._evictionTimeout = null;
+                    }
+                    if (this.isHost) {
+                        this.roomRef.child('status').onDisconnect().set('host_left');
+                    }
+                    this.roomRef.child('players/' + this.myPlayerId).onDisconnect().remove();
+
+                    const nick = this.getNickname() || 'Gracz';
+                    this.roomRef.child('players/' + this.myPlayerId).transaction(currentData => {
+                        if (!currentData) {
+                            return {
+                                id: this.myPlayerId,
+                                name: nick,
+                                slot: this.mySlot,
+                                isHost: this.isHost,
+                                totalScore: 0
+                            };
+                        }
+                        return currentData;
+                    });
+                }
+            };
+            connectedRef.on('value', this._presenceListener);
         }
 
         handleRoomUpdate(snapshot) {
@@ -321,14 +352,41 @@
 
             const playersMap = this.roomData.players || {};
 
-            // Usunięty z pokoju
+            // Usunięty z pokoju (z okresem karencji)
             if (!playersMap[this.myPlayerId]) {
-                this.emitToast("🚪 Zostałeś usunięty z pokoju.", "info");
-                if (this.callbacks.onPlayerRemoved) {
-                    this.callbacks.onPlayerRemoved();
+                if (!this._evictionTimeout) {
+                    if (this.roomRef && this.isMultiplayer) {
+                        const nick = this.getNickname() || 'Gracz';
+                        this.roomRef.child('players/' + this.myPlayerId).set({
+                            id: this.myPlayerId,
+                            name: nick,
+                            slot: this.mySlot,
+                            isHost: this.isHost,
+                            totalScore: 0
+                        });
+                    }
+
+                    this._evictionTimeout = setTimeout(() => {
+                        if (this.isMultiplayer && this.roomRef) {
+                            this.roomRef.child('players/' + this.myPlayerId).once('value').then(pSnap => {
+                                if (!pSnap.exists() && this.isMultiplayer) {
+                                    this.emitToast("🚪 Zostałeś usunięty z pokoju.", "info");
+                                    if (this.callbacks.onPlayerRemoved) {
+                                        this.callbacks.onPlayerRemoved();
+                                    }
+                                    this.leaveRoom(false);
+                                }
+                            });
+                        }
+                        this._evictionTimeout = null;
+                    }, 5000);
                 }
-                this.leaveRoom(false);
                 return;
+            }
+
+            if (this._evictionTimeout) {
+                clearTimeout(this._evictionTimeout);
+                this._evictionTimeout = null;
             }
 
             this.mySlot = playersMap[this.myPlayerId].slot || 0;
@@ -484,6 +542,15 @@
                 }
                 this.roomRef.off();
                 this.roomRef = null;
+            }
+
+            if (this._presenceListener && this.fbDb) {
+                this.fbDb.ref('.info/connected').off('value', this._presenceListener);
+                this._presenceListener = null;
+            }
+            if (this._evictionTimeout) {
+                clearTimeout(this._evictionTimeout);
+                this._evictionTimeout = null;
             }
 
             this.isMultiplayer = false;
