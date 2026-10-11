@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <!-- Google Analytics Tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZP827DTZJ5"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-ZP827DTZJ5');
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stany USA i Prowincje Kanady – Interaktywny Quiz Mapowy (ABCD)</title>
+    <link rel="stylesheet" href="../style.css" />
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <style>
+        :root {
+            --bg-dark: #07152b;
+            --card-bg: rgba(15, 23, 42, 0.94);
+            --card-border: rgba(56, 189, 248, 0.35);
+            --primary: #38bdf8;
+            --primary-hover: #0284c7;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-rose: #f43f5e;
+            --accent-purple: #c084fc;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: linear-gradient(180deg, #051024 0%, #082142 45%, #0d3461 100%);
+            color: var(--text-main);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            padding: 16px 16px 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .main-container {
+            max-width: 1300px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Górna nawigacja */
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            background: rgba(14, 30, 56, 0.85);
+            border: 1px solid rgba(125, 211, 252, 0.4);
+            color: #7dd3fc;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(8px);
+        }
+
+        .nav-btn:hover {
+            color: #ffffff;
+            border-color: #38bdf8;
+            background: #0284c7;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.4);
+        }
+
+        /* Główny baner */
+        .quiz-banner {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.92) 100%);
+            border: 2px solid #38bdf8;
+            border-radius: 16px;
+            padding: 16px 24px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6), 0 0 25px rgba(56, 189, 248, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+
+        .banner-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .banner-icon {
+            font-size: 2.4rem;
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid #38bdf8;
+            width: 56px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+        }
+
+        .banner-text h1 {
+            font-size: 1.45rem;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: 0.5px;
+        }
+
+        .banner-text p {
+            color: #7dd3fc;
+            font-size: 0.9rem;
+            margin-top: 3px;
+        }
+
+        /* Pasek filtrów i statystyk */
+        .controls-card {
+            background: rgba(14, 30, 56, 0.92);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            padding: 14px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .mode-tabs {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .mode-tab-btn {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid #475569;
+            color: #cbd5e1;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .mode-tab-btn:hover {
+            border-color: #38bdf8;
+            color: #ffffff;
+        }
+
+        .mode-tab-btn.active {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            border-color: #38bdf8;
+            color: #ffffff;
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
+        }
+
+        .stats-badge {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: rgba(15, 23, 42, 0.9);
+            padding: 8px 16px;
+            border-radius: 10px;
+            border: 1px solid #334155;
+            font-size: 0.92rem;
+        }
+
+        .stats-badge b {
+            font-family: monospace;
+            font-size: 1.05rem;
+        }
+
+        .stats-badge b.correct {
+            color: #10b981;
+        }
+
+        .stats-badge b.wrong {
+            color: #f43f5e;
+        }
+
+        /* Układ dwukolumnowy: Mapa po lewej, Pytanie po prawej */
+        .game-layout {
+            display: grid;
+            grid-template-columns: 1.25fr 1fr;
+            gap: 18px;
+            width: 100%;
+        }
+
+        @media (max-width: 950px) {
+            .game-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Kontener mapy Leaflet */
+        .map-card {
+            background: rgba(15, 23, 42, 0.96);
+            border: 2px solid var(--card-border);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            min-height: 520px;
+        }
+
+        .map-container {
+            width: 100%;
+            height: 100%;
+            min-height: 480px;
+            flex: 1;
+            background: #0f172a;
+        }
+
+        .map-footer-bar {
+            background: rgba(15, 23, 42, 0.95);
+            border-top: 1px solid #334155;
+            padding: 10px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            color: #94a3b8;
+        }
+
+        /* Panel pytania po prawej */
+        .quiz-panel {
+            background: rgba(15, 23, 42, 0.96);
+            border: 2px solid var(--card-border);
+            border-radius: 16px;
+            padding: 22px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+        }
+
+        .target-prompt-box {
+            background: linear-gradient(135deg, rgba(2, 132, 199, 0.15) 0%, rgba(14, 30, 56, 0.6) 100%);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .target-prompt-box h3 {
+            font-size: 1.15rem;
+            color: #ffffff;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .target-prompt-box p {
+            font-size: 0.9rem;
+            color: #7dd3fc;
+        }
+
+        .highlight-tag {
+            display: inline-block;
+            background: rgba(251, 191, 36, 0.2);
+            border: 1px solid #fbbf24;
+            color: #fbbf24;
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            margin-top: 6px;
+        }
+
+        /* Przyciski opcji ABCD */
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .opt-btn {
+            background: rgba(30, 41, 59, 0.85);
+            border: 2px solid #334155;
+            border-radius: 12px;
+            padding: 13px 16px;
+            color: #f8fafc;
+            font-size: 0.98rem;
+            font-weight: 600;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .opt-letter {
+            width: 32px;
+            height: 32px;
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid #38bdf8;
+            color: #38bdf8;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+            transition: all 0.2s ease;
+        }
+
+        .opt-btn:hover:not(:disabled) {
+            border-color: #38bdf8;
+            background: #1e293b;
+            transform: translateX(4px);
+            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);
+        }
+
+        .opt-btn:disabled {
+            cursor: default;
+        }
+
+        .opt-btn.correct {
+            background: rgba(16, 185, 129, 0.25) !important;
+            border-color: #10b981 !important;
+            color: #ffffff !important;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+        }
+
+        .opt-btn.correct .opt-letter {
+            background: #10b981;
+            color: #ffffff;
+            border-color: #10b981;
+        }
+
+        .opt-btn.wrong {
+            background: rgba(244, 63, 94, 0.25) !important;
+            border-color: #f43f5e !important;
+            color: #ffffff !important;
+        }
+
+        .opt-btn.wrong .opt-letter {
+            background: #f43f5e;
+            color: #ffffff;
+            border-color: #f43f5e;
+        }
+
+        /* Pasek feedbacku */
+        .feedback-box {
+            display: none;
+            padding: 14px 18px;
+            border-radius: 12px;
+            background: rgba(30, 41, 59, 0.95);
+            border-left: 5px solid #38bdf8;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .feedback-box.correct {
+            border-left-color: #10b981;
+            background: rgba(16, 185, 129, 0.14);
+        }
+
+        .feedback-box.wrong {
+            border-left-color: #f43f5e;
+            background: rgba(244, 63, 94, 0.14);
+        }
+
+        .feedback-status {
+            font-size: 1.05rem;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .feedback-status.correct {
+            color: #10b981;
+        }
+
+        .feedback-status.wrong {
+            color: #f43f5e;
+        }
+
+        .feedback-text {
+            color: #cbd5e1;
+            font-size: 0.92rem;
+            line-height: 1.45;
+        }
+
+        .btn-next-round {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+            width: 100%;
+        }
+
+        .btn-next-round:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.6);
+        }
+
+        /* Ekran podsumowania */
+        .summary-card {
+            display: none;
+            background: rgba(15, 23, 42, 0.98);
+            border: 2px solid #38bdf8;
+            border-radius: 16px;
+            padding: 35px 30px;
+            text-align: center;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7);
+            width: 100%;
+        }
+
+        .summary-card.active {
+            display: block;
+        }
+
+        .summary-title {
+            font-size: 1.9rem;
+            color: #ffffff;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .summary-score {
+            font-size: 3.2rem;
+            font-weight: 900;
+            font-family: monospace;
+            color: #38bdf8;
+            margin: 12px 0;
+            text-shadow: 0 0 20px rgba(56, 189, 248, 0.5);
+        }
+
+        .summary-badge {
+            display: inline-block;
+            background: rgba(251, 191, 36, 0.18);
+            border: 1px solid #fbbf24;
+            color: #fbbf24;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+        }
+
+        .summary-btns {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main-container">
+        <!-- Górna nawigacja -->
+        <nav class="top-nav">
+            <a href="../pomocnicze.html" class="nav-btn">
+                ← Powrót do bazy quizów
+            </a>
+            <a href="podz_adm_USA_Can.html" class="nav-btn">
+                📝 Podział administracyjny (100 pytań)
+            </a>
+            <a href="odkrycia_ameryka_3d.html" class="nav-btn">
+                🧭 Odkrycia w Ameryce 3D
+            </a>
+            <a href="../famous_places/famous_places_single.html" class="nav-btn">
+                📸 Famous Places
+            </a>
+            <a href="../index.html" class="nav-btn">
+                🏠 Strona główna
+            </a>
+        </nav>
+
+        <!-- Baner główny -->
+        <header class="quiz-banner">
+            <div class="banner-left">
+                <div class="banner-icon">🗺️</div>
+                <div class="banner-text">
+                    <h1>Stany USA i Prowincje Kanady – Quiz Mapowy</h1>
+                    <p>Rozpoznaj podświetloną na mapie jednostkę administracyjną (50 stanów USA, 10 prowincji i 3 terytoria Kanady)</p>
+                </div>
+            </div>
+            <div class="stats-badge">
+                <span>Runda: <b id="stat-round">1 / 20</b></span>
+                <span>Trafienia: <b id="stat-correct" class="correct">0</b></span>
+                <span>Błędy: <b id="stat-wrong" class="wrong">0</b></span>
+            </div>
+        </header>
+
+        <!-- Panel kontroli trybu -->
+        <div class="controls-card">
+            <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                <span style="font-size:0.88rem; color:#94a3b8; font-weight:600;">Wybierz obszar:</span>
+                <div class="mode-tabs">
+                    <button type="button" class="mode-tab-btn active" id="btn-mode-all" onclick="changeMode('all')">
+                        🌎 USA & Kanada (64)
+                    </button>
+                    <button type="button" class="mode-tab-btn" id="btn-mode-usa" onclick="changeMode('usa')">
+                        🇺🇸 Stany USA (51)
+                    </button>
+                    <button type="button" class="mode-tab-btn" id="btn-mode-canada" onclick="changeMode('canada')">
+                        🇨🇦 Prowincje Kanady (13)
+                    </button>
+                    <button type="button" class="mode-tab-btn" id="btn-mode-series20" onclick="changeMode('series20')">
+                        🎲 Szybka seria (20 rund)
+                    </button>
+                </div>
+            </div>
+
+            <button type="button" class="mode-tab-btn" onclick="restartGame()" style="background:rgba(239,68,68,0.15); border-color:#ef4444; color:#f87171;">
+                🔄 Zresetuj grę
+            </button>
+        </div>
+
+        <!-- Układ gry (Mapa + Pytanie) -->
+        <div class="game-layout" id="game-layout">
+            <!-- Lewa strona: Mapa Leaflet -->
+            <div class="map-card">
+                <div id="map" class="map-container"></div>
+                <div class="map-footer-bar">
+                    <span id="map-hint">💡 <strong>Wskazówka:</strong> Możesz przesuwać i przybliżać mapę kółkiem myszy.</span>
+                    <span id="map-zoom-reset" style="cursor:pointer; color:#38bdf8;" onclick="resetMapView()">🔍 Resetuj widok</span>
+                </div>
+            </div>
+
+            <!-- Prawa strona: Pytanie i wybór ABCD -->
+            <div class="quiz-panel">
+                <div class="target-prompt-box">
+                    <h3>🎯 Jaka to jednostka administracyjna?</h3>
+                    <p>Zwróć uwagę na podświetlony na <strong>złoto/pomarańczowo</strong> obszar na mapie.</p>
+                    <span class="highlight-tag" id="target-region-hint">Kraj: Stany Zjednoczone / Kanada</span>
+                </div>
+
+                <div class="options-list" id="options-list">
+                    <button type="button" class="opt-btn" onclick="handleGuess(0)">
+                        <span class="opt-letter">A</span>
+                        <span class="opt-text" id="opt-text-0">-</span>
+                    </button>
+                    <button type="button" class="opt-btn" onclick="handleGuess(1)">
+                        <span class="opt-letter">B</span>
+                        <span class="opt-text" id="opt-text-1">-</span>
+                    </button>
+                    <button type="button" class="opt-btn" onclick="handleGuess(2)">
+                        <span class="opt-letter">C</span>
+                        <span class="opt-text" id="opt-text-2">-</span>
+                    </button>
+                    <button type="button" class="opt-btn" onclick="handleGuess(3)">
+                        <span class="opt-letter">D</span>
+                        <span class="opt-text" id="opt-text-3">-</span>
+                    </button>
+                </div>
+
+                <!-- Feedback -->
+                <div class="feedback-box" id="feedback-box">
+                    <div class="feedback-status" id="feedback-status">Świetnie!</div>
+                    <div class="feedback-text" id="feedback-text">Opis stanu/prowincji i stolica.</div>
+                </div>
+
+                <button type="button" class="btn-next-round" id="btn-next-round" onclick="nextRound()">
+                    Kolejne pytanie (Spacja lub Enter) ➔
+                </button>
+            </div>
+        </div>
+
+        <!-- Ekran podsumowania -->
+        <div class="summary-card" id="summary-card">
+            <h2 class="summary-title">🎉 Koniec Quizu Mapowego!</h2>
+            <p style="color:#94a3b8; font-size:1.05rem;">Twój wynik końcowy:</p>
+            <div class="summary-score" id="summary-score">18 / 20</div>
+            <div class="summary-badge" id="summary-badge">🏆 Kartograficzny Ekspert Ameryki Północnej!</div>
+            <div class="summary-btns">
+                <button type="button" class="nav-btn" onclick="restartGame()" style="font-size:1rem; padding:12px 24px;">
+                    🔄 Zagraj ponownie
+                </button>
+                <a href="../pomocnicze.html" class="nav-btn" style="font-size:1rem; padding:12px 24px;">
+                    📚 Wróć do bazy pomocy dydaktycznych
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- GeoJSON granice stanów USA i prowincji Kanady -->
+    <script src="us_ca_states.geojson.js"></script>
+
+    <!-- Metadane, polskie nazwy i stolice -->
+    <script src="states_meta.js"></script>
+
+    <script>
+        // =========================================================
+        // LOGIKA INTERAKTYWNA QUIZU MAPOWEGO
+        // =========================================================
+        let map = null;
+        let geojsonLayer = null;
+        let currentMode = 'all'; // 'all', 'usa', 'canada', 'series20'
+        let activePool = [];
+        let currentRound = 0;
+        let totalRounds = 20;
+        let correctCount = 0;
+        let wrongCount = 0;
+        let currentTarget = null;
+        let isAnswered = false;
+        let currentOptions = [];
+
+        // Inicjalizacja Mapy Leaflet
+        function initMap() {
+            map = L.map('map', {
+                center: [45, -96],
+                zoom: 3.5,
+                minZoom: 2.5,
+                maxZoom: 10
+            });
+
+            // Ciemny kafelek CartoDB Dark Matter
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+                subdomains: 'abcd',
+                maxZoom: 19
+            }).addTo(map);
+
+            renderGeoJson();
+        }
+
+        function resetMapView() {
+            if (currentTarget && currentTarget.layer) {
+                map.fitBounds(currentTarget.layer.getBounds(), { padding: [50, 50], maxZoom: 6 });
+            } else {
+                map.setView([45, -96], 3.5);
+            }
+        }
+
+        // Podstawowy styl granic
+        function defaultStyle(feature) {
+            return {
+                fillColor: feature.properties.country === 'Kanada' ? '#0369a1' : '#1e3a8a',
+                weight: 1.2,
+                opacity: 0.9,
+                color: '#38bdf8',
+                fillOpacity: 0.35
+            };
+        }
+
+        // Styl podświetlonego stanu/prowincji
+        const targetStyle = {
+            fillColor: '#f59e0b',
+            weight: 3.5,
+            opacity: 1,
+            color: '#fbbf24',
+            fillOpacity: 0.85
+        };
+
+        const correctStyle = {
+            fillColor: '#10b981',
+            weight: 3,
+            opacity: 1,
+            color: '#34d399',
+            fillOpacity: 0.8
+        };
+
+        const wrongStyle = {
+            fillColor: '#ef4444',
+            weight: 3,
+            opacity: 1,
+            color: '#f87171',
+            fillOpacity: 0.8
+        };
+
+        function renderGeoJson() {
+            if (geojsonLayer) {
+                map.removeLayer(geojsonLayer);
+            }
+
+            geojsonLayer = L.geoJSON(US_CA_GEOJSON, {
+                style: defaultStyle
+            }).addTo(map);
+        }
+
+        function changeMode(mode) {
+            currentMode = mode;
+            document.querySelectorAll('.mode-tab-btn').forEach(btn => btn.classList.remove('active'));
+            if (mode === 'all') document.getElementById('btn-mode-all').classList.add('active');
+            if (mode === 'usa') document.getElementById('btn-mode-usa').classList.add('active');
+            if (mode === 'canada') document.getElementById('btn-mode-canada').classList.add('active');
+            if (mode === 'series20') document.getElementById('btn-mode-series20').classList.add('active');
+
+            restartGame();
+        }
+
+        function restartGame() {
+            preparePool();
+            currentRound = 0;
+            correctCount = 0;
+            wrongCount = 0;
+            isAnswered = false;
+
+            document.getElementById('game-layout').style.display = 'grid';
+            document.getElementById('summary-card').classList.remove('active');
+
+            updateStats();
+            nextRound();
+        }
+
+        function preparePool() {
+            let features = US_CA_GEOJSON.features;
+            if (currentMode === 'usa') {
+                features = features.filter(f => f.properties.country === 'USA');
+            } else if (currentMode === 'canada') {
+                features = features.filter(f => f.properties.country === 'Kanada');
+            }
+
+            // Losowe przetasowanie
+            activePool = [...features].sort(() => Math.random() - 0.5);
+
+            if (currentMode === 'series20') {
+                totalRounds = Math.min(20, activePool.length);
+                activePool = activePool.slice(0, 20);
+            } else {
+                totalRounds = activePool.length;
+            }
+        }
+
+        function updateStats() {
+            document.getElementById('stat-round').innerText = `${Math.min(currentRound, totalRounds)} / ${totalRounds}`;
+            document.getElementById('stat-correct').innerText = correctCount;
+            document.getElementById('stat-wrong').innerText = wrongCount;
+        }
+
+        function nextRound() {
+            if (currentRound >= totalRounds || currentRound >= activePool.length) {
+                showSummary();
+                return;
+            }
+
+            isAnswered = false;
+            document.getElementById('feedback-box').style.display = 'none';
+            document.getElementById('btn-next-round').style.display = 'none';
+
+            // Zresetuj styl poprzednich warstw
+            geojsonLayer.eachLayer(layer => {
+                geojsonLayer.resetStyle(layer);
+            });
+
+            const targetFeature = activePool[currentRound];
+            currentRound++;
+            updateStats();
+
+            // Znajdź warstwę Leaflet dla wylosowanego obiektu
+            let targetLayer = null;
+            geojsonLayer.eachLayer(layer => {
+                if (layer.feature && layer.feature.properties.name === targetFeature.properties.name) {
+                    targetLayer = layer;
+                }
+            });
+
+            currentTarget = {
+                feature: targetFeature,
+                layer: targetLayer,
+                meta: STATES_PROVINCES_META[targetFeature.properties.name] || {}
+            };
+
+            // Podświetlenie na mapie i centrowanie
+            if (targetLayer) {
+                targetLayer.setStyle(targetStyle);
+                targetLayer.bringToFront();
+                map.fitBounds(targetLayer.getBounds(), { padding: [40, 40], maxZoom: 6 });
+            }
+
+            const countryName = targetFeature.properties.country === 'Kanada' ? '🇨🇦 Kanada' : '🇺🇸 Stany Zjednoczone';
+            const typeName = currentTarget.meta.type || 'Jednostka terytorialna';
+            document.getElementById('target-region-hint').innerText = `${countryName} • ${typeName}`;
+
+            generateOptions(targetFeature);
+        }
+
+        function generateOptions(targetFeature) {
+            const correctName = targetFeature.properties.name;
+            const correctPl = currentTarget.meta.pl || correctName;
+
+            // Dystraktory z tej samej puli geograficznej lub ogólnej
+            const sameCountryFeatures = US_CA_GEOJSON.features.filter(f => 
+                f.properties.country === targetFeature.properties.country && f.properties.name !== correctName
+            );
+
+            const shuffledDistractors = sameCountryFeatures.sort(() => Math.random() - 0.5);
+            const distractors = shuffledDistractors.slice(0, 3).map(f => {
+                const meta = STATES_PROVINCES_META[f.properties.name] || {};
+                return {
+                    name: f.properties.name,
+                    label: meta.pl ? `${meta.pl} (${f.properties.name})` : f.properties.name,
+                    isCorrect: false
+                };
+            });
+
+            const correctOption = {
+                name: correctName,
+                label: currentTarget.meta.pl ? `${currentTarget.meta.pl} (${correctName})` : correctName,
+                isCorrect: true
+            };
+
+            // Wymieszaj 4 opcje
+            currentOptions = [correctOption, ...distractors].sort(() => Math.random() - 0.5);
+
+            const optButtons = document.querySelectorAll('.opt-btn');
+            optButtons.forEach((btn, idx) => {
+                btn.disabled = false;
+                btn.className = 'opt-btn';
+                document.getElementById(`opt-text-${idx}`).innerText = currentOptions[idx].label;
+            });
+        }
+
+        function handleGuess(selectedIndex) {
+            if (isAnswered) return;
+            isAnswered = true;
+
+            const selected = currentOptions[selectedIndex];
+            const optButtons = document.querySelectorAll('.opt-btn');
+            optButtons.forEach(btn => btn.disabled = true);
+
+            const isCorrect = selected.isCorrect;
+            if (isCorrect) {
+                correctCount++;
+                optButtons[selectedIndex].classList.add('correct');
+                if (currentTarget.layer) currentTarget.layer.setStyle(correctStyle);
+            } else {
+                wrongCount++;
+                optButtons[selectedIndex].classList.add('wrong');
+                // Podświetl prawidłową opcję
+                currentOptions.forEach((opt, idx) => {
+                    if (opt.isCorrect) optButtons[idx].classList.add('correct');
+                });
+                if (currentTarget.layer) currentTarget.layer.setStyle(wrongStyle);
+            }
+
+            updateStats();
+            showFeedback(isCorrect);
+        }
+
+        function showFeedback(isCorrect) {
+            const fbBox = document.getElementById('feedback-box');
+            const fbStatus = document.getElementById('feedback-status');
+            const fbText = document.getElementById('feedback-text');
+
+            fbBox.style.display = 'block';
+            if (isCorrect) {
+                fbBox.className = 'feedback-box correct';
+                fbStatus.className = 'feedback-status correct';
+                fbStatus.innerHTML = '✅ Znakomicie! Prawidłowa odpowiedź.';
+            } else {
+                fbBox.className = 'feedback-box wrong';
+                fbStatus.className = 'feedback-status wrong';
+                fbStatus.innerHTML = `❌ Błąd! To: <strong>${currentTarget.meta.pl || currentTarget.feature.properties.name}</strong>`;
+            }
+
+            const cap = currentTarget.meta.capital ? ` • Stolica: <strong>${currentTarget.meta.capital}</strong>` : '';
+            fbText.innerHTML = `Region: <strong>${currentTarget.meta.pl} (${currentTarget.feature.properties.name})</strong> [${currentTarget.meta.type || ''}]${cap}.`;
+
+            document.getElementById('btn-next-round').style.display = 'inline-flex';
+        }
+
+        function showSummary() {
+            document.getElementById('game-layout').style.display = 'none';
+            const sumCard = document.getElementById('summary-card');
+            sumCard.classList.add('active');
+
+            document.getElementById('summary-score').innerText = `${correctCount} / ${totalRounds}`;
+            const pct = Math.round((correctCount / totalRounds) * 100);
+
+            let rank = "";
+            if (pct >= 90) rank = "🥇 Kartograficzny Mistrz Ameryki Północnej! (Bezbłędna orientacja na mapie!)";
+            else if (pct >= 70) rank = "🥈 Doświadczony Nawigator! (Znakomita znajomość granic stanów i prowincji!)";
+            else if (pct >= 50) rank = "🥉 Dobry Podróżnik! (Niezła orientacja, z drobnymi pomyłkami!)";
+            else rank = "🧭 Ambitny Odkrywca! (Ćwicz dalej, mapa Ameryki Północnej kryje jeszcze tajemnice!)";
+
+            document.getElementById('summary-badge').innerText = rank;
+        }
+
+        // Skróty klawiszowe
+        document.addEventListener('keydown', (e) => {
+            if (!isAnswered) {
+                if (e.key === '1' || e.key.toLowerCase() === 'a') handleGuess(0);
+                else if (e.key === '2' || e.key.toLowerCase() === 'b') handleGuess(1);
+                else if (e.key === '3' || e.key.toLowerCase() === 'c') handleGuess(2);
+                else if (e.key === '4' || e.key.toLowerCase() === 'd') handleGuess(3);
+            } else {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    nextRound();
+                }
+            }
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initMap();
+            restartGame();
+        });
+    </script>
+</body>
+
+</html>
