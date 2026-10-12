@@ -1313,6 +1313,9 @@
                     <button type="button" class="mode-toggle-btn" id="btn-mode-usacan" onclick="setGameDifficulty('usacan')">
                         🗽 USA i Kanada (50)
                     </button>
+                    <button type="button" class="mode-toggle-btn" id="btn-mode-neighbors" onclick="setGameDifficulty('neighbors')">
+                        🤝 Sąsiedzi Polski (56)
+                    </button>
                 </div>
 
                 <div class="round-stats-badge">
@@ -1540,6 +1543,7 @@
                             <select id="mp-select-pool" class="mp-select">
                                 <option value="easy">🏛️ Najsłynniejsze Miejsca Świata</option>
                                 <option value="usacan">🗽 USA i Kanada (50 miejsc)</option>
+                                <option value="neighbors">🤝 Sąsiedzi Polski (56 miejsc)</option>
                                 <option value="full">🌍 Wszystkie Miejsca Świata</option>
                             </select>
                         </div>
@@ -1695,9 +1699,10 @@
         let mpOtherMarkers = [];
         let mpOtherLines = [];
 
-        // Filtrowana lista dla trybu łatwego oraz USA i Kanada
+        // Filtrowana lista dla trybu łatwego, USA i Kanada oraz Sąsiadów Polski
         const EASY_PLACES = FAMOUS_PLACES_DB.filter(p => p.easy);
         const USA_CAN_PLACES = FAMOUS_PLACES_DB.filter(p => p.name.includes('USA') || p.name.includes('Kanada') || p.name.includes('Stany Zjednoczone'));
+        const NEIGHBORS_PLACES = FAMOUS_PLACES_DB.filter(p => p.neighbor);
 
         // =========================================================================
         // STAN GRY I LICZNIK CZASU (20s NA PYTANIE)
@@ -1709,7 +1714,7 @@
         let revealTimerInterval = null;
         let currentRevealRound = null;
 
-        let gameDifficulty = 'easy'; // 'easy' | 'full' | 'usacan'
+        let gameDifficulty = 'easy'; // 'easy' | 'full' | 'usacan' | 'neighbors'
         let currentRound = 1;
         let lastLoadedMpRound = 0; // Śledzenie załadowanej rundy w trybie multiplayer
         let totalNegativeKm = 0; // w dziesiątkach km (x 10 km)
@@ -1881,15 +1886,20 @@
             document.getElementById('btn-mode-full').classList.toggle('active', mode === 'full');
             const btnUsaCan = document.getElementById('btn-mode-usacan');
             if (btnUsaCan) btnUsaCan.classList.toggle('active', mode === 'usacan');
+            const btnNeighbors = document.getElementById('btn-mode-neighbors');
+            if (btnNeighbors) btnNeighbors.classList.toggle('active', mode === 'neighbors');
 
             const easyCount = EASY_PLACES.length;
             const fullCount = FAMOUS_PLACES_DB.length;
             const usaCount = USA_CAN_PLACES.length;
+            const neighborsCount = NEIGHBORS_PLACES.length;
 
             if (mode === 'easy') {
                 showToast(`🏛️ Wybrano Najsłynniejsze Miejsca (${easyCount})`);
             } else if (mode === 'usacan') {
                 showToast(`🗽 Wybrano USA i Kanada (${usaCount})`);
+            } else if (mode === 'neighbors') {
+                showToast(`🤝 Wybrano Sąsiadów Polski (${neighborsCount})`);
             } else {
                 showToast(`🌍 Wybrano Wszystkie Miejsca Świata (${fullCount})`);
             }
@@ -1902,6 +1912,7 @@
         function getActivePool() {
             if (gameDifficulty === 'easy') return EASY_PLACES;
             if (gameDifficulty === 'usacan') return USA_CAN_PLACES;
+            if (gameDifficulty === 'neighbors') return NEIGHBORS_PLACES;
             return FAMOUS_PLACES_DB;
         }
 
@@ -1971,6 +1982,8 @@
             document.getElementById('btn-mode-full').innerHTML = `🌍 Wszystkie Miejsca (${FAMOUS_PLACES_DB.length})`;
             const btnUsaCan = document.getElementById('btn-mode-usacan');
             if (btnUsaCan) btnUsaCan.innerHTML = `🗽 USA i Kanada (${USA_CAN_PLACES.length})`;
+            const btnNeighbors = document.getElementById('btn-mode-neighbors');
+            if (btnNeighbors) btnNeighbors.innerHTML = `🤝 Sąsiedzi Polski (${NEIGHBORS_PLACES.length})`;
 
             const selectPoolEl = document.getElementById('mp-select-pool');
             if (selectPoolEl) {
@@ -2287,6 +2300,7 @@
                     let pool = FAMOUS_PLACES_DB;
                     if (roomData.difficulty === 'easy') pool = EASY_PLACES;
                     else if (roomData.difficulty === 'usacan') pool = USA_CAN_PLACES;
+                    else if (roomData.difficulty === 'neighbors') pool = NEIGHBORS_PLACES;
                     const poolIndices = pool.map(p => FAMOUS_PLACES_DB.indexOf(p));
                     const selectedIndices = [];
                     while (selectedIndices.length < totalR && poolIndices.length > 0) {
@@ -2387,6 +2401,7 @@
             let pool = FAMOUS_PLACES_DB;
             if (poolType === 'easy') pool = EASY_PLACES;
             else if (poolType === 'usacan') pool = USA_CAN_PLACES;
+            else if (poolType === 'neighbors') pool = NEIGHBORS_PLACES;
             const poolIndices = pool.map(p => FAMOUS_PLACES_DB.indexOf(p));
             const selectedIndices = [];
             while (selectedIndices.length < roundsCount && poolIndices.length > 0) {
@@ -2636,6 +2651,7 @@
                 let poolName = 'Najsłynniejsze';
                 if (roomData.difficulty === 'full') poolName = `Wszystkie (${FAMOUS_PLACES_DB.length})`;
                 else if (roomData.difficulty === 'usacan') poolName = `USA i Kanada (${USA_CAN_PLACES.length})`;
+                else if (roomData.difficulty === 'neighbors') poolName = `Sąsiedzi Polski (${NEIGHBORS_PLACES.length})`;
                 else poolName = `Najsłynniejsze (${EASY_PLACES.length})`;
                 const roundsEl = document.getElementById('mp-lobby-rounds-display');
                 const timeEl = document.getElementById('mp-lobby-time-display');
