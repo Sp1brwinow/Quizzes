@@ -1305,10 +1305,13 @@
                 <div class="mode-toggle-group" id="mode-toggle-group">
                     <span class="mode-label">Pula:</span>
                     <button type="button" class="mode-toggle-btn active" id="btn-mode-easy" onclick="setGameDifficulty('easy')">
-                        🏛️ Najsłynniejsze (20)
+                        🏛️ Najsłynniejsze
                     </button>
                     <button type="button" class="mode-toggle-btn" id="btn-mode-full" onclick="setGameDifficulty('full')">
-                        🌍 Wszystkie Miejsca (34)
+                        🌍 Wszystkie Miejsca
+                    </button>
+                    <button type="button" class="mode-toggle-btn" id="btn-mode-usacan" onclick="setGameDifficulty('usacan')">
+                        🗽 USA i Kanada (50)
                     </button>
                 </div>
 
@@ -1536,6 +1539,7 @@
                             <label for="mp-select-pool">Pula miejsc zagadek:</label>
                             <select id="mp-select-pool" class="mp-select">
                                 <option value="easy">🏛️ Najsłynniejsze Miejsca Świata</option>
+                                <option value="usacan">🗽 USA i Kanada (50 miejsc)</option>
                                 <option value="full">🌍 Wszystkie Miejsca Świata</option>
                             </select>
                         </div>
@@ -1691,8 +1695,9 @@
         let mpOtherMarkers = [];
         let mpOtherLines = [];
 
-        // Filtrowana lista dla trybu łatwego
+        // Filtrowana lista dla trybu łatwego oraz USA i Kanada
         const EASY_PLACES = FAMOUS_PLACES_DB.filter(p => p.easy);
+        const USA_CAN_PLACES = FAMOUS_PLACES_DB.filter(p => p.name.includes('USA') || p.name.includes('Kanada') || p.name.includes('Stany Zjednoczone'));
 
         // =========================================================================
         // STAN GRY I LICZNIK CZASU (20s NA PYTANIE)
@@ -1704,7 +1709,7 @@
         let revealTimerInterval = null;
         let currentRevealRound = null;
 
-        let gameDifficulty = 'easy'; // 'easy' (20 miejsc) | 'full' (34 miejsca)
+        let gameDifficulty = 'easy'; // 'easy' | 'full' | 'usacan'
         let currentRound = 1;
         let lastLoadedMpRound = 0; // Śledzenie załadowanej rundy w trybie multiplayer
         let totalNegativeKm = 0; // w dziesiątkach km (x 10 km)
@@ -1874,9 +1879,20 @@
             gameDifficulty = mode;
             document.getElementById('btn-mode-easy').classList.toggle('active', mode === 'easy');
             document.getElementById('btn-mode-full').classList.toggle('active', mode === 'full');
+            const btnUsaCan = document.getElementById('btn-mode-usacan');
+            if (btnUsaCan) btnUsaCan.classList.toggle('active', mode === 'usacan');
 
-            const easyCount = FAMOUS_PLACES_DB.filter(p => p.easy).length;
-            showToast(mode === 'easy' ? `🏛️ Wybrano Najsłynniejsze Miejsca (${easyCount})` : `🌍 Wybrano Wszystkie Miejsca Świata (${FAMOUS_PLACES_DB.length})`);
+            const easyCount = EASY_PLACES.length;
+            const fullCount = FAMOUS_PLACES_DB.length;
+            const usaCount = USA_CAN_PLACES.length;
+
+            if (mode === 'easy') {
+                showToast(`🏛️ Wybrano Najsłynniejsze Miejsca (${easyCount})`);
+            } else if (mode === 'usacan') {
+                showToast(`🗽 Wybrano USA i Kanada (${usaCount})`);
+            } else {
+                showToast(`🌍 Wybrano Wszystkie Miejsca Świata (${fullCount})`);
+            }
 
             if (currentRound === 1 && !isRoundFinished) {
                 startRound(1);
@@ -1884,7 +1900,9 @@
         }
 
         function getActivePool() {
-            return gameDifficulty === 'easy' ? EASY_PLACES : FAMOUS_PLACES_DB;
+            if (gameDifficulty === 'easy') return EASY_PLACES;
+            if (gameDifficulty === 'usacan') return USA_CAN_PLACES;
+            return FAMOUS_PLACES_DB;
         }
 
         // =========================================================================
@@ -1896,7 +1914,7 @@
                 maxZoom: 18
             });
 
-            const satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{x}/{y}', {
+            const satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
                 attribution: '&copy; Esri & Earthstar Geographics',
                 maxZoom: 18
             });
@@ -1948,14 +1966,17 @@
                 document.getElementById('btn-submit-guess').disabled = false;
             });
 
-            const easyCount = FAMOUS_PLACES_DB.filter(p => p.easy).length;
+            const easyCount = EASY_PLACES.length;
             document.getElementById('btn-mode-easy').innerHTML = `🏛️ Najsłynniejsze (${easyCount})`;
             document.getElementById('btn-mode-full').innerHTML = `🌍 Wszystkie Miejsca (${FAMOUS_PLACES_DB.length})`;
+            const btnUsaCan = document.getElementById('btn-mode-usacan');
+            if (btnUsaCan) btnUsaCan.innerHTML = `🗽 USA i Kanada (${USA_CAN_PLACES.length})`;
 
             const selectPoolEl = document.getElementById('mp-select-pool');
             if (selectPoolEl) {
                 selectPoolEl.innerHTML = `
                     <option value="easy">🏛️ Najsłynniejsze Miejsca Świata (${easyCount})</option>
+                    <option value="usacan">🗽 USA i Kanada (${USA_CAN_PLACES.length})</option>
                     <option value="full">🌍 Wszystkie Miejsca Świata (${FAMOUS_PLACES_DB.length})</option>
                 `;
             }
@@ -2263,7 +2284,9 @@
                 if (isHost && roomRef) {
                     // Losowanie nowych miejsc dla pokoju
                     const totalR = (roomData && roomData.totalRounds) || 5;
-                    const pool = (roomData.difficulty === 'easy') ? EASY_PLACES : FAMOUS_PLACES_DB;
+                    let pool = FAMOUS_PLACES_DB;
+                    if (roomData.difficulty === 'easy') pool = EASY_PLACES;
+                    else if (roomData.difficulty === 'usacan') pool = USA_CAN_PLACES;
                     const poolIndices = pool.map(p => FAMOUS_PLACES_DB.indexOf(p));
                     const selectedIndices = [];
                     while (selectedIndices.length < totalR && poolIndices.length > 0) {
@@ -2361,7 +2384,9 @@
             const roundsCount = parseInt(document.getElementById('mp-select-rounds').value, 10) || 5;
             const roundTimeSec = parseInt(document.getElementById('mp-select-round-time').value, 10) || 20;
 
-            const pool = (poolType === 'easy') ? EASY_PLACES : FAMOUS_PLACES_DB;
+            let pool = FAMOUS_PLACES_DB;
+            if (poolType === 'easy') pool = EASY_PLACES;
+            else if (poolType === 'usacan') pool = USA_CAN_PLACES;
             const poolIndices = pool.map(p => FAMOUS_PLACES_DB.indexOf(p));
             const selectedIndices = [];
             while (selectedIndices.length < roundsCount && poolIndices.length > 0) {
@@ -2608,8 +2633,10 @@
                 // Aktualizacja podsumowania ustawień pokoju w lobby
                 const totalR = roomData.totalRounds || TOTAL_ROUNDS;
                 const rTime = roomData.roundTime || czas_zadania;
-                const easyPlacesCount = FAMOUS_PLACES_DB.filter(p => p.easy).length;
-                const poolName = (roomData.difficulty === 'full') ? `Wszystkie (${FAMOUS_PLACES_DB.length})` : `Najsłynniejsze (${easyPlacesCount})`;
+                let poolName = 'Najsłynniejsze';
+                if (roomData.difficulty === 'full') poolName = `Wszystkie (${FAMOUS_PLACES_DB.length})`;
+                else if (roomData.difficulty === 'usacan') poolName = `USA i Kanada (${USA_CAN_PLACES.length})`;
+                else poolName = `Najsłynniejsze (${EASY_PLACES.length})`;
                 const roundsEl = document.getElementById('mp-lobby-rounds-display');
                 const timeEl = document.getElementById('mp-lobby-time-display');
                 const poolEl = document.getElementById('mp-lobby-pool-display');

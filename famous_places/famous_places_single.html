@@ -765,11 +765,15 @@
                     <span class="mode-label">Pula:</span>
                     <button type="button" class="mode-toggle-btn active" id="btn-mode-easy"
                         onclick="setGameDifficulty('easy')">
-                        🏛️ Najsłynniejsze (20)
+                        🏛️ Najsłynniejsze
                     </button>
                     <button type="button" class="mode-toggle-btn" id="btn-mode-full"
                         onclick="setGameDifficulty('full')">
-                        🌍 Wszystkie Miejsca (34)
+                        🌍 Wszystkie Miejsca
+                    </button>
+                    <button type="button" class="mode-toggle-btn" id="btn-mode-usacan"
+                        onclick="setGameDifficulty('usacan')">
+                        🗽 USA i Kanada (50)
                     </button>
                 </div>
 
@@ -918,14 +922,15 @@
 
     <script>
 
-        // Filtrowana lista dla trybu łatwego
+        // Filtrowana lista dla trybu łatwego oraz USA i Kanada
         const EASY_PLACES = FAMOUS_PLACES_DB.filter(p => p.easy);
+        const USA_CAN_PLACES = FAMOUS_PLACES_DB.filter(p => p.name.includes('USA') || p.name.includes('Kanada') || p.name.includes('Stany Zjednoczone'));
 
         // =========================================================================
         // STAN GRY (5 RUND)
         // =========================================================================
         const TOTAL_ROUNDS = 5;
-        let gameDifficulty = 'easy'; // 'easy' (20 miejsc) | 'full' (wszystkie)
+        let gameDifficulty = 'easy'; // 'easy' | 'full' | 'usacan'
         let currentRound = 1;
         let totalNegativeKm = 0; // w tysiącach km
         let roundsHistory = [];
@@ -945,8 +950,20 @@
             gameDifficulty = mode;
             document.getElementById('btn-mode-easy').classList.toggle('active', mode === 'easy');
             document.getElementById('btn-mode-full').classList.toggle('active', mode === 'full');
+            const btnUsaCan = document.getElementById('btn-mode-usacan');
+            if (btnUsaCan) btnUsaCan.classList.toggle('active', mode === 'usacan');
 
-            showToast(mode === 'easy' ? '🏛️ Wybrano Najsłynniejsze Miejsca (20)' : '🌍 Wybrano Wszystkie Miejsca Świata (34)');
+            const easyCount = EASY_PLACES.length;
+            const fullCount = FAMOUS_PLACES_DB.length;
+            const usaCount = USA_CAN_PLACES.length;
+
+            if (mode === 'easy') {
+                showToast(`🏛️ Wybrano Najsłynniejsze Miejsca (${easyCount})`);
+            } else if (mode === 'usacan') {
+                showToast(`🗽 Wybrano USA i Kanada (${usaCount})`);
+            } else {
+                showToast(`🌍 Wybrano Wszystkie Miejsca Świata (${fullCount})`);
+            }
 
             if (currentRound === 1 && !isRoundFinished) {
                 startRound(1);
@@ -954,7 +971,9 @@
         }
 
         function getActivePool() {
-            return gameDifficulty === 'easy' ? EASY_PLACES : FAMOUS_PLACES_DB;
+            if (gameDifficulty === 'easy') return EASY_PLACES;
+            if (gameDifficulty === 'usacan') return USA_CAN_PLACES;
+            return FAMOUS_PLACES_DB;
         }
 
         // =========================================================================
@@ -1008,9 +1027,11 @@
                 document.getElementById('btn-submit-guess').disabled = false;
             });
 
-            const easyCount = FAMOUS_PLACES_DB.filter(p => p.easy).length;
+            const easyCount = EASY_PLACES.length;
             document.getElementById('btn-mode-easy').innerHTML = `🏛️ Najsłynniejsze (${easyCount})`;
             document.getElementById('btn-mode-full').innerHTML = `🌍 Wszystkie Miejsca (${FAMOUS_PLACES_DB.length})`;
+            const btnUsaCan = document.getElementById('btn-mode-usacan');
+            if (btnUsaCan) btnUsaCan.innerHTML = `🗽 USA i Kanada (${USA_CAN_PLACES.length})`;
 
             startRound(1);
         }

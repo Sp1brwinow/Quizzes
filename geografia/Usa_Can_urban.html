@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <!-- Google Analytics Tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZP827DTZJ5"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-ZP827DTZJ5');
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Urbanizacja i Osadnictwo w USA i Kanadzie – Wielki Quiz Konkursowy (75 Pytań)</title>
+    <link rel="stylesheet" href="../style.css" />
+
+    <style>
+        :root {
+            --bg-dark: #07152b;
+            --card-bg: rgba(15, 23, 42, 0.94);
+            --card-border: rgba(56, 189, 248, 0.35);
+            --primary: #38bdf8;
+            --primary-hover: #0284c7;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-rose: #f43f5e;
+            --accent-purple: #c084fc;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: linear-gradient(180deg, #051024 0%, #092042 45%, #0e325e 100%);
+            color: var(--text-main);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            padding: 16px 16px 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .main-container {
+            max-width: 1020px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Górna nawigacja */
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            background: rgba(14, 30, 56, 0.88);
+            border: 1px solid rgba(125, 211, 252, 0.4);
+            color: #7dd3fc;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.88rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(8px);
+            cursor: pointer;
+        }
+
+        .nav-btn:hover {
+            color: #ffffff;
+            border-color: #38bdf8;
+            background: #0284c7;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.4);
+        }
+
+        /* Baner nagłówkowy */
+        .quiz-banner {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.96) 0%, rgba(26, 40, 71, 0.94) 100%);
+            border: 2px solid #38bdf8;
+            border-radius: 16px;
+            padding: 22px 26px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6), 0 0 25px rgba(56, 189, 248, 0.25);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .banner-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .banner-icon {
+            font-size: 2.8rem;
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid #38bdf8;
+            width: 64px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 14px;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.35);
+        }
+
+        .banner-text h1 {
+            font-size: 1.55rem;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: 0.3px;
+        }
+
+        .banner-text p {
+            color: #7dd3fc;
+            font-size: 0.92rem;
+            margin-top: 4px;
+        }
+
+        .badge-konkurs {
+            display: inline-block;
+            background: rgba(245, 158, 11, 0.2);
+            border: 1px solid #f59e0b;
+            color: #fbbf24;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            margin-left: 6px;
+            vertical-align: middle;
+        }
+
+        .stats-badge {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: rgba(15, 23, 42, 0.92);
+            padding: 10px 18px;
+            border-radius: 12px;
+            border: 1px solid #334155;
+            font-size: 0.92rem;
+        }
+
+        .stats-badge b {
+            color: #38bdf8;
+            font-family: monospace;
+            font-size: 1.1rem;
+        }
+
+        .stats-badge b.correct {
+            color: #10b981;
+        }
+
+        .stats-badge b.wrong {
+            color: #f43f5e;
+        }
+
+        /* Pasek postępu */
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background: #1e293b;
+            border-radius: 4px;
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5);
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #38bdf8 0%, #818cf8 50%, #c084fc 100%);
+            transition: width 0.3s ease;
+        }
+
+        /* Panel filtrów zakresu */
+        .controls-card {
+            background: rgba(14, 30, 56, 0.92);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            padding: 14px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .mode-tabs {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .mode-tab-btn {
+            background: rgba(30, 41, 59, 0.85);
+            border: 1px solid #475569;
+            color: #cbd5e1;
+            padding: 8px 13px;
+            border-radius: 8px;
+            font-size: 0.84rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .mode-tab-btn:hover {
+            border-color: #38bdf8;
+            color: #ffffff;
+        }
+
+        .mode-tab-btn.active {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            border-color: #38bdf8;
+            color: #ffffff;
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
+        }
+
+        /* Główna karta pytania */
+        .question-card {
+            background: rgba(15, 23, 42, 0.96);
+            border: 2px solid var(--card-border);
+            border-radius: 16px;
+            padding: 26px 30px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            position: relative;
+        }
+
+        .question-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 12px;
+        }
+
+        .category-tag {
+            background: rgba(56, 189, 248, 0.15);
+            color: #7dd3fc;
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .type-badge {
+            background: rgba(192, 132, 252, 0.15);
+            color: #c084fc;
+            border: 1px solid rgba(192, 132, 252, 0.4);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 600;
+        }
+
+        .question-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #ffffff;
+            line-height: 1.5;
+        }
+
+        /* Opcje wyboru (ABCD) */
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 6px;
+        }
+
+        @media (max-width: 680px) {
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .option-btn {
+            background: rgba(30, 41, 59, 0.85);
+            border: 2px solid #334155;
+            border-radius: 12px;
+            padding: 14px 16px;
+            color: #f8fafc;
+            font-size: 0.98rem;
+            font-weight: 600;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            line-height: 1.4;
+        }
+
+        .option-letter {
+            width: 34px;
+            height: 34px;
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid #38bdf8;
+            color: #38bdf8;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+            font-size: 1.05rem;
+            transition: all 0.2s ease;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            border-color: #38bdf8;
+            background: #1e293b;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);
+        }
+
+        .option-btn:disabled {
+            cursor: default;
+        }
+
+        .option-btn.correct {
+            background: rgba(16, 185, 129, 0.25) !important;
+            border-color: #10b981 !important;
+            color: #ffffff !important;
+            box-shadow: 0 0 16px rgba(16, 185, 129, 0.45);
+        }
+
+        .option-btn.correct .option-letter {
+            background: #10b981;
+            color: #ffffff;
+            border-color: #10b981;
+        }
+
+        .option-btn.wrong {
+            background: rgba(244, 63, 94, 0.25) !important;
+            border-color: #f43f5e !important;
+            color: #ffffff !important;
+        }
+
+        .option-btn.wrong .option-letter {
+            background: #f43f5e;
+            color: #ffffff;
+            border-color: #f43f5e;
+        }
+
+        /* Wyjaśnienie merytoryczne */
+        .feedback-box {
+            display: none;
+            margin-top: 10px;
+            padding: 16px 20px;
+            border-radius: 12px;
+            background: rgba(30, 41, 59, 0.92);
+            border-left: 5px solid #38bdf8;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .feedback-box.correct {
+            border-left-color: #10b981;
+            background: rgba(16, 185, 129, 0.12);
+        }
+
+        .feedback-box.wrong {
+            border-left-color: #f43f5e;
+            background: rgba(244, 63, 94, 0.12);
+        }
+
+        .feedback-status {
+            font-size: 1.1rem;
+            font-weight: 800;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feedback-status.correct {
+            color: #10b981;
+        }
+
+        .feedback-status.wrong {
+            color: #f43f5e;
+        }
+
+        .feedback-explanation {
+            color: #cbd5e1;
+            font-size: 0.96rem;
+            line-height: 1.55;
+        }
+
+        .question-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 10px;
+            gap: 12px;
+        }
+
+        .btn-next-question {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4);
+        }
+
+        .btn-next-question:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(56, 189, 248, 0.6);
+        }
+
+        /* Ekran podsumowania */
+        .summary-card {
+            display: none;
+            background: rgba(15, 23, 42, 0.98);
+            border: 2px solid #38bdf8;
+            border-radius: 16px;
+            padding: 35px 30px;
+            text-align: center;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7);
+        }
+
+        .summary-card.active {
+            display: block;
+        }
+
+        .summary-title {
+            font-size: 2rem;
+            color: #ffffff;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .summary-score {
+            font-size: 3.2rem;
+            font-weight: 900;
+            font-family: monospace;
+            color: #38bdf8;
+            margin: 15px 0;
+            text-shadow: 0 0 20px rgba(56, 189, 248, 0.5);
+        }
+
+        .summary-badge {
+            display: inline-block;
+            background: rgba(251, 191, 36, 0.18);
+            border: 1px solid #fbbf24;
+            color: #fbbf24;
+            padding: 8px 22px;
+            border-radius: 20px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+            line-height: 1.4;
+        }
+
+        .summary-btns {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* Kompendium wiedzy na dole */
+        .fact-sheet-card {
+            background: rgba(15, 23, 42, 0.92);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            padding: 18px 20px;
+            margin-top: 10px;
+        }
+
+        .fact-sheet-header {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #38bdf8;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .fact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+            font-size: 0.86rem;
+            color: #cbd5e1;
+        }
+
+        .fact-item {
+            background: rgba(30, 41, 59, 0.65);
+            padding: 10px 14px;
+            border-radius: 10px;
+            border-left: 3px solid #38bdf8;
+            line-height: 1.45;
+        }
+
+        .fact-item strong {
+            color: #ffffff;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .keyboard-hint {
+            font-size: 0.8rem;
+            color: #64748b;
+            text-align: center;
+            margin-top: -6px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main-container">
+        <!-- Górna nawigacja -->
+        <nav class="top-nav">
+            <a href="../pomocnicze.html" class="nav-btn">
+                ← Powrót do bazy quizów
+            </a>
+            <a href="Usa_Kan_mapa_fiz_quiz.html" class="nav-btn">
+                🗺️ Mapa fizyczna & Geofizyka
+            </a>
+            <a href="Usa_Kan_fizyczna.html" class="nav-btn">
+                🏞️ Środowisko fizyczne (100 pytań)
+            </a>
+            <a href="stany.html" class="nav-btn">
+                📍 Stany & Prowincje
+            </a>
+            <a href="podz_adm_USA_Can.html" class="nav-btn">
+                📝 Podział administracyjny
+            </a>
+            <a href="../index.html" class="nav-btn">
+                🏠 Strona główna
+            </a>
+        </nav>
+
+        <!-- Baner główny -->
+        <header class="quiz-banner">
+            <div class="banner-left">
+                <div class="banner-icon">🏙️</div>
+                <div class="banner-text">
+                    <h1>Urbanizacja i Osadnictwo w USA i Kanadzie <span class="badge-konkurs">Konkurs Geograficzny</span></h1>
+                    <p>75 pytań konkursowych: megalopolis (BosWash, ChiPitts, SanSan, Main Street), fazy urbanizacji, CBD, gentryfikacja, bariery osadnicze i struktura etniczna</p>
+                </div>
+            </div>
+            <div class="stats-badge">
+                <span>Pytanie: <b id="stat-current-num">1 / 75</b></span>
+                <span>Poprawne: <b id="stat-correct-num" class="correct">0</b></span>
+                <span>Błędy: <b id="stat-wrong-num" class="wrong">0</b></span>
+            </div>
+        </header>
+
+        <!-- Pasek postępu -->
+        <div class="progress-bar-container">
+            <div class="progress-bar-fill" id="progress-bar"></div>
+        </div>
+
+        <!-- Panel filtrów zakresu -->
+        <div class="controls-card">
+            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                <span style="font-size:0.86rem; color:#94a3b8; font-weight:600;">Wybierz moduł:</span>
+                <div class="mode-tabs">
+                    <button type="button" class="mode-tab-btn active" id="btn-mode-all" onclick="changeQuizMode('all')">
+                        📚 Wszystkie 75 pytań
+                    </button>
+                    <button type="button" class="mode-tab-btn" id="btn-mode-phases" onclick="changeQuizMode('phases')">
+                        📈 Fazy & Formy (15)
+                    </button>
+                    <button type="button" class="mode-tab-btn" id="btn-mode-megalopolis" onclick="changeQuizMode('megalopolis')">
+                        🌐 Megalopolis (15)
+                    </button>
+                    <button type="button" class="mode-tab-btn" id="btn-mode-structure" onclick="changeQuizMode('structure')">
+                        🏙️ Struktura Miast & CBD (15)
+                    </button>
+                    <button type="button" class="mode-tab-btn" id="btn-mode-distribution" onclick="changeQuizMode('distribution')">
+                        🧭 Rozmieszczenie & Bariery (15)
+                    </button>
+                    <button type="button" class="mode-tab-btn" id="btn-mode-ethnic" onclick="changeQuizMode('ethnic')">
+                        👥 Etniczność & Migracje (15)
+                    </button>
+                    <button type="button" class="mode-tab-btn" id="btn-mode-random20" onclick="changeQuizMode('random20')">
+                        🎲 Seria 20 losowych
+                    </button>
+                </div>
+            </div>
+
+            <div style="display:flex; gap:8px;">
+                <button type="button" class="mode-tab-btn" id="btn-sound-toggle" onclick="toggleSound()" title="Włącz / wyłącz dźwięk">
+                    🔊 Dźwięk: WŁ
+                </button>
+                <button type="button" class="mode-tab-btn" onclick="restartQuiz()" style="background:rgba(239,68,68,0.15); border-color:#ef4444; color:#f87171;">
+                    🔄 Reset
+                </button>
+            </div>
+        </div>
+
+        <!-- Główna karta pytania -->
+        <main class="question-card" id="question-card">
+            <div class="question-meta">
+                <span class="category-tag" id="q-category">Kategoria</span>
+                <span class="type-badge" id="q-type-badge">Pytanie A B C D</span>
+            </div>
+
+            <div class="question-title" id="q-text">
+                Ładowanie pytania konkursowego...
+            </div>
+
+            <!-- Opcje wyboru odpowiedzi (A B C D) -->
+            <div class="options-grid" id="options-grid">
+                <button type="button" class="option-btn" onclick="submitChoiceAnswer(0)">
+                    <span class="option-letter">A</span>
+                    <span class="option-text" id="opt-text-0">-</span>
+                </button>
+                <button type="button" class="option-btn" onclick="submitChoiceAnswer(1)">
+                    <span class="option-letter">B</span>
+                    <span class="option-text" id="opt-text-1">-</span>
+                </button>
+                <button type="button" class="option-btn" onclick="submitChoiceAnswer(2)">
+                    <span class="option-letter">C</span>
+                    <span class="option-text" id="opt-text-2">-</span>
+                </button>
+                <button type="button" class="option-btn" onclick="submitChoiceAnswer(3)">
+                    <span class="option-letter">D</span>
+                    <span class="option-text" id="opt-text-3">-</span>
+                </button>
+            </div>
+
+            <!-- Pole feedbacku z wyjaśnieniem naukowym -->
+            <div class="feedback-box" id="feedback-box">
+                <div class="feedback-status" id="feedback-status">Odpowiedź</div>
+                <div class="feedback-explanation" id="feedback-explanation">Wyjaśnienie.</div>
+            </div>
+
+            <!-- Przycisk przejścia do kolejnego pytania -->
+            <div class="question-actions">
+                <button type="button" class="btn-next-question" id="btn-next" onclick="nextQuestion()" style="display:none;">
+                    Następne pytanie ➔
+                </button>
+            </div>
+
+            <div class="keyboard-hint">
+                💡 Skróty klawiszowe: <b>1-4</b> lub <b>A-D</b> wybierają odpowiedź, <b>Spacja / Enter</b> przechodzi dalej.
+            </div>
+        </main>
+
+        <!-- Ekran podsumowania końcowego -->
+        <section class="summary-card" id="summary-card">
+            <h2 class="summary-title">🎉 Gratulacje! Ukończono Quiz!</h2>
+            <p style="color:#94a3b8; font-size:1.05rem;">Twój wynik końcowy:</p>
+            <div class="summary-score" id="summary-score-val">68 / 75</div>
+            <div class="summary-badge" id="summary-rank-badge">🏆 Laureat Konkursu: Ekspert Urbanizacji i Osadnictwa!</div>
+            <div class="summary-btns">
+                <button type="button" class="nav-btn" onclick="restartQuiz()" style="font-size:1rem; padding:12px 24px;">
+                    🔄 Rozwiąż ponownie
+                </button>
+                <a href="../pomocnicze.html" class="nav-btn" style="font-size:1rem; padding:12px 24px;">
+                    📚 Wróć do bazy pomocy dydaktycznych
+                </a>
+            </div>
+        </section>
+
+        <!-- Kompendium wiedzy konkursowej -->
+        <footer class="fact-sheet-card">
+            <div class="fact-sheet-header">
+                <span>💡 Kluczowe pojęcia i fakty z urbanizacji i osadnictwa do konkursu:</span>
+            </div>
+            <div class="fact-grid">
+                <div class="fact-item">
+                    <strong>🌐 Wielkie Megalopolis:</strong>
+                    • BosWash (Boston–Waszyngton): >50 mln mieszk., finanse & polityka<br>
+                    • ChiPitts (Chicago–Pittsburgh): Wielkie Jeziora, Rust Belt<br>
+                    • SanSan (San Francisco–San Diego): Silicon Valley, high-tech<br>
+                    • Main Street (Quebec–Windsor): >60% ludności Kanady
+                </div>
+                <div class="fact-item">
+                    <strong>🏙️ Struktura Miasta:</strong>
+                    • CBD (Central Business District): drapacze chmur, banki, pustoszeje nocą<br>
+                    • Gentryfikacja: rewitalizacja starych dzielnic i wzrost zamożności<br>
+                    • Suburban Sprawl: niekontrolowane rozlewanie się przedmieść<br>
+                    • Edge Cities: węzły biurowo-handlowe na obrzeżach autostrad
+                </div>
+                <div class="fact-item">
+                    <strong>🧭 Rozmieszczenie & Bariery:</strong>
+                    • Ekumena kanadyjska: >90% Kanadyjczyków do 160-200 km od granicy z USA<br>
+                    • Południk 100°W: granica wilgotnego wschodu i suchego zachodu USA<br>
+                    • Bariery: termiczna (północ, zmarzlina), wodna (Great Basin), wysokościowa (Kordyliery)
+                </div>
+                <div class="fact-item">
+                    <strong>👥 Społeczeństwo & Migracje:</strong>
+                    • Melting Pot (tygiel narodów w USA) vs Cultural Mosaic (mozaika kulturowa w Kanadzie)<br>
+                    • Sun Belt: napływ ludności z chłodnej północy na słoneczne południe<br>
+                    • Nunavut (1999 r.): samorządne terytorium rdzennych Inuitów
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Baza 75 pytań konkursowych -->
+    <script src="usa_can_urban_questions.js"></script>
+
+    <script>
+        // =========================================================
+        // SYNTEZATOR DŹWIĘKÓW WEB AUDIO API
+        // =========================================================
+        let soundEnabled = true;
+        let audioCtx = null;
+
+        function getAudioContext() {
+            if (!audioCtx) {
+                const AudioCtxClass = window.AudioContext || window.webkitAudioContext;
+                if (AudioCtxClass) audioCtx = new AudioCtxClass();
+            }
+            if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+            return audioCtx;
+        }
+
+        function playSound(type) {
+            if (!soundEnabled) return;
+            try {
+                const ctx = getAudioContext();
+                if (!ctx) return;
+                const now = ctx.currentTime;
+
+                if (type === 'correct') {
+                    const osc1 = ctx.createOscillator();
+                    const osc2 = ctx.createOscillator();
+                    const gain = ctx.createGain();
+
+                    osc1.type = 'sine';
+                    osc2.type = 'sine';
+
+                    osc1.frequency.setValueAtTime(523.25, now);
+                    osc1.frequency.exponentialRampToValueAtTime(783.99, now + 0.15);
+
+                    osc2.frequency.setValueAtTime(659.25, now);
+                    osc2.frequency.exponentialRampToValueAtTime(1046.50, now + 0.15);
+
+                    gain.gain.setValueAtTime(0.12, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+
+                    osc1.connect(gain);
+                    osc2.connect(gain);
+                    gain.connect(ctx.destination);
+
+                    osc1.start(now);
+                    osc2.start(now);
+                    osc1.stop(now + 0.36);
+                    osc2.stop(now + 0.36);
+                } else if (type === 'wrong') {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(220, now);
+                    osc.frequency.exponentialRampToValueAtTime(140, now + 0.22);
+
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+
+                    osc.start(now);
+                    osc.stop(now + 0.26);
+                } else if (type === 'complete') {
+                    [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        osc.frequency.value = freq;
+                        const startTime = now + (i * 0.1);
+                        gain.gain.setValueAtTime(0.1, startTime);
+                        gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.35);
+                        osc.connect(gain);
+                        gain.connect(ctx.destination);
+                        osc.start(startTime);
+                        osc.stop(startTime + 0.36);
+                    });
+                }
+            } catch (err) {
+                console.log('Audio error:', err);
+            }
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            const btn = document.getElementById('btn-sound-toggle');
+            if (btn) btn.innerText = soundEnabled ? '🔊 Dźwięk: WŁ' : '🔇 Dźwięk: WYŁ';
+        }
+
+        // =========================================================
+        // LOGIKA QUIZU
+        // =========================================================
+        let currentMode = 'all';
+        let activeQuestions = [];
+        let currentIndex = 0;
+        let correctCount = 0;
+        let wrongCount = 0;
+        let isAnswered = false;
+
+        function getQuestionDatabase() {
+            if (typeof USA_CAN_URBAN_QUESTIONS !== 'undefined' && Array.isArray(USA_CAN_URBAN_QUESTIONS)) {
+                return USA_CAN_URBAN_QUESTIONS;
+            }
+            if (window.USA_CAN_URBAN_QUESTIONS && Array.isArray(window.USA_CAN_URBAN_QUESTIONS)) {
+                return window.USA_CAN_URBAN_QUESTIONS;
+            }
+            return [];
+        }
+
+        function initQuiz() {
+            filterQuestions();
+            currentIndex = 0;
+            correctCount = 0;
+            wrongCount = 0;
+            isAnswered = false;
+            updateStatsUI();
+
+            document.getElementById('question-card').style.display = 'flex';
+            document.getElementById('summary-card').classList.remove('active');
+
+            loadCurrentQuestion();
+        }
+
+        function filterQuestions() {
+            const allQ = getQuestionDatabase();
+            if (currentMode === 'phases') {
+                activeQuestions = allQ.filter(q => q.category === 'Fazy i Formy Urbanizacji');
+            } else if (currentMode === 'megalopolis') {
+                activeQuestions = allQ.filter(q => q.category === 'Megalopolis Ameryki Północnej');
+            } else if (currentMode === 'structure') {
+                activeQuestions = allQ.filter(q => q.category === 'Struktura Miast i Procesy Społeczne');
+            } else if (currentMode === 'distribution') {
+                activeQuestions = allQ.filter(q => q.category === 'Rozmieszczenie Ludności i Bariery');
+            } else if (currentMode === 'ethnic') {
+                activeQuestions = allQ.filter(q => q.category === 'Struktura Etniczna i Migracje');
+            } else if (currentMode === 'random20') {
+                const shuffled = [...allQ].sort(() => Math.random() - 0.5);
+                activeQuestions = shuffled.slice(0, 20);
+            } else {
+                activeQuestions = [...allQ];
+            }
+        }
+
+        function changeQuizMode(mode) {
+            currentMode = mode;
+            document.querySelectorAll('.mode-tab-btn').forEach(btn => {
+                if (btn.id !== 'btn-sound-toggle') btn.classList.remove('active');
+            });
+            if (mode === 'all') document.getElementById('btn-mode-all')?.classList.add('active');
+            if (mode === 'phases') document.getElementById('btn-mode-phases')?.classList.add('active');
+            if (mode === 'megalopolis') document.getElementById('btn-mode-megalopolis')?.classList.add('active');
+            if (mode === 'structure') document.getElementById('btn-mode-structure')?.classList.add('active');
+            if (mode === 'distribution') document.getElementById('btn-mode-distribution')?.classList.add('active');
+            if (mode === 'ethnic') document.getElementById('btn-mode-ethnic')?.classList.add('active');
+            if (mode === 'random20') document.getElementById('btn-mode-random20')?.classList.add('active');
+
+            initQuiz();
+        }
+
+        function restartQuiz() {
+            initQuiz();
+        }
+
+        function updateStatsUI() {
+            const total = activeQuestions.length || 1;
+            document.getElementById('stat-current-num').innerText = `${Math.min(currentIndex + 1, total)} / ${total}`;
+            document.getElementById('stat-correct-num').innerText = correctCount;
+            document.getElementById('stat-wrong-num').innerText = wrongCount;
+
+            const percent = (currentIndex / total) * 100;
+            document.getElementById('progress-bar').style.width = `${percent}%`;
+        }
+
+        function loadCurrentQuestion() {
+            if (currentIndex >= activeQuestions.length) {
+                showSummary();
+                return;
+            }
+
+            isAnswered = false;
+            updateStatsUI();
+
+            const q = activeQuestions[currentIndex];
+            document.getElementById('q-category').innerText = q.category;
+            document.getElementById('q-type-badge').innerText = `ID: #${q.id} • Mazowiecki Konkurs`;
+            document.getElementById('q-text').innerText = `${currentIndex + 1}. ${q.question}`;
+
+            const fbBox = document.getElementById('feedback-box');
+            fbBox.style.display = 'none';
+            fbBox.className = 'feedback-box';
+
+            document.getElementById('btn-next').style.display = 'none';
+
+            const optButtons = document.querySelectorAll('.option-btn');
+            optButtons.forEach((btn, idx) => {
+                btn.disabled = false;
+                btn.className = 'option-btn';
+                const optTextElem = document.getElementById(`opt-text-${idx}`);
+                if (optTextElem && q.options[idx]) {
+                    optTextElem.innerText = q.options[idx];
+                }
+            });
+        }
+
+        function submitChoiceAnswer(selectedIndex) {
+            if (isAnswered) return;
+            isAnswered = true;
+
+            const q = activeQuestions[currentIndex];
+            const optButtons = document.querySelectorAll('.option-btn');
+            optButtons.forEach(btn => btn.disabled = true);
+
+            const isCorrect = (selectedIndex === q.correct);
+            if (isCorrect) {
+                correctCount++;
+                optButtons[selectedIndex].classList.add('correct');
+                playSound('correct');
+            } else {
+                wrongCount++;
+                optButtons[selectedIndex].classList.add('wrong');
+                optButtons[q.correct].classList.add('correct');
+                playSound('wrong');
+            }
+
+            renderFeedback(isCorrect, q.explanation);
+        }
+
+        function renderFeedback(isCorrect, explanation) {
+            updateStatsUI();
+
+            const fbBox = document.getElementById('feedback-box');
+            const fbStatus = document.getElementById('feedback-status');
+            const fbExpl = document.getElementById('feedback-explanation');
+
+            fbBox.style.display = 'block';
+            if (isCorrect) {
+                fbBox.className = 'feedback-box correct';
+                fbStatus.className = 'feedback-status correct';
+                fbStatus.innerHTML = '✅ Prawidłowa odpowiedź!';
+            } else {
+                fbBox.className = 'feedback-box wrong';
+                fbStatus.className = 'feedback-status wrong';
+                fbStatus.innerHTML = '❌ Błędna odpowiedź!';
+            }
+
+            fbExpl.innerText = explanation;
+            document.getElementById('btn-next').style.display = 'inline-flex';
+        }
+
+        function nextQuestion() {
+            currentIndex++;
+            loadCurrentQuestion();
+        }
+
+        function showSummary() {
+            document.getElementById('question-card').style.display = 'none';
+            const sumCard = document.getElementById('summary-card');
+            sumCard.classList.add('active');
+
+            const total = activeQuestions.length;
+            document.getElementById('progress-bar').style.width = '100%';
+            document.getElementById('summary-score-val').innerText = `${correctCount} / ${total}`;
+
+            const percent = Math.round((correctCount / total) * 100);
+            let rank = "";
+            if (percent >= 90) {
+                rank = "🥇 Laureat Konkursu Geograficznego! (Znakomita wiedza o urbanizacji i osadnictwie USA i Kanady!)";
+            } else if (percent >= 75) {
+                rank = "🥈 Finalista Konkursu Geograficznego! (Bardzo dobra znajomość megalopolis, modeli miast i demografii!)";
+            } else if (percent >= 55) {
+                rank = "🥉 Solidny Uczestnik Etapu Szkolnego! (Dobre podstawy, warto powtórzyć fazy urbanizacji i migracje!)";
+            } else {
+                rank = "🧭 Początkujący Urbanista (Przejrzyj kompendium na dole strony i spróbuj jeszcze raz!)";
+            }
+
+            document.getElementById('summary-rank-badge').innerText = rank;
+            playSound('complete');
+        }
+
+        // Skróty klawiszowe (1-4, A-D, Spacja, Enter)
+        document.addEventListener('keydown', function (e) {
+            if (!isAnswered) {
+                if (e.key === '1' || e.key.toLowerCase() === 'a') submitChoiceAnswer(0);
+                else if (e.key === '2' || e.key.toLowerCase() === 'b') submitChoiceAnswer(1);
+                else if (e.key === '3' || e.key.toLowerCase() === 'c') submitChoiceAnswer(2);
+                else if (e.key === '4' || e.key.toLowerCase() === 'd') submitChoiceAnswer(3);
+            } else {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    nextQuestion();
+                }
+            }
+        });
+
+        // Start po załadowaniu
+        window.addEventListener('DOMContentLoaded', () => {
+            initQuiz();
+        });
+    </script>
+</body>
+
+</html>
