@@ -8,12 +8,12 @@ const QUIZ_QUESTIONS = [
         "category": "Stany USA i ich stolice",
         "question": "Które miasto jest stolicą stanu Kalifornia?",
         "options": [
-            "Sacramento",
-            "San Francisco",
             "San Diego",
-            "Los Angeles"
+            "Sacramento",
+            "Los Angeles",
+            "San Francisco"
         ],
-        "correct": 0,
+        "correct": 1,
         "explanation": "Stolicą Kalifornii jest Sacramento (od 1854 roku), mimo że Los Angeles i San Francisco są znacznie większymi metropoliami."
     },
     {
@@ -23,11 +23,11 @@ const QUIZ_QUESTIONS = [
         "question": "Stolicą stanu Teksas jest:",
         "options": [
             "Houston",
-            "Austin",
             "San Antonio",
-            "Dallas"
+            "Dallas",
+            "Austin"
         ],
-        "correct": 1,
+        "correct": 3,
         "explanation": "Austin jest stolicą Teksasu od 1839 roku. Houston jest z kolei najludniejszym miastem tego stanu."
     },
     {
@@ -36,8 +36,8 @@ const QUIZ_QUESTIONS = [
         "category": "Stany USA i ich stolice",
         "question": "Jakie miasto pełni funkcję stolicy stanu Nowy Jork (New York)?",
         "options": [
-            "Nowy Jork (New York City)",
             "Rochester",
+            "Nowy Jork (New York City)",
             "Albany",
             "Buffalo"
         ],
@@ -50,12 +50,12 @@ const QUIZ_QUESTIONS = [
         "category": "Stany USA i ich stolice",
         "question": "Które miasto jest stolicą stanu Floryda (często myloną z Miami lub Orlando)?",
         "options": [
-            "Tallahassee",
-            "Miami",
+            "Orlando",
             "Tampa",
-            "Orlando"
+            "Miami",
+            "Tallahassee"
         ],
-        "correct": 0,
+        "correct": 3,
         "explanation": "Stolicą Florydy jest Tallahassee, położone w północnej części stanu (tzw. Florida Panhandle)."
     },
     {
@@ -64,12 +64,12 @@ const QUIZ_QUESTIONS = [
         "category": "Stany USA i ich stolice",
         "question": "Stolicą stanu Illinois jest miasto powiązane z Abrahamem Lincolnem. Jest to:",
         "options": [
-            "Peoria",
-            "Springfield",
             "Rockford",
-            "Chicago"
+            "Peoria",
+            "Chicago",
+            "Springfield"
         ],
-        "correct": 1,
+        "correct": 3,
         "explanation": "Stolicą Illinois jest Springfield, a nie olbrzymia metropolia Chicago."
     },
     {
@@ -79,9 +79,9 @@ const QUIZ_QUESTIONS = [
         "question": "Które z poniższych miast jest stolicą stanu Waszyngton (stanu na północno-zachodnim wybrzeżu Pacyfiku)?",
         "options": [
             "Olympia",
+            "Tacoma",
             "Spokane",
-            "Seattle",
-            "Tacoma"
+            "Seattle"
         ],
         "correct": 0,
         "explanation": "Stolicą stanu Waszyngton jest Olympia, leżąca nad zatoką Puget Sound."
@@ -94,10 +94,10 @@ const QUIZ_QUESTIONS = [
         "options": [
             "Colorado Springs",
             "Aspen",
-            "Denver",
-            "Boulder"
+            "Boulder",
+            "Denver"
         ],
-        "correct": 2,
+        "correct": 3,
         "explanation": "Stolicą i największym miastem Kolorado jest Denver, położone dokładnie jedną milę (1609 m) n.p.m."
     },
     {
@@ -106,12 +106,12 @@ const QUIZ_QUESTIONS = [
         "category": "Stany USA i ich stolice",
         "question": "Stolicą stanu Pensylwania jest:",
         "options": [
+            "Pittsburgh",
             "Filadelfia",
-            "Harrisburg",
             "Allentown",
-            "Pittsburgh"
+            "Harrisburg"
         ],
-        "correct": 1,
+        "correct": 3,
         "explanation": "Stolicą Pensylwanii jest Harrisburg, mimo że najważniejszym historycznie i demograficznie miastem jest Filadelfia."
     },
     {
@@ -121,9 +121,9 @@ const QUIZ_QUESTIONS = [
         "question": "Które miasto jest stolicą stanu Arizona?",
         "options": [
             "Phoenix",
+            "Mesa",
             "Flagstaff",
-            "Tucson",
-            "Mesa"
+            "Tucson"
         ],
         "correct": 0,
         "explanation": "Phoenix jest stolicą Arizony i jednocześnie najludniejszą stolicą stanową w całych Stanach Zjednoczonych (ponad 1,6 mln mieszkańców)."
@@ -136,8 +136,8 @@ const QUIZ_QUESTIONS = [
         "options": [
             "Macon",
             "Atlanta",
-            "Savannah",
-            "Augusta"
+            "Augusta",
+            "Savannah"
         ],
         "correct": 1,
         "explanation": "Stolicą i gospodarczym sercem Georgii jest Atlanta."
@@ -148,12 +148,12 @@ const QUIZ_QUESTIONS = [
         "category": "Stany USA i ich stolice",
         "question": "Stolicą stanu Massachusetts i jednym z najstarszych miast w USA jest:",
         "options": [
-            "Cambridge",
             "Worcester",
             "Boston",
+            "Cambridge",
             "Salem"
         ],
-        "correct": 2,
+        "correct": 1,
         "explanation": "Boston jest stolicą Massachusetts oraz nieformalną stolicą całego regionu Nowej Anglii."
     },
     {
@@ -163,8 +163,8 @@ const QUIZ_QUESTIONS = [
         "question": "Które miasto jest stolicą stanu Luizjana?",
         "options": [
             "Baton Rouge",
-            "Lafayette",
             "Shreveport",
+            "Lafayette",
             "Nowy Orlean"
         ],
         "correct": 0,
@@ -176,10 +176,10 @@ const QUIZ_QUESTIONS = [
         "category": "Stany USA i ich stolice",
         "question": "Stolicą Alaski – do której nie można dojechać żadną drogą lądową z reszty kontynentu – jest:",
         "options": [
-            "Anchorage",
+            "Fairbanks",
             "Nome",
             "Juneau",
-            "Fairbanks"
+            "Anchorage"
         ],
         "correct": 2,
         "explanation": "Stolicą Alaski jest Juneau. Można się tam dostać wyłącznie drogą morską (promem) lub samolotem."
@@ -190,12 +190,12 @@ const QUIZ_QUESTIONS = [
         "category": "Stany USA i ich stolice",
         "question": "Stolicą stanu Hawaje, położoną na wyspie Oahu, jest:",
         "options": [
-            "Kailua",
             "Honolulu",
-            "Kahului",
-            "Hilo"
+            "Hilo",
+            "Kailua",
+            "Kahului"
         ],
-        "correct": 1,
+        "correct": 0,
         "explanation": "Stolicą i głównym portem stanu Hawaje jest Honolulu."
     },
     {
@@ -204,12 +204,12 @@ const QUIZ_QUESTIONS = [
         "category": "Stany USA i ich stolice",
         "question": "Stolicą stanu Nevada, słynącego z kasyn i pustyń, jest:",
         "options": [
-            "Las Vegas",
-            "Henderson",
             "Reno",
-            "Carson City"
+            "Las Vegas",
+            "Carson City",
+            "Henderson"
         ],
-        "correct": 3,
+        "correct": 2,
         "explanation": "Stolicą Nevady jest Carson City, leżące w pobliżu jeziora Tahoe."
     },
     {
@@ -218,12 +218,12 @@ const QUIZ_QUESTIONS = [
         "category": "Stany USA i ich stolice",
         "question": "Stolicą stanu Michigan, znanego z przemysłu motoryzacyjnego (Detroit), jest:",
         "options": [
+            "Detroit",
             "Ann Arbor",
-            "Lansing",
             "Grand Rapids",
-            "Detroit"
+            "Lansing"
         ],
-        "correct": 1,
+        "correct": 3,
         "explanation": "Stolicą stanu Michigan jest Lansing, wybrane w 1847 roku jako kompromisowa lokalizacja w głębi lądu."
     },
     {
@@ -233,11 +233,11 @@ const QUIZ_QUESTIONS = [
         "question": "Stolicą stanu Utah, będącą światowym centrum mormonów, jest:",
         "options": [
             "Provo",
-            "Ogden",
             "Saint George",
-            "Salt Lake City"
+            "Salt Lake City",
+            "Ogden"
         ],
-        "correct": 3,
+        "correct": 2,
         "explanation": "Stolicą Utah jest Salt Lake City, położone nad Wielkim Jeziorem Słonym."
     },
     {
@@ -246,12 +246,12 @@ const QUIZ_QUESTIONS = [
         "category": "Stany USA i ich stolice",
         "question": "Które miasto jest stolicą stanu Ohio?",
         "options": [
-            "Columbus",
             "Cleveland",
-            "Cincinnati",
-            "Toledo"
+            "Columbus",
+            "Toledo",
+            "Cincinnati"
         ],
-        "correct": 0,
+        "correct": 1,
         "explanation": "Stolicą i największym miastem Ohio jest Columbus."
     },
     {
@@ -260,8 +260,8 @@ const QUIZ_QUESTIONS = [
         "category": "Stany USA i ich stolice",
         "question": "Stolicą stanu Minnesota (tworzącą z Minneapolis tzw. \"Bliźniacze Miasta\" – Twin Cities) jest:",
         "options": [
-            "Rochester",
             "Bloomington",
+            "Rochester",
             "Saint Paul",
             "Duluth"
         ],
@@ -274,12 +274,12 @@ const QUIZ_QUESTIONS = [
         "category": "Stany USA i ich stolice",
         "question": "Które miasto jest stolicą stanu Nowy Meksyk (najstarsza stolica stanowa w USA, założona w 1610 r.)?",
         "options": [
-            "Roswell",
             "Santa Fe",
             "Albuquerque",
-            "Las Cruces"
+            "Las Cruces",
+            "Roswell"
         ],
-        "correct": 1,
+        "correct": 0,
         "explanation": "Stolicą Nowego Meksyku jest Santa Fe, założone przez hiszpańskich konkwistadorów w 1610 roku."
     },
     {
@@ -288,12 +288,12 @@ const QUIZ_QUESTIONS = [
         "category": "Stany USA i ich stolice",
         "question": "Stolicą stanu Indiana jest:",
         "options": [
-            "South Bend",
-            "Fort Wayne",
             "Indianapolis",
-            "Evansville"
+            "Evansville",
+            "Fort Wayne",
+            "South Bend"
         ],
-        "correct": 2,
+        "correct": 0,
         "explanation": "Indianapolis jest stolicą i największym miastem stanu Indiana."
     },
     {
@@ -302,12 +302,12 @@ const QUIZ_QUESTIONS = [
         "category": "Stany USA i ich stolice",
         "question": "Które miasto jest stolicą stanu Tennessee, słynącego z muzyki country?",
         "options": [
+            "Nashville",
             "Knoxville",
             "Memphis",
-            "Chattanooga",
-            "Nashville"
+            "Chattanooga"
         ],
-        "correct": 3,
+        "correct": 0,
         "explanation": "Stolicą Tennessee jest Nashville, światowa stolica muzyki country. Memphis leży na zachodnim krańcu stanu."
     },
     {
@@ -316,8 +316,8 @@ const QUIZ_QUESTIONS = [
         "category": "Stany USA i ich stolice",
         "question": "Stolicą stanu Karolina Północna (North Carolina) jest:",
         "options": [
-            "Greensboro",
             "Durham",
+            "Greensboro",
             "Raleigh",
             "Charlotte"
         ],
@@ -330,12 +330,12 @@ const QUIZ_QUESTIONS = [
         "category": "Stany USA i ich stolice",
         "question": "Które miasto jest stolicą stanu Wirginia (Virginia)?",
         "options": [
-            "Norfolk",
             "Richmond",
-            "Alexandria",
-            "Virginia Beach"
+            "Norfolk",
+            "Virginia Beach",
+            "Alexandria"
         ],
-        "correct": 1,
+        "correct": 0,
         "explanation": "Stolicą Wirginii jest Richmond, dawna stolica Skonfederowanych Stanów Ameryki podczas wojny secesyjnej."
     },
     {
@@ -344,12 +344,12 @@ const QUIZ_QUESTIONS = [
         "category": "Stany USA i ich stolice",
         "question": "Stolicą stanu Oregon (nie mylić z największym miastem Portland) jest:",
         "options": [
-            "Salem",
-            "Bend",
             "Eugene",
-            "Medford"
+            "Salem",
+            "Medford",
+            "Bend"
         ],
-        "correct": 0,
+        "correct": 1,
         "explanation": "Stolicą Oregonu jest Salem, położone w urodzajnej dolinie rzeki Willamette."
     },
     {
@@ -359,11 +359,11 @@ const QUIZ_QUESTIONS = [
         "question": "Z ilu stanów składają się Stany Zjednoczone Ameryki?",
         "options": [
             "51",
-            "52",
+            "50",
             "48",
-            "50"
+            "52"
         ],
-        "correct": 3,
+        "correct": 1,
         "explanation": "USA składają się dokładnie z 50 stanów (48 stanów kontynentalnych oraz Alaska i Hawaje), a także Dystryktu Kolumbii i terytoriów zależnych."
     },
     {
@@ -373,11 +373,11 @@ const QUIZ_QUESTIONS = [
         "question": "Który stan został przyjęty do Unii jako 50. (ostatni) w sierpniu 1959 roku?",
         "options": [
             "Alaska",
-            "Arizona",
             "Hawaje",
+            "Arizona",
             "Nowy Meksyk"
         ],
-        "correct": 2,
+        "correct": 1,
         "explanation": "Hawaje zostały przyjęte jako 50. stan 21 sierpnia 1959 roku, kilka miesięcy po Alasce (49. stan)."
     },
     {
@@ -386,12 +386,12 @@ const QUIZ_QUESTIONS = [
         "category": "Struktura administracyjna USA",
         "question": "Stolica federalna USA, Waszyngton, leży w specjalnym okręgu federalnym o nazwie:",
         "options": [
-            "District of Columbia (D.C.)",
-            "Capital State",
             "Union Territory",
-            "Federal Territory of Washington"
+            "Federal Territory of Washington",
+            "District of Columbia (D.C.)",
+            "Capital State"
         ],
-        "correct": 0,
+        "correct": 2,
         "explanation": "Waszyngton leży w Dystrykcie Kolumbii (D.C. – District of Columbia), który nie jest częścią żadnego stanu."
     },
     {
@@ -400,12 +400,12 @@ const QUIZ_QUESTIONS = [
         "category": "Struktura administracyjna USA",
         "question": "Który stan USA ma największą powierzchnię lądową?",
         "options": [
-            "Montana",
-            "Kalifornia",
+            "Alaska",
             "Teksas",
-            "Alaska"
+            "Montana",
+            "Kalifornia"
         ],
-        "correct": 3,
+        "correct": 0,
         "explanation": "Alaska ma ponad 1,7 mln km² powierzchni – jest ponad 2,4 razy większa od drugiego w kolejności Teksasu!"
     },
     {
@@ -414,12 +414,12 @@ const QUIZ_QUESTIONS = [
         "category": "Struktura administracyjna USA",
         "question": "Najmniejszym pod względem powierzchni stanem USA (leżącym w Nowej Anglii) jest:",
         "options": [
-            "New Jersey",
-            "Rhode Island",
             "Connecticut",
-            "Delaware"
+            "New Jersey",
+            "Delaware",
+            "Rhode Island"
         ],
-        "correct": 1,
+        "correct": 3,
         "explanation": "Rhode Island (State of Rhode Island) ma zaledwie 3144 km² lądu i wód śródlądowych."
     },
     {
@@ -428,12 +428,12 @@ const QUIZ_QUESTIONS = [
         "category": "Struktura administracyjna USA",
         "question": "Który stan USA ma największą liczbę ludności (ponad 39 milionów mieszkańców)?",
         "options": [
-            "Floryda",
-            "Teksas",
             "Nowy Jork",
-            "Kalifornia"
+            "Kalifornia",
+            "Floryda",
+            "Teksas"
         ],
-        "correct": 3,
+        "correct": 1,
         "explanation": "Kalifornia jest najludniejszym stanem USA (ok. 39 mln), wyprzedzając Teksas (ok. 30 mln) i Florydę (ok. 22 mln)."
     },
     {
@@ -442,12 +442,12 @@ const QUIZ_QUESTIONS = [
         "category": "Struktura administracyjna USA",
         "question": "Który stan USA ma najmniejszą liczbę ludności (poniżej 600 tysięcy mieszkańców)?",
         "options": [
-            "Alaska",
             "Dakota Północna",
             "Wyoming",
-            "Vermont"
+            "Vermont",
+            "Alaska"
         ],
-        "correct": 2,
+        "correct": 1,
         "explanation": "Wyoming liczy jedynie ok. 580 tys. mieszkańców i ma najmniejszą populację spośród wszystkich 50 stanów."
     },
     {
@@ -456,9 +456,9 @@ const QUIZ_QUESTIONS = [
         "category": "Struktura administracyjna USA",
         "question": "Większość stanów USA dzieli się na hrabstwa (counties). W Luizjanie odpowiednikiem hrabstwa jest jednak:",
         "options": [
-            "Gmina (Borough)",
-            "Prowincja (Province)",
             "Dystrykt (District)",
+            "Prowincja (Province)",
+            "Gmina (Borough)",
             "Parafia (Parish)"
         ],
         "correct": 3,
@@ -470,12 +470,12 @@ const QUIZ_QUESTIONS = [
         "category": "Struktura administracyjna USA",
         "question": "Na Alasce odpowiednikiem hrabstw (counties) są jednostki podziału zwane:",
         "options": [
+            "Districts",
             "Boroughs",
             "Townships",
-            "Districts",
             "Parishes"
         ],
-        "correct": 0,
+        "correct": 1,
         "explanation": "Alaska dzieli się na \"boroughs\" (zorganizowane) oraz jeden wielki Unorganized Borough."
     },
     {
@@ -484,12 +484,12 @@ const QUIZ_QUESTIONS = [
         "category": "Struktura administracyjna USA",
         "question": "Które z poniższych terytoriów zamorskich USA jest tzw. wspólnotą (Commonwealth) o największej populacji na Karaibach?",
         "options": [
-            "Wyspy Dziewicze USA",
-            "Guam",
             "Portoryko (Puerto Rico)",
-            "Samoa Amerykańskie"
+            "Samoa Amerykańskie",
+            "Wyspy Dziewicze USA",
+            "Guam"
         ],
-        "correct": 2,
+        "correct": 0,
         "explanation": "Portoryko (Puerto Rico) jest stowarzyszonym terytorium USA na Morzu Karaibskim zamieszkanym przez ok. 3,2 mln obywateli USA."
     },
     {
@@ -499,11 +499,11 @@ const QUIZ_QUESTIONS = [
         "question": "Punkt \"Four Corners\" (Cztery Kąty) to jedyne miejsce w USA, gdzie stykają się granice czterech stanów. Są to:",
         "options": [
             "Nevada, Idaho, Wyoming, Utah",
+            "Kolorado, Utah, Arizona, Nowy Meksyk",
             "Montana, Dakota Północna, Dakota Południowa, Wyoming",
-            "Kalifornia, Nevada, Arizona, Utah",
-            "Kolorado, Utah, Arizona, Nowy Meksyk"
+            "Kalifornia, Nevada, Arizona, Utah"
         ],
-        "correct": 3,
+        "correct": 1,
         "explanation": "Four Corners Monument łączy pod kątem prostym granice stanów: Kolorado, Utah, Arizona i Nowy Meksyk."
     },
     {
@@ -513,11 +513,11 @@ const QUIZ_QUESTIONS = [
         "question": "Który z poniższych stanów jako pierwszy ratyfikował Konstytucję USA w 1787 roku (przez co nazywany jest \"The First State\")?",
         "options": [
             "Wirginia",
-            "Delaware",
+            "Nowy Jork",
             "Pensylwania",
-            "Nowy Jork"
+            "Delaware"
         ],
-        "correct": 1,
+        "correct": 3,
         "explanation": "Delaware jako pierwszy stan ratyfikował Konstytucję Stanów Zjednoczonych 7 grudnia 1787 roku."
     },
     {
@@ -540,12 +540,12 @@ const QUIZ_QUESTIONS = [
         "category": "Struktura administracyjna USA",
         "question": "Termin \"Lower 48\" lub \"CONUS\" oznacza:",
         "options": [
-            "48 najmniejszych stanów",
             "Stany, które wstąpiły do Unii w XIX wieku",
-            "48 stanów położonych na południe od Kanady (bez Alaski i Hawajów)",
-            "Stany założycielskie"
+            "48 najmniejszych stanów",
+            "Stany założycielskie",
+            "48 stanów położonych na południe od Kanady (bez Alaski i Hawajów)"
         ],
-        "correct": 2,
+        "correct": 3,
         "explanation": "\"Lower 48\" (lub Contiguous US) to 48 przyległych stanów leżących na zwartym obszarze kontynentu Ameryki Północnej."
     },
     {
@@ -554,12 +554,12 @@ const QUIZ_QUESTIONS = [
         "category": "Struktura administracyjna USA",
         "question": "Region Nowa Anglia (New England) w północno-wschodnich USA obejmuje 6 stanów. Który stan NIE należy do Nowej Anglii?",
         "options": [
-            "New Hampshire",
             "Nowy Jork",
+            "New Hampshire",
             "Maine",
             "Vermont"
         ],
-        "correct": 1,
+        "correct": 0,
         "explanation": "Nowy Jork należy do regionu Środkowoatlantyckiego (Mid-Atlantic). Nowa Anglia to: Maine, New Hampshire, Vermont, Massachusetts, Rhode Island i Connecticut."
     },
     {
@@ -568,12 +568,12 @@ const QUIZ_QUESTIONS = [
         "category": "Struktura administracyjna USA",
         "question": "Stolicą stanu Wisconsin, położoną malowniczo na przesmyku między dwoma jeziorami, jest:",
         "options": [
-            "Madison",
-            "Kenosha",
             "Milwaukee",
-            "Green Bay"
+            "Green Bay",
+            "Kenosha",
+            "Madison"
         ],
-        "correct": 0,
+        "correct": 3,
         "explanation": "Stolicą Wisconsin jest Madison, podczas gdy największym miastem jest Milwaukee nad jeziorem Michigan."
     },
     {
@@ -582,12 +582,12 @@ const QUIZ_QUESTIONS = [
         "category": "Stany USA i ich stolice",
         "question": "Stolicą stanu Kansas (słynną m.in. z orzeczenia Sądu Najwyższego ws. desegregacji szkół) jest:",
         "options": [
-            "Wichita",
             "Topeka",
             "Overland Park",
+            "Wichita",
             "Kansas City"
         ],
-        "correct": 1,
+        "correct": 0,
         "explanation": "Stolicą Kansas jest Topeka (sprawa Brown v. Board of Education of Topeka w 1954 r.)."
     },
     {
@@ -610,12 +610,12 @@ const QUIZ_QUESTIONS = [
         "category": "Stany USA i ich stolice",
         "question": "Stolicą stanu Missouri jest miasto:",
         "options": [
-            "Saint Louis",
             "Jefferson City",
+            "Kansas City",
             "Springfield",
-            "Kansas City"
+            "Saint Louis"
         ],
-        "correct": 1,
+        "correct": 0,
         "explanation": "Stolicą Missouri jest Jefferson City, nazwane na cześć prezydenta Thomasa Jeffersona."
     },
     {
@@ -624,9 +624,9 @@ const QUIZ_QUESTIONS = [
         "category": "Stany USA i ich stolice",
         "question": "Stolicą stanu Idaho, znaną jako \"Miasto Drzew\" (City of Trees), jest:",
         "options": [
-            "Pocatello",
-            "Idaho Falls",
             "Coeur d'Alene",
+            "Idaho Falls",
+            "Pocatello",
             "Boise"
         ],
         "correct": 3,
@@ -638,10 +638,10 @@ const QUIZ_QUESTIONS = [
         "category": "Stany USA i ich stolice",
         "question": "Stolicą stanu Montana jest:",
         "options": [
+            "Bozeman",
             "Billings",
-            "Missoula",
             "Helena",
-            "Bozeman"
+            "Missoula"
         ],
         "correct": 2,
         "explanation": "Stolicą Montany jest Helena, założona podczas gorączki złota w 1864 roku."
@@ -652,12 +652,12 @@ const QUIZ_QUESTIONS = [
         "category": "Stany USA i ich stolice",
         "question": "Stolicą stanu Wyoming jest:",
         "options": [
-            "Casper",
             "Jackson",
+            "Cheyenne",
             "Laramie",
-            "Cheyenne"
+            "Casper"
         ],
-        "correct": 3,
+        "correct": 1,
         "explanation": "Stolicą i największym miastem stanu Wyoming jest Cheyenne."
     },
     {
@@ -667,9 +667,9 @@ const QUIZ_QUESTIONS = [
         "question": "Które miasto jest stolicą stanu Alabama?",
         "options": [
             "Mobile",
-            "Huntsville",
+            "Birmingham",
             "Montgomery",
-            "Birmingham"
+            "Huntsville"
         ],
         "correct": 2,
         "explanation": "Stolicą Alabamy jest Montgomery, historyczne centrum walk o prawa obywatelskie Afroamerykanów (strajk autobusowy Rosy Parks)."
@@ -680,12 +680,12 @@ const QUIZ_QUESTIONS = [
         "category": "Stany USA i ich stolice",
         "question": "Stolicą stanu Arkansas jest:",
         "options": [
-            "Little Rock",
-            "Fayetteville",
             "Jonesboro",
-            "Fort Smith"
+            "Fort Smith",
+            "Fayetteville",
+            "Little Rock"
         ],
-        "correct": 0,
+        "correct": 3,
         "explanation": "Stolicą i największym miastem Arkansas jest Little Rock."
     },
     {
@@ -695,11 +695,11 @@ const QUIZ_QUESTIONS = [
         "question": "Stolicą stanu Karolina Południowa (South Carolina) jest:",
         "options": [
             "Greenville",
-            "Myrtle Beach",
             "Charleston",
-            "Columbia"
+            "Columbia",
+            "Myrtle Beach"
         ],
-        "correct": 3,
+        "correct": 2,
         "explanation": "Stolicą Karoliny Południowej jest Columbia, leżąca w centrum stanu."
     },
     {
@@ -708,12 +708,12 @@ const QUIZ_QUESTIONS = [
         "category": "Podział administracyjny Kanady",
         "question": "Ile prowincji i ile terytoriów liczy obecnie Kanada?",
         "options": [
-            "12 prowincji i 2 terytoria",
-            "10 prowincji i 3 terytoria",
+            "50 prowincji i 1 terytorium",
             "8 prowincji i 4 terytoria",
-            "50 prowincji i 1 terytorium"
+            "10 prowincji i 3 terytoria",
+            "12 prowincji i 2 terytoria"
         ],
-        "correct": 1,
+        "correct": 2,
         "explanation": "Kanada dzieli się na 10 prowincji (posiadających szeroką suwerenność konstytucyjną) oraz 3 terytoria federalne na północy."
     },
     {
@@ -722,12 +722,12 @@ const QUIZ_QUESTIONS = [
         "category": "Podział administracyjny Kanady",
         "question": "Stolicą federalną Kanady (leżącą w prowincji Ontario nad rzeką graniczną z Quebekiem) jest:",
         "options": [
-            "Vancouver",
-            "Toronto",
             "Montreal",
-            "Ottawa"
+            "Ottawa",
+            "Vancouver",
+            "Toronto"
         ],
-        "correct": 3,
+        "correct": 1,
         "explanation": "Stolicą Kanady jest Ottawa, wybrana w 1857 roku przez królową Wiktorię."
     },
     {
@@ -736,12 +736,12 @@ const QUIZ_QUESTIONS = [
         "category": "Podział administracyjny Kanady",
         "question": "Która prowincja Kanady ma największą liczbę ludności (prawie 40% mieszkańców kraju)?",
         "options": [
-            "Alberta",
-            "Kolumbia Brytyjska",
             "Ontario",
-            "Quebec"
+            "Kolumbia Brytyjska",
+            "Quebec",
+            "Alberta"
         ],
-        "correct": 2,
+        "correct": 0,
         "explanation": "Ontario jest najludniejszą prowincją Kanady (ponad 15 mln mieszkańców), z największym miastem Toronto."
     },
     {
@@ -750,12 +750,12 @@ const QUIZ_QUESTIONS = [
         "category": "Podział administracyjny Kanady",
         "question": "Stolicą prowincji Ontario jest:",
         "options": [
-            "London",
-            "Toronto",
+            "Hamilton",
             "Ottawa",
-            "Hamilton"
+            "London",
+            "Toronto"
         ],
-        "correct": 1,
+        "correct": 3,
         "explanation": "Stolicą prowincji Ontario jest Toronto. Ottawa jest z kolei stolicą całego państwa (federalną)."
     },
     {
@@ -764,12 +764,12 @@ const QUIZ_QUESTIONS = [
         "category": "Podział administracyjny Kanady",
         "question": "Która prowincja Kanady jest największa pod względem powierzchni lądowej?",
         "options": [
-            "Ontario",
-            "Nunavut",
+            "Kolumbia Brytyjska",
             "Quebec",
-            "Kolumbia Brytyjska"
+            "Nunavut",
+            "Ontario"
         ],
-        "correct": 2,
+        "correct": 1,
         "explanation": "Spośród prowincji największy jest Quebec (ponad 1,5 mln km²). Nunavut jest większe, ale jest terytorium, a nie prowincją."
     },
     {
@@ -778,12 +778,12 @@ const QUIZ_QUESTIONS = [
         "category": "Podział administracyjny Kanady",
         "question": "Jedyną kanadyjską prowincją, w której jedynym językiem urzędowym jest wyłącznie język francuski, jest:",
         "options": [
+            "Quebec",
             "Manitoba",
             "Ontario",
-            "Nowy Brunszwik",
-            "Quebec"
+            "Nowy Brunszwik"
         ],
-        "correct": 3,
+        "correct": 0,
         "explanation": "Quebec (Québec) jest prowincją francuskojęzyczną z własnym unikalnym systemem prawa cywilnego."
     },
     {
@@ -792,12 +792,12 @@ const QUIZ_QUESTIONS = [
         "category": "Podział administracyjny Kanady",
         "question": "Stolicą prowincji Quebec jest:",
         "options": [
-            "Gatineau",
-            "Laval",
             "Québec (Quebec City)",
+            "Laval",
+            "Gatineau",
             "Montreal"
         ],
-        "correct": 2,
+        "correct": 0,
         "explanation": "Stolicą prowincji jest miasto Québec (Quebec City), choć największą metropolią jest Montreal."
     },
     {
@@ -806,12 +806,12 @@ const QUIZ_QUESTIONS = [
         "category": "Podział administracyjny Kanady",
         "question": "Które miasto jest stolicą Kolumbii Brytyjskiej (British Columbia), położone na wyspie Vancouver?",
         "options": [
-            "Victoria",
             "Vancouver",
             "Kelowna",
-            "Richmond"
+            "Richmond",
+            "Victoria"
         ],
-        "correct": 0,
+        "correct": 3,
         "explanation": "Stolicą Kolumbii Brytyjskiej jest Victoria, położona na południowym krańcu wyspy Vancouver."
     },
     {
@@ -821,11 +821,11 @@ const QUIZ_QUESTIONS = [
         "question": "Stolicą prowincji Alberta, słynącej z ropy naftowej i bliskości Gór Skalistych, jest:",
         "options": [
             "Red Deer",
+            "Calgary",
             "Edmonton",
-            "Banff",
-            "Calgary"
+            "Banff"
         ],
-        "correct": 1,
+        "correct": 2,
         "explanation": "Stolicą Alberty jest Edmonton, podczas gdy Calgary jest jej największym miastem i centrum biznesowym."
     },
     {
@@ -835,11 +835,11 @@ const QUIZ_QUESTIONS = [
         "question": "Stolicą prowincji Manitoba, będącą węzłem kolejowym i centrum geograficznym Kanady, jest:",
         "options": [
             "Steinbach",
+            "Winnipeg",
             "Brandon",
-            "Thompson",
-            "Winnipeg"
+            "Thompson"
         ],
-        "correct": 3,
+        "correct": 1,
         "explanation": "Stolicą i zdecydowanie największym miastem Manitoby jest Winnipeg."
     },
     {
@@ -849,11 +849,11 @@ const QUIZ_QUESTIONS = [
         "question": "Stolicą preriowej prowincji Saskatchewan jest miasto:",
         "options": [
             "Moose Jaw",
-            "Saskatoon",
             "Regina",
-            "Prince Albert"
+            "Prince Albert",
+            "Saskatoon"
         ],
-        "correct": 2,
+        "correct": 1,
         "explanation": "Stolicą Saskatchewan jest Regina (nazwana na cześć królowej Wiktorii: Victoria Regina), choć największym miastem jest Saskatoon."
     },
     {
@@ -862,9 +862,9 @@ const QUIZ_QUESTIONS = [
         "category": "Podział administracyjny Kanady",
         "question": "Która prowincja Kanady jest oficjalnie jedyną dwujęzyczną (angielsko-francuską) prowincją w konstytucji?",
         "options": [
+            "Nowa Szkocja",
             "Ontario",
             "Quebec",
-            "Nowa Szkocja",
             "Nowy Brunszwik (New Brunswick)"
         ],
         "correct": 3,
@@ -876,12 +876,12 @@ const QUIZ_QUESTIONS = [
         "category": "Podział administracyjny Kanady",
         "question": "Stolicą Nowego Brunszwiku (New Brunswick) jest:",
         "options": [
+            "Moncton",
             "Saint John",
             "Fredericton",
-            "Moncton",
             "Bathurst"
         ],
-        "correct": 1,
+        "correct": 2,
         "explanation": "Stolicą Nowego Brunszwiku jest Fredericton, a największymi ośrodkami miejskimi są Moncton i Saint John."
     },
     {
@@ -890,12 +890,12 @@ const QUIZ_QUESTIONS = [
         "category": "Podział administracyjny Kanady",
         "question": "Stolicą nadatlantyckiej prowincji Nowa Szkocja (Nova Scotia) jest:",
         "options": [
+            "Halifax",
             "Lunenburg",
             "Dartmouth",
-            "Sydney",
-            "Halifax"
+            "Sydney"
         ],
-        "correct": 3,
+        "correct": 0,
         "explanation": "Stolicą i głównym portem Nowej Szkocji jest Halifax, strategiczna baza kanadyjskiej marynarki wojennej."
     },
     {
@@ -905,9 +905,9 @@ const QUIZ_QUESTIONS = [
         "question": "Najmniejszą pod względem powierzchni i ludności prowincją Kanady jest:",
         "options": [
             "Wyspa Księcia Edwarda (PEI)",
-            "Nowa Fundlandia",
+            "Jukon",
             "Nowa Szkocja",
-            "Jukon"
+            "Nowa Fundlandia"
         ],
         "correct": 0,
         "explanation": "Wyspa Księcia Edwarda (Prince Edward Island) ma powierzchnię zaledwie 5660 km² i ok. 175 tys. mieszkańców."
@@ -918,12 +918,12 @@ const QUIZ_QUESTIONS = [
         "category": "Podział administracyjny Kanady",
         "question": "Stolicą Wyspy Księcia Edwarda (uznawaną za \"Kolebkę Konfederacji Kanady\" z 1864 r.) jest:",
         "options": [
+            "Summerside",
             "Stratford",
-            "Charlottetown",
             "Cornwall",
-            "Summerside"
+            "Charlottetown"
         ],
-        "correct": 1,
+        "correct": 3,
         "explanation": "Stolicą PEI jest Charlottetown, uznawane za \"Kolebkę Konfederacji Kanady\"."
     },
     {
@@ -932,12 +932,12 @@ const QUIZ_QUESTIONS = [
         "category": "Podział administracyjny Kanady",
         "question": "Prowincja Nowa Fundlandia i Labrador wstąpiła do Konfederacji Kanady jako ostatnia w roku:",
         "options": [
-            "1949",
             "1999",
-            "1905",
-            "1867"
+            "1867",
+            "1949",
+            "1905"
         ],
-        "correct": 0,
+        "correct": 2,
         "explanation": "Nowa Fundlandia była osobnym brytyjskim dominium aż do referendum w 1949 roku, kiedy została 10. prowincją Kanady."
     },
     {
@@ -948,10 +948,10 @@ const QUIZ_QUESTIONS = [
         "options": [
             "Gander",
             "Corner Brook",
-            "St. John's",
-            "Happy Valley-Goose Bay"
+            "Happy Valley-Goose Bay",
+            "St. John's"
         ],
-        "correct": 2,
+        "correct": 3,
         "explanation": "Stolicą Nowej Fundlandii i Labradoru jest St. John's, położone na półwyspie Avalon."
     },
     {
@@ -960,12 +960,12 @@ const QUIZ_QUESTIONS = [
         "category": "Podział administracyjny Kanady",
         "question": "Trzy terytoria Kanady na dalekiej północy to:",
         "options": [
-            "Manitoba, Jukon, Nunavut",
-            "Jukon, Terytoria Północno-Zachodnie, Nunavut",
             "Labrador, Jukon, Grenlandia",
-            "Alaska, Nunavut, Arktyka"
+            "Alaska, Nunavut, Arktyka",
+            "Jukon, Terytoria Północno-Zachodnie, Nunavut",
+            "Manitoba, Jukon, Nunavut"
         ],
-        "correct": 1,
+        "correct": 2,
         "explanation": "Kanada ma 3 terytoria: Jukon (Yukon), Terytoria Północno-Zachodnie (NWT) oraz Nunavut."
     },
     {
@@ -974,12 +974,12 @@ const QUIZ_QUESTIONS = [
         "category": "Podział administracyjny Kanady",
         "question": "Najmłodszym terytorium Kanady, utworzonym w 1999 roku jako ojczyzna Inuitów, jest:",
         "options": [
-            "Terytoria Północno-Zachodnie",
             "Labrador",
             "Nunavut",
+            "Terytoria Północno-Zachodnie",
             "Jukon"
         ],
-        "correct": 2,
+        "correct": 1,
         "explanation": "Nunavut zostało wydzielone z Terytoriów Północno-Zachodnich 1 kwietnia 1999 roku."
     },
     {
@@ -988,12 +988,12 @@ const QUIZ_QUESTIONS = [
         "category": "Podział administracyjny Kanady",
         "question": "Stolicą terytorium Nunavut jest miasto na Ziemi Baffina o nazwie:",
         "options": [
-            "Yellowknife",
-            "Iqaluit",
             "Rankin Inlet",
-            "Inuvik"
+            "Inuvik",
+            "Iqaluit",
+            "Yellowknife"
         ],
-        "correct": 1,
+        "correct": 2,
         "explanation": "Stolicą Nunavut jest Iqaluit (do 1987 r. znane jako Frobisher Bay)."
     },
     {
@@ -1002,12 +1002,12 @@ const QUIZ_QUESTIONS = [
         "category": "Podział administracyjny Kanady",
         "question": "Stolicą Terytoriów Północno-Zachodnich (Northwest Territories) położoną nad Wielkim Jeziorem Niewolniczym jest:",
         "options": [
+            "Yellowknife",
             "Hay River",
-            "Whitehorse",
             "Dawson City",
-            "Yellowknife"
+            "Whitehorse"
         ],
-        "correct": 3,
+        "correct": 0,
         "explanation": "Stolicą NWT jest Yellowknife, słynące ze złotonośnych i diamentowych złóż oraz zórz polarnych."
     },
     {
@@ -1016,12 +1016,12 @@ const QUIZ_QUESTIONS = [
         "category": "Podział administracyjny Kanady",
         "question": "Stolicą terytorium Jukon (Yukon), znanego z gorączki złota nad rzeką Klondike, jest:",
         "options": [
+            "Mayo",
             "Dawson City",
             "Watson Lake",
-            "Whitehorse",
-            "Mayo"
+            "Whitehorse"
         ],
-        "correct": 2,
+        "correct": 3,
         "explanation": "Stolicą Jukonu jest Whitehorse (przeniesiona z Dawson City w 1953 roku)."
     },
     {
@@ -1030,12 +1030,12 @@ const QUIZ_QUESTIONS = [
         "category": "Podział administracyjny Kanady",
         "question": "Które prowincje Kanady wchodzą w skład tzw. Prowincji Prerii (Prairie Provinces)?",
         "options": [
-            "Alberta, Saskatchewan, Manitoba",
+            "Saskatchewan, Manitoba, Ontario",
             "Kolumbia Brytyjska, Alberta, Jukon",
-            "Ontario, Quebec, Nowy Brunszwik",
-            "Saskatchewan, Manitoba, Ontario"
+            "Alberta, Saskatchewan, Manitoba",
+            "Ontario, Quebec, Nowy Brunszwik"
         ],
-        "correct": 0,
+        "correct": 2,
         "explanation": "Prowincje Prerii to Alberta, Saskatchewan i Manitoba – rolnicze serce kanadyjskiej uprawy zbóż."
     },
     {
@@ -1044,12 +1044,12 @@ const QUIZ_QUESTIONS = [
         "category": "Podział administracyjny Kanady",
         "question": "Cztery prowincje leżące nad Oceanem Atlantyckim (Nowy Brunszwik, Nowa Szkocja, PEI i Nowa Fundlandia) określa się wspólnie jako:",
         "options": [
-            "Kanada Arktyczna",
             "Prowincje Atlantyckie (Atlantic Canada)",
+            "Kraina Wielkich Jezior",
             "Terytoria Wschodnie",
-            "Kraina Wielkich Jezior"
+            "Kanada Arktyczna"
         ],
-        "correct": 1,
+        "correct": 0,
         "explanation": "Atlantic Canada (Prowincje Atlantyckie) obejmuje 4 prowincje nadmorskie nad Oceanem Atlantyckim."
     },
     {
@@ -1058,12 +1058,12 @@ const QUIZ_QUESTIONS = [
         "category": "Granice i geografia polityczna",
         "question": "Główna lądowa granica między zachodnią częścią Kanady a USA (od Jeziora Leśnego po Cieśninę Georgia) biegnie wzdłuż równoleżnika:",
         "options": [
-            "49°N",
-            "42°N",
             "54°40'N",
-            "45°N"
+            "45°N",
+            "49°N",
+            "42°N"
         ],
-        "correct": 0,
+        "correct": 2,
         "explanation": "Równoleżnik 49°N stanowi najdłuższy prostoliniowy odcinek nieufortyfikowanej granicy międzynarodowej na świecie, ustalony traktatami z 1818 i 1846 roku."
     },
     {
@@ -1073,11 +1073,11 @@ const QUIZ_QUESTIONS = [
         "question": "Który stan USA dzieli najdłuższą granicę lądową z Kanadą (aż 2475 km)?",
         "options": [
             "Waszyngton",
+            "Nowy Jork",
             "Montana",
-            "Alaska",
-            "Nowy Jork"
+            "Alaska"
         ],
-        "correct": 2,
+        "correct": 3,
         "explanation": "Granica lądowa Alaski z Jukonem i Kolumbią Brytyjską liczy aż 2475 km (1538 mil)."
     },
     {
@@ -1100,12 +1100,12 @@ const QUIZ_QUESTIONS = [
         "category": "Granice i geografia polityczna",
         "question": "Ile stanów USA bezpośrednio graniczy z terytorium Kanady (lądowo lub przez wody Wielkich Jezior)?",
         "options": [
-            "13",
+            "10",
             "15",
-            "8",
-            "10"
+            "13",
+            "8"
         ],
-        "correct": 0,
+        "correct": 2,
         "explanation": "Dokładnie 13 stanów: Alaska, Waszyngton, Idaho, Montana, Dakota Północna, Minnesota, Wisconsin (przez jezioro), Michigan, Ohio (przez jezioro), Pensylwania (przez jezioro), Nowy Jork, Vermont, New Hampshire, Maine."
     },
     {
@@ -1114,9 +1114,9 @@ const QUIZ_QUESTIONS = [
         "category": "Granice i geografia polityczna",
         "question": "Rzeka Rio Grande stanowi naturalną granicę między USA (głównie stanem Teksas) a:",
         "options": [
-            "Kanadą",
             "Kubą",
             "Nowym Meksykiem",
+            "Kanadą",
             "Meksykiem"
         ],
         "correct": 3,
@@ -1128,10 +1128,10 @@ const QUIZ_QUESTIONS = [
         "category": "Granice i geografia polityczna",
         "question": "Która rzeka stanowi naturalną granicę oddzielającą stany Waszyngton i Oregon na północnym zachodzie USA?",
         "options": [
-            "Rzeka Kolorado",
+            "Rzeka Snake",
             "Rzeka Kolumbia",
-            "Rzeka Missouri",
-            "Rzeka Snake"
+            "Rzeka Kolorado",
+            "Rzeka Missouri"
         ],
         "correct": 1,
         "explanation": "Rzeka Kolumbia (Columbia River) stanowi znaczną część granicy między stanami Waszyngton i Oregon."
@@ -1142,12 +1142,12 @@ const QUIZ_QUESTIONS = [
         "category": "Granice i geografia polityczna",
         "question": "Wodospad Niagara leży na granicy kanadyjskiej prowincji Ontario oraz amerykańskiego stanu:",
         "options": [
+            "Pensylwania",
             "Nowy Jork",
             "Ohio",
-            "Michigan",
-            "Pensylwania"
+            "Michigan"
         ],
-        "correct": 0,
+        "correct": 1,
         "explanation": "Wodospad Niagara leży na rzece Niagara łączącej jezioro Erie z jeziorem Ontario, na granicy stanu Nowy Jork i prowincji Ontario."
     },
     {
@@ -1157,11 +1157,11 @@ const QUIZ_QUESTIONS = [
         "question": "Point Roberts to niezwykła eksklawa lądowa USA, do której można dojechać lądem wyłącznie przez terytorium Kanady. Do którego stanu USA należy?",
         "options": [
             "Alaska",
-            "Maine",
             "Minnesota",
-            "Waszyngton"
+            "Waszyngton",
+            "Maine"
         ],
-        "correct": 3,
+        "correct": 2,
         "explanation": "Point Roberts leży na południe od 49. równoleżnika na półwyspie Tsawwassen i należy do hrabstwa Whatcom w stanie Waszyngton."
     },
     {
@@ -1171,9 +1171,9 @@ const QUIZ_QUESTIONS = [
         "question": "Północno-Zachodni Kąt (Northwest Angle) nad Jeziorem Leśnym to jedyna część przyległych stanów USA na północ od 49°N. Należy do stanu:",
         "options": [
             "Minnesota",
+            "Michigan",
             "Wisconsin",
-            "Dakota Północna",
-            "Michigan"
+            "Dakota Północna"
         ],
         "correct": 0,
         "explanation": "Northwest Angle należy do stanu Minnesota i jest odciętą enklawą dostępną lądem tylko przez kanadyjską Manitobę."
@@ -1184,12 +1184,12 @@ const QUIZ_QUESTIONS = [
         "category": "Geografia fizyczno-administracyjna",
         "question": "Najwyższy szczyt Stanów Zjednoczonych i całej Ameryki Północnej (Denali, 6190 m n.p.m.) leży w stanie:",
         "options": [
-            "Kolorado",
-            "Alaska",
             "Waszyngton",
-            "Kalifornia"
+            "Kalifornia",
+            "Kolorado",
+            "Alaska"
         ],
-        "correct": 1,
+        "correct": 3,
         "explanation": "Denali (dawniej Mount McKinley) leży w Parku Narodowym Denali w środkowej części Alaski."
     },
     {
@@ -1198,12 +1198,12 @@ const QUIZ_QUESTIONS = [
         "category": "Geografia fizyczno-administracyjna",
         "question": "Najwyższy szczyt Kanady – Góra Logan (Mount Logan, 5959 m n.p.m.) – leży w jednostce:",
         "options": [
-            "Terytoria Północno-Zachodnie",
+            "Terytorium Jukon",
             "Kolumbia Brytyjska",
             "Alberta",
-            "Terytorium Jukon"
+            "Terytoria Północno-Zachodnie"
         ],
-        "correct": 3,
+        "correct": 0,
         "explanation": "Mount Logan leży w Parku Narodowym Kluane na terenie terytorium Jukon."
     },
     {
@@ -1212,12 +1212,12 @@ const QUIZ_QUESTIONS = [
         "category": "Geografia fizyczno-administracyjna",
         "question": "Najgłębsza depresja i najgorętsze miejsce w Ameryce Północnej (Dolina Śmierci, -86 m p.p.m.) znajduje się w stanie:",
         "options": [
-            "Kalifornia",
-            "Arizona",
+            "Nevada",
             "Nowy Meksyk",
-            "Nevada"
+            "Arizona",
+            "Kalifornia"
         ],
-        "correct": 0,
+        "correct": 3,
         "explanation": "Dolina Śmierci (Death Valley) oraz Badwater Basin leżą we wschodniej Kalifornii."
     },
     {
@@ -1227,8 +1227,8 @@ const QUIZ_QUESTIONS = [
         "question": "Wielki Kanion rzeki Kolorado (Grand Canyon) znajduje się w całości w stanie:",
         "options": [
             "Kolorado",
-            "Nevada",
             "Utah",
+            "Nevada",
             "Arizona"
         ],
         "correct": 3,
@@ -1240,12 +1240,12 @@ const QUIZ_QUESTIONS = [
         "category": "Geografia fizyczno-administracyjna",
         "question": "Najstarszy park narodowy na świecie – Yellowstone – leży głównie w granicach stanu:",
         "options": [
-            "Montana",
-            "Kolorado",
+            "Idaho",
             "Wyoming",
-            "Idaho"
+            "Montana",
+            "Kolorado"
         ],
-        "correct": 2,
+        "correct": 1,
         "explanation": "Aż 96% powierzchni Yellowstone leży w stanie Wyoming (3% w Montanie i 1% w Idaho)."
     },
     {
@@ -1254,12 +1254,12 @@ const QUIZ_QUESTIONS = [
         "category": "Stany USA i ich stolice",
         "question": "Stolicą stanu Karolina Północna (będącą częścią Research Triangle wraz z Durham i Chapel Hill) jest:",
         "options": [
-            "Greensboro",
-            "Winston-Salem",
             "Charlotte",
-            "Raleigh"
+            "Raleigh",
+            "Greensboro",
+            "Winston-Salem"
         ],
-        "correct": 3,
+        "correct": 1,
         "explanation": "Stolicą Karoliny Północnej jest Raleigh."
     },
     {
@@ -1268,12 +1268,12 @@ const QUIZ_QUESTIONS = [
         "category": "Symbole i ciekawostki stanowe",
         "question": "Dlaczego Teksas nosi oficjalny przydomek \"The Lone Star State\" (Stan Samotnej Gwiazdy)?",
         "options": [
-            "Na pamiątkę okresu, gdy był niepodległą republiką (1836–1845)",
             "Bo ma tylko jedno duże miasto",
-            "Bo na niebie widać tam tylko jedną jasną gwiazdę",
-            "Na cześć pierwszego gubernatora"
+            "Na pamiątkę okresu, gdy był niepodległą republiką (1836–1845)",
+            "Na cześć pierwszego gubernatora",
+            "Bo na niebie widać tam tylko jedną jasną gwiazdę"
         ],
-        "correct": 0,
+        "correct": 1,
         "explanation": "Teksas przez 9 lat po wyzwoleniu spod władzy Meksyku był niepodległym państwem (Republika Teksasu) z flagą z jedną gwiazdą."
     },
     {
@@ -1298,8 +1298,8 @@ const QUIZ_QUESTIONS = [
         "options": [
             "Aleuty (Aleutian Islands)",
             "Hawaje",
-            "Florida Keys",
-            "Wyspy Królowej Elżbiety"
+            "Wyspy Królowej Elżbiety",
+            "Florida Keys"
         ],
         "correct": 0,
         "explanation": "Aleuty (Aleutian Islands) to wyspy należące do Alaski, rozdzielające Morze Beringa od Pacyfiku."
@@ -1310,9 +1310,9 @@ const QUIZ_QUESTIONS = [
         "category": "Struktura administracyjna USA",
         "question": "Który z Wielkich Jezior Ameryki Północnej leży W CAŁOŚCI w granicach Stanów Zjednoczonych (nie graniczy z Kanadą)?",
         "options": [
+            "Jezioro Huron",
             "Jezioro Erie",
             "Jezioro Górne",
-            "Jezioro Huron",
             "Jezioro Michigan"
         ],
         "correct": 3,
@@ -1324,12 +1324,12 @@ const QUIZ_QUESTIONS = [
         "category": "Podział administracyjny Kanady",
         "question": "Słynny Park Narodowy Banff oraz Lake Louise znajdują się w kanadyjskiej prowincji:",
         "options": [
+            "Kolumbia Brytyjska",
             "Alberta",
-            "Ontario",
             "Quebec",
-            "Kolumbia Brytyjska"
+            "Ontario"
         ],
-        "correct": 0,
+        "correct": 1,
         "explanation": "Banff leży w prowincji Alberta w paśmie kanadyjskich Gór Skalistych."
     },
     {
@@ -1338,10 +1338,10 @@ const QUIZ_QUESTIONS = [
         "category": "Struktura administracyjna USA",
         "question": "W którym stanie znajduje się słynny przylądek Canaveral (Cape Canaveral) i Centrum Kosmiczne Kennedy’ego?",
         "options": [
+            "Teksas",
             "Kalifornia",
-            "Karolina Północna",
             "Floryda",
-            "Teksas"
+            "Karolina Północna"
         ],
         "correct": 2,
         "explanation": "Cape Canaveral i Kennedy Space Center leżą na wschodnim wybrzeżu Florydy."
@@ -1352,12 +1352,12 @@ const QUIZ_QUESTIONS = [
         "category": "Struktura administracyjna USA",
         "question": "Który stan USA ma przydomek \"The Sunshine State\" (Słoneczny Stan)?",
         "options": [
-            "Floryda",
             "Kalifornia",
-            "Arizona",
-            "Hawaje"
+            "Hawaje",
+            "Floryda",
+            "Arizona"
         ],
-        "correct": 0,
+        "correct": 2,
         "explanation": "Oficjalnym przydomkiem Florydy jest \"The Sunshine State\" (od 1970 roku na tablicach rejestracyjnych)."
     },
     {
@@ -1368,10 +1368,10 @@ const QUIZ_QUESTIONS = [
         "options": [
             "Wild West Expo",
             "Yukon Quest",
-            "Rodeo Fiesta",
-            "Calgary Stampede"
+            "Calgary Stampede",
+            "Rodeo Fiesta"
         ],
-        "correct": 3,
+        "correct": 2,
         "explanation": "Calgary Stampede to jedno z największych rodeo i festiwali kultury Dzikiego Zachodu na świecie."
     },
     {
@@ -1394,12 +1394,12 @@ const QUIZ_QUESTIONS = [
         "category": "Podsumowanie podziału administracyjnego",
         "question": "Gdyby połączyć wszystkie stany USA (50) oraz prowincje (10) i terytoria (3) Kanady, ile głównych jednostek administracyjnych 1. rzędu tworzą te dwa kraje?",
         "options": [
-            "70",
+            "63",
             "60",
-            "65",
-            "63"
+            "70",
+            "65"
         ],
-        "correct": 3,
+        "correct": 0,
         "explanation": "50 stanów USA + 10 prowincji Kanady + 3 terytoria Kanady = dokładnie 63 jednostki administracyjne pierwszego rzędu (oraz D.C. i terytoria zamorskie)."
     }
 ];

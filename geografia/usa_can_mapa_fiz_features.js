@@ -58,20 +58,20 @@ const PHYSICAL_MAP_FEATURES = [
         "question": "Wskaż nazwę zaznaczonej na mapie najdłuższej rzeki Ameryki Północnej (wraz z dopływem Missouri), uchodzącej rozległą deltą palczastą do Zatoki Meksykańskiej:",
         "options": [
             "Rzeka Kolorado",
-            "Rzeka Missisipi",
             "Rzeka Mackenzie",
+            "Rzeka Missisipi",
             "Rzeka Świętego Wawrzyńca"
         ],
-        "correct": 1,
+        "correct": 2,
         "explanation": "Missisipi wraz z Missouri tworzy system rzeczny o długości ok. 6275 km. Jej zlewisko obejmuje ponad 3,2 mln km² (ponad 40% powierzchni kontynentalnych USA), a rzeka uchodzi charakterystyczną deltą palczastą.",
         "geophysicalQuestion": "Wskaż proces geomorfologiczny kształtujący ujście tej rzeki do Zatoki Meksykańskiej:",
         "geophysicalOptions": [
+            "Powstanie estuarium w wyniku silnych prądów przybrzeżnych i abrazyjnego niszczenia wybrzeża",
             "Erozja wsteczna spowodowana gigantycznymi pływami oceanicznymi",
-            "Akumulacja osadów rzecznych tworząca deltę palczastą z powodu małych pływów morskich",
             "Erozja lodowcowa pogłębiająca fiordy u ujścia",
-            "Powstanie estuarium w wyniku silnych prądów przybrzeżnych i abrazyjnego niszczenia wybrzeża"
+            "Akumulacja osadów rzecznych tworząca deltę palczastą z powodu małych pływów morskich"
         ],
-        "geophysicalCorrect": 1,
+        "geophysicalCorrect": 3,
         "geophysicalExplanation": "Zatoka Meksykańska charakteryzuje się bardzo małymi pływami i spokojnymi wodami, co sprzyja intensywnej akumulacji niesionego materiału i budowie rozległej delty palczastej (bird-foot delta)."
     },
     {
@@ -121,21 +121,21 @@ const PHYSICAL_MAP_FEATURES = [
         "zoom": 6,
         "question": "Zaznaczona rzeka płynie przez suche wyżyny południowo-zachodnich USA i wyżłobiła najsłynniejszy kanion świata. Jest to:",
         "options": [
-            "Rzeka Kolorado",
-            "Rzeka Rio Grande",
             "Rzeka Columbia",
-            "Rzeka Snake"
+            "Rzeka Kolorado",
+            "Rzeka Snake",
+            "Rzeka Rio Grande"
         ],
-        "correct": 0,
+        "correct": 1,
         "explanation": "Rzeka Kolorado (ok. 2330 km) płynie przez Wyżynę Kolorado i uchodzi do Zatoki Kalifornijskiej. Słynie z Wielkiego Kanonu (Grand Canyon) oraz potężnej zapory Hoovera.",
         "geophysicalQuestion": "Jakie procesy doprowadziły do powstania Wielkiego Kanonu wyżłobionego przez tę rzekę?",
         "geophysicalOptions": [
-            "Abrazja morska w zatoce oceanicznej",
             "Żłobienie przez lądolód plejstoceński w okresie zlodowacenia",
-            "Zapadlisko tektoniczne (rów tektoniczny) bez udziału erozji wodnej",
-            "Głęboka erozja denna (wgłębna) rzeki przy jednoczesnym powolnym wypiętrzaniu tektonicznym Wyżyny Kolorado"
+            "Głęboka erozja denna (wgłębna) rzeki przy jednoczesnym powolnym wypiętrzaniu tektonicznym Wyżyny Kolorado",
+            "Abrazja morska w zatoce oceanicznej",
+            "Zapadlisko tektoniczne (rów tektoniczny) bez udziału erozji wodnej"
         ],
-        "geophysicalCorrect": 3,
+        "geophysicalCorrect": 1,
         "geophysicalExplanation": "Wielki Kanon Kolorado powstał w wyniku synergii powolnego wypiętrzania tektonicznego Wyżyny Kolorado w kenozoiku i intensywnej, głębokiej erozji dennej niosącej twardy rumosz rzeki Kolorado."
     },
     {
@@ -174,20 +174,20 @@ const PHYSICAL_MAP_FEATURES = [
         "question": "Wskaż najdłuższą rzekę Kanady (ok. 4241 km w systemie z rzekami Peace i Finlay), uchodzącą rozległą deltą do Morza Beauforta:",
         "options": [
             "Rzeka Nelson",
-            "Rzeka Jukon",
             "Rzeka Mackenzie",
+            "Rzeka Jukon",
             "Rzeka Fraser"
         ],
-        "correct": 2,
+        "correct": 1,
         "explanation": "Mackenzie odprowadza wody z Wielkiego Jeziora Niewolniczego do Morza Beauforta w Arktyce. Przez ponad pół roku jest skuta lodem, a wiosenne odmarzanie od południa powoduje ogromne zatory lodowe i powodzie.",
         "geophysicalQuestion": "Dlaczego w dolnym biegu rzeki Mackenzie dochodzi wiosną do katastrofalnych wezbrań i powodzi zatorowych?",
         "geophysicalOptions": [
-            "Przez wdzieranie się pływów oceanicznych w głąb lądu",
             "Ponieważ rzeka płynie na północ – jej źródła i górny bieg odmarzają wcześniej niż skute lodem ujście arktyczne",
+            "Wskutek nagłego topnienia lądolodu grenlandzkiego",
             "Z powodu gwałtownych monsunów letnich w Arktyce",
-            "Wskutek nagłego topnienia lądolodu grenlandzkiego"
+            "Przez wdzieranie się pływów oceanicznych w głąb lądu"
         ],
-        "geophysicalCorrect": 1,
+        "geophysicalCorrect": 0,
         "geophysicalExplanation": "Rzeki Syberii i północnej Kanady płynące na północ (jak Mackenzie czy Ob) odmarzają od południa ku chłodnej północy; spływająca woda napotyka nienaruszony lód w ujściu, co tworzy potężne zatory lodowe."
     },
     {
@@ -231,19 +231,19 @@ const PHYSICAL_MAP_FEATURES = [
         "options": [
             "Rzeka Świętego Wawrzyńca",
             "Rzeka Potomak",
-            "Rzeka Hudson",
-            "Rzeka Ottawa"
+            "Rzeka Ottawa",
+            "Rzeka Hudson"
         ],
         "correct": 0,
         "explanation": "Rzeka św. Wawrzyńca odprowadza wody z Wielkich Jezior do Zatoki Św. Wawrzyńca. Jej potężne estuarium jest jednym z największych na Ziemi i stanowi morską drogę wodną Saint Lawrence Seaway.",
         "geophysicalQuestion": "Jaką formę ujścia tworzy rzeka Świętego Wawrzyńca i w jaki sposób powstała?",
         "geophysicalOptions": [
-            "Ogromne estuarium (lejkowate ujście) ukształtowane w zapadlisku tektonicznym i pogłębione przez lodowiec",
-            "Piaszczystą mierzeję odcinającą zalew przymorski",
             "Wielostopniowy wodospad wpadający bezpośrednio do rowu oceanicznego",
-            "Deltę palczastą powstałą wskutek braku pływów"
+            "Deltę palczastą powstałą wskutek braku pływów",
+            "Piaszczystą mierzeję odcinającą zalew przymorski",
+            "Ogromne estuarium (lejkowate ujście) ukształtowane w zapadlisku tektonicznym i pogłębione przez lodowiec"
         ],
-        "geophysicalCorrect": 0,
+        "geophysicalCorrect": 3,
         "geophysicalExplanation": "Ujście rzeki św. Wawrzyńca to najdłuższe estuarium świata (ponad 300 km długości i do kilkudziesięciu km szerokości), w którym mieszają się wody słodkie ze słonymi wodami Atlantyku."
     },
     {
@@ -293,21 +293,21 @@ const PHYSICAL_MAP_FEATURES = [
         "zoom": 5,
         "question": "Wskaż wielką rzekę północy (3185 km), która przepływa przez kanadyjskie terytorium o tej samej nazwie i całą Alaskę, uchodząc do Morza Beringa:",
         "options": [
-            "Rzeka Kolumbia",
+            "Rzeka Mackenzie",
             "Rzeka Kuskokwim",
-            "Rzeka Jukon",
-            "Rzeka Mackenzie"
+            "Rzeka Kolumbia",
+            "Rzeka Jukon"
         ],
-        "correct": 2,
+        "correct": 3,
         "explanation": "Jukon był osią XIX-wiecznej gorączki złota (nad dopływem Klondike). Przepływa przez płaskowyże Alaski i uchodzi ogromną deltą do Morza Beringa.",
         "geophysicalQuestion": "Wokół basenu rzeki Jukon występuje zjawisko wiecznej zmarzliny. Co charakteryzuje tę warstwę?",
         "geophysicalOptions": [
-            "Zimowe zamarzanie wód morskich przy braku zmarzliny gruntowej",
             "Wieloletnie przemarznięcie gruntu do kilkuset metrów w głąb, z rozmarzaniem jedynie cienkiej warstwy czynnej latem",
+            "Ciągłe pokrycie terenu lądolodem o miąższości 2 km",
             "Brak jakiejkolwiek roślinności i wieczne ciemności polarne",
-            "Ciągłe pokrycie terenu lądolodem o miąższości 2 km"
+            "Zimowe zamarzanie wód morskich przy braku zmarzliny gruntowej"
         ],
-        "geophysicalCorrect": 1,
+        "geophysicalCorrect": 0,
         "geophysicalExplanation": "Wieloletnia (ciągła i nieciągła) zmarzlina pokrywa większość dorzecza Jukonu, powodując m.in. zjawiska termokrasu, powstawanie pingo i utrudnienia budowlane przy rozmarzaniu warstwy czynnej."
     },
     {
@@ -353,21 +353,21 @@ const PHYSICAL_MAP_FEATURES = [
         "zoom": 6,
         "question": "Wskaż największą rzekę pacyficznego zlewiska Ameryki Północnej pod względem przepływu wody, słynącą z potężnych elektrowni wodnych (m.in. Grand Coulee):",
         "options": [
-            "Rzeka Sacramento",
             "Rzeka Kolumbia",
-            "Rzeka Kolorado",
-            "Rzeka Fraser"
+            "Rzeka Sacramento",
+            "Rzeka Fraser",
+            "Rzeka Kolorado"
         ],
-        "correct": 1,
+        "correct": 0,
         "explanation": "Rzeka Kolumbia (ok. 2000 km) wypływa z Kolumbii Brytyjskiej w Kanadzie, przecina Góry Kaskadowe i uchodzi do Pacyfiku. Wraz z dopływem Snake River produkuje ponad 40% energii hydroelektrycznej w USA.",
         "geophysicalQuestion": "Przez jaką krainę wulkaniczną zbudowaną z potężnych pokryw lawowych (trapów) bazaltowych płynie rzeka Kolumbia?",
         "geophysicalOptions": [
+            "Płaskowyż Kolumbii (Columbia Plateau)",
             "Tarczę Kanadyjską",
             "Nizinę Atlantycką",
-            "Wielkie Równiny",
-            "Płaskowyż Kolumbii (Columbia Plateau)"
+            "Wielkie Równiny"
         ],
-        "geophysicalCorrect": 3,
+        "geophysicalCorrect": 0,
         "geophysicalExplanation": "Płaskowyż Kolumbii jest jednym z największych płaskowyżów bazaltowych na świecie, uformowanym w miocenie przez wylewy law szczelinowych (Columbia River Basalt Group)."
     },
     {
@@ -413,21 +413,21 @@ const PHYSICAL_MAP_FEATURES = [
         "zoom": 6,
         "question": "Zaznaczona rzeka na długim odcinku stanowi naturalną granicę państwową między Stanami Zjednoczonymi a Meksykiem. Jest to:",
         "options": [
-            "Rio Grande",
             "Rzeka Brazos",
             "Rzeka Gila",
+            "Rio Grande",
             "Rzeka Kolorado"
         ],
-        "correct": 0,
+        "correct": 2,
         "explanation": "Rio Grande (3051 km) wypływa z Gór Skalistych w Kolorado, płynie przez Nowy Meksyk i wzdłuż granicy Teksasu z Meksykiem uchodzi do Zatoki Meksykańskiej.",
         "geophysicalQuestion": "Przez jaki rów tektoniczny (strefę rozciągania litosfery kontynentalnej) płynie w górnym i środkowym biegu ta rzeka?",
         "geophysicalOptions": [
-            "Rów Rio Grande (Rio Grande Rift)",
             "Rów Atakamski",
             "Rów Środkowoamerykański",
-            "Uskok San Andreas"
+            "Uskok San Andreas",
+            "Rów Rio Grande (Rio Grande Rift)"
         ],
-        "geophysicalCorrect": 0,
+        "geophysicalCorrect": 3,
         "geophysicalExplanation": "Rio Grande Rift to strefa ryftowa w skorupie kontynentalnej, wzdłuż której litosfera Ameryki Północnej ulega rozciąganiu i pocienieniu, z towarzyszącym wulkanizmem i uskokami normalnymi."
     },
     {
@@ -473,12 +473,12 @@ const PHYSICAL_MAP_FEATURES = [
         "zoom": 6,
         "question": "Wskaż zaznaczoną na mapie Kalifornii słynną strefę uskokową o długości ok. 1200 km, będącą przyczyną niszczycielskich trzęsień ziemi:",
         "options": [
-            "Uskok Denali",
             "Rów Cascadia",
             "Uskok San Andreas",
+            "Uskok Denali",
             "Uskok Nowego Madrytu"
         ],
-        "correct": 2,
+        "correct": 1,
         "explanation": "Uskok San Andreas to strefa uskoku przesuwczego prawoskrętnego, oddzielająca poruszającą się na północny zachód płytę Pacyficzną od płyty Północnoamerykańskiej.",
         "geophysicalQuestion": "Jaki typ granicy płyt litosfery reprezentuje uskok San Andreas?",
         "geophysicalOptions": [
@@ -525,21 +525,21 @@ const PHYSICAL_MAP_FEATURES = [
         "zoom": 5,
         "question": "Zaznaczona podmorska strefa u wybrzeży Oregonu, Waszyngtonu i Kolumbii Brytyjskiej to strefa subdukcji generująca megatrzęsienia i wulkany. Jest to:",
         "options": [
+            "Strefa subdukcji Cascadia",
             "Grzbiet Gorda",
             "Rów Mariański",
-            "Uskok Haywarda",
-            "Strefa subdukcji Cascadia"
+            "Uskok Haywarda"
         ],
-        "correct": 3,
+        "correct": 0,
         "explanation": "Cascadia Subduction Zone to strefa o długości 1000 km, gdzie oceaniczna płyta Juan de Fuca zagłębia się pod płytę Północnoamerykańską. Ostatnie potężne megatrzęsienie o magnitudzie ok. 9,0 miało tu miejsce w 1700 r.",
         "geophysicalQuestion": "Jakie pasmo górskie powstało bezpośrednio jako łuk wulkaniczny w wyniku subdukcji w strefie Cascadia?",
         "geophysicalOptions": [
+            "Appalachy (Appalachian Mountains)",
             "Góry Kaskadowe (Cascade Range)",
             "Sierra Nevada",
-            "Góry Skaliste (Rocky Mountains)",
-            "Appalachy (Appalachian Mountains)"
+            "Góry Skaliste (Rocky Mountains)"
         ],
-        "geophysicalCorrect": 0,
+        "geophysicalCorrect": 1,
         "geophysicalExplanation": "Topnienie pogrążającej się płyty Juan de Fuca zasila magmą łuk wulkaniczny Gór Kaskadowych, w tym aktywne stratowulkany: Mount St. Helens, Mount Rainier, Mount Shasta i Mount Hood."
     },
     {
@@ -559,21 +559,21 @@ const PHYSICAL_MAP_FEATURES = [
         "zoom": 7,
         "question": "Wskazany punkt na Alasce to najwyższy szczyt Ameryki Północnej (6190 m n.p.m.). Jest to:",
         "options": [
-            "Mount Saint Elias",
-            "Denali",
             "Mount Whitney",
-            "Mount Logan"
+            "Mount Saint Elias",
+            "Mount Logan",
+            "Denali"
         ],
-        "correct": 1,
+        "correct": 3,
         "explanation": "Denali (dawniej Mt. McKinley) wznosi się w paśmie Alaska Range. Ma największą na świecie wysokość względną mierzoną od podstawy szczytu wznoszącej się z płaskowyżu (ponad 5500 m przewyższenia).",
         "geophysicalQuestion": "W jakiej orogenezie i strefie tektonicznej wypiętrzyło się pasmo Denali?",
         "geophysicalOptions": [
-            "W orogenezie kaledońskiej na twardej tarczy kratonicznej",
-            "W orogenezie hercyńskiej na skutek ryftu kontynentalnego",
             "W orogenezie alpejskiej w strefie aktywnej kolizji i subdukcji pacyficznej",
-            "W wyniku zapadania się kaldery wulkanicznej"
+            "W wyniku zapadania się kaldery wulkanicznej",
+            "W orogenezie kaledońskiej na twardej tarczy kratonicznej",
+            "W orogenezie hercyńskiej na skutek ryftu kontynentalnego"
         ],
-        "geophysicalCorrect": 2,
+        "geophysicalCorrect": 0,
         "geophysicalExplanation": "Kordyliery Alaski i Denali to młode góry fałdowe powstałe w alpejskim cyklu orogenicznym wskutek naporu płyty Pacyficznej na płytę Północnoamerykańską."
     },
     {
@@ -595,19 +595,19 @@ const PHYSICAL_MAP_FEATURES = [
         "options": [
             "Mount Robson",
             "Mount Columbia",
-            "Mount Logan",
-            "Denali"
+            "Denali",
+            "Mount Logan"
         ],
-        "correct": 2,
+        "correct": 3,
         "explanation": "Mount Logan leży w Górach Świętego Eliasza w Parku Narodowym Kluane. Jest potężnym masywem lodowcowym o obwodzie podstawy przekraczającym 100 km.",
         "geophysicalQuestion": "Masyw Mount Logan leży w jednym z największych pozapolarnych pól lodowych na Ziemi. Jak nazywają się spływające z niego lodowce?",
         "geophysicalOptions": [
+            "Brak lodowców z powodu zbyt suchych mas powietrza",
             "Lądolód kontynentalny",
             "Lodowce alpejskie i piedmontowe (podgórskie, np. Malaspina)",
-            "Brak lodowców z powodu zbyt suchych mas powietrza",
             "Lodowce norweskie typu fjell"
         ],
-        "geophysicalCorrect": 1,
+        "geophysicalCorrect": 2,
         "geophysicalExplanation": "Góry Świętego Eliasza zatrzymują wilgotne masy powietrza znad Pacyfiku, co wywołuje gigantyczne opady śniegu i tworzy potężne lodowce dolinne oraz podgórskie (piedmontowe, jak lodowiec Malaspina)."
     },
     {
@@ -627,21 +627,21 @@ const PHYSICAL_MAP_FEATURES = [
         "zoom": 8,
         "question": "Wskazany stratowulkan w Górach Kaskadowych zasłynął katastrofalną erupcją z wyrzutem bocznym w maju 1980 roku. Jest to:",
         "options": [
-            "Kilauea",
-            "Mount St. Helens",
             "Mount Shasta",
-            "Mount Rainier"
+            "Mount Rainier",
+            "Mount St. Helens",
+            "Kilauea"
         ],
-        "correct": 1,
+        "correct": 2,
         "explanation": "Erupcja Mount St. Helens w 1980 r. zniszczyła północny stok wulkanu (największe osuwisko w historii nowożytnej), ścięła las na setkach kilometrów kwadratowych i obniżyła szczyt o 400 metrów.",
         "geophysicalQuestion": "Jaki typ erupcji wulkanicznej i materiału charakteryzuje Mount St. Helens?",
         "geophysicalOptions": [
-            "Eksplozywna erupcja pliniańska z lepką magmą dacytowo-andezytową i spływami piroklastycznymi",
-            "Erupcja szczelinowa tworząca płaskowyż lawowy",
             "Wulkanizm błotny związany ze złożami gazu ziemnego",
-            "Spokojna erupcja hawajska z rzadką lawą bazaltową"
+            "Spokojna erupcja hawajska z rzadką lawą bazaltową",
+            "Eksplozywna erupcja pliniańska z lepką magmą dacytowo-andezytową i spływami piroklastycznymi",
+            "Erupcja szczelinowa tworząca płaskowyż lawowy"
         ],
-        "geophysicalCorrect": 0,
+        "geophysicalCorrect": 2,
         "geophysicalExplanation": "Wulkany łuku Kaskadów zasilane są magmą bogatą w krzemionkę i gazy (andezyty i dacyty), co powoduje zatykanie przewodów wulkanicznych i potężne, katastrofalne erupcje eksplozywne."
     },
     {
@@ -662,11 +662,11 @@ const PHYSICAL_MAP_FEATURES = [
         "question": "Zaznaczony punkt w Wyoming to największe pole gejzerów na świecie oraz gigantyczna kaldera superwulkanu. Jest to:",
         "options": [
             "Dolina Śmierci",
-            "Lassen Peak",
             "Kilauea",
-            "Yellowstone"
+            "Yellowstone",
+            "Lassen Peak"
         ],
-        "correct": 3,
+        "correct": 2,
         "explanation": "Yellowstone to najstarszy park narodowy świata (od 1872 r.). Kaldera wulkaniczna o wymiarach 55 × 72 km kryje pod sobą potężną komorę magmową.",
         "geophysicalQuestion": "Jakie jest geologiczne pochodzenie wulkanizmu i zjawisk geotermalnych w Yellowstone?",
         "geophysicalOptions": [
@@ -696,20 +696,20 @@ const PHYSICAL_MAP_FEATURES = [
         "question": "Wskazany punkt w Kalifornii to najniżej położone miejsce w Ameryce Północnej (depresja -86 m p.p.m.) oraz rekordzista ciepła na Ziemi. Jest to:",
         "options": [
             "Dolina Śmierci (Death Valley)",
-            "Pustynia Mojave",
             "Salton Sea",
-            "Wielkie Jezioro Słone"
+            "Wielkie Jezioro Słone",
+            "Pustynia Mojave"
         ],
         "correct": 0,
         "explanation": "Badwater Basin w Dolinie Śmierci to depresja leżąca 86 metrów poniżej poziomu morza. W 1913 r. odnotowano tu światowy rekord temperatury powietrza (+56,7°C).",
         "geophysicalQuestion": "W jaki sposób powstała ta głęboka depresja pod względem tektonicznym?",
         "geophysicalOptions": [
-            "Wskutek erozji rzecznej wyschniętej rzeki Kolorado",
             "Jako rów tektoniczny (graben) w strefie rozciągania prowincji Basenów i Pasm (Basin and Range)",
             "Przez zapadlisko krasowe w skałach wapiennych",
-            "Przez wywianie piasku w procesie deflacji eolicznej"
+            "Przez wywianie piasku w procesie deflacji eolicznej",
+            "Wskutek erozji rzecznej wyschniętej rzeki Kolorado"
         ],
-        "geophysicalCorrect": 1,
+        "geophysicalCorrect": 0,
         "geophysicalExplanation": "Dolina Śmierci to rów tektoniczny (graben) ograniczony zrębami górskimi (Panamint Range i Black Mountains) w prowincji Basin and Range, gdzie skorupa kontynentalna pęka i rozszerza się."
     },
     {
@@ -729,21 +729,21 @@ const PHYSICAL_MAP_FEATURES = [
         "zoom": 8,
         "question": "Wskazany szczyt w paśmie Sierra Nevada (4421 m n.p.m.) to najwyższy punkt 48 kontynentalnych stanów USA. Jest to:",
         "options": [
-            "Pikes Peak",
             "Mount Rainier",
             "Mount Elbert",
-            "Mount Whitney"
+            "Mount Whitney",
+            "Pikes Peak"
         ],
-        "correct": 3,
+        "correct": 2,
         "explanation": "Mount Whitney wznosi się zaledwie 136 km na zachód od najniższego punktu Ameryki Północnej (Doliny Śmierci), co stanowi jeden z największych kontrastów hipsometrycznych kontynentu.",
         "geophysicalQuestion": "Z jakich skał jest zbudowane pasmo Sierra Nevada i szczyt Mount Whitney?",
         "geophysicalOptions": [
             "Z młodych popiołów wulkanicznych i bazaltów",
+            "Ze skał osadowych – fliszu karpackiego",
             "Z soli kamiennej i gipsów",
-            "Z głębinowych skał magmowych – potężnego granodiorytowego batolitu",
-            "Ze skał osadowych – fliszu karpackiego"
+            "Z głębinowych skał magmowych – potężnego granodiorytowego batolitu"
         ],
-        "geophysicalCorrect": 2,
+        "geophysicalCorrect": 3,
         "geophysicalExplanation": "Sierra Nevada to gigantyczny batolit granitowy (Sierra Nevada Batholith) powstały w mezozoiku w głębi skorupy ziemskiej, a następnie wyniesiony tektonicznie i odsłonięty przez erozję."
     },
     {
@@ -789,21 +789,21 @@ const PHYSICAL_MAP_FEATURES = [
         "zoom": 5,
         "question": "Wskaż zaznaczony potężny wschodni łańcuch Kordylierów o długości ok. 4800 km, ciągnący się od Kolumbii Brytyjskiej po Nowy Meksyk:",
         "options": [
-            "Góry Skaliste (Rocky Mountains)",
-            "Appalachy",
             "Góry Kaskadowe",
+            "Appalachy",
+            "Góry Skaliste (Rocky Mountains)",
             "Sierra Nevada"
         ],
-        "correct": 0,
+        "correct": 2,
         "explanation": "Góry Skaliste stanowią główny kontynentalny dział wodny Ameryki Północnej (Continental Divide) między zlewiskami Oceanu Atlantyckiego/Arktycznego a Spokojnego.",
         "geophysicalQuestion": "W jakiej orogenezie i fazie fałdowań ukształtowały się Góry Skaliste?",
         "geophysicalOptions": [
             "W orogenezie prekambryjskiej",
-            "W orogenezie laramijskiej (faza alpejskiego cyklu górotwórczego) na przełomie kredy i paleogenu",
             "W orogenezie hercyńskiej podczas powstawania Pangei",
+            "W orogenezie laramijskiej (faza alpejskiego cyklu górotwórczego) na przełomie kredy i paleogenu",
             "W orogenezie kaledońskiej w paleozoiku"
         ],
-        "geophysicalCorrect": 1,
+        "geophysicalCorrect": 2,
         "geophysicalExplanation": "Góry Skaliste zostały sfałdowane i wypiętrzone podczas orogenezy laramijskiej (ok. 80-55 mln lat temu), spowodowanej płaskim wsuwaniem się płyty Farallon pod płytę Północnoamerykańską."
     },
     {
@@ -849,21 +849,21 @@ const PHYSICAL_MAP_FEATURES = [
         "zoom": 5,
         "question": "Zaznaczone stare góry na wschodzie USA i Kanady, bogate w złoża węgla kamiennego (z najwyższym szczytem Mount Mitchell 2037 m), to:",
         "options": [
-            "Ozark",
-            "Appalachy",
             "Góry Skaliste",
+            "Appalachy",
+            "Ozark",
             "Góry Laurentyńskie"
         ],
         "correct": 1,
         "explanation": "Appalachy to stare góry fałdowo-zrębowe. Ich wypiętrzenie w paleozoiku wiązało się z kolizją płyt tworzących superkontynent Pangea.",
         "geophysicalQuestion": "W jakich orogenezach paleozoicznych powstały pierwotne pasma Appalachów?",
         "geophysicalOptions": [
-            "W orogenezie kimeryjskiej w mezozoiku",
-            "W orogenezie alpejskiej w kenozoiku",
             "W orogenezach kaledońskiej i hercyńskiej (orogeneza takońska, akadyjska i allegańska)",
-            "W orogenezie alpejskiej równocześnie z Kordylierami"
+            "W orogenezie kimeryjskiej w mezozoiku",
+            "W orogenezie alpejskiej równocześnie z Kordylierami",
+            "W orogenezie alpejskiej w kenozoiku"
         ],
-        "geophysicalCorrect": 2,
+        "geophysicalCorrect": 0,
         "geophysicalExplanation": "Appalachy powstawały w serii orogenez paleozoicznych przy zamykaniu oceanu Japetus i kolizji z Gondwaną; są rówieśnikami europejskich Kaledonidów i Waryscydów (Hercynidów)."
     },
     {
@@ -921,21 +921,21 @@ const PHYSICAL_MAP_FEATURES = [
         "zoom": 4,
         "question": "Zaznaczony rozległy obszar w kształcie podkowy wokół Zatoki Hudsona, zbudowany ze starych skał krystalicznych i zmatowiony przez lodowce, to:",
         "options": [
-            "Wielkie Równiny",
-            "Płaskowyż Kolorado",
             "Tarcza Kanadyjska",
-            "Nizina Zatokowa"
+            "Nizina Zatokowa",
+            "Wielkie Równiny",
+            "Płaskowyż Kolorado"
         ],
-        "correct": 2,
+        "correct": 0,
         "explanation": "Tarcza Kanadyjska zajmuje prawie połowę powierzchni Kanady. Jest najstarszym trzonem kontynentu (skały prekambryjskie liczące do 4 mld lat), obfitującym w rudy żelaza, niklu, miedzi i złota.",
         "geophysicalQuestion": "Jaki proces czwartorzędowy nadał Tarczy Kanadyjskiej współczesny krajobraz pełen tysięcy jezior, mutonów i obnażonych skał?",
         "geophysicalOptions": [
-            "Działalność lądolodu laurentyjskiego (egzaracja, detrakcja i akumulacja polodowcowa)",
-            "Pustynnienie i intensywna erozja wietrzna w klimacie suchym",
             "Zapadanie się rowów tektonicznych w neogenie",
-            "Wylewy magmy bazaltowej"
+            "Działalność lądolodu laurentyjskiego (egzaracja, detrakcja i akumulacja polodowcowa)",
+            "Wylewy magmy bazaltowej",
+            "Pustynnienie i intensywna erozja wietrzna w klimacie suchym"
         ],
-        "geophysicalCorrect": 0,
+        "geophysicalCorrect": 1,
         "geophysicalExplanation": "Lądolód laurentyjski zdarł pokrywy zwietrzelinowe (egzaracja), wygładził lite skały krystaliczne (mutony/barańce) i wytworzył misy jeziorne, które po stopnieniu lodu wypełniła woda."
     },
     {
@@ -955,21 +955,21 @@ const PHYSICAL_MAP_FEATURES = [
         "zoom": 7,
         "question": "Wskazana wąska zatoka między Nowym Brunszwikiem a Nową Szkocją słynie z największych na Ziemi pływów morskich (do 16 m). Jest to:",
         "options": [
+            "Zatoka Fundy",
             "Zatoka Świętego Wawrzyńca",
             "Zatoka Hudsona",
-            "Zatoka Chesapeake",
-            "Zatoka Fundy"
+            "Zatoka Chesapeake"
         ],
-        "correct": 3,
+        "correct": 0,
         "explanation": "Zatoka Fundy bije światowe rekordy pływów morskich (skok pływu dochodzi do 16,3 metra). Woda wlewa się dwa razy na dobę w postaci fali pływowej (tidal bore).",
         "geophysicalQuestion": "Dlaczego pływy w Zatoce Fundy osiągają tak gigantyczną wysokość?",
         "geophysicalOptions": [
-            "Przez przyciąganie grawitacyjne okolicznych pasm górskich",
+            "Wskutek silnego Prądu Zatokowego wpychającego wodę",
             "Z powodu podmorskiego wulkanizmu podgrzewającego dno morskie",
-            "Przez zjawisko rezonansu fal pływowych połączone z lejkowatym zwężaniem się i spłycaniem zatoki",
-            "Wskutek silnego Prądu Zatokowego wpychającego wodę"
+            "Przez przyciąganie grawitacyjne okolicznych pasm górskich",
+            "Przez zjawisko rezonansu fal pływowych połączone z lejkowatym zwężaniem się i spłycaniem zatoki"
         ],
-        "geophysicalCorrect": 2,
+        "geophysicalCorrect": 3,
         "geophysicalExplanation": "Okres drgań własnych wody w zatoce (ok. 12,5 godziny) pokrywa się idealnie z okresem pływu oceanicznego Atlantyku, wywołując zjawisko rezonansu i kumulacji fali w wąskim leju zatoki."
     },
     {
@@ -989,21 +989,21 @@ const PHYSICAL_MAP_FEATURES = [
         "zoom": 5,
         "question": "Wskaż wielkie śródlądowe morze/zatokę szelfową na północy Kanady, połączoną z Atlantykiem cieśniną o tej samej nazwie:",
         "options": [
-            "Zatoka Baffina",
-            "Zatoka Świętego Wawrzyńca",
+            "Morze Beauforta",
             "Zatoka Hudsona",
-            "Morze Beauforta"
+            "Zatoka Baffina",
+            "Zatoka Świętego Wawrzyńca"
         ],
-        "correct": 2,
+        "correct": 1,
         "explanation": "Zatoka Hudsona ma powierzchnię ok. 1,23 mln km². Zimą zamarza niemal w całości, a latem jej chłodne wody silnie obniżają temperaturę powietrza w środkowej Kanadzie.",
         "geophysicalQuestion": "Wokół Zatoki Hudsona występuje jedno z najszybszych na świecie zjawisk izostazji. Na czym ono polega?",
         "geophysicalOptions": [
             "Na powolnym dryfie Kanady w stronę bieguna północnego",
             "Na wypiętrzaniu nowo powstających wulkanów",
-            "Na zapadaniu się dna zatoki z powodu gromadzenia się ciężkich osadów",
-            "Na powolnym podnoszeniu się skorupy ziemskiej (glaciizostazja) po odciążeniu od stopniałego lądolodu laurentyjskiego"
+            "Na powolnym podnoszeniu się skorupy ziemskiej (glaciizostazja) po odciążeniu od stopniałego lądolodu laurentyjskiego",
+            "Na zapadaniu się dna zatoki z powodu gromadzenia się ciężkich osadów"
         ],
-        "geophysicalCorrect": 3,
+        "geophysicalCorrect": 2,
         "geophysicalExplanation": "Skorupa ziemska ugięta pod ciężarem 3-kilometrowego lądolodu wciąż powraca do równowagi izostatycznej – wybrzeża Zatoki Hudsona podnoszą się w tempie ponad 1 cm na rok."
     },
     {
@@ -1023,21 +1023,21 @@ const PHYSICAL_MAP_FEATURES = [
         "zoom": 5,
         "question": "Zaznaczony akwen to olbrzymi basen oceaniczny, z którego wypływa ciepły prąd morski ogrzewający Europę. Jest to:",
         "options": [
+            "Morze Karaibskie",
             "Zatoka Kalifornijska",
-            "Zatoka Meksykańska",
             "Zatoka Hudsona",
-            "Morze Karaibskie"
+            "Zatoka Meksykańska"
         ],
-        "correct": 1,
+        "correct": 3,
         "explanation": "Zatoka Meksykańska gromadzi ciepłe wody tropikalne, które uchodzą przez Cieśninę Florydzką jako Prąd Zatokowy (Golfsztrom). Jest także miejscem narodzin niszczycielskich huraganów.",
         "geophysicalQuestion": "Jaką rolę odgrywa ten akwen w cyrkulacji mas powietrza i powstawaniu tornad w USA?",
         "geophysicalOptions": [
             "Zatrzymuje pasaty, blokując opady w Ameryce Północnej",
-            "Dostarcza wilgotne i gorące powietrze zwrotnikowe morskie (mT), które napływa na Wielkie Równiny i zderza się z suchym arktycznym powietrzem z północy",
             "Generuje wyłącznie monsuny letnie",
-            "Ochładza całe południe USA masami polarnymi"
+            "Ochładza całe południe USA masami polarnymi",
+            "Dostarcza wilgotne i gorące powietrze zwrotnikowe morskie (mT), które napływa na Wielkie Równiny i zderza się z suchym arktycznym powietrzem z północy"
         ],
-        "geophysicalCorrect": 1,
+        "geophysicalCorrect": 3,
         "geophysicalExplanation": "Brak poprzecznych pasm górskich na południu USA pozwala gorącym i skrajnie wilgotnym masom powietrza mT z Zatoki Meksykańskiej bez przeszkód wdzierać się w głąb kontynentu i zasilać burze superkomórkowe w Alei Tornad."
     },
     {
@@ -1057,21 +1057,21 @@ const PHYSICAL_MAP_FEATURES = [
         "zoom": 6,
         "question": "Wskazana cieśnina oddziela Alaskę (Przylądek Księcia Walii) od Azji (Przylądek Dieżniowa w Rosji). Jest to:",
         "options": [
+            "Cieśnina Beringa",
             "Cieśnina Hudsona",
             "Cieśnina Florydzka",
-            "Cieśnina Davisa",
-            "Cieśnina Beringa"
+            "Cieśnina Davisa"
         ],
-        "correct": 3,
+        "correct": 0,
         "explanation": "Cieśnina Beringa (szerokość ok. 85 km, głębokość zaledwie 30-50 m) łączy Morze Beringa z Oceanem Arktycznym (Morzem Czukockim). Przebiega przez nią międzynarodowa linia zmiany daty.",
         "geophysicalQuestion": "W okresach zlodowaceń plejstoceńskich w miejscu tej cieśniny istniał tzw. pomost lądowy Beringia. Z jakiego powodu powstał?",
         "geophysicalOptions": [
-            "Z powodu wyschnięcia oceanu wskutek suszy polarnej",
-            "Przez nagłe wypiętrzenie tektoniczne dna morskiego",
+            "Przez wylewy law podmorskich",
             "Wskutek obniżenia poziomu wód wszechoceanu o ponad 100 metrów z powodu uwięzienia wody w lądolodach",
-            "Przez wylewy law podmorskich"
+            "Przez nagłe wypiętrzenie tektoniczne dna morskiego",
+            "Z powodu wyschnięcia oceanu wskutek suszy polarnej"
         ],
-        "geophysicalCorrect": 2,
+        "geophysicalCorrect": 1,
         "geophysicalExplanation": "W epoce lodowcowej ogromne masy wody zostały uwięzione w lądolodach na lądach, co obniżyło poziom morza o ok. 120 m i odsłoniło płytki szelf Beringii, umożliwiając migrację ludzi i zwierząt z Azji do Ameryki."
     },
     {
@@ -1091,21 +1091,21 @@ const PHYSICAL_MAP_FEATURES = [
         "zoom": 7,
         "question": "Wskazane jezioro to największe pod względem powierzchni słodkowodne jezioro świata (ok. 82,1 tys. km²). Jest to:",
         "options": [
+            "Jezioro Huron",
             "Jezioro Ontario",
-            "Jezioro Górne",
             "Jezioro Michigan",
-            "Jezioro Huron"
+            "Jezioro Górne"
         ],
-        "correct": 1,
+        "correct": 3,
         "explanation": "Jezioro Górne jest najgłębszym (406 m) i najbardziej wysuniętym na północny zachód akwenem w kompleksie Wielkich Jezior Ameryki Północnej.",
         "geophysicalQuestion": "Jaka jest geneza misy Jeziora Górnego i pozostałych Wielkich Jezior?",
         "geophysicalOptions": [
-            "Wulkaniczna – zalanie wielkich kalder wulkanicznych",
-            "Krasowa – rozpuszczenie skał gipsowych",
             "Meteorytowa – ślad po uderzeniu asteroidy",
-            "Polodowcowo-tektoniczna: pogłębienie dawnych dolin i rowów tektonicznych przez czaszę lądolodu plejstoceńskiego"
+            "Wulkaniczna – zalanie wielkich kalder wulkanicznych",
+            "Polodowcowo-tektoniczna: pogłębienie dawnych dolin i rowów tektonicznych przez czaszę lądolodu plejstoceńskiego",
+            "Krasowa – rozpuszczenie skał gipsowych"
         ],
-        "geophysicalCorrect": 3,
+        "geophysicalCorrect": 2,
         "geophysicalExplanation": "Wielkie Jeziora powstały w preglacjalnych obniżeniach tektonicznych, które zostały potężnie wyżłobione i pogłębione przez kolejne nasunięcia lądolodu laurentyjskiego, a następnie wypełnione wodami roztopowymi."
     },
     {
@@ -1125,21 +1125,21 @@ const PHYSICAL_MAP_FEATURES = [
         "zoom": 9,
         "question": "Wskazany słynny zespół wodospadów leży na rzece łączącej jezioro Erie z jeziorem Ontario. Jest to:",
         "options": [
-            "Wodospad Niagara",
-            "Wodospad Shoshone",
             "Wodospad Yosemite",
-            "Wodospad Montmorency"
+            "Wodospad Shoshone",
+            "Wodospad Montmorency",
+            "Wodospad Niagara"
         ],
-        "correct": 0,
+        "correct": 3,
         "explanation": "Niagara (ok. 51 m wysokości) zrzuca wody jeziora Erie w stronę położonego o 100 m niżej jeziora Ontario. Składa się z wodospadu Horseshoe (Podkowa – po stronie Kanady) i American Falls.",
         "geophysicalQuestion": "Jaki proces erozyjny powoduje stopniowe cofanie się progu wodospadu Niagara w górę rzeki?",
         "geophysicalOptions": [
+            "Erozja wietrzna niszcząca krawędź skalną",
             "Erozja wsteczna: podcinanie miękkich łupków u podstawy progu pod twardą warstwą dolomitów",
             "Erozja boczna rozszerzająca koryto w dół rzeki",
-            "Erozja wietrzna niszcząca krawędź skalną",
             "Abrazja lodowcowa"
         ],
-        "geophysicalCorrect": 0,
+        "geophysicalCorrect": 1,
         "geophysicalExplanation": "Woda spadająca z progu wyżłabia kocioł eworsyjny w miękkich łupkach pod dolomitową płytą (Niagara Escarpment); pozbawiony oparcia twardy dolomit odłamuje się, powodując erozję wsteczną progu."
     },
     {
@@ -1159,19 +1159,19 @@ const PHYSICAL_MAP_FEATURES = [
         "zoom": 8,
         "question": "Wskazana największa aglomeracja Stanów Zjednoczonych u ujścia rzeki Hudson do Atlantyku to:",
         "options": [
-            "Waszyngton",
-            "Boston",
             "Filadelfia",
-            "Nowy Jork"
+            "Waszyngton",
+            "Nowy Jork",
+            "Boston"
         ],
-        "correct": 3,
+        "correct": 2,
         "explanation": "Nowy Jork liczy w zespole metropolitalnym ponad 20 mln mieszkańców. Jest globalnym centrum finansowym (Wall Street) i kulturalnym oraz siedzibą ONZ.",
         "geophysicalQuestion": "Do jakiej megastruktury urbanistycznej (megalopolis) należy Nowy Jork?",
         "geophysicalOptions": [
+            "SanSan (Kalifornia)",
             "ChiPitts (Wielkie Jeziora)",
-            "Głównego Trójkąta Kanady",
             "BosWash (Megalopolis Wschodniego Wybrzeża od Bostonu po Waszyngton)",
-            "SanSan (Kalifornia)"
+            "Głównego Trójkąta Kanady"
         ],
         "geophysicalCorrect": 2,
         "geophysicalExplanation": "Megalopolis BosWash rozciąga się na długości ok. 800 km wzdłuż wybrzeża Atlantyku, skupiając ponad 50 milionów mieszkańców w pasie Boston-Nowy Jork-Filadelfia-Baltimore-Waszyngton."
@@ -1193,21 +1193,21 @@ const PHYSICAL_MAP_FEATURES = [
         "zoom": 8,
         "question": "Wskazane miasto nad rzeką Potomak jest stolicą federalną Stanów Zjednoczonych (Dystrykt Kolumbii). Jest to:",
         "options": [
-            "Waszyngton (Washington, D.C.)",
             "Filadelfia",
             "Nowy Jork",
+            "Waszyngton (Washington, D.C.)",
             "Chicago"
         ],
-        "correct": 0,
+        "correct": 2,
         "explanation": "Waszyngton jest autonomicznym okręgiem federalnym niebędącym częścią żadnego stanu. Mieści się tu Biały Dom, Kapitol i Sąd Najwyższy USA.",
         "geophysicalQuestion": "W jakiej strefie klimatycznej i krajobrazowej leży stolica USA?",
         "geophysicalOptions": [
-            "W strefie klimatu umiarkowanego chłodnego kontynentalnego",
             "W strefie podrównikowej",
+            "W strefie klimatu podzwrotnikowego wilgotnego (Cfa) na Nizinie Atlantyckiej",
             "W strefie klimatu śródziemnomorskiego",
-            "W strefie klimatu podzwrotnikowego wilgotnego (Cfa) na Nizinie Atlantyckiej"
+            "W strefie klimatu umiarkowanego chłodnego kontynentalnego"
         ],
-        "geophysicalCorrect": 3,
+        "geophysicalCorrect": 1,
         "geophysicalExplanation": "Waszyngton leży w wilgotnym klimacie podzwrotnikowym, charakteryzującym się gorącymi, dusznymi latami pod wpływem mas powietrza zwrotnikowego morskiego z południa."
     },
     {
@@ -1227,21 +1227,21 @@ const PHYSICAL_MAP_FEATURES = [
         "zoom": 8,
         "question": "Wskazana metropolia na wybrzeżu Pacyfiku to drugie pod względem liczby ludności miasto USA. Jest to:",
         "options": [
-            "Seattle",
             "San Diego",
+            "Los Angeles",
             "San Francisco",
-            "Los Angeles"
+            "Seattle"
         ],
-        "correct": 3,
+        "correct": 1,
         "explanation": "Los Angeles liczy w aglomeracji blisko 13 mln mieszkańców. Słynie z przemysłu filmowego (Hollywood), lotniczego oraz gęstej sieci autostrad.",
         "geophysicalQuestion": "Z jakim typem smogu i specyfiką klimatu zmaga się basen Los Angeles?",
         "geophysicalOptions": [
-            "Ze smogiem fotochemicznym (utleniającym typu Los Angeles) w warunkach inwersji termicznej i silnego nasłonecznienia",
-            "Ze zjawiskiem wiecznej mgły adwekcyjnej z Grenlandii",
             "Z brakiem zanieczyszczeń dzięki stałym wiatrom monsunowym",
-            "Ze smogiem kwaśnym (typu londyńskiego) wywołanym spalaniem węgla w mroźne zimy"
+            "Ze smogiem fotochemicznym (utleniającym typu Los Angeles) w warunkach inwersji termicznej i silnego nasłonecznienia",
+            "Ze smogiem kwaśnym (typu londyńskiego) wywołanym spalaniem węgla w mroźne zimy",
+            "Ze zjawiskiem wiecznej mgły adwekcyjnej z Grenlandii"
         ],
-        "geophysicalCorrect": 0,
+        "geophysicalCorrect": 1,
         "geophysicalExplanation": "Góry otaczające kotlinę Los Angeles sprzyjają inwersji temperatury, która więzi spaliny samochodowe; pod wpływem silnego promieniowania UV powstają toksyczne związki smogu fotochemicznego."
     },
     {
@@ -1261,21 +1261,21 @@ const PHYSICAL_MAP_FEATURES = [
         "zoom": 8,
         "question": "Wskazane miasto nad jeziorem Michigan to największy węzeł transportowy, kolejowy i lotniczy Środkowego Zachodu USA:",
         "options": [
-            "Minneapolis",
             "Cleveland",
             "Chicago",
+            "Minneapolis",
             "Detroit"
         ],
-        "correct": 2,
+        "correct": 1,
         "explanation": "Chicago (\"Wietrzne Miasto\") jest trzecim pod względem ludności miastem USA, wielkim ośrodkiem giełdowym (giełda towarowa CME) i historyczną stolicą przemysłu stalowego i mięsnego.",
         "geophysicalQuestion": "Z jakiego zjawiska meteorologicznego zimą słyną miasta leżące na zawietrznych brzegach Wielkich Jezior (w tym w rejonie Chicago i Buffalo)?",
         "geophysicalOptions": [
-            "Z gorących wiatrów pasatowych",
-            "Z całorocznej suszy fizjologicznej",
             "Z efektu jeziora (lake-effect snow) niosącego gwałtowne, paraliżujące opady śniegu",
-            "Z letnich cyklonów tropikalnych"
+            "Z letnich cyklonów tropikalnych",
+            "Z gorących wiatrów pasatowych",
+            "Z całorocznej suszy fizjologicznej"
         ],
-        "geophysicalCorrect": 2,
+        "geophysicalCorrect": 0,
         "geophysicalExplanation": "Gdy mroźne arktyczne powietrze przemieszcza się nad cieplejszymi wodami Wielkich Jezior, nasyca się wilgocią i po dotarciu nad chłodny ląd zrzuca ogromne masy obfitego śniegu."
     },
     {
@@ -1295,21 +1295,21 @@ const PHYSICAL_MAP_FEATURES = [
         "zoom": 8,
         "question": "Wskazane miasto we wschodnim Ontario nad rzeką Ottawa jest stolicą Kanady. Jest to:",
         "options": [
-            "Ottawa",
-            "Quebec",
             "Montreal",
-            "Toronto"
+            "Ottawa",
+            "Toronto",
+            "Quebec"
         ],
-        "correct": 0,
+        "correct": 1,
         "explanation": "Ottawa została wybrana na stolicę przez królową Wiktorię w 1857 r. jako kompromis między frankofońskim Quebecem a anglofońskim Ontario.",
         "geophysicalQuestion": "W jakiej strefie klimatycznej leży Ottawa, będąca jedną z najzimniejszych stolic świata?",
         "geophysicalOptions": [
             "W strefie arktycznej polarnej",
+            "W strefie podzwrotnikowej suchej",
             "W strefie klimatu umiarkowanego chłodnego kontynentalnego z mroźnymi, śnieżnymi zimami",
-            "W strefie morskiej z łagodnymi zimami bez mrozu",
-            "W strefie podzwrotnikowej suchej"
+            "W strefie morskiej z łagodnymi zimami bez mrozu"
         ],
-        "geophysicalCorrect": 1,
+        "geophysicalCorrect": 2,
         "geophysicalExplanation": "Ottawa cechuje się wyraźnym kontynentalizmem: średnia temperatura stycznia spada do -10°C, a słynny Kanał Rideau zamarza, stając się najdłuższym naturalnym lodowiskiem świata."
     },
     {
@@ -1329,21 +1329,21 @@ const PHYSICAL_MAP_FEATURES = [
         "zoom": 8,
         "question": "Wskazana metropolia nad jeziorem Ontario to największe miasto Kanady i stolica prowincji Ontario (ze słynną wieżą CN Tower):",
         "options": [
-            "Montreal",
             "Toronto",
-            "Vancouver",
-            "Calgary"
+            "Montreal",
+            "Calgary",
+            "Vancouver"
         ],
-        "correct": 1,
+        "correct": 0,
         "explanation": "Toronto liczy w aglomeracji (Greater Toronto Area) ponad 6 mln mieszkańców. Jest sercem finansowym i gospodarczym Kanady.",
         "geophysicalQuestion": "Nad brzegiem którego z Wielkich Jezior położone jest Toronto?",
         "geophysicalOptions": [
+            "Jeziora Ontario",
             "Jeziora Górnego",
             "Jeziora Huron",
-            "Jeziora Erie",
-            "Jeziora Ontario"
+            "Jeziora Erie"
         ],
-        "geophysicalCorrect": 3,
+        "geophysicalCorrect": 0,
         "geophysicalExplanation": "Toronto leży na północno-zachodnim brzegu jeziora Ontario. Jezioro łagodzi klimat aglomeracji, wydłużając okres wegetacyjny w tzw. rejonie Golden Horseshoe."
     },
     {
@@ -1364,20 +1364,20 @@ const PHYSICAL_MAP_FEATURES = [
         "question": "Wskazany główny port pacyficzny Kanady w Kolumbii Brytyjskiej, otoczony fiordami i górami, to:",
         "options": [
             "Prince Rupert",
+            "Victoria",
             "Seattle",
-            "Vancouver",
-            "Victoria"
+            "Vancouver"
         ],
-        "correct": 2,
+        "correct": 3,
         "explanation": "Vancouver to największa metropolia zachodniej Kanady. Cieszy się najłagodniejszym klimatem w kraju dzięki wpływowi Pacyfiku.",
         "geophysicalQuestion": "Jaki prąd morski i masy powietrza odpowiadają za łagodne zimy i wysokie opady w Vancouver?",
         "geophysicalOptions": [
-            "Ciepły Prąd Północnopacyficzny i wilgotne masy powietrza polarno-morskiego (mP)",
             "Masy powietrza zwrotnikowo-kontynentalnego",
+            "Ciepły Prąd Północnopacyficzny i wilgotne masy powietrza polarno-morskiego (mP)",
             "Zimny Prąd Labradorski",
             "Zimny Prąd Kalifornijski"
         ],
-        "geophysicalCorrect": 0,
+        "geophysicalCorrect": 1,
         "geophysicalExplanation": "Ciepły Prąd Północnopacyficzny ociepla powietrze u wybrzeży Kolumbii Brytyjskiej, a napływające znad oceanu masy mP uderzają w Góry Nadbrzeżne, dając obfite opady orograficzne (nawet ponad 2000 mm rocznie)."
     }
 ];

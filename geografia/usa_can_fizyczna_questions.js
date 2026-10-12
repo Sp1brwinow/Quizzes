@@ -8,12 +8,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Ukształtowanie i tektonika",
         "question": "Główną cechą rzeźby terenu Ameryki Północnej jest tzw. południkowy układ głównych jednostek geomorfologicznych. Wskaż prawidłowe ułożenie tych jednostek idąc z zachodu na wschód:",
         "options": [
-            "Wielkie Równiny → Kordyliery → Tarcza Kanadyjska",
-            "Kordyliery → Wielkie Równiny i Niziny Wewnętrzne → Appalachy",
             "Appalachy → Wielkie Równiny → Kordyliery",
-            "Kordyliery → Tarcza Kanadyjska → Nizina Atlantycka"
+            "Kordyliery → Tarcza Kanadyjska → Nizina Atlantycka",
+            "Wielkie Równiny → Kordyliery → Tarcza Kanadyjska",
+            "Kordyliery → Wielkie Równiny i Niziny Wewnętrzne → Appalachy"
         ],
-        "correct": 1,
+        "correct": 3,
         "explanation": "Południkowy pasowy układ krain (młode góry fałdowe Kordyliery na zachodzie, centralny pas nizin i równin oraz stare góry Appalachy na wschodzie) warunkuje cyrkulację mas powietrza na całym kontynencie."
     },
     {
@@ -22,12 +22,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Ukształtowanie i tektonika",
         "question": "Najwyższym szczytem Ameryki Północnej oraz całych Stanów Zjednoczonych jest szczyt leżący w Kordylierach na Alasce o wysokości 6190 m n.p.m. Jest to:",
         "options": [
-            "Mount Rainier",
-            "Mount Logan",
             "Mount Whitney",
-            "Denali (dawniej Mount McKinley)"
+            "Mount Rainier",
+            "Denali (dawniej Mount McKinley)",
+            "Mount Logan"
         ],
-        "correct": 3,
+        "correct": 2,
         "explanation": "Denali (6190 m n.p.m.) wznosi się w paśmie górskim Alaska Range. Mount Logan (5959 m n.p.m.) jest najwyższym szczytem Kanady, a Mount Whitney (4421 m) najwyższym w 48 kontynentalnych stanach USA."
     },
     {
@@ -37,11 +37,11 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "question": "Najwyższym szczytem Kanady i drugim pod względem wysokości szczytem Ameryki Północnej (5959 m n.p.m.) jest:",
         "options": [
             "Mount Robson (Góry Skaliste)",
+            "Mount Fairweather",
             "Mount Columbia",
-            "Mount Logan (Góry Świętego Eliasza w Jukonie)",
-            "Mount Fairweather"
+            "Mount Logan (Góry Świętego Eliasza w Jukonie)"
         ],
-        "correct": 2,
+        "correct": 3,
         "explanation": "Mount Logan leży w Parku Narodowym Kluane na terenie terytorium Jukon i jest potężnym masywem pokrytym rozległymi lodowcami."
     },
     {
@@ -51,11 +51,11 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "question": "Najgłębsza depresja Ameryki Północnej, leżąca w Dolinie Śmierci (Badwater Basin) na terytorium stanu Kalifornia, osiąga głębokość:",
         "options": [
             "430 m p.p.m.",
-            "86 m p.p.m.",
             "154 m p.p.m.",
+            "86 m p.p.m.",
             "28 m p.p.m."
         ],
-        "correct": 1,
+        "correct": 2,
         "explanation": "Badwater Basin w Dolinie Śmierci leży 86 metrów poniżej poziomu morza i jest najniżej położonym oraz najsuchszym i najgorętszym miejscem w Ameryce Północnej."
     },
     {
@@ -64,12 +64,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Ukształtowanie i tektonika",
         "question": "Słynny uskok San Andreas w Kalifornii stanowi granicę pomiędzy dwiema płytami litosfery:",
         "options": [
-            "Północnoamerykańską i Pacyficzną (jest to uskok transformacyjny z ruchem przesuwczym)",
-            "Północnoamerykańską i Nazca (jest to strefa ryftu)",
             "Północnoamerykańską i Juan de Fuca (jest to strefa subdukcji)",
-            "Kokosową i Karaibską (jest to rów oceaniczny)"
+            "Kokosową i Karaibską (jest to rów oceaniczny)",
+            "Północnoamerykańską i Pacyficzną (jest to uskok transformacyjny z ruchem przesuwczym)",
+            "Północnoamerykańską i Nazca (jest to strefa ryftu)"
         ],
-        "correct": 0,
+        "correct": 2,
         "explanation": "Uskok San Andreas to uskok transformacyjny o długości ok. 1200 km, gdzie płyta Pacyficzna przesuwa się poziomo na północny zachód względem płyty Północnoamerykańskiej, generując silne trzęsienia ziemi."
     },
     {
@@ -78,12 +78,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Ukształtowanie i tektonika",
         "question": "W Górach Kaskadowych (północno-zachodnie USA) wulkany takie jak Mount St. Helens i Mount Rainier powstały w wyniku:",
         "options": [
-            "Rozsuwania się dna morskiego w strefie ryftu oceanicznego",
             "Subdukcji małej płyty oceanicznej Juan de Fuca pod płytę Północnoamerykańską",
+            "Działania plamy gorąca pod nieruchomą płytą litosfery",
             "Kolizji dwóch płyt kontynentalnych bez udziału skorupy oceanicznej",
-            "Działania plamy gorąca pod nieruchomą płytą litosfery"
+            "Rozsuwania się dna morskiego w strefie ryftu oceanicznego"
         ],
-        "correct": 1,
+        "correct": 0,
         "explanation": "Płyta Juan de Fuca wsuwa się pod płytę Północnoamerykańską (subdukcja), co powoduje topnienie skał i powstawanie wybuchowych stratowulkanów łuku kaskadowego (np. erupcja Mount St. Helens w 1980 r.)."
     },
     {
@@ -92,12 +92,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Ukształtowanie i tektonika",
         "question": "Rozległy geologiczny obszar prastarych skał krystalicznych (prekambr) otaczający Zatokę Hudsona, silnie zdarty i przekształcony przez lądolód plejstoceński, to:",
         "options": [
-            "Tarcza Kanadyjska (Laurentyjska)",
+            "Kotlina Wielkich Jezior",
             "Tarcza Gujańska",
-            "Płaskowyż Kolumbii",
-            "Kotlina Wielkich Jezior"
+            "Tarcza Kanadyjska (Laurentyjska)",
+            "Płaskowyż Kolumbii"
         ],
-        "correct": 0,
+        "correct": 2,
         "explanation": "Tarcza Kanadyjska zajmuje prawie połowę powierzchni Kanady. Zdzierające działanie lądolodu odsłoniło twarde skały krystaliczne i pozostawiło tysiące polodowcowych jezior oraz cienkie, ubogie gleby."
     },
     {
@@ -106,12 +106,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Ukształtowanie i tektonika",
         "question": "Góry Appalachy na wschodzie Ameryki Północnej różnią się od Kordylierów tym, że:",
         "options": [
+            "Są najwyższym pasmem górskim kontynentu z lodowcami dolinnymi",
             "Są górami młodszymi, powstałymi w orogenezie alpejskiej, o ostrych turniach i czynnych wulkanach",
             "Są górami starymi (fałdowania kaledońskie i hercyńskie), silnie zdenudowanymi, o łagodnych grzbietach i braku wulkanizmu",
-            "Powstały wyłącznie na skutek uskoków w neogenie",
-            "Są najwyższym pasmem górskim kontynentu z lodowcami dolinnymi"
+            "Powstały wyłącznie na skutek uskoków w neogenie"
         ],
-        "correct": 1,
+        "correct": 2,
         "explanation": "Appalachy to stare góry paleozoiczne (orogenezy kaledońska i hercyńska), które przez setki milionów lat uległy erozji i zrównaniu (najwyższy szczyt Mount Mitchell ma 2037 m n.p.m.)."
     },
     {
@@ -120,9 +120,9 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Ukształtowanie i tektonika",
         "question": "Wielki Basen (Great Basin) w zachodniej części USA to specyficzna kraina geograficzna, którą charakteryzuje:",
         "options": [
+            "Dominacja gęstych lasów deszczowych strefy umiarkowanej",
             "Odpływ wód do Oceanu Arktycznego przez sieć potężnych rzek",
             "Położenie w całości poniżej poziomu morza",
-            "Dominacja gęstych lasów deszczowych strefy umiarkowanej",
             "Bezodpływowy charakter sieci rzecznej oraz obecność słonych jezior i wyschniętych basenów (playa)"
         ],
         "correct": 3,
@@ -134,12 +134,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Ukształtowanie i tektonika",
         "question": "Płaskowyż Kolorado (Colorado Plateau) słynie na świecie z unikalnych form terenu wyciętych w poziomo zalegających warstwach piaskowców i wapieni. Są to przede wszystkim:",
         "options": [
-            "Fiordy polodowcowe i klify morskie",
-            "Formy krasu podziemnego bez jakichkolwiek dolin rzecznych",
+            "Ruchome wydmy barchany o wysokości kilkuset metrów",
             "Głębokie kaniony o pionowych ścianach (canyons), ostańce stołowe (mesas) i iglice skalne (buttes)",
-            "Ruchome wydmy barchany o wysokości kilkuset metrów"
+            "Fiordy polodowcowe i klify morskie",
+            "Formy krasu podziemnego bez jakichkolwiek dolin rzecznych"
         ],
-        "correct": 2,
+        "correct": 1,
         "explanation": "Płaskowyż Kolorado wznosił się tektonicznie, podczas gdy rzeki (zwłaszcza rzeka Kolorado) intensywnie wcinały się w podłoże, tworząc Wielki Kanion oraz formy stoliw (mesas) i ostańców (buttes)."
     },
     {
@@ -148,12 +148,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Ukształtowanie i tektonika",
         "question": "Zjawiska geotermalne w Parku Narodowym Yellowstone (gejzery, gorące źródła, fumarole) są wynikiem:",
         "options": [
+            "Obecności pod płytą kontynentalną tzw. plamy gorąca (hotspot) i gigantycznej kaldery superwulkanu",
             "Subdukcji płyty Pacyficznej bezpośrednio pod stan Wyoming",
-            "Procesów rozkładu materii organicznej w pokładach węgla kamiennego",
             "Tarcia płyt wzdłuż uskoku San Andreas",
-            "Obecności pod płytą kontynentalną tzw. plamy gorąca (hotspot) i gigantycznej kaldery superwulkanu"
+            "Procesów rozkładu materii organicznej w pokładach węgla kamiennego"
         ],
-        "correct": 3,
+        "correct": 0,
         "explanation": "Plama gorąca Yellowstone to stacjonarna komora magmowa w płaszczu Ziemi, nad którą przesuwa się płyta kontynentalna. Powstała kaldera o wymiarach ok. 55x72 km jest jednym z największych superwulkanów świata."
     },
     {
@@ -163,11 +163,11 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "question": "Archipelag Hawaje leżący na Oceanie Spokojnym różni się pod względem wulkanizmu od wulkanów Gór Kaskadowych tym, że:",
         "options": [
             "Wszystkie hawajskie wulkany są wygasłe i zniszczone przez lodowce",
+            "Cechuje się wyłącznie gwałtownymi wybuchami popiołowymi bez wylewów lawy",
             "Powstał nad oceaniczną plamą gorąca, a lawy bazaltowe tworzą łagodne wulkany tarczowe (np. Mauna Loa, Kilauea)",
-            "Powstał w rowie oceanicznym w wyniku zderzenia dwóch kontynentów",
-            "Cechuje się wyłącznie gwałtownymi wybuchami popiołowymi bez wylewów lawy"
+            "Powstał w rowie oceanicznym w wyniku zderzenia dwóch kontynentów"
         ],
-        "correct": 1,
+        "correct": 2,
         "explanation": "Hawaje to klasyczny przykład łańcucha wulkanicznego nad oceaniczną plamą gorąca. Lawa bazaltowa o niskiej lepkości wylewa się spokojnie, budując rozległe wulkany tarczowe (shield volcanoes)."
     },
     {
@@ -176,12 +176,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Ukształtowanie i tektonika",
         "question": "Wapienne iglice skalne zwane \"hoodoos\", mieniące się jaskrawymi barwami pomarańczu i czerwieni, są wizytówką Parku Narodowego w stanie Utah:",
         "options": [
-            "Dolina Śmierci",
+            "Bryce Canyon",
             "Acadia",
             "Everglades",
-            "Bryce Canyon"
+            "Dolina Śmierci"
         ],
-        "correct": 3,
+        "correct": 0,
         "explanation": "W Parku Narodowym Bryce Canyon procesy zamrażania i odmarzania wody w szczelinach skalnych (wietrzenie mrozowe) wypreparowały tysiące malowniczych iglic skalnych (hoodoos)."
     },
     {
@@ -190,12 +190,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Ukształtowanie i tektonika",
         "question": "Dolina Yosemite w Kalifornii zawdzięcza swój charakterystyczny przekrój poprzeczny w kształcie litery \"U\" oraz strome granitowe ściany (np. El Capitan):",
         "options": [
-            "Zapadlisku tektonicznemu typu rów ryftowy",
-            "Erozji lodowcowej w plejstocenie, gdy jęzory lodowcowe przekształciły dolinę rzeczną w żłób polodowcowy",
+            "Rozpuszczaniu skał wapiennych przez kwaśne deszcze",
             "Działalności wiatru i erozji eolicznej na pustyni",
-            "Rozpuszczaniu skał wapiennych przez kwaśne deszcze"
+            "Zapadlisku tektonicznemu typu rów ryftowy",
+            "Erozji lodowcowej w plejstocenie, gdy jęzory lodowcowe przekształciły dolinę rzeczną w żłób polodowcowy"
         ],
-        "correct": 1,
+        "correct": 3,
         "explanation": "Dolina Yosemite to podręcznikowy przykład żłobu lodowcowego (doliny U-kształtnej) wyciętego przez lodowiec w litych granitach batolitu Sierra Nevada."
     },
     {
@@ -204,9 +204,9 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Ukształtowanie i tektonika",
         "question": "Równiny Nadbrzeżne (Nizina Zatokowa i Nizina Atlantycka) w południowo-wschodnich USA charakteryzują się:",
         "options": [
+            "Czynnym wulkanizmem i częstymi trzęsieniami ziemi",
             "Głębokimi fiordami wcinającymi się w lite skały bazaltowe",
             "Górzystym krajobrazem o wysokościach względnych przekraczających 1000 metrów",
-            "Czynnym wulkanizmem i częstymi trzęsieniami ziemi",
             "Płaskim ukształtowaniem, osadami morskimi i rzecznymi, obecnością bagnisk, lagun oraz mierzei barierowych"
         ],
         "correct": 3,
@@ -218,12 +218,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Ukształtowanie i tektonika",
         "question": "Wielkie Równiny (Great Plains) wznoszą się stopniowo w kierunku zachodnim od około 200 m n.p.m. nad Missisipi aż do ponad:",
         "options": [
-            "1500–1800 m n.p.m. u podnóża Gór Skalistych",
             "3500 m n.p.m.",
-            "płaskiego poziomu morza",
-            "500 m n.p.m."
+            "1500–1800 m n.p.m. u podnóża Gór Skalistych",
+            "500 m n.p.m.",
+            "płaskiego poziomu morza"
         ],
-        "correct": 0,
+        "correct": 1,
         "explanation": "Wielkie Równiny to rozległy płaskowyż nachylony ku wschodowi; u podnóża Gór Skalistych (np. w Denver – Mile High City) osiągają wysokość ponad 1600 m n.p.m."
     },
     {
@@ -232,12 +232,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Ukształtowanie i tektonika",
         "question": "Jaka forma ukształtowania powierzchni powstała w Arizonie około 50 000 lat temu na skutek uderzenia meteorytu niklowo-żelaznego o średnicy ok. 50 metrów?",
         "options": [
+            "Wielka Błękitna Dziura",
             "Kaldera Yellowstone",
             "Krater Barringera (Meteor Crater)",
-            "Basen Morza Salton",
-            "Wielka Błękitna Dziura"
+            "Basen Morza Salton"
         ],
-        "correct": 1,
+        "correct": 2,
         "explanation": "Krater Barringera ma średnicę 1200 m i głębokość 170 m; dzięki suchemu pustynnemu klimatowi Arizony jest najlepiej zachowanym kraterem uderzeniowym na Ziemi."
     },
     {
@@ -260,9 +260,9 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Ukształtowanie i tektonika",
         "question": "Wybrzeże pacyficzne Kanady (Kolumbia Brytyjska) oraz południowej Alaski odznacza się wybrzeżem typu:",
         "options": [
-            "Dalmatyńskiego – zalanego pasma wzgórz równoległego do lądu",
             "Limanowego – odciętego piaszczystymi kosami",
             "Riasowego – zalane doliny rzeczne starych gór",
+            "Dalmatyńskiego – zalanego pasma wzgórz równoległego do lądu",
             "Fiordowego – głębokie, wąskie zatoki polodowcowe wcinające się stromo w góry przybrzeżne"
         ],
         "correct": 3,
@@ -274,12 +274,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Ukształtowanie i tektonika",
         "question": "Największym jeziorem w Ameryce Północnej oraz drugim pod względem powierzchni słodkowodnym jeziorem na świecie (82,1 tys. km²) jest:",
         "options": [
-            "Jezioro Michigan",
-            "Wielkie Jezioro Niedźwiedzie",
             "Jezioro Górne (Lake Superior)",
+            "Wielkie Jezioro Niedźwiedzie",
+            "Jezioro Michigan",
             "Jezioro Huron"
         ],
-        "correct": 2,
+        "correct": 0,
         "explanation": "Jezioro Górne na granicy USA i Kanady jest największym ze słodkowodnych jezior Ameryki Płn. (większe powierzchniowo jest tylko słone Morze Kaspijskie)."
     },
     {
@@ -288,8 +288,8 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Klimatologia i masy powietrza",
         "question": "Dlaczego w Ameryce Północnej fale arktycznego mrozu mogą zimą docierać aż nad Zatokę Meksykańską, a fale gorącego powietrza latem w głąb Kanady?",
         "options": [
-            "Ze względu na bardzo niskie ciśnienie nad Grenlandią",
             "Ponieważ kontynent leży wyłącznie w strefie okołorównikowej",
+            "Ze względu na bardzo niskie ciśnienie nad Grenlandią",
             "Z powodu obecności zimnego Prądu Zatokowego",
             "Z powodu braku poprzecznych (równoleżnikowych) barier górskich w centralnej części kontynentu"
         ],
@@ -317,11 +317,11 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "question": "Wybrzeże stanu Waszyngton oraz południowo-zachodniej Kanady (np. Vancouver, Olympic Peninsula) cechuje się bardzo wysokimi rocznymi sumami opadów (często >2500 mm). Jest to wynik:",
         "options": [
             "Działania zimnego Prądu Kalifornijskiego",
-            "Położenia w strefie pasatów okołorównikowych",
             "Monsunów letnich wiejących znad Arktyki",
-            "Opadów orograficznych – wilgotne masy powietrza polarnomorskiego znad Pacyfiku wznoszą się na barierze gór Kordylierów"
+            "Opadów orograficznych – wilgotne masy powietrza polarnomorskiego znad Pacyfiku wznoszą się na barierze gór Kordylierów",
+            "Położenia w strefie pasatów okołorównikowych"
         ],
-        "correct": 3,
+        "correct": 2,
         "explanation": "Wilgotne i ciepłe powietrze pacyficzne napotyka wysokie pasma górskie (Góry Nadbrzeżne, Góry Kaskadowe) i jest zmuszone do unoszenia się, ochładzania i skraplania (opady orograficzne), tworząc strefę lasów deszczowych strefy umiarkowanej."
     },
     {
@@ -331,11 +331,11 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "question": "Klimatogram stacji położonej w San Francisco (Kalifornia) charakteryzuje się łagodną, wilgotną zimą oraz suchym, chłodnym latem z częstymi mgłami. Jaki to typ klimatu?",
         "options": [
             "Umiarkowany chłodny kontynentalny",
-            "Równikowy wybitnie wilgotny",
             "Podzwrotnikowy śródziemnomorski (z chłodzącym wpływem zimnego Prądu Kalifornijskiego)",
+            "Równikowy wybitnie wilgotny",
             "Zwrotnikowy skrajnie suchy pustynny"
         ],
-        "correct": 2,
+        "correct": 1,
         "explanation": "Wybrzeże Kalifornii ma klimat podzwrotnikowy śródziemnomorski. Zimny Prąd Kalifornijski powoduje inwersję termiczną i słynne letnie mgły nad Zatoką San Francisco."
     },
     {
@@ -344,12 +344,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Klimatologia i masy powietrza",
         "question": "Klimatogram ze stacji Winnipeg (stolica prowincji Manitoba w Kanadzie) wykazuje średnią temperaturę w styczniu ok. -16°C, w lipcu ok. +20°C oraz maksimum opadów w miesiącach letnich. Wskazuje to na klimat:",
         "options": [
-            "Podzwrotnikowy suchy",
-            "Umiarkowany morski",
+            "Umiarkowany chłodny wybitnie kontynentalny",
             "Polarny arktyczny",
-            "Umiarkowany chłodny wybitnie kontynentalny"
+            "Podzwrotnikowy suchy",
+            "Umiarkowany morski"
         ],
-        "correct": 3,
+        "correct": 0,
         "explanation": "Duża roczna amplituda temperatury (ponad 35°C), mroźne zimy i deszczowe lata to podręcznikowe cechy klimatu umiarkowanego o wysokim stopniu kontynentalizmu w głębi lądu."
     },
     {
@@ -360,8 +360,8 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "options": [
             "Znacznym obniżeniem temperatury powietrza, częstymi mgłami i obecnością gór lodowych dryfujących na południe",
             "Wzrostem temperatury wód i rozwojem raf koralowych wokół Nowej Fundlandii",
-            "Całkowitym brakiem zimy i wiecznym latem",
-            "Występowaniem tropikalnych huraganów przez cały rok"
+            "Występowaniem tropikalnych huraganów przez cały rok",
+            "Całkowitym brakiem zimy i wiecznym latem"
         ],
         "correct": 0,
         "explanation": "Prąd Labradorski przynosi lodowate wody z Arktyki wzdłuż Labradoru i Nowej Fundlandii, powodując, że obszary te na szerokości geograficznej Polski mają klimat tundrowy i subarktyczny z dryfującymi górami lodowymi."
@@ -372,10 +372,10 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Klimatologia i masy powietrza",
         "question": "Ciepły Prąd Zatokowy (Golfsztrom) opływający wschodnie wybrzeże USA ma kluczowe znaczenie, ponieważ:",
         "options": [
-            "Powoduje wysuszenie klimatu Florydy i powstanie pustyń",
-            "Transportuje olbrzymie ilości ciepła z Zatoki Meksykańskiej na północny wschód przez Ocean Atlantycki",
             "Jest jedynym źródłem wody słodkiej dla Nowego Jorku",
-            "Płynie w kierunku bieguna południowego"
+            "Transportuje olbrzymie ilości ciepła z Zatoki Meksykańskiej na północny wschód przez Ocean Atlantycki",
+            "Płynie w kierunku bieguna południowego",
+            "Powoduje wysuszenie klimatu Florydy i powstanie pustyń"
         ],
         "correct": 1,
         "explanation": "Golfsztrom to potężny ciepły prąd morski, który łagodzi klimat wschodnich wybrzeży Ameryki Płn. i przemieszcza się dalej ku Europie Zachodniej jako Prąd Północnoatlantycki."
@@ -386,12 +386,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Klimatologia i masy powietrza",
         "question": "Zjawisko \"cienia opadowego\" (rain shadow) na zachodzie USA polega na tym, że:",
         "options": [
-            "Chmury zasłaniają Słońce przez ponad 300 dni w roku na pustyni Mojave",
-            "Lodowce rzucają cień na doliny rzeczne",
             "Obszary położone po wschodniej (zawietrznej) stronie pasm Sierra Nevada i Kaskad otrzymują znikome opady i stają się pustyniami",
-            "Opady deszczu występują wyłącznie w nocy"
+            "Chmury zasłaniają Słońce przez ponad 300 dni w roku na pustyni Mojave",
+            "Opady deszczu występują wyłącznie w nocy",
+            "Lodowce rzucają cień na doliny rzeczne"
         ],
-        "correct": 2,
+        "correct": 0,
         "explanation": "Gdy masy powietrza znad Pacyfiku przekroczą wysokie pasma górskie, opadają po ich zawietrznej (wschodniej) stronie, ogrzewając się i osuszając. Dlatego Wielki Basen, Nevada czy Dolina Śmierci są skrajnie suche."
     },
     {
@@ -400,12 +400,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Klimatologia i masy powietrza",
         "question": "Klimat Florydy i południowej części wybrzeża Zatoki Meksykańskiej klasyfikowany jest jako:",
         "options": [
+            "Zwrotnikowy suchy z pustyniami piaszczystymi",
             "Zwrotnikowy i podzwrotnikowy wilgotny (z obfitymi opadami i gorącym, parnym latem)",
             "Umiarkowany chłodny kontynentalny",
-            "Zwrotnikowy suchy z pustyniami piaszczystymi",
             "Okołobiegunowy polarny"
         ],
-        "correct": 0,
+        "correct": 1,
         "explanation": "Floryda leży w strefie podzwrotnikowej wilgotnej (a jej południowy kraniec w zwrotnikowej morskiej), pod stałym wpływem ciepłych wód morskich i wilgotnych mas powietrza."
     },
     {
@@ -414,12 +414,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Klimatologia i masy powietrza",
         "question": "W miejscowości Barrow (Utqiaġvik) na północnym wybrzeżu Alaski noc polarna trwa nieprzerwanie od połowy listopada do końca stycznia. Wynika to z faktu, że miejscowość leży:",
         "options": [
-            "Na południe od równika",
-            "W strefie cienia rzucanego przez Kordyliery",
             "W strefie podzwrotnikowej",
-            "Za kołem podbiegunowym północnym (powyżej 66°33' N)"
+            "W strefie cienia rzucanego przez Kordyliery",
+            "Za kołem podbiegunowym północnym (powyżej 66°33' N)",
+            "Na południe od równika"
         ],
-        "correct": 3,
+        "correct": 2,
         "explanation": "Zjawisko dnia i nocy polarnej występuje wyłącznie na obszarach leżących w strefach polarnych, za kołami podbiegunowymi (66°33' N i S), w wyniku nachylenia osi ziemskiej do płaszczyzny orbity."
     },
     {
@@ -430,10 +430,10 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "options": [
             "Ciepły Prąd Zatokowy wpływa bezpośrednio do jeziora Ontario",
             "Woda w jeziorach paruje z powodu erupcji podwodnych wulkanów",
-            "Mroźne, arktyczne powietrze przemieszcza się nad relatywnie cieplejszymi wodami Wielkich Jezior, nasyca się wilgocią i gwałtownie zrzuca śnieg na nawietrznym brzegu",
-            "Tornado zasysa wodę z jeziora i zamraża ją w stratosferze"
+            "Tornado zasysa wodę z jeziora i zamraża ją w stratosferze",
+            "Mroźne, arktyczne powietrze przemieszcza się nad relatywnie cieplejszymi wodami Wielkich Jezior, nasyca się wilgocią i gwałtownie zrzuca śnieg na nawietrznym brzegu"
         ],
-        "correct": 2,
+        "correct": 3,
         "explanation": "Późną jesienią i wczesną zimą woda w Wielkich Jeziorach jest wciąż ciepła. Gdy nadpływa lodowate powietrze kanadyjskie, ogrzewa się od spodu, pobiera wilgoć i tworzy gwałtowne pasma śnieżyc (lake-effect snow)."
     },
     {
@@ -442,12 +442,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Klimatologia i masy powietrza",
         "question": "Wiatr Santa Ana wiejący jesienią w południowej Kalifornii to wiatr:",
         "options": [
-            "Arktyczna zamieć śnieżna",
-            "Morska bryza dzienna",
             "Chłodny i wilgotny wiatr przynoszący wielodniowe ulewy z Pacyfiku",
-            "Gorący, skrajnie suchy i porywisty, wiejący z pustyń Wielkiego Basenu w kierunku wybrzeża, drastycznie podnoszący ryzyko pożarów"
+            "Arktyczna zamieć śnieżna",
+            "Gorący, skrajnie suchy i porywisty, wiejący z pustyń Wielkiego Basenu w kierunku wybrzeża, drastycznie podnoszący ryzyko pożarów",
+            "Morska bryza dzienna"
         ],
-        "correct": 3,
+        "correct": 2,
         "explanation": "Santa Ana powstaje w wyniku układu wysokiego ciśnienia nad pustyniami Wielkiego Basenu; powietrze spływa w dół przez przełęcze ku Los Angeles, sprężając się, ogrzewając i rozpalając katastrofalne pożary buszu."
     },
     {
@@ -456,12 +456,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Klimatologia i masy powietrza",
         "question": "Wyspa Vancouver w Kanadzie charakteryzuje się najłagodniejszym klimatem w całym kraju, gdzie średnia temperatura najchłodniejszego miesiąca nie spada poniżej zera. Główną przyczyną jest:",
         "options": [
-            "Aktywność licznych gejzerów ogrzewających atmosferę",
-            "Brak jakichkolwiek wiatrów",
             "Ogrzewający wpływ mas powietrza polarnomorskiego znad Pacyfiku i ciepłego prądu Północnopacyficznego",
+            "Brak jakichkolwiek wiatrów",
+            "Aktywność licznych gejzerów ogrzewających atmosferę",
             "Położenie geograficzne na szerokości geograficznej Florydy"
         ],
-        "correct": 2,
+        "correct": 0,
         "explanation": "Morski klimat wybrzeża Pacyfiku sprawia, że Victoria i Vancouver mają zimy niemal bezśnieżne, w przeciwieństwie do reszty Kanady leżącej na tej samej szerokości geograficznej."
     },
     {
@@ -470,12 +470,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Klimatologia i masy powietrza",
         "question": "Strefa klimatu umiarkowanego chłodnego w Kanadzie i północnych USA charakteryzuje się opadami rocznymi rzędu 400–800 mm. W której porze roku przypada tam maksimum opadowe?",
         "options": [
-            "W zimie (wyłącznie w postaci gradu)",
             "Wczesną wiosną podczas topnienia śniegów",
-            "Opady w klimacie kontynentalnym nie występują wcale",
-            "W lecie (w wyniku intensywniejszej konwekcji termicznej)"
+            "W zimie (wyłącznie w postaci gradu)",
+            "W lecie (w wyniku intensywniejszej konwekcji termicznej)",
+            "Opady w klimacie kontynentalnym nie występują wcale"
         ],
-        "correct": 3,
+        "correct": 2,
         "explanation": "W klimacie kontynentalnym strefy umiarkowanej maksimum opadów przypada na miesiące letnie (czerwiec–sierpień), gdy nagrzane podłoże sprzyja wznoszeniu powietrza i powstawaniu chmur kłębiasto-deszczowych."
     },
     {
@@ -484,12 +484,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Klimatologia i masy powietrza",
         "question": "Gdzie w Ameryce Północnej odnotowano absolutny rekord najwyższej temperatury powietrza w historii pomiarów na Ziemi (+56,7°C w lipcu 1913 r.)?",
         "options": [
-            "Key West (Floryda)",
             "Las Vegas (Nevada)",
             "Furnace Creek w Dolinie Śmierci (Kalifornia)",
+            "Key West (Floryda)",
             "Phoenix (Arizona)"
         ],
-        "correct": 2,
+        "correct": 1,
         "explanation": "W Furnace Creek w Dolinie Śmierci (depresja otoczona nagimi górami, zatrzymującymi gorące powietrze niczym w piecu) zarejestrowano oficjalny światowy rekord temperatury +56,7°C (134°F)."
     },
     {
@@ -498,12 +498,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Klimatologia i masy powietrza",
         "question": "Który z poniższych czynników decyduje o powstawaniu pustyń Sonora i Mojave w południowo-zachodnich USA?",
         "options": [
+            "Stałe panowanie wyżów zwrotnikowych oraz orograficzny cień opadowy pasm górskich Sierra Nevada i Peninsular Ranges",
             "Zaleganie wiecznej zmarzliny",
-            "Monsunowy rozkład opadów atmosferycznych",
             "Przepływ ciepłego Prądu Zatokowego",
-            "Stałe panowanie wyżów zwrotnikowych oraz orograficzny cień opadowy pasm górskich Sierra Nevada i Peninsular Ranges"
+            "Monsunowy rozkład opadów atmosferycznych"
         ],
-        "correct": 3,
+        "correct": 0,
         "explanation": "Pustynie te leżą pod wpływem zwrotnikowej strefy wysokiego ciśnienia (zstępujące, suche masy powietrza) oraz dodatkowo w głębokim cieniu opadowym gór zatrzymujących wilgoć pacyficzną."
     },
     {
@@ -512,12 +512,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Klimatologia i masy powietrza",
         "question": "Zjawisko wiru polarnego (Polar Vortex), przynoszące w USA i Kanadzie fale mrozów poniżej -30°C i paraliż komunikacyjny, wiąże się z:",
         "options": [
-            "Osłabieniem i meandrowaniem prądu strumieniowego (Jet Stream), co pozwala masom mroźnego powietrza arktycznego spłynąć głęboko na południe",
-            "Wzrostem stężenia ozonu w troposferze nad Meksykiem",
             "Przesunięciem Ziemi w peryhelium",
-            "Wybuchem podwodnego wulkanu na Karaibach"
+            "Wzrostem stężenia ozonu w troposferze nad Meksykiem",
+            "Wybuchem podwodnego wulkanu na Karaibach",
+            "Osłabieniem i meandrowaniem prądu strumieniowego (Jet Stream), co pozwala masom mroźnego powietrza arktycznego spłynąć głęboko na południe"
         ],
-        "correct": 0,
+        "correct": 3,
         "explanation": "Gdy okołobiegunowy prąd strumieniowy zwalnia i faluje, jęzory arktycznego mrozu (Polar Vortex) wdzierają się głęboko nad Środkowy Zachód i wschodnie wybrzeże USA."
     },
     {
@@ -527,11 +527,11 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "question": "Klimatogram dla Nowego Jorku charakteryzuje się stosunkowo równomiernym rozkładem opadów w ciągu całego roku (ok. 80–110 mm miesięcznie). Główną tego przyczyną jest:",
         "options": [
             "Położenie w strefie równikowej",
-            "Ciągły dopływ wilgotnego powietrza polarnomorskiego i zwrotnikowomorskiego znad Oceanu Atlantyckiego",
             "Działanie monsunu letniego i zimowego",
-            "Wpływ zimnego Prądu Peruańskiego"
+            "Wpływ zimnego Prądu Peruańskiego",
+            "Ciągły dopływ wilgotnego powietrza polarnomorskiego i zwrotnikowomorskiego znad Oceanu Atlantyckiego"
         ],
-        "correct": 1,
+        "correct": 3,
         "explanation": "Nowy Jork leży w strefie umiarkowanej ciepłej morskiej/przejściowej, gdzie cyklicznie przemieszczające się niże atlantyckie zapewniają opady deszczu i śniegu przez wszystkie 12 miesięcy."
     },
     {
@@ -540,12 +540,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Klimatologia i masy powietrza",
         "question": "W kanadyjskim terytorium Nunavut na Ziemi Baffina opady roczne rzadko przekraczają 250 mm. Obszar ten pod względem wilgotnościowym zalicza się do:",
         "options": [
-            "Sawanny wilgotnej",
             "Ligi lasów równikowych",
-            "Wilgotnej strefy śródziemnomorskiej",
-            "Pustyń polarnych (arktycznych)"
+            "Pustyń polarnych (arktycznych)",
+            "Sawanny wilgotnej",
+            "Wilgotnej strefy śródziemnomorskiej"
         ],
-        "correct": 3,
+        "correct": 1,
         "explanation": "Bardzo niskie temperatury uniemożliwiają powietrzu nasycenie parą wodną, a stałe wyże arktyczne hamują konwekcję – obszary te są pod względem sumy opadów prawdziwymi pustyniami polarnymi."
     },
     {
@@ -554,9 +554,9 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Klimatologia i masy powietrza",
         "question": "Dlaczego wschodnie wybrzeże Kanady (Nowa Fundlandia) na szerokości geograficznej 48°N jest znacznie chłodniejsze niż zachodnie wybrzeże Europy (np. Francja na tej samej szerokości)?",
         "options": [
-            "We Francji występuje wulkanizm tarczowy",
-            "Nową Fundlandię opływa zimny Prąd Labradorski, podczas gdy Francję ociepla Prąd Północnoatlantycki",
             "W Nowej Fundlandii noc polarna trwa przez 6 miesięcy",
+            "Nową Fundlandię opływa zimny Prąd Labradorski, podczas gdy Francję ociepla Prąd Północnoatlantycki",
+            "We Francji występuje wulkanizm tarczowy",
             "Ziemia w Kanadzie otrzymuje o połowę mniej promieniowania słonecznego"
         ],
         "correct": 1,
@@ -568,12 +568,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Zjawiska ekstremalne",
         "question": "W tzw. Alei Tornad (Tornado Alley) w USA najczęstszą przyczyną powstawania gwałtownych trąb powietrznych jest zderzenie trzech mas powietrza:",
         "options": [
-            "Ciepłego i wilgotnego znad Zatoki Meksykańskiej + zimnego i suchego z Kanady + gorącego i suchego z wyżyn Meksyku",
+            "Trzech mas ciepłego powietrza zwrotnikowego bez udziału mas chłodnych",
             "Wilgotnego znad Pacyfiku + mroźnego znad Syberii + równikowego z Brazylii",
-            "Wiatru halnego z pasatami atlantyckimi",
-            "Trzech mas ciepłego powietrza zwrotnikowego bez udziału mas chłodnych"
+            "Ciepłego i wilgotnego znad Zatoki Meksykańskiej + zimnego i suchego z Kanady + gorącego i suchego z wyżyn Meksyku",
+            "Wiatru halnego z pasatami atlantyckimi"
         ],
-        "correct": 0,
+        "correct": 2,
         "explanation": "Gwałtowne burze superkomórkowe rodzą się na Wielkich Równinach, gdy ciepłe i wilgotne powietrze z Zatoki Meksykańskiej spotyka się z suchym powietrzem z Kordylierów i chłodnym frontem arktycznym znad Kanady."
     },
     {
@@ -582,12 +582,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Zjawiska ekstremalne",
         "question": "Do pomiaru siły i prędkości wiatru w tornadach na podstawie wyrządzonych zniszczeń stosuje się obecnie skalę:",
         "options": [
-            "Saffira-Simpsona",
             "Beauforta",
-            "Richtera",
-            "EF (Enhanced Fujita – Skalę Fujity)"
+            "EF (Enhanced Fujita – Skalę Fujity)",
+            "Saffira-Simpsona",
+            "Richtera"
         ],
-        "correct": 3,
+        "correct": 1,
         "explanation": "Ulepszona skala Fujity (od EF0 do EF5) ocenia siłę tornad na podstawie skali zniszczeń infrastruktury i szacowanej prędkości wiatru w leju (w EF5 wiatr przekracza 322 km/h)."
     },
     {
@@ -596,12 +596,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Zjawiska ekstremalne",
         "question": "Huragany (cyklony tropikalne) uderzające w południowo-wschodnie wybrzeże USA (np. Katrina, Ian) powstają nad:",
         "options": [
-            "Ciepłymi wodami Oceanu Atlantyckiego i Morza Karaibskiego o temperaturze powierzchniowej powyżej 26,5°C",
             "Lądem Wielkich Równin w wyniku nagrzania skał",
-            "Lodowatymi wodami Zatoki Hudsona",
-            "Zimnymi wodami Prądu Kalifornijskiego"
+            "Ciepłymi wodami Oceanu Atlantyckiego i Morza Karaibskiego o temperaturze powierzchniowej powyżej 26,5°C",
+            "Zimnymi wodami Prądu Kalifornijskiego",
+            "Lodowatymi wodami Zatoki Hudsona"
         ],
-        "correct": 0,
+        "correct": 1,
         "explanation": "Huragany czerpią energię z parowania nagrzanych wód oceanicznych (temperatura wody musi przekraczać 26,5°C na głębokość kilkudziesięciu metrów); w kontakcie z chłodniejszą wodą lub lądem szybko słabną."
     },
     {
@@ -610,12 +610,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Zjawiska ekstremalne",
         "question": "W \"oku huraganu\" (centralnej części cyklonu tropikalnego) panują specyficzne warunki atmosferyczne:",
         "options": [
-            "Występuje najsilniejszy huraganowy wiatr i ściana ulewnego deszczu",
-            "Ciśnienie osiąga rekordowo wysoką wartość 1040 hPa",
             "Temperatura spada poniżej -20°C",
-            "Ciśnienie jest najniższe, wiatr niemal całkowicie cichnie, a niebo często przejaśnia się"
+            "Ciśnienie jest najniższe, wiatr niemal całkowicie cichnie, a niebo często przejaśnia się",
+            "Ciśnienie osiąga rekordowo wysoką wartość 1040 hPa",
+            "Występuje najsilniejszy huraganowy wiatr i ściana ulewnego deszczu"
         ],
-        "correct": 3,
+        "correct": 1,
         "explanation": "W oku cyklonu panuje zstępujący ruch powietrza, co powoduje zanik chmur i ciszę wiatrową; najgroźniejszy wiatr i opady szaleją w tzw. ścianie oka (eyewall) tuż wokół centrum."
     },
     {
@@ -624,12 +624,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Zjawiska ekstremalne",
         "question": "Który stan USA odnotowuje statystycznie największą liczbę uderzeń huraganów atlantyckich?",
         "options": [
-            "Floryda",
             "Kalifornia",
             "Waszyngton",
-            "Nowy Jork"
+            "Nowy Jork",
+            "Floryda"
         ],
-        "correct": 0,
+        "correct": 3,
         "explanation": "Floryda, ze względu na swoje półwyspowe położenie między ciepłymi wodami Atlantyku a Zatoką Meksykańską, jest stanem najbardziej narażonym na uderzenia huraganów w USA."
     },
     {
@@ -638,12 +638,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Zjawiska ekstremalne",
         "question": "Katastrofalne pożary lasów (wildfires) w Kanadzie i na zachodzie USA wybuchają najczęściej w okresie letnim na skutek:",
         "options": [
-            "Topnienia wiecznej zmarzliny",
             "Wylewów lawy ze wszystkich wulkanów Kordylierów",
-            "Wzrostu poziomu wód gruntowych",
-            "Długotrwałych fal upałów, suszy glebowej, uderzeń suchych piorunów oraz podsycającego działania porywistych wiatrów"
+            "Długotrwałych fal upałów, suszy glebowej, uderzeń suchych piorunów oraz podsycającego działania porywistych wiatrów",
+            "Topnienia wiecznej zmarzliny",
+            "Wzrostu poziomu wód gruntowych"
         ],
-        "correct": 3,
+        "correct": 1,
         "explanation": "Susza, wysoka temperatura i wysuszona ściółka iglasta sprawiają, że wyładowania atmosferyczne (tzw. suche burze) oraz nieostrożność człowieka wywołują gigantyczne pożary obejmujące miliony hektarów tajgi."
     },
     {
@@ -652,12 +652,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Zjawiska ekstremalne",
         "question": "Które miasto w USA zostało w 2005 roku zalane w 80% przez wody jeziora Pontchartrain na skutek przerwania wałów przeciwpowodziowych podczas huraganu Katrina?",
         "options": [
-            "Atlanta",
-            "Miami",
             "Nowy Orlean",
-            "Houston"
+            "Atlanta",
+            "Houston",
+            "Miami"
         ],
-        "correct": 2,
+        "correct": 0,
         "explanation": "Nowy Orlean leży w dużej mierze w depresji poniżej poziomu morza i rzeki Missisipi; spiętrzone przez huragan Katrina fale sztormowe przerwały wały, powodując jedną z największych katastrof w historii USA."
     },
     {
@@ -666,12 +666,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Zjawiska ekstremalne",
         "question": "Gwałtowna zimowa burza śnieżna charakteryzująca się wiatrem powyżej 56 km/h, temperaturą poniżej zera i widocznością spadającą poniżej 400 m to w Ameryce Północnej:",
         "options": [
-            "Blizzard",
             "Tornado",
-            "Sirocco",
-            "Haboob"
+            "Blizzard",
+            "Haboob",
+            "Sirocco"
         ],
-        "correct": 0,
+        "correct": 1,
         "explanation": "Blizzard to oficjalny termin meteorologiczny dla potężnej zamieci śnieżnej sparaliżującej życie na Wielkich Równinach, w Kanadzie i na wschodnim wybrzeżu."
     },
     {
@@ -680,10 +680,10 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Zjawiska ekstremalne",
         "question": "Jak mieszkańcy miast w Alei Tornad w USA zabezpieczają się przed bezpośrednim uderzeniem żywiołu?",
         "options": [
-            "Budują wysokie tamy na rzekach",
-            "Budują podziemne schrony przeciwburzowe (storm shelters), instalują syreny alarmowe i korzystają z ostrzeżeń radarów dopplerowskich",
             "Wyjeżdżają na stałe na Alaskę na cały okres wiosny",
-            "Wznoszą domy wyłącznie z gliny i słomy"
+            "Budują podziemne schrony przeciwburzowe (storm shelters), instalują syreny alarmowe i korzystają z ostrzeżeń radarów dopplerowskich",
+            "Wznoszą domy wyłącznie z gliny i słomy",
+            "Budują wysokie tamy na rzekach"
         ],
         "correct": 1,
         "explanation": "W Alei Tornad domy wyposaża się w specjalnie wzmocnione schrony (często podziemne lub wylewane z betonu *safe rooms*), a sieć radarów dopplerowskich pozwala nadać ostrzeżenie kilkanaście minut przed uderzeniem leja."
@@ -695,11 +695,11 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "question": "Wielka powódź na rzece Missisipi w 1927 i 1993 roku była spowodowana:",
         "options": [
             "Zatkaniem delty przez lód morski z Arktyki",
+            "Pęknięciem zapory Hoovera",
             "Tsunami wywołanym przez trzęsienie ziemi na Hawajach",
-            "Długotrwałymi, intensywnymi opadami deszczu na obszarze całego dorzecza połączonymi z wiosennym topnieniem śniegów",
-            "Pęknięciem zapory Hoovera"
+            "Długotrwałymi, intensywnymi opadami deszczu na obszarze całego dorzecza połączonymi z wiosennym topnieniem śniegów"
         ],
-        "correct": 2,
+        "correct": 3,
         "explanation": "Dorzecze Missisipi obejmuje ponad 40% powierzchni kontynentalnych USA; zbieg obfitych deszczów i roztopów w dorzeczach Missouri i Ohio powoduje wezbrania stulecia zalewające tysiące kilometrów kwadratowych nizin."
     },
     {
@@ -709,11 +709,11 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "question": "Katastrofalne zjawisko tzw. \"Dust Bowl\" (burze pyłowe) na Wielkich Równinach w latach 30. XX wieku wynikło z:",
         "options": [
             "Zalania terenu przez wody oceaniczne",
-            "Spadku meteorytu w Kansas",
             "Wybuchu wulkanu Mount St. Helens",
-            "Wielkiej suszy połączonej z zaoraniem naturalnej darni trawiastej i rabunkową gospodarką rolną (erozja wietrzna)"
+            "Wielkiej suszy połączonej z zaoraniem naturalnej darni trawiastej i rabunkową gospodarką rolną (erozja wietrzna)",
+            "Spadku meteorytu w Kansas"
         ],
-        "correct": 3,
+        "correct": 2,
         "explanation": "Zaoranie naturalnej trawy prerii pod uprawę pszenicy pozbawiło glebę korzeni; podczas wieloletniej suszy i silnych wiatrów miliony ton żyznej gleby uniosły się w powietrze, zmuszając setki tysięcy ludzi do migracji."
     },
     {
@@ -723,11 +723,11 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "question": "Do pomiaru siły huraganów (cyklonów tropikalnych) w oparciu o stałą prędkość wiatru służy 5-stopniowa skala:",
         "options": [
             "Fujity",
-            "Saffira-Simpsona",
             "Torro",
+            "Saffira-Simpsona",
             "Mercallego"
         ],
-        "correct": 1,
+        "correct": 2,
         "explanation": "Skala Saffira-Simpsona klasyfikuje huragany od kategorii 1 (od 119 km/h) do niszczycielskiej kategorii 5 (wiatr stały powyżej 252 km/h)."
     },
     {
@@ -751,11 +751,11 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "question": "Zjawisko zatorów lodowych na rzekach północnej Kanady (np. rzeka Mackenzie) powodujące gwałtowne powodzie zatorowe wynika z faktu, że:",
         "options": [
             "Rzeki zasilane są wyłącznie przez gorące źródła",
-            "Woda w rzekach zamarza od dna ku powierzchni",
             "Rzeki płyną z południa na północ – lód taje najpierw w górnym biegu, a zablokowany jest przez wciąż zamarznięte ujście",
+            "Woda w rzekach zamarza od dna ku powierzchni",
             "Wszystkie rzeki w Kanadzie płyną pod ziemią"
         ],
-        "correct": 2,
+        "correct": 1,
         "explanation": "Rzeka Mackenzie płynie ku północy; wiosną na południu rzeka już rusza, a masy kry spływają w kierunku północnym, gdzie rzeka wciąż tkwi w grubym lodzie, tworząc spiętrzenia zatorowe i powodzie."
     },
     {
@@ -764,12 +764,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Zjawiska ekstremalne",
         "question": "Zjawisko \"derecho\" występujące latem w centralnych i wschodnich stanach USA to:",
         "options": [
-            "Zjawisko zorzy polarnej",
             "Rozległa, długotrwała i szybko przemieszczająca się burza wiatrowa niosąca niszczycielskie proste wichury na dystansie setek kilometrów",
-            "Pojedyncza trąba wodna na Pacyfiku",
-            "Okres całkowitego zaniku wiatru trwający miesiąc"
+            "Zjawisko zorzy polarnej",
+            "Okres całkowitego zaniku wiatru trwający miesiąc",
+            "Pojedyncza trąba wodna na Pacyfiku"
         ],
-        "correct": 1,
+        "correct": 0,
         "explanation": "Derecho to groźny układ mezoskalowy przynoszący gwałtowny szkwał wiatrowy (często >150 km/h) na pasie o długości ponad 400 km, łamiący miliony drzew i niszczący sieci energetyczne."
     },
     {
@@ -778,12 +778,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Hydrologia i zlodowacenie",
         "question": "Rzeka Missisipi wraz ze swoim najdłuższym dopływem Missouri tworzy czwarty pod względem długości system rzeczny świata (ok. 6275 km). Uchodzi ona do:",
         "options": [
-            "Zatoki Hudsona",
-            "Oceanu Spokojnego",
             "Zatoki Meksykańskiej (tworząc rozległą deltę palczastą)",
-            "Morza Arktycznego"
+            "Zatoki Hudsona",
+            "Morza Arktycznego",
+            "Oceanu Spokojnego"
         ],
-        "correct": 2,
+        "correct": 0,
         "explanation": "Missisipi uchodzi do Zatoki Meksykańskiej na południe od Nowego Orleanu, budując klasyczną deltę palczastą (bird-foot delta) wysuniętą w głąb wód zatoki."
     },
     {
@@ -792,12 +792,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Hydrologia i zlodowacenie",
         "question": "Najdłuższa rzeka Kanady, wypływająca z Wielkiego Jeziora Niewolniczego i uchodząca deltą do Morza Beauforta (Ocean Arktyczny), to:",
         "options": [
-            "Rzeka Mackenzie (o długości 4241 km w systemie z Peace i Finlay)",
+            "Rzeka Fraser",
             "Rzeka Nelson",
             "Rzeka św. Wawrzyńca",
-            "Rzeka Fraser"
+            "Rzeka Mackenzie (o długości 4241 km w systemie z Peace i Finlay)"
         ],
-        "correct": 0,
+        "correct": 3,
         "explanation": "Mackenzie to największa i najdłuższa rzeka Kanady, odprowadzająca wody z ogromnego obszaru subarktycznego na północny zachód."
     },
     {
@@ -806,12 +806,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Hydrologia i zlodowacenie",
         "question": "Rzeka św. Wawrzyńca (Saint Lawrence River) pełni fundamentalną rolę gospodarczą w Ameryce Północnej, ponieważ:",
         "options": [
-            "Płynie przez pustynie południowej Kalifornii",
-            "Stanowi wraz z kanałami i śluzami głębokowodną Drogę Wodną Wielkich Jezior, łącząc wnętrze kontynentu z Atlantykiem",
+            "Uchodzi do Zatoki Meksykańskiej",
             "Jest jedyną rzeką zaporową produkującą energię dla całego Teksasu",
-            "Uchodzi do Zatoki Meksykańskiej"
+            "Płynie przez pustynie południowej Kalifornii",
+            "Stanowi wraz z kanałami i śluzami głębokowodną Drogę Wodną Wielkich Jezior, łącząc wnętrze kontynentu z Atlantykiem"
         ],
-        "correct": 1,
+        "correct": 3,
         "explanation": "Droga Wodna Świętego Wawrzyńca (Saint Lawrence Seaway) otwarta w 1959 roku umożliwia statkom oceanicznym dopłynięcie z Atlantyku aż do portów w Chicago czy Duluth nad Jeziorem Górnym."
     },
     {
@@ -820,12 +820,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Hydrologia i zlodowacenie",
         "question": "Pięć Wielkich Jezior Ameryki Północnej (Górne, Huron, Michigan, Erie, Ontario) ma genezę:",
         "options": [
-            "Meteorytową (kratery po roju meteorytów)",
-            "Krasową (zapadliska po rozpuszczonym gipsie)",
+            "Wulkaniczną (są to kaldery po superwulkanach)",
             "Polodowcowo-tektoniczną (powstały w rynnach wyżłobionych przez lądolód plejstoceński w strefach osłabień skorupy)",
-            "Wulkaniczną (są to kaldery po superwulkanach)"
+            "Krasową (zapadliska po rozpuszczonym gipsie)",
+            "Meteorytową (kratery po roju meteorytów)"
         ],
-        "correct": 2,
+        "correct": 1,
         "explanation": "Miski Wielkich Jezior zostały pogłębione i wymodelowane przez lądolód laurentyjski, a po jego ustąpieniu wypełniły się wodami roztopowymi około 10 000 lat temu."
     },
     {
@@ -834,12 +834,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Hydrologia i zlodowacenie",
         "question": "Wodospad Niagara leży na rzece Niagara łączącej dwa Wielkie Jeziora:",
         "options": [
-            "Jezioro Górne i Jezioro Huron",
-            "Jezioro Huron i Jezioro Ontario",
             "Jezioro Michigan i Jezioro Erie",
-            "Jezioro Erie i Jezioro Ontario"
+            "Jezioro Erie i Jezioro Ontario",
+            "Jezioro Huron i Jezioro Ontario",
+            "Jezioro Górne i Jezioro Huron"
         ],
-        "correct": 3,
+        "correct": 1,
         "explanation": "Woda spływa z wyżej położonego jeziora Erie (174 m n.p.m.) do niższego jeziora Ontario (75 m n.p.m.), pokonując 99-metrową różnicę poziomów m.in. na progach wodospadów Horseshoe i American Falls."
     },
     {
@@ -848,10 +848,10 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Hydrologia i zlodowacenie",
         "question": "Rzeka Kolorado (Colorado River) na południowym zachodzie USA uchodziła historycznie do:",
         "options": [
-            "Wielkiego Jeziora Słonego",
+            "Zatoki San Francisco",
             "Zatoki Kalifornijskiej (Morza Corteza), lecz obecnie jej wody są niemal w całości pobierane do nawadniania i celów komunalnych",
             "Zatoki Meksykańskiej",
-            "Zatoki San Francisco"
+            "Wielkiego Jeziora Słonego"
         ],
         "correct": 1,
         "explanation": "Intensywny pobór wody dla wielkich miast (Las Vegas, Los Angeles, Phoenix) i rolnictwa w Arizonie i Kalifornii sprawia, że rzeka Kolorado rzadko dociera do swojego ujścia w Meksyku."
@@ -862,12 +862,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Hydrologia i zlodowacenie",
         "question": "Potężna zapora Hoovera (Hoover Dam) wybudowana w latach 30. XX wieku spiętrza wody rzeki Kolorado, tworząc sztuczny zbiornik:",
         "options": [
-            "Jezioro Mead (Lake Mead)",
-            "Jezioro Powell",
             "Jezioro Winnebago",
-            "Jezioro Pontchartrain"
+            "Jezioro Pontchartrain",
+            "Jezioro Mead (Lake Mead)",
+            "Jezioro Powell"
         ],
-        "correct": 0,
+        "correct": 2,
         "explanation": "Zapora Hoovera na granicy Nevady i Arizony utworzyła jezioro Mead – kluczowy rezerwuar wody pitnej i energii wodnej dla południowego zachodu USA."
     },
     {
@@ -876,12 +876,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Hydrologia i zlodowacenie",
         "question": "Wielkie Jezioro Słone (Great Salt Lake) w stanie Utah jest pozostałością po gigantycznym plejstoceńskim jeziorze polodowcowym o nazwie:",
         "options": [
-            "Jezioro Lahontan",
             "Jezioro Bonneville",
+            "Jezioro Lahontan",
             "Jezioro Missoula",
             "Jezioro Agassiz"
         ],
-        "correct": 1,
+        "correct": 0,
         "explanation": "Jezioro Bonneville pokrywało w plejstocenie dużą część Utah. Po ociepleniu klimatu woda wyparowała, a minerały skoncentrowały się w bezodpływowym Wielkim Jeziorze Słonym i otaczających solniskach Bonneville Salt Flats."
     },
     {
@@ -890,12 +890,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Hydrologia i zlodowacenie",
         "question": "Rzeka Kolumbia (Columbia River) na północnym zachodzie USA i w Kanadzie ma ogromne znaczenie ze względu na:",
         "options": [
-            "Największy potencjał hydroenergetyczny w Ameryce Północnej (m.in. Zapora Grand Coulee)",
+            "Fakt, że nie ma w niej żadnych ryb",
             "Przepływ przez środek pustyni Dolina Śmierci",
             "Najcieplejszą wodę ze wszystkich rzek na świecie",
-            "Fakt, że nie ma w niej żadnych ryb"
+            "Największy potencjał hydroenergetyczny w Ameryce Północnej (m.in. Zapora Grand Coulee)"
         ],
-        "correct": 0,
+        "correct": 3,
         "explanation": "Rzeka Kolumbia ma duży spadek i olbrzymie zasoby wodne, dzięki czemu wybudowane na niej kaskady hydroelektrowni (Grand Coulee, Bonneville) dostarczają ogromnych ilości czystej energii."
     },
     {
@@ -918,12 +918,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Hydrologia i zlodowacenie",
         "question": "Zjawisko wieloletniej zmarzliny (permafrostu) obejmujące ponad połowę terytorium Kanady i znaczną część Alaski sprawia, że:",
         "options": [
-            "Budynki i rurociągi (np. Rurociąg Trans-Alaska) muszą być budowane na specjalnych palach termicznych, by ciepło budowli nie roztopiło gruntu",
             "Ziemia nadaje się idealnie pod uprawę kukurydzy przez cały rok",
-            "Nie występują tam żadne zjawiska mrozowe",
-            "Woda w rzekach nigdy nie zamarza"
+            "Budynki i rurociągi (np. Rurociąg Trans-Alaska) muszą być budowane na specjalnych palach termicznych, by ciepło budowli nie roztopiło gruntu",
+            "Woda w rzekach nigdy nie zamarza",
+            "Nie występują tam żadne zjawiska mrozowe"
         ],
-        "correct": 0,
+        "correct": 1,
         "explanation": "Rozmarzanie zmarzliny powoduje osiadanie gruntu i zjawisko termokrasu, dlatego rurociągi i domy posadawia się na palach z radiatorami chłodzącymi grunt."
     },
     {
@@ -932,12 +932,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Hydrologia i zlodowacenie",
         "question": "Zlewisko którego oceanu zajmuje największą powierzchnię na terytorium Kanady?",
         "options": [
-            "Zatoki Kalifornijskiej",
             "Oceanu Arktycznego i Zatoki Hudsona",
             "Morza Śródziemnego",
+            "Zatoki Kalifornijskiej",
             "Oceanu Indyjskiego"
         ],
-        "correct": 1,
+        "correct": 0,
         "explanation": "Zatoka Hudsona i Morze Arktyczne zbierają wody z ponad połowy terytorium Kanady przez potężne systemy rzeczne (Mackenzie, Nelson, Churchill)."
     },
     {
@@ -946,10 +946,10 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Hydrologia i zlodowacenie",
         "question": "Rzeka Jukon (Yukon River) uchodzi potężną deltą do:",
         "options": [
-            "Oceanu Atlantyckiego",
             "Zatoki Hudsona",
+            "Zatoki Meksykańskiej",
             "Morza Beringa",
-            "Zatoki Meksykańskiej"
+            "Oceanu Atlantyckiego"
         ],
         "correct": 2,
         "explanation": "Rzeka Jukon o długości 3185 km przepływa przez terytorium Jukon w Kanadzie i całą centralną Alaskę, uchodząc do Morza Beringa."
@@ -960,12 +960,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Hydrologia i zlodowacenie",
         "question": "W Górach Skalistych na granicy prowincji Alberta i Kolumbia Brytyjska znajduje się słynne Pole Lodowe Columbia (Columbia Icefield). Cechuje się ono tym, że:",
         "options": [
-            "Zasila wyłącznie rzekę Missisipi",
             "Leży poniżej poziomu morza",
             "Jest jedynym lodowcem na Ziemi, który płonie pod wpływem słońca",
-            "Jego wody roztopowe spływają do trzech różnych oceanów: Spokojnego, Arktycznego oraz Atlantyckiego (przez Zatokę Hudsona)"
+            "Jego wody roztopowe spływają do trzech różnych oceanów: Spokojnego, Arktycznego oraz Atlantyckiego (przez Zatokę Hudsona)",
+            "Zasila wyłącznie rzekę Missisipi"
         ],
-        "correct": 3,
+        "correct": 2,
         "explanation": "Columbia Icefield leży na potrójnym dziale wodnym Ameryki Płn. (Snow Dome) – zasilając rzeki Columbia (Pacyfik), Athabasca/Mackenzie (Arktyka) i Saskatchewan (Zatoka Hudsona / Atlantyk)."
     },
     {
@@ -974,12 +974,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Hydrologia i zlodowacenie",
         "question": "Główny Dział Wodny Ameryki (Continental Divide of the Americas) przebiega wzdłuż grzbietów:",
         "options": [
-            "Tarczy Kanadyjskiej",
-            "Gór Kaskadowych",
+            "Appalachów",
             "Gór Skalistych (Kordylierów)",
-            "Appalachów"
+            "Tarczy Kanadyjskiej",
+            "Gór Kaskadowych"
         ],
-        "correct": 2,
+        "correct": 1,
         "explanation": "Kontynentalny Dział Wodny biegnie wzdłuż grani Gór Skalistych, rozdzielając zlewiska rzek uchodzących do Pacyfiku od zlewisk uchodzących do Atlantyku i Arktyki."
     },
     {
@@ -988,12 +988,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Biosfera i gleby",
         "question": "Północne obszary Kanady i Alaski porasta tundra. Wśród roślinności tundrowej dominują:",
         "options": [
-            "Kaktusy saguaro i agawy",
-            "Mchy, porosty, krzewinki (np. borówka bagienna) oraz karłowate brzozy i wierzby polarne",
+            "Gęste lasy dębowe i bukowe z lianami",
             "Wysokie trawy preriowe dochodzące do 3 metrów wysokości",
-            "Gęste lasy dębowe i bukowe z lianami"
+            "Kaktusy saguaro i agawy",
+            "Mchy, porosty, krzewinki (np. borówka bagienna) oraz karłowate brzozy i wierzby polarne"
         ],
-        "correct": 1,
+        "correct": 3,
         "explanation": "Krótki okres wegetacyjny, wieczna zmarzlina i silne wiatry uniemożliwiają rozwój drzew; roślinność tundry jest niska, płożąca i odporna na mrozy."
     },
     {
@@ -1002,12 +1002,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Biosfera i gleby",
         "question": "Największym biomem leśnym w Kanadzie i na Alasce jest tajga (borealny las iglasty). Główne gatunki drzew budujące tajgę to:",
         "options": [
-            "Dąb szypułkowy, grab, buk i kasztanowiec",
+            "Palmy kokosowe i namorzyny",
             "Eukaliptusy, baobaby i akacje",
-            "Świerk czarny, świerk biały, modrzew amerykański, sosna Banksa oraz jodła balsamiczna",
-            "Palmy kokosowe i namorzyny"
+            "Dąb szypułkowy, grab, buk i kasztanowiec",
+            "Świerk czarny, świerk biały, modrzew amerykański, sosna Banksa oraz jodła balsamiczna"
         ],
-        "correct": 2,
+        "correct": 3,
         "explanation": "Kanadyjski las borealny (tajga) tworzą iglaste drzewa szpilkowe przystosowane do długich, mroźnych zim i kwaśnych gleb bielicowych."
     },
     {
@@ -1016,12 +1016,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Biosfera i gleby",
         "question": "Gleby wykształcone pod borealnymi lasami iglastymi tajgi, charakteryzujące się jasnym poziomem wymywania, małą zawartością próchnicy i kwaśnym odczynem, to:",
         "options": [
-            "Czarnoziemy",
-            "Gleby bielicowe (bielice)",
             "Mady rzeczne",
-            "Czarne ziemie"
+            "Czarne ziemie",
+            "Gleby bielicowe (bielice)",
+            "Czarnoziemy"
         ],
-        "correct": 1,
+        "correct": 2,
         "explanation": "Powolny rozkład igliwia i intensywne przemywanie przez kwaśne roztwory wodne wypłukuje związki żelaza i glinu, tworząc ubogi, jasny poziom bielicowania."
     },
     {
@@ -1031,9 +1031,9 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "question": "Formacja roślinna Wielkich Równin w Ameryce Północnej, odpowiadająca eurazjatyckiemu stepowi, to:",
         "options": [
             "Preria",
+            "Pampa",
             "Sawanna",
-            "Pustynia piaszczysta",
-            "Pampa"
+            "Pustynia piaszczysta"
         ],
         "correct": 0,
         "explanation": "Preria to północnoamerykański odpowiednik stepu, zdominowany przez traworośla. W zależności od opadów wyróżnia się prerię wysokotrawiastą na wschodzie i niskotrawiastą na suchym zachodzie."
@@ -1044,12 +1044,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Biosfera i gleby",
         "question": "Najbardziej urodzajnymi glebami w Ameryce Północnej, powstałymi pod bogatą roślinnością trawiastą prerii przy udziale dużej biomasy i głębokich korzeni, są:",
         "options": [
+            "Czarnoziemy preriowe (molisole) i gleby kasztanowe",
             "Lateryty",
             "Pustynne szaroziemy i burozemy",
-            "Czarnoziemy preriowe (molisole) i gleby kasztanowe",
             "Gleby tundrowe glejowe"
         ],
-        "correct": 2,
+        "correct": 0,
         "explanation": "Czarne ziemie prerii i czarnoziemy mają miąższy poziom próchniczny bogaty w składniki pokarmowe, stanowiąc serce rolniczego \"pasa kukurydzianego i pszenicznego\" (Corn Belt, Wheat Belt)."
     },
     {
@@ -1058,12 +1058,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Biosfera i gleby",
         "question": "Roślinność twardolistna typu śródziemnomorskiego, występująca w strefie nadmorskiej Kalifornii, składająca się z wiecznie zielonych, gęstych, kolczastych zarośli krzewiastych, nosi lokalną nazwę:",
         "options": [
-            "Chaparral",
             "Pampa",
+            "Selwa",
             "Makia",
-            "Selwa"
+            "Chaparral"
         ],
-        "correct": 0,
+        "correct": 3,
         "explanation": "Chaparral to kalifornijski odpowiednik śródziemnomorskiej makii; krzewy mają skórzaste liście pokryte woskiem, ograniczające parowanie podczas bezdeszczowego lata."
     },
     {
@@ -1072,12 +1072,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Biosfera i gleby",
         "question": "Mamutowiec olbrzymi (Sequoiadendron giganteum) oraz sekwoja wieczniezielona (Sequoia sempervirens) to najpotężniejsze i najwyższe drzewa świata. Ich naturalnym siedliskiem jest:",
         "options": [
-            "Bagniska Everglades na Florydzie",
             "Równiny Teksasu",
-            "Góry Sierra Nevada oraz wilgotny pas wybrzeża Pacyfiku w północnej Kalifornii",
-            "Pustynia Sonora w Arizonie"
+            "Pustynia Sonora w Arizonie",
+            "Bagniska Everglades na Florydzie",
+            "Góry Sierra Nevada oraz wilgotny pas wybrzeża Pacyfiku w północnej Kalifornii"
         ],
-        "correct": 2,
+        "correct": 3,
         "explanation": "Sekwoje rosną naturalnie wyłącznie w wąskim, wilgotnym pasie mgieł oceanicznych wybrzeża Kalifornii, a mamutowce olbrzymie (General Sherman) na zachodnich stokach Sierra Nevada."
     },
     {
@@ -1086,12 +1086,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Biosfera i gleby",
         "question": "Gigantyczny kaktus saguaro (Carnegiea gigantea), osiągający wysokość kilkunastu metrów i magazynujący tony wody w łodydze, jest symbolem pustyni:",
         "options": [
-            "Sonora w Arizonie",
             "Sahara w Afryce",
+            "Gobi",
             "Wielka Pustynia Piaszczysta",
-            "Gobi"
+            "Sonora w Arizonie"
         ],
-        "correct": 0,
+        "correct": 3,
         "explanation": "Kaktus saguaro rośnie endemicznie na pustyni Sonora w południowej Arizonie i północnym Meksyku, będąc chronionym m.in. w Parku Narodowym Saguaro."
     },
     {
@@ -1100,12 +1100,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Biosfera i gleby",
         "question": "Które z poniższych zwierząt jest największym roślinożercą lądowym Ameryki Północnej, niegdyś występującym w milionowych stadach na Wielkich Równinach, niemal wytępionym w XIX wieku?",
         "options": [
-            "Puma",
-            "Niedźwiedź grizli",
             "Bizon amerykański (Bison bison)",
-            "Karibu"
+            "Puma",
+            "Karibu",
+            "Niedźwiedź grizli"
         ],
-        "correct": 2,
+        "correct": 0,
         "explanation": "Bizon amerykański był podstawą egzystencji rdzennych plemion Indian prerii. W XIX wieku z populacji liczącej 30–60 milionów ocalało zaledwie kilkaset osobników (ocalony m.in. w Yellowstone)."
     },
     {
@@ -1114,12 +1114,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Biosfera i gleby",
         "question": "Zwierzęciem endemicznym dla arktycznych obszarów Kanady i Grenlandii, pokrytym wyjątkowo gęstą, długą sierścią chroniącą przed mrozami -50°C, jest:",
         "options": [
-            "Bizon preriowy",
             "Wół piżmowy (Ovibos moschatus)",
             "Pancernik",
-            "Kojot"
+            "Kojot",
+            "Bizon preriowy"
         ],
-        "correct": 1,
+        "correct": 0,
         "explanation": "Wół piżmowy to relikt epoki lodowcowej, doskonale przystosowany do skrajnych warunków tundry arktycznej dzięki wełnistemu podszerstkowi qiviut."
     },
     {
@@ -1128,12 +1128,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Biosfera i gleby",
         "question": "Drzewo będące narodowym symbolem Kanady, którego liść znajduje się na fladze państwowej, a pień służy do pozyskiwania tradycyjnego słodkiego syropu, to:",
         "options": [
+            "Daglezja zielona",
             "Klon cukrowy (Acer saccharum)",
-            "Świerk czarny",
             "Dąb czerwony",
-            "Daglezja zielona"
+            "Świerk czarny"
         ],
-        "correct": 0,
+        "correct": 1,
         "explanation": "Klon cukrowy rośnie obficie w lasach liściastych wschodniej Kanady (Quebec, Ontario); wczesną wiosną z pni wytacza się sok gotowany na syrop klonowy."
     },
     {
@@ -1142,12 +1142,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Biosfera i gleby",
         "question": "Unikalną cechą ekosystemu bagien Everglades w południowej Florydzie jest to, że współwystępują tam naturalnie dwa gatunki wielkich gadów drapieżnych:",
         "options": [
-            "Waran z Komodo oraz żółw słoniowy",
             "Krokodyl nilowy oraz anakonda zielona",
-            "Aligator amerykański oraz krokodyl amerykański",
-            "Kajman czarny oraz gawial gangesowy"
+            "Waran z Komodo oraz żółw słoniowy",
+            "Kajman czarny oraz gawial gangesowy",
+            "Aligator amerykański oraz krokodyl amerykański"
         ],
-        "correct": 2,
+        "correct": 3,
         "explanation": "Everglades to jedyne miejsce na Ziemi, gdzie w jednym środowisku (mieszanka wód słodkich i słonawych wód namorzynowych) współwystępują obok siebie aligatory i krokodyle."
     },
     {
@@ -1156,12 +1156,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Biosfera i gleby",
         "question": "Dzikim krewnym renifera w Ameryce Północnej, podejmującym coroczne wędrówki na dystansie setek kilometrów między tundrą a tajgą, jest:",
         "options": [
-            "Widłoróg",
+            "Karibu (Rangifer tarandus caribou)",
             "Jeleń wapiti",
             "Łoś amerykański",
-            "Karibu (Rangifer tarandus caribou)"
+            "Widłoróg"
         ],
-        "correct": 3,
+        "correct": 0,
         "explanation": "Karibu tworzą ogromne stada migrujące wiosną na północ na pastwiska tundrowe, a jesienią na południe w osłonę lasów tajgi."
     },
     {
@@ -1171,11 +1171,11 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "question": "Najszybszym ssakiem lądowym Ameryki Północnej, potrafiącym biec z prędkością dochodzącą do 90 km/h po otwartych równinach, jest:",
         "options": [
             "Gepard",
+            "Mulak białoogonowy",
             "Wilk szary",
-            "Widłoróg (Antilocapra americana)",
-            "Mulak białoogonowy"
+            "Widłoróg (Antilocapra americana)"
         ],
-        "correct": 2,
+        "correct": 3,
         "explanation": "Widłoróg rozwinął zawrotną prędkość w epoce lodowcowej uciekając przed wymarłym amerykańskim gepardem (Miracinonyx)."
     },
     {
@@ -1186,8 +1186,8 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "options": [
             "Daglezja zielona (jedlica Douglasa)",
             "Baobab",
-            "Sosna limba",
-            "Brzoza brodawkowata"
+            "Brzoza brodawkowata",
+            "Sosna limba"
         ],
         "correct": 0,
         "explanation": "Daglezja zielona (Douglas fir) osiąga wysokość do 80–100 metrów i tworzy lasy o największej biomasie na hektar poza strefą równikową."
@@ -1198,12 +1198,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Ochrona przyrody i Parki",
         "question": "Pierwszym parkiem narodowym na świecie, utworzonym w 1872 roku decyzją Kongresu USA i prezydenta Ulyssesa Granta, był:",
         "options": [
-            "Park Narodowy Wielkiego Kanionu",
-            "Park Narodowy Yellowstone",
+            "Park Narodowy Banff",
             "Park Narodowy Yosemite",
-            "Park Narodowy Banff"
+            "Park Narodowy Yellowstone",
+            "Park Narodowy Wielkiego Kanionu"
         ],
-        "correct": 1,
+        "correct": 2,
         "explanation": "Yellowstone powstał w 1872 roku \"dla pożytku i przyjemności narodu\", dając początek globalnemu ruchowi tworzenia parków narodowych."
     },
     {
@@ -1213,8 +1213,8 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "question": "Najstarszym parkiem narodowym w Kanadzie, założonym w 1885 roku w Górach Skalistych wokół gorących źródeł siarkowych, jest:",
         "options": [
             "Park Narodowy Gros Morne",
-            "Park Narodowy Yoho",
             "Park Narodowy Jasper",
+            "Park Narodowy Yoho",
             "Park Narodowy Banff"
         ],
         "correct": 3,
@@ -1226,12 +1226,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Ochrona przyrody i Parki",
         "question": "Najsłynniejszy regularny gejzer w Parku Narodowym Yellowstone, wyrzucający słup wrzącej wody na wysokość do 55 metrów co około 90 minut, to:",
         "options": [
-            "Old Faithful (Wierny Stary)",
             "Steamboat Geyser",
+            "Old Faithful (Wierny Stary)",
             "El Tatio",
             "Strokkur"
         ],
-        "correct": 0,
+        "correct": 1,
         "explanation": "Gejzer Old Faithful zawdzięcza swą nazwę niezwykłej punktualności wybuchów, dokumentowanej od czasów ekspedycji Washburna w 1870 roku."
     },
     {
@@ -1240,12 +1240,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Ochrona przyrody i Parki",
         "question": "Park Narodowy Wielkiego Kanionu (Grand Canyon National Park) w Arizonie chroni przełom rzeki Kolorado o głębokości dochodzącej do:",
         "options": [
-            "50 metrów",
-            "Około 1600–1800 metrów (ponad milę w głąb skał)",
             "4000 metrów",
-            "300 metrów"
+            "300 metrów",
+            "Około 1600–1800 metrów (ponad milę w głąb skał)",
+            "50 metrów"
         ],
-        "correct": 1,
+        "correct": 2,
         "explanation": "Wielki Kanion ma długość 446 km, szerokość do 29 km i głębokość 1,8 km, odsłaniając przekrój geologiczny od prekambryjskiego łupku Wisznu po permskie wapienie Kaibab."
     },
     {
@@ -1254,12 +1254,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Ochrona przyrody i Parki",
         "question": "Park Narodowy Arches w stanie Utah słynie z największego na Ziemi zagęszczenia naturalnych form erozyjnych piaskowca:",
         "options": [
+            "Głębokich jaskiń lodowych z naciekami",
             "Naturalnych łuków skalnych (ponad 2000 skatalogowanych łuków, w tym Delicate Arch)",
-            "Jezior kraterowych o szmaragdowej barwie",
             "Stożków wulkanicznych z lawą kordową",
-            "Głębokich jaskiń lodowych z naciekami"
+            "Jezior kraterowych o szmaragdowej barwie"
         ],
-        "correct": 0,
+        "correct": 1,
         "explanation": "Delicate Arch i Landscape Arch w Parku Arches powstały w wyniku wietrzenia mrozowego i chemicznego w warstwie piaskowca Entrada nad podziemnym wysadem solnym."
     },
     {
@@ -1270,10 +1270,10 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "options": [
             "Jedyne drzewo, które nie zrzuca igieł w pożarze",
             "Najstarsze drzewo świata liczące ponad 10 000 lat",
-            "Najwyższą palmę na świecie",
-            "Największy pod względem objętości pnia pojedynczy organizm żywy na Ziemi (ponad 1480 m³ drewna)"
+            "Największy pod względem objętości pnia pojedynczy organizm żywy na Ziemi (ponad 1480 m³ drewna)",
+            "Najwyższą palmę na świecie"
         ],
-        "correct": 3,
+        "correct": 2,
         "explanation": "General Sherman (mamutowiec olbrzymi) ma 84 m wysokości i ponad 31 m obwodu u podstawy, będąc rekordzistą objętości biomasy pnia."
     },
     {
@@ -1282,12 +1282,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Ochrona przyrody i Parki",
         "question": "Jezioro Moraine oraz Jezioro Louise, znane ze zjawiskowej turkusowo-mlecznej barwy wody, leżą w Kanadzie w parku:",
         "options": [
-            "Parku Narodowym Gros Morne",
             "Parku Narodowym Fundy",
             "Parku Narodowym Banff (Alberta)",
-            "Parku Narodowym Nahanni"
+            "Parku Narodowym Nahanni",
+            "Parku Narodowym Gros Morne"
         ],
-        "correct": 2,
+        "correct": 1,
         "explanation": "Intensywnie błękitny kolor wody tych jezior wynika z obecności mączki skalnej (drobno zmielonych osadów polodowcowych), która zawieszona w wodzie rozprasza światło słoneczne w odcieniach turkusu."
     },
     {
@@ -1297,9 +1297,9 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "question": "Park Narodowy Gros Morne w Nowej Fundlandii został wpisany na Listę UNESCO m.in. z powodu płaskowyżu Tablelands, gdzie:",
         "options": [
             "Na powierzchni Ziemi odsłonięte są bezpośrednio skały płaszcza ziemskiego (perydotyty), co potwierdziło teorię tektoniki płyt",
+            "Znajduje się największy czynny wulkan Ameryki Północnej",
             "Płynie rzeka o temperaturze wrzenia",
-            "Żyją ostatnie dzikie dinozaury",
-            "Znajduje się największy czynny wulkan Ameryki Północnej"
+            "Żyją ostatnie dzikie dinozaury"
         ],
         "correct": 0,
         "explanation": "Tablelands to rzadkie zjawisko ofiolitu – skały z głębokiego płaszcza Ziemi zostały wprasowane na kontynent podczas zamykania dawnego oceanu Japetus."
@@ -1310,8 +1310,8 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Ochrona przyrody i Parki",
         "question": "Pierwszym Pomnikiem Narodowym (National Monument) w USA, ustanowionym w 1906 roku przez prezydenta Theodore'a Roosevelta, była bazaltowa intruzja w Wyoming:",
         "options": [
-            "Mesa Verde",
             "Góra Rushmore",
+            "Mesa Verde",
             "Wielki Kanion",
             "Devils Tower (Wieża Diabła)"
         ],
@@ -1324,12 +1324,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Ochrona przyrody i Parki",
         "question": "Największym pod względem powierzchni parkiem narodowym w USA (ponad 53 tys. km² – obszar większy niż Szwajcaria) jest:",
         "options": [
-            "Yellowstone w Wyoming",
+            "Everglades na Florydzie",
             "Death Valley w Kalifornii",
-            "Wrangell-St. Elias na Alasce",
-            "Everglades na Florydzie"
+            "Yellowstone w Wyoming",
+            "Wrangell-St. Elias na Alasce"
         ],
-        "correct": 2,
+        "correct": 3,
         "explanation": "Park Narodowy Wrangell-St. Elias na Alasce chroni potężne lodowce i szczyty Kordylierów, zajmując powierzchnię ponad 53 000 km²."
     },
     {
@@ -1338,12 +1338,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Ochrona przyrody i Parki",
         "question": "Park Narodowy Everglades na Florydzie chroni unikalną, bardzo wolno płynącą rzekę słodkowodną zwaną metaforycznie:",
         "options": [
+            "\"Czarnym Strumieniem\"",
             "\"Doliną Błota\"",
             "\"Rzeką Traw\" (River of Grass)",
-            "\"Czarnym Strumieniem\"",
             "\"Wodnym Lasem\""
         ],
-        "correct": 1,
+        "correct": 2,
         "explanation": "Everglades to w rzeczywistości szeroka na kilkadziesiąt kilometrów i płytka na kilkadziesiąt centymetrów rzeka porośnięta kłocią wiechowatą (sawgrass), płynąca powoli z jeziora Okeechobee ku Zatoce Florydzkiej."
     },
     {
@@ -1352,12 +1352,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Ochrona przyrody i Parki",
         "question": "W Parku Narodowym Mesa Verde w stanie Kolorado chronione są:",
         "options": [
-            "Zalane jaskinie krasowe z kośćmi mamutów",
-            "Czynne wulkany błotne",
             "Wykute w piaskowcowych niszach klifowych prehistoryczne osiedla Indian Pueblo (np. Cliff Palace)",
+            "Czynne wulkany błotne",
+            "Zalane jaskinie krasowe z kośćmi mamutów",
             "Największe drzewa iglaste Ameryki"
         ],
-        "correct": 2,
+        "correct": 0,
         "explanation": "Mesa Verde to park łączący ochronę przyrody i archeologii – chroni spektakularne wielopiętrowe kamienne budowle Indian kultury Anasazi z XII i XIII wieku."
     },
     {
@@ -1366,12 +1366,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Ochrona przyrody i Parki",
         "question": "W Parku Narodowym Jasper w kanadyjskiej prowincji Alberta turyści mogą wjechać specjalnymi autobusami terenowymi bezpośrednio na jęzor lodowca:",
         "options": [
-            "Lodowiec Athabasca",
-            "Lodowiec Malaspina",
             "Lodowiec Perito Moreno",
-            "Lodowiec Hubbarda"
+            "Lodowiec Hubbarda",
+            "Lodowiec Athabasca",
+            "Lodowiec Malaspina"
         ],
-        "correct": 0,
+        "correct": 2,
         "explanation": "Lodowiec Athabasca wypływający z Columbia Icefield jest najłatwiej dostępnym i najchętniej odwiedzanym lodowcem w Górach Skalistych Kanady."
     },
     {
@@ -1380,12 +1380,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Ochrona przyrody i Parki",
         "question": "Park Narodowy Nahanni w Terytoriach Północno-Zachodnich Kanady, jeden z pierwszych obiektów na liście UNESCO, słynie z potężnego wodospadu Virginia Falls oraz:",
         "options": [
-            "Ciepłych raf koralowych",
-            "Głębokich kanionów rzeki South Nahanni i jaskiń krasowych w strefie subarktycznej",
+            "Piaszczystych plaż wypoczynkowych",
             "Gajów palmowych",
-            "Piaszczystych plaż wypoczynkowych"
+            "Głębokich kanionów rzeki South Nahanni i jaskiń krasowych w strefie subarktycznej",
+            "Ciepłych raf koralowych"
         ],
-        "correct": 1,
+        "correct": 2,
         "explanation": "Nahanni to dziki rezerwat przyrody chroniący kaniony głębsze niż Grand Canyon, zjawiska krasowe w wiecznej zmarzlinie oraz wodospad dwa razy wyższy od Niagary."
     },
     {
@@ -1394,12 +1394,12 @@ const USA_CAN_PHYSICAL_QUESTIONS = [
         "category": "Ochrona przyrody i Parki",
         "question": "Zatoka Fundy (Bay of Fundy) leżąca między Nowym Brunszwikiem a Nową Szkocją jest chroniona m.in. w Parku Narodowym Fundy z powodu:",
         "options": [
-            "Całorocznego zlodzenia i braku dostępu do morza",
+            "Najwyższych na świecie pływów morskich, których amplituda osiąga nawet 16 metrów",
             "Najwyższej temperatury wody w Arktyce",
             "Najgłębszego rowu oceanicznego na Ziemi",
-            "Najwyższych na świecie pływów morskich, których amplituda osiąga nawet 16 metrów"
+            "Całorocznego zlodzenia i braku dostępu do morza"
         ],
-        "correct": 3,
+        "correct": 0,
         "explanation": "Lejkowaty kształt zatoki oraz zjawisko rezonansu fal pływowych sprawiają, że różnica poziomów wody między odpływem a przypływem w Zatoce Fundy dochodzi do rekordowych 16 metrów."
     }
 ];
