@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <!-- Google Analytics Tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZP827DTZJ5"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-ZP827DTZJ5');
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>USA i Kanada – Interaktywny Quiz Mapowy: Geografia Fizyczna & Zjawiska Geofizyczne</title>
+    <link rel="stylesheet" href="../style.css" />
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <style>
+        :root {
+            --bg-dark: #07152b;
+            --card-bg: rgba(15, 23, 42, 0.94);
+            --card-border: rgba(56, 189, 248, 0.35);
+            --primary: #38bdf8;
+            --primary-hover: #0284c7;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-rose: #f43f5e;
+            --accent-purple: #c084fc;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: linear-gradient(180deg, #051024 0%, #082142 45%, #0d3461 100%);
+            color: var(--text-main);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            padding: 16px 16px 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .main-container {
+            max-width: 1350px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Górna nawigacja */
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            background: rgba(14, 30, 56, 0.85);
+            border: 1px solid rgba(125, 211, 252, 0.4);
+            color: #7dd3fc;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.88rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(8px);
+        }
+
+        .nav-btn:hover {
+            color: #ffffff;
+            border-color: #38bdf8;
+            background: #0284c7;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.4);
+        }
+
+        /* Główny baner */
+        .quiz-banner {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.92) 100%);
+            border: 2px solid #38bdf8;
+            border-radius: 16px;
+            padding: 16px 24px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6), 0 0 25px rgba(56, 189, 248, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+
+        .banner-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .banner-icon {
+            font-size: 2.4rem;
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid #38bdf8;
+            width: 56px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+        }
+
+        .banner-text h1 {
+            font-size: 1.45rem;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: 0.5px;
+        }
+
+        .banner-text p {
+            color: #7dd3fc;
+            font-size: 0.9rem;
+            margin-top: 3px;
+        }
+
+        .badge-konkurs {
+            display: inline-block;
+            background: rgba(245, 158, 11, 0.2);
+            border: 1px solid #f59e0b;
+            color: #fbbf24;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            margin-left: 6px;
+            vertical-align: middle;
+        }
+
+        /* Pasek filtrów i statystyk */
+        .controls-card {
+            background: rgba(14, 30, 56, 0.92);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            padding: 14px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .mode-tabs {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .mode-tab-btn {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid #475569;
+            color: #cbd5e1;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 0.86rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .mode-tab-btn:hover {
+            border-color: #38bdf8;
+            color: #ffffff;
+        }
+
+        .mode-tab-btn.active {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            border-color: #38bdf8;
+            color: #ffffff;
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
+        }
+
+        .stats-badge {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: rgba(15, 23, 42, 0.9);
+            padding: 8px 16px;
+            border-radius: 10px;
+            border: 1px solid #334155;
+            font-size: 0.92rem;
+        }
+
+        .stats-badge b {
+            font-family: monospace;
+            font-size: 1.05rem;
+        }
+
+        .stats-badge b.correct {
+            color: #10b981;
+        }
+
+        .stats-badge b.wrong {
+            color: #f43f5e;
+        }
+
+        /* Układ dwukolumnowy: Mapa po lewej, Pytanie po prawej */
+        .game-layout {
+            display: grid;
+            grid-template-columns: 1.25fr 1fr;
+            gap: 18px;
+            width: 100%;
+        }
+
+        @media (max-width: 980px) {
+            .game-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Kontener mapy Leaflet */
+        .map-card {
+            background: rgba(15, 23, 42, 0.96);
+            border: 2px solid var(--card-border);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            min-height: 560px;
+        }
+
+        .map-container {
+            width: 100%;
+            height: 100%;
+            min-height: 520px;
+            flex: 1;
+            background: #07152b;
+        }
+
+        .map-footer-bar {
+            background: rgba(15, 23, 42, 0.95);
+            border-top: 1px solid #334155;
+            padding: 10px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            color: #94a3b8;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .legend-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .legend-dot.point {
+            background: #fbbf24;
+            box-shadow: 0 0 8px #fbbf24;
+        }
+
+        .legend-dot.line {
+            background: #38bdf8;
+            border-radius: 2px;
+            width: 18px;
+            height: 5px;
+            box-shadow: 0 0 8px #38bdf8;
+        }
+
+        /* Prawa kolumna: Pytanie quizowe */
+        .question-card {
+            background: rgba(15, 23, 42, 0.96);
+            border: 2px solid var(--card-border);
+            border-radius: 16px;
+            padding: 22px 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .step-switcher {
+            display: flex;
+            gap: 8px;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 10px;
+        }
+
+        .step-pill {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            background: rgba(30, 41, 59, 0.7);
+            color: #94a3b8;
+            border: 1px solid #475569;
+        }
+
+        .step-pill.active {
+            background: rgba(56, 189, 248, 0.15);
+            color: #38bdf8;
+            border-color: #38bdf8;
+        }
+
+        .step-pill.geophys {
+            background: rgba(245, 158, 11, 0.15);
+            color: #fbbf24;
+            border-color: #fbbf24;
+        }
+
+        .question-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .category-badge {
+            background: rgba(56, 189, 248, 0.15);
+            color: #38bdf8;
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .question-text {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #ffffff;
+            line-height: 1.45;
+        }
+
+        /* Siatka opcji ABCD */
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 4px;
+        }
+
+        .option-btn {
+            background: rgba(30, 41, 59, 0.85);
+            border: 2px solid #334155;
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: #f8fafc;
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            line-height: 1.35;
+        }
+
+        .option-letter {
+            width: 32px;
+            height: 32px;
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid #38bdf8;
+            color: #38bdf8;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            border-color: #38bdf8;
+            background: #1e293b;
+            transform: translateX(4px);
+            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);
+        }
+
+        .option-btn:disabled {
+            cursor: default;
+        }
+
+        .option-btn.correct {
+            background: rgba(16, 185, 129, 0.25) !important;
+            border-color: #10b981 !important;
+            color: #ffffff !important;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+        }
+
+        .option-btn.correct .option-letter {
+            background: #10b981;
+            color: #ffffff;
+            border-color: #10b981;
+        }
+
+        .option-btn.wrong {
+            background: rgba(244, 63, 94, 0.25) !important;
+            border-color: #f43f5e !important;
+            color: #ffffff !important;
+        }
+
+        .option-btn.wrong .option-letter {
+            background: #f43f5e;
+            color: #ffffff;
+            border-color: #f43f5e;
+        }
+
+        /* Feedback i wyjaśnienie */
+        .feedback-box {
+            display: none;
+            padding: 14px 16px;
+            border-radius: 12px;
+            background: rgba(30, 41, 59, 0.95);
+            border-left: 5px solid #38bdf8;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .feedback-box.correct {
+            border-left-color: #10b981;
+            background: rgba(16, 185, 129, 0.12);
+        }
+
+        .feedback-box.wrong {
+            border-left-color: #f43f5e;
+            background: rgba(244, 63, 94, 0.12);
+        }
+
+        .feedback-status {
+            font-size: 1.05rem;
+            font-weight: 800;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feedback-status.correct {
+            color: #10b981;
+        }
+
+        .feedback-status.wrong {
+            color: #f43f5e;
+        }
+
+        .feedback-text {
+            color: #cbd5e1;
+            font-size: 0.92rem;
+            line-height: 1.45;
+        }
+
+        /* Przyciski przejścia */
+        .actions-bar {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 6px;
+        }
+
+        .btn-action {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            padding: 11px 22px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-action.geophys {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+        }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.6);
+        }
+
+        /* Ekran podsumowania */
+        .summary-card {
+            display: none;
+            background: rgba(15, 23, 42, 0.98);
+            border: 2px solid #38bdf8;
+            border-radius: 16px;
+            padding: 35px 30px;
+            text-align: center;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7);
+        }
+
+        .summary-card.active {
+            display: block;
+        }
+
+        .summary-title {
+            font-size: 2rem;
+            color: #ffffff;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .summary-score {
+            font-size: 3.2rem;
+            font-weight: 900;
+            font-family: monospace;
+            color: #38bdf8;
+            margin: 15px 0;
+            text-shadow: 0 0 20px rgba(56, 189, 248, 0.5);
+        }
+
+        .summary-badge {
+            display: inline-block;
+            background: rgba(251, 191, 36, 0.18);
+            border: 1px solid #fbbf24;
+            color: #fbbf24;
+            padding: 8px 22px;
+            border-radius: 20px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+        }
+
+        .summary-btns {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* Animacja pulsującego markera */
+        .pulse-marker {
+            background: #fbbf24;
+            border: 3px solid #ffffff;
+            border-radius: 50%;
+            box-shadow: 0 0 15px #fbbf24, 0 0 30px rgba(251, 191, 36, 0.6);
+            animation: pulse-ring 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+
+        @keyframes pulse-ring {
+            0% {
+                transform: scale(0.9);
+                box-shadow: 0 0 10px #fbbf24;
+            }
+            50% {
+                transform: scale(1.25);
+                box-shadow: 0 0 25px #fbbf24, 0 0 40px rgba(251, 191, 36, 0.8);
+            }
+            100% {
+                transform: scale(0.9);
+                box-shadow: 0 0 10px #fbbf24;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main-container">
+        <!-- Górna nawigacja -->
+        <nav class="top-nav">
+            <a href="../pomocnicze.html" class="nav-btn">
+                ← Powrót do bazy quizów
+            </a>
+            <a href="Usa_Can_urban.html" class="nav-btn">
+                🏙️ Urbanizacja & Osadnictwo (75 pytań)
+            </a>
+            <a href="Usa_Kan_fizyczna.html" class="nav-btn">
+                🏞️ Środowisko fizyczne (100 pytań)
+            </a>
+            <a href="stany.html" class="nav-btn">
+                🗺️ Stany & Prowincje
+            </a>
+            <a href="podz_adm_USA_Can.html" class="nav-btn">
+                📝 Podział administracyjny
+            </a>
+            <a href="../index.html" class="nav-btn">
+                🏠 Strona główna
+            </a>
+        </nav>
+
+        <!-- Baner główny -->
+        <header class="quiz-banner">
+            <div class="banner-left">
+                <div class="banner-icon">🗺️</div>
+                <div class="banner-text">
+                    <h1>USA i Kanada – Mapa Fizyczna & Zjawiska Geofizyczne <span class="badge-konkurs">Konkurs Geograficzny</span></h1>
+                    <p>Rozpoznawaj obiekty bez podpisów (rzeki, szczyty, pasma, zatoki, uskok San Andreas) i odpowiadaj na pytania geofizyczne!</p>
+                </div>
+            </div>
+            <div class="stats-badge">
+                <span>Runda: <b id="stat-round">1 / 15</b></span>
+                <span>Poprawne: <b id="stat-correct" class="correct">0</b></span>
+                <span>Błędy: <b id="stat-wrong" class="wrong">0</b></span>
+            </div>
+        </header>
+
+        <!-- Pasek filtrów warstw mapy -->
+        <div class="controls-card">
+            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                <span style="font-size:0.86rem; color:#94a3b8; font-weight:600;">Wersja mapy / zakres:</span>
+                <div class="mode-tabs">
+                    <button type="button" class="mode-tab-btn active" id="btn-mode-all" onclick="changeMode('all')">
+                        🌐 Wszystkie obiekty (Miks)
+                    </button>
+                    <button type="button" class="mode-tab-btn" id="btn-mode-hydro" onclick="changeMode('hydro')">
+                        🌊 Hydrografia (Rzeki & Zatoki)
+                    </button>
+                    <button type="button" class="mode-tab-btn" id="btn-mode-orography" onclick="changeMode('orography')">
+                        🏔️ Orografia (Góry & Szczyty)
+                    </button>
+                    <button type="button" class="mode-tab-btn" id="btn-mode-tectonics" onclick="changeMode('tectonics')">
+                        🌋 Tektonika, Uskoki & Wulkany
+                    </button>
+                    <button type="button" class="mode-tab-btn" id="btn-mode-cities" onclick="changeMode('cities')">
+                        🏙️ Główne Miasta
+                    </button>
+                </div>
+            </div>
+
+            <div style="display:flex; gap:8px;">
+                <button type="button" class="mode-tab-btn" id="btn-sound-toggle" onclick="toggleSound()">
+                    🔊 Dźwięk: WŁ
+                </button>
+                <button type="button" class="mode-tab-btn" onclick="resetMapView()" title="Wycentruj widok mapy">
+                    🔍 Wycentruj
+                </button>
+                <button type="button" class="mode-tab-btn" onclick="restartGame()" style="background:rgba(239,68,68,0.15); border-color:#ef4444; color:#f87171;">
+                    🔄 Reset
+                </button>
+            </div>
+        </div>
+
+        <!-- Układ główny gry (Mapa + Pytanie) -->
+        <div class="game-layout" id="game-layout">
+            <!-- Lewa kolumna: Mapa konturowo-fizyczna -->
+            <div class="map-card">
+                <div class="map-container" id="map"></div>
+                <div class="map-footer-bar">
+                    <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                        <span style="font-weight:700; color:#38bdf8;">Podkład:</span>
+                        <button type="button" class="mode-tab-btn active" id="btn-tile-sat" onclick="setBaseLayer('sat')" style="padding:4px 10px; font-size:0.8rem;">
+                            🛰️ Satelitarny (Fizyczny)
+                        </button>
+                        <button type="button" class="mode-tab-btn" id="btn-tile-dark" onclick="setBaseLayer('dark')" style="padding:4px 10px; font-size:0.8rem;">
+                            🌑 Ciemny (Konturowy)
+                        </button>
+                        <button type="button" class="mode-tab-btn" id="btn-tile-topo" onclick="setBaseLayer('topo')" style="padding:4px 10px; font-size:0.8rem;">
+                            🏔️ Rzeźba terenu
+                        </button>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+                        <span class="legend-tag">
+                            <span class="legend-dot point"></span> Punkt
+                        </span>
+                        <span class="legend-tag">
+                            <span class="legend-dot line"></span> Wstęga
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Prawa kolumna: Pytanie ABCD -->
+            <div class="question-card" id="question-card">
+                <div class="step-switcher">
+                    <span class="step-pill active" id="pill-step-1">1. Identyfikacja obiektu</span>
+                    <span class="step-pill" id="pill-step-2">2. Pytanie geofizyczne</span>
+                </div>
+
+                <div class="question-meta">
+                    <span class="category-badge" id="q-category">Kategoria</span>
+                    <span style="font-size:0.85rem; color:#94a3b8; font-weight:600;" id="q-type-label">Spójrz na zaznaczenie na mapie</span>
+                </div>
+
+                <div class="question-text" id="q-text">
+                    Ładowanie zadania z mapy...
+                </div>
+
+                <!-- Opcje wyboru ABCD -->
+                <div class="options-list" id="options-list">
+                    <button type="button" class="option-btn" onclick="submitAnswer(0)">
+                        <span class="option-letter">A</span>
+                        <span class="option-text" id="opt-text-0">-</span>
+                    </button>
+                    <button type="button" class="option-btn" onclick="submitAnswer(1)">
+                        <span class="option-letter">B</span>
+                        <span class="option-text" id="opt-text-1">-</span>
+                    </button>
+                    <button type="button" class="option-btn" onclick="submitAnswer(2)">
+                        <span class="option-letter">C</span>
+                        <span class="option-text" id="opt-text-2">-</span>
+                    </button>
+                    <button type="button" class="option-btn" onclick="submitAnswer(3)">
+                        <span class="option-letter">D</span>
+                        <span class="option-text" id="opt-text-3">-</span>
+                    </button>
+                </div>
+
+                <!-- Feedback z wyjaśnieniem -->
+                <div class="feedback-box" id="feedback-box">
+                    <div class="feedback-status" id="feedback-status">Świetnie!</div>
+                    <div class="feedback-text" id="feedback-text">Wyjaśnienie.</div>
+                </div>
+
+                <!-- Przyciski nawigacji pytania -->
+                <div class="actions-bar">
+                    <button type="button" class="btn-action geophys" id="btn-next-step" onclick="goToStep2()" style="display:none;">
+                        🌋 Przejdź do pytania geofizycznego ➔
+                    </button>
+                    <button type="button" class="btn-action" id="btn-next-target" onclick="nextRound()" style="display:none;">
+                        Następny obiekt na mapie ➔
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ekran podsumowania gry -->
+        <section class="summary-card" id="summary-card">
+            <h2 class="summary-title">🎉 Gratulacje! Ukończono Test Mapowy!</h2>
+            <p style="color:#94a3b8; font-size:1.05rem;">Twój łączny wynik (identyfikacja obiektów + pytania geofizyczne):</p>
+            <div class="summary-score" id="summary-score-val">26 / 30</div>
+            <div class="summary-badge" id="summary-rank-badge">🏆 Mistrz Kartografii Ameryki Północnej!</div>
+            <div class="summary-btns">
+                <button type="button" class="nav-btn" onclick="restartGame()" style="font-size:1rem; padding:12px 24px;">
+                    🔄 Rozwiąż ponownie
+                </button>
+                <a href="../pomocnicze.html" class="nav-btn" style="font-size:1rem; padding:12px 24px;">
+                    📚 Wróć do bazy pomocy dydaktycznych
+                </a>
+            </div>
+        </section>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- Baza obiektów i geometrii -->
+    <script src="usa_can_mapa_fiz_features.js"></script>
+
+    <script>
+        // =========================================================
+        // SYNTEZATOR DŹWIĘKÓW WEB AUDIO API
+        // =========================================================
+        let soundEnabled = true;
+        let audioCtx = null;
+
+        function getAudioContext() {
+            if (!audioCtx) {
+                const AudioCtxClass = window.AudioContext || window.webkitAudioContext;
+                if (AudioCtxClass) audioCtx = new AudioCtxClass();
+            }
+            if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+            return audioCtx;
+        }
+
+        function playSound(type) {
+            if (!soundEnabled) return;
+            try {
+                const ctx = getAudioContext();
+                if (!ctx) return;
+                const now = ctx.currentTime;
+
+                if (type === 'correct') {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(523.25, now);
+                    osc.frequency.exponentialRampToValueAtTime(783.99, now + 0.15);
+                    gain.gain.setValueAtTime(0.12, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.36);
+                } else if (type === 'wrong') {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(220, now);
+                    osc.frequency.exponentialRampToValueAtTime(140, now + 0.22);
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.26);
+                } else if (type === 'complete') {
+                    [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        osc.frequency.value = freq;
+                        const startTime = now + (i * 0.1);
+                        gain.gain.setValueAtTime(0.1, startTime);
+                        gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.35);
+                        osc.connect(gain);
+                        gain.connect(ctx.destination);
+                        osc.start(startTime);
+                        osc.stop(startTime + 0.36);
+                    });
+                }
+            } catch (e) {
+                console.log('Audio disabled:', e);
+            }
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            const btn = document.getElementById('btn-sound-toggle');
+            if (btn) btn.innerText = soundEnabled ? '🔊 Dźwięk: WŁ' : '🔇 Dźwięk: WYŁ';
+        }
+
+        // =========================================================
+        // LOGIKA INTERAKTYWNA QUIZU MAPOWEGO
+        // =========================================================
+        let map = null;
+        let currentMode = 'all'; // 'all', 'hydro', 'orography', 'tectonics', 'cities'
+        let activePool = [];
+        let currentRound = 0;
+        let totalRounds = 15;
+        let correctCount = 0;
+        let wrongCount = 0;
+        let currentFeature = null;
+        let currentStep = 1; // 1 = Identyfikacja obiektu, 2 = Pytanie geofizyczne
+        let isAnswered = false;
+        let activeMapLayer = null;
+        let currentTileLayer = null;
+        const TILE_PROVIDERS = {
+            sat: {
+                url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+                options: {
+                    attribution: '&copy; Esri, Maxar, Earthstar Geographics',
+                    maxZoom: 18
+                }
+            },
+            dark: {
+                url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+                options: {
+                    attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+                    subdomains: 'abcd',
+                    maxZoom: 19
+                }
+            },
+            topo: {
+                url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Physical_Map/MapServer/tile/{z}/{y}/{x}',
+                options: {
+                    attribution: '&copy; Esri, US National Park Service',
+                    maxZoom: 8
+                }
+            }
+        };
+
+        function setBaseLayer(layerKey) {
+            if (!TILE_PROVIDERS[layerKey]) return;
+            if (currentTileLayer) {
+                map.removeLayer(currentTileLayer);
+            }
+            const prov = TILE_PROVIDERS[layerKey];
+            currentTileLayer = L.tileLayer(prov.url, prov.options).addTo(map);
+
+            // Aktualizacja wyglądu przycisków
+            ['sat', 'dark', 'topo'].forEach(k => {
+                const btn = document.getElementById(`btn-tile-${k}`);
+                if (btn) {
+                    if (k === layerKey) btn.classList.add('active');
+                    else btn.classList.remove('active');
+                }
+            });
+        }
+
+        function initMap() {
+            map = L.map('map', {
+                center: [48.0, -98.0],
+                zoom: 3.5,
+                minZoom: 2.5,
+                maxZoom: 11
+            });
+
+            // Domyślny piękny, bezpłatny podkład satelitarno-fizyczny bez wymogu klucza API
+            setBaseLayer('sat');
+
+            restartGame();
+        }
+
+        function changeMode(mode) {
+            currentMode = mode;
+            document.querySelectorAll('.mode-tab-btn').forEach(btn => {
+                if (btn.id !== 'btn-sound-toggle') btn.classList.remove('active');
+            });
+            if (mode === 'all') document.getElementById('btn-mode-all')?.classList.add('active');
+            if (mode === 'hydro') document.getElementById('btn-mode-hydro')?.classList.add('active');
+            if (mode === 'orography') document.getElementById('btn-mode-orography')?.classList.add('active');
+            if (mode === 'tectonics') document.getElementById('btn-mode-tectonics')?.classList.add('active');
+            if (mode === 'cities') document.getElementById('btn-mode-cities')?.classList.add('active');
+
+            restartGame();
+        }
+
+        function restartGame() {
+            let pool = [...PHYSICAL_MAP_FEATURES];
+            if (currentMode !== 'all') {
+                pool = pool.filter(f => f.category === currentMode);
+            }
+            // Losowe tasowanie
+            activePool = pool.sort(() => Math.random() - 0.5);
+            totalRounds = Math.min(activePool.length, 15);
+            activePool = activePool.slice(0, totalRounds);
+
+            currentRound = 0;
+            correctCount = 0;
+            wrongCount = 0;
+            isAnswered = false;
+
+            document.getElementById('game-layout').style.display = 'grid';
+            document.getElementById('summary-card').classList.remove('active');
+
+            updateStats();
+            loadRound();
+        }
+
+        function updateStats() {
+            document.getElementById('stat-round').innerText = `${Math.min(currentRound + 1, totalRounds)} / ${totalRounds}`;
+            document.getElementById('stat-correct').innerText = correctCount;
+            document.getElementById('stat-wrong').innerText = wrongCount;
+        }
+
+        function resetMapView() {
+            if (currentFeature) {
+                if (currentFeature.type === 'point') {
+                    map.setView(currentFeature.center, currentFeature.zoom || 6);
+                } else if (activeMapLayer && activeMapLayer.getBounds) {
+                    map.fitBounds(activeMapLayer.getBounds(), { padding: [60, 60], maxZoom: 7 });
+                }
+            } else {
+                map.setView([48.0, -98.0], 3.5);
+            }
+        }
+
+        function loadRound() {
+            if (currentRound >= totalRounds) {
+                showSummary();
+                return;
+            }
+
+            currentFeature = activePool[currentRound];
+            currentStep = 1;
+            isAnswered = false;
+            updateStats();
+
+            // Usunięcie poprzedniej warstwy z mapy
+            if (activeMapLayer) {
+                map.removeLayer(activeMapLayer);
+                activeMapLayer = null;
+            }
+
+            // Rysowanie wyróżnionego obiektu na mapie
+            if (currentFeature.type === 'point') {
+                const pulseIcon = L.divIcon({
+                    className: 'pulse-marker',
+                    iconSize: [22, 22],
+                    iconAnchor: [11, 11]
+                });
+                activeMapLayer = L.marker(currentFeature.coords, { icon: pulseIcon }).addTo(map);
+                map.setView(currentFeature.center, currentFeature.zoom || 6);
+            } else if (currentFeature.type === 'polyline') {
+                // Neonowa podświetlona wstęga
+                const isTectonic = currentFeature.category === 'tectonics';
+                activeMapLayer = L.polyline(currentFeature.coords, {
+                    color: isTectonic ? '#f43f5e' : '#38bdf8',
+                    weight: 6,
+                    opacity: 0.95,
+                    dashArray: isTectonic ? '8, 6' : null,
+                    lineCap: 'round',
+                    lineJoin: 'round'
+                }).addTo(map);
+                map.fitBounds(activeMapLayer.getBounds(), { padding: [60, 60], maxZoom: 7 });
+            }
+
+            // Ustawienie pytania kroku 1 (Identyfikacja)
+            renderStep1UI();
+        }
+
+        function renderStep1UI() {
+            document.getElementById('pill-step-1').className = 'step-pill active';
+            document.getElementById('pill-step-2').className = 'step-pill';
+
+            document.getElementById('q-category').innerText = currentFeature.categoryName;
+            document.getElementById('q-type-label').innerText = 'Krok 1: Identyfikacja obiektu na mapie';
+            document.getElementById('q-text').innerText = `${currentRound + 1}. ${currentFeature.question}`;
+
+            document.getElementById('feedback-box').style.display = 'none';
+            document.getElementById('btn-next-step').style.display = 'none';
+            document.getElementById('btn-next-target').style.display = 'none';
+
+            const optButtons = document.querySelectorAll('.option-btn');
+            optButtons.forEach((btn, idx) => {
+                btn.disabled = false;
+                btn.className = 'option-btn';
+                document.getElementById(`opt-text-${idx}`).innerText = currentFeature.options[idx];
+            });
+        }
+
+        function renderStep2UI() {
+            currentStep = 2;
+            isAnswered = false;
+
+            document.getElementById('pill-step-1').className = 'step-pill';
+            document.getElementById('pill-step-2').className = 'step-pill active geophys';
+
+            document.getElementById('q-category').innerText = 'Geofizyka & Przyczyna';
+            document.getElementById('q-type-label').innerText = 'Krok 2: Konkursowe pytanie geofizyczne powiązane z obiektem';
+            document.getElementById('q-text').innerText = `${currentRound + 1}B. ${currentFeature.geophysicalQuestion}`;
+
+            document.getElementById('feedback-box').style.display = 'none';
+            document.getElementById('btn-next-step').style.display = 'none';
+            document.getElementById('btn-next-target').style.display = 'none';
+
+            const optButtons = document.querySelectorAll('.option-btn');
+            optButtons.forEach((btn, idx) => {
+                btn.disabled = false;
+                btn.className = 'option-btn';
+                document.getElementById(`opt-text-${idx}`).innerText = currentFeature.geophysicalOptions[idx];
+            });
+        }
+
+        function submitAnswer(selectedIndex) {
+            if (isAnswered) return;
+            isAnswered = true;
+
+            const optButtons = document.querySelectorAll('.option-btn');
+            optButtons.forEach(btn => btn.disabled = true);
+
+            const fbBox = document.getElementById('feedback-box');
+            const fbStatus = document.getElementById('feedback-status');
+            const fbText = document.getElementById('feedback-text');
+
+            if (currentStep === 1) {
+                const isCorrect = (selectedIndex === currentFeature.correct);
+                if (isCorrect) {
+                    correctCount++;
+                    optButtons[selectedIndex].classList.add('correct');
+                    playSound('correct');
+                    fbStatus.innerHTML = '✅ Prawidłowo! Trafna identyfikacja na mapie.';
+                    fbBox.className = 'feedback-box correct';
+                } else {
+                    wrongCount++;
+                    optButtons[selectedIndex].classList.add('wrong');
+                    optButtons[currentFeature.correct].classList.add('correct');
+                    playSound('wrong');
+                    fbStatus.innerHTML = `❌ Błąd! Właściwa odpowiedź to: <strong>${currentFeature.options[currentFeature.correct]}</strong>`;
+                    fbBox.className = 'feedback-box wrong';
+                }
+
+                fbText.innerText = currentFeature.explanation;
+                fbBox.style.display = 'block';
+
+                updateStats();
+                // Pokazujemy przycisk do przejścia do pytania geofizycznego
+                document.getElementById('btn-next-step').style.display = 'inline-flex';
+            } else {
+                // Krok 2: Pytanie geofizyczne
+                const isCorrect = (selectedIndex === currentFeature.geophysicalCorrect);
+                if (isCorrect) {
+                    correctCount++;
+                    optButtons[selectedIndex].classList.add('correct');
+                    playSound('correct');
+                    fbStatus.innerHTML = '✅ Znakomicie! Wyjaśnienie geofizyczne bezbłędne.';
+                    fbBox.className = 'feedback-box correct';
+                } else {
+                    wrongCount++;
+                    optButtons[selectedIndex].classList.add('wrong');
+                    optButtons[currentFeature.geophysicalCorrect].classList.add('correct');
+                    playSound('wrong');
+                    fbStatus.innerHTML = '❌ Błąd w analizie zjawiska geofizycznego.';
+                    fbBox.className = 'feedback-box wrong';
+                }
+
+                fbText.innerText = currentFeature.geophysicalExplanation;
+                fbBox.style.display = 'block';
+
+                updateStats();
+                // Pokazujemy przycisk przejścia do kolejnej rundy/obiektu
+                document.getElementById('btn-next-target').style.display = 'inline-flex';
+            }
+        }
+
+        function goToStep2() {
+            renderStep2UI();
+        }
+
+        function nextRound() {
+            currentRound++;
+            loadRound();
+        }
+
+        function showSummary() {
+            document.getElementById('game-layout').style.display = 'none';
+            const sumCard = document.getElementById('summary-card');
+            sumCard.classList.add('active');
+
+            const maxPossible = totalRounds * 2;
+            document.getElementById('summary-score-val').innerText = `${correctCount} / ${maxPossible}`;
+
+            const percent = Math.round((correctCount / maxPossible) * 100);
+            let rank = "";
+            if (percent >= 85) {
+                rank = "🥇 Mistrz Kartografii & Geofizyki! (Znakomite rozeznanie na czystej mapie konturowej!)";
+            } else if (percent >= 70) {
+                rank = "🥈 Finalista Konkursu Geograficznego! (Bardzo dobra orientacja na mapie i znajomość procesów!)";
+            } else if (percent >= 50) {
+                rank = "🥉 Solidny Uczestnik Etapu Szkolnego! (Dobre podstawy, warto poćwiczyć uskok i zlewiska!)";
+            } else {
+                rank = "🧭 Początkujący Nawigator (Poćwicz z mapą fizyczną i spróbuj ponownie!)";
+            }
+
+            document.getElementById('summary-rank-badge').innerText = rank;
+            playSound('complete');
+        }
+
+        // Skróty klawiszowe (1-4 / A-D, Enter / Spacja)
+        document.addEventListener('keydown', function (e) {
+            if (!isAnswered) {
+                if (e.key === '1' || e.key.toLowerCase() === 'a') submitAnswer(0);
+                else if (e.key === '2' || e.key.toLowerCase() === 'b') submitAnswer(1);
+                else if (e.key === '3' || e.key.toLowerCase() === 'c') submitAnswer(2);
+                else if (e.key === '4' || e.key.toLowerCase() === 'd') submitAnswer(3);
+            } else {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    if (currentStep === 1) {
+                        goToStep2();
+                    } else {
+                        nextRound();
+                    }
+                }
+            }
+        });
+
+        // Inicjalizacja po załadowaniu DOM
+        window.addEventListener('DOMContentLoaded', () => {
+            initMap();
+        });
+    </script>
+</body>
+
+</html>
