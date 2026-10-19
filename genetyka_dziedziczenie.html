@@ -1183,6 +1183,7 @@
                         <!-- Szybkie pytania (Chips) -->
                         <div class="gen-ai-chips-row">
                             <span style="font-size:0.8rem; color:#94a3b8;">Szybkie pytania:</span>
+                            <button type="button" class="gen-ai-chip" style="border-color:#38bdf8; color:#38bdf8; font-weight:700;" onclick="askQuickAiQuestion('phenotype_stats')">👥 Fenotypy potomstwa w praktyce</button>
                             <button type="button" class="gen-ai-chip" onclick="askQuickAiQuestion('lifestyle')">🍎 Wpływ diety i stylu życia</button>
                             <button type="button" class="gen-ai-chip" onclick="askQuickAiQuestion('epigenetics')">🧬 Epigenetyka i badania bliźniąt</button>
                             <button type="button" class="gen-ai-chip" onclick="askQuickAiQuestion('phenotype')">👶 Co to oznacza w praktyce dla dziecka?</button>
@@ -2223,7 +2224,12 @@
                 <div class="gen-step-item" style="border-left-color: #10b981;">
                     <strong>Krok 4: Porównanie i wnioski fenotypowe dla człowieka</strong><br>
                     ${trait.desc}<br>
-                    Przy obecnym stanie rodziców szansa, że kolejne dziecko wykaże tę cechę wynosi <strong>${trait.mode === 'autosomal-dominant' ? ((data.count1 + data.count2) / 10).toFixed(1) + '%' : (trait.mode === 'autosomal-recessive' ? data.p2 + '%' : data.p1 + '% (forma pośrednia)')}</strong>.
+                    Przy obecnym stanie rodziców szansa, że kolejne dziecko wykaże tę cechę wynosi <strong>${trait.mode === 'autosomal-dominant' ? ((data.count1 + data.count2) / 10).toFixed(1) + '%' : (trait.mode === 'autosomal-recessive' ? data.p2 + '%' : data.p1 + '% (forma pośrednia)')}</strong>.<br>
+                    <div style="margin-top: 8px;">
+                        <button type="button" class="gen-explain-btn" onclick="askQuickAiQuestion('phenotype_stats')" style="border-color:#10b981; color:#6ee7b7; font-size:0.83rem; padding: 6px 14px;">
+                            👥 Sprawdź fenotypy potomstwa w praktyce z Gemini AI (kto reaguje silnie, umiarkowanie, wcale)
+                        </button>
+                    </div>
                 </div>
 
                 <div class="gen-step-item" style="border-left-color: #a855f7;">
@@ -2353,7 +2359,14 @@
             const input = document.getElementById('gen-ai-custom-q');
             if (!input) return;
 
-            if (type === 'lifestyle') {
+            const last = window.lastSimulationData;
+            const p0 = last ? last.p0 : '50.0';
+            const p1 = last ? last.p1 : '50.0';
+            const p2 = last ? last.p2 : '0.0';
+
+            if (type === 'phenotype_stats') {
+                input.value = `Przeanalizuj praktyczne fenotypy potomstwa dla cechy '${trait.name}'. Rozkład genotypów z symulacji: ${p0}% brak mutacji (0/0), ${p1}% jedna mutacja (0/1), ${p2}% dwie mutacje (1/1). Jaki odsetek dzieci będzie reagował silnie, jaki umiarkowanie, a jaki w ogóle (lub jaki procent ujawni cechę w pełni vs częściowo)? Opisz to na konkretnych sytuacjach z życia codziennego.`;
+            } else if (type === 'lifestyle') {
                 input.value = `W jaki sposób styl życia, dieta i nawyki mogą zmodyfikować ekspresję genu ${trait.gene} dla cechy '${trait.name}'?`;
             } else if (type === 'epigenetics') {
                 input.value = `Jakie mechanizmy epigenetyczne (np. metylacja DNA, mikroRNA) wpływają na odziedziczalność genu ${trait.gene} (h² = ${trait.h2}%) i co mówią o tym badania bliźniąt?`;
@@ -2389,25 +2402,36 @@
             responseBox.innerHTML = `
                 <div style="display: flex; align-items: center; gap: 8px; color: #c084fc;">
                     <span>✨</span>
-                    <span>Sztuczna inteligencja analizuje odziedziczalność (h² = ${trait.h2}%) i epigenetykę dla genu <strong>${trait.gene}</strong> (${trait.name})...</span>
+                    <span>Sztuczna inteligencja analizuje odziedziczalność (h² = ${trait.h2}%) i fenotypy dla genu <strong>${trait.gene}</strong> (${trait.name})...</span>
                 </div>
             `;
 
             let promptText = '';
             const mCount = getMotherMutCount();
             const fCount = getFatherMutCount();
+            const lastData = window.lastSimulationData;
 
             if (customQ) {
-                promptText = `Jesteś wybitnym profesorem genetyki klinicznej i populacyjnej człowieka oraz popularyzatorem nauki.
+                promptText = `Jesteś wybitnym profesorem genetyki klinicznej i populacyjnej człowieka oraz inspirującym popularyzatorem nauki.
 Użytkownik bada w symulatorze cechę: "${trait.name}" (Gen: ${trait.gene}, chromosom: ${trait.chr}, model dziedziczenia: ${trait.modeLabel}).
 Odziedziczalność tej cechy w populacji wynosi h² = ${trait.h2}% (wpływ środowiska i stylu życia: ${100 - trait.h2}%).
 Znane modyfikatory środowiskowe: ${trait.envFactors}.
 Stan rodziców: Matka (${mCount} mutacji), Ojciec (${fCount} mutacji).
+Empiryczny rozkład genotypów potomstwa z symulacji 1000 połączeń Monte Carlo:
+• Brak mutacji (0/0): ${lastData ? lastData.p0 : '50.0'}%
+• Jedna mutacja (0/1 - heterozygota): ${lastData ? lastData.p1 : '50.0'}%
+• Dwie mutacje (1/1 - homozygota): ${lastData ? lastData.p2 : '0.0'}%
 
 Użytkownik zadał konkretne pytanie:
 "${customQ}"
 
-Odpowiedz rzeczowo, inspirująco i naukowo, po polsku (około 3-5 zwięzłych, bogatych merytorycznie akapitów lub punktów). Używaj formatowania HTML (<strong>, <em>, <ul>, <li>), wyjaśniając konkretne mechanizmy biologiczne (np. epigenetyka, metylacja, mikrobiom, badania bliźniąt).`;
+Instrukcje dotyczące odpowiedzi:
+1. Jeśli pytanie dotyczy fenotypów potomstwa w praktyce (kto reaguje silnie, umiarkowanie, wcale):
+   - Wypisz estetycznie w punktach przewidywane grupy fenotypowe wraz z ich procentami (np. 🔴 Silna reakcja / pełna cecha: X%, 🟡 Umiarkowana / pośrednia: Y%, 🟢 Brak cechy / typ dziki: Z%).
+   - Podaj plastyczne, życiowe przykłady funkcjonowania dziecka w codziennych sytuacjach (np. reakcja na kawę, posiłki, komary, sport, ból, sen itp.).
+   - Wyjaśnij krótko, jak styl życia i czynniki zewnętrzne mogą złagodzić lub przesunąć odczuwanie tej cechy.
+2. W pozostałych przypadkach odpowiedz rzeczowo, inspirująco i naukowo.
+3. Sformatuj odpowiedź wyłącznie w czystym HTML (używaj <strong>, <em>, <ul>, <li>, ewentualnie kolorowych akcentów dla grup fenotypowych), unikaj znaczników markdown typu \`\`\`html.`;
             } else {
                 promptText = `Jesteś ekspertem genetyki i epigenetyki człowieka. Użytkownik przeprowadził symulację krzyżówki dla cechy:
 "${trait.name}" (Gen: ${trait.gene}, chromosom: ${trait.chr}, model dziedziczenia: ${trait.modeLabel}).
