@@ -702,6 +702,183 @@
             }
         }
 
+        /* Moduł Hybrydowy: Siła Odziedziczalności (h^2) i Gemini AI */
+        .gen-hybrid-card {
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid rgba(168, 85, 247, 0.35);
+            border-radius: 14px;
+            padding: 22px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .gen-hybrid-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            border-bottom: 1px solid rgba(168, 85, 247, 0.25);
+            padding-bottom: 12px;
+        }
+
+        .gen-hybrid-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #c084fc;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .gen-h2-dual-bar {
+            width: 100%;
+            height: 28px;
+            border-radius: 999px;
+            overflow: hidden;
+            background: #070d18;
+            border: 1px solid #334155;
+            display: flex;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.6);
+        }
+
+        .gen-h2-part-gene {
+            background: linear-gradient(90deg, #0284c7 0%, #38bdf8 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #ffffff;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+            transition: width 0.4s ease;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .gen-h2-part-env {
+            background: linear-gradient(90deg, #d97706 0%, #fbbf24 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #0f172a;
+            transition: width 0.4s ease;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .gen-env-factors-box {
+            background: rgba(30, 41, 59, 0.55);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-size: 0.92rem;
+            line-height: 1.55;
+            color: #cbd5e1;
+        }
+
+        .gen-ai-panel {
+            background: rgba(88, 28, 135, 0.15);
+            border: 1px solid rgba(168, 85, 247, 0.4);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .gen-ai-input-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .gen-ai-input {
+            flex: 1;
+            min-width: 260px;
+            background: #070d18;
+            border: 1px solid rgba(168, 85, 247, 0.4);
+            color: #ffffff;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 0.92rem;
+            outline: none;
+        }
+
+        .gen-ai-input:focus {
+            border-color: #c084fc;
+            box-shadow: 0 0 10px rgba(168, 85, 247, 0.3);
+        }
+
+        .gen-ai-ask-btn {
+            background: linear-gradient(135deg, #9333ea 0%, #7c3aed 100%);
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 0.92rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(147, 51, 234, 0.3);
+            white-space: nowrap;
+        }
+
+        .gen-ai-ask-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(147, 51, 234, 0.45);
+        }
+
+        .gen-ai-ask-btn:disabled {
+            background: #475569;
+            color: #94a3b8;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .gen-ai-chips-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .gen-ai-chip {
+            background: rgba(168, 85, 247, 0.15);
+            border: 1px solid rgba(168, 85, 247, 0.35);
+            color: #d8b4fe;
+            border-radius: 20px;
+            padding: 5px 12px;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .gen-ai-chip:hover {
+            background: rgba(168, 85, 247, 0.3);
+            color: #ffffff;
+            border-color: #c084fc;
+        }
+
+        .gen-ai-response-box {
+            background: #070d18;
+            border: 1px solid rgba(168, 85, 247, 0.4);
+            border-radius: 10px;
+            padding: 16px;
+            font-size: 0.92rem;
+            line-height: 1.65;
+            color: #e2e8f0;
+            display: none;
+        }
+
         @media (max-width: 640px) {
             .header-card h1 { font-size: 1.6rem; }
             .gen-parents-grid { grid-template-columns: 1fr; }
@@ -958,6 +1135,71 @@
                     </div>
                 </div>
 
+                <!-- Moduł Hybrydowy: Siła Odziedziczalności (h^2) i Asystent Gemini AI -->
+                <div class="gen-hybrid-card" id="hybrid-genetics-card">
+                    <div class="gen-hybrid-header">
+                        <div class="gen-hybrid-title">
+                            <span>🌱 Siła Odziedziczalności (Heritability, h²) & Czynniki Środowiskowe</span>
+                        </div>
+                        <span class="gen-sim-badge" style="color:#c084fc; border-color:rgba(168,85,247,0.4);">Model Hybrydowy: Nauka + AI</span>
+                    </div>
+
+                    <!-- Podwójny pasek odziedziczalności: Genetyka vs Środowisko -->
+                    <div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; font-size:0.88rem; flex-wrap:wrap; gap:4px;">
+                            <span style="color:#38bdf8; font-weight:700;">🧬 Wkład genetyczny (h²): <strong id="h2-val-genetics">0%</strong></span>
+                            <span style="color:#fbbf24; font-weight:700;">🌍 Wpływ stylu życia i środowiska: <strong id="h2-val-env">0%</strong></span>
+                        </div>
+                        <div class="gen-h2-dual-bar">
+                            <div id="h2-bar-gene" class="gen-h2-part-gene" style="width:70%;">Genetyka: 70%</div>
+                            <div id="h2-bar-env" class="gen-h2-part-env" style="width:30%;">Środowisko: 30%</div>
+                        </div>
+                    </div>
+
+                    <!-- Karta czynników środowiskowych i stylu życia (Programowa) -->
+                    <div class="gen-env-factors-box">
+                        <div style="font-weight:700; color:#f1f5f9; margin-bottom:4px; display:flex; align-items:center; gap:6px;">
+                            <span>🥗 Zidentyfikowane czynniki środowiskowe, nawyki i styl życia:</span>
+                        </div>
+                        <div id="h2-env-description" style="color:#cbd5e1; font-size:0.91rem;">
+                            Ładowanie czynników modyfikujących...
+                        </div>
+                    </div>
+
+                    <!-- Asystent Gemini AI (Wpływ epigenetyki i stylu życia) -->
+                    <div class="gen-ai-panel">
+                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                            <div style="font-size:1rem; font-weight:700; color:#d8b4fe; display:flex; align-items:center; gap:8px;">
+                                <span>✨ Asystent Naukowy Gemini AI (Wpływ Stylu Życia & Epigenetyka)</span>
+                            </div>
+                            <div id="gemini-key-status" style="font-size:0.82rem; color:#94a3b8;">
+                                <!-- Status klucza API -->
+                            </div>
+                        </div>
+                        <div style="font-size:0.86rem; color:#cbd5e1;">
+                            Zadaj pytanie asystentowi AI, aby dowiedzieć się, jak dieta, aktywność fizyczna, leki czy epigenetyka (np. metylacja DNA) mogą złagodzić lub wzmocnić tę cechę u dziecka:
+                        </div>
+
+                        <!-- Szybkie pytania (Chips) -->
+                        <div class="gen-ai-chips-row">
+                            <span style="font-size:0.8rem; color:#94a3b8;">Szybkie pytania:</span>
+                            <button type="button" class="gen-ai-chip" onclick="askQuickAiQuestion('lifestyle')">🍎 Wpływ diety i stylu życia</button>
+                            <button type="button" class="gen-ai-chip" onclick="askQuickAiQuestion('epigenetics')">🧬 Epigenetyka i badania bliźniąt</button>
+                            <button type="button" class="gen-ai-chip" onclick="askQuickAiQuestion('phenotype')">👶 Co to oznacza w praktyce dla dziecka?</button>
+                        </div>
+
+                        <div class="gen-ai-input-row">
+                            <input type="text" id="gen-ai-custom-q" class="gen-ai-input" placeholder="Wpisz własne pytanie o tę cechę lub wybierz powyżej...">
+                            <button type="button" id="gen-ai-submit-btn" class="gen-ai-ask-btn" onclick="submitGeneticsAiQuestion()">
+                                <span>✨ Zapytaj Gemini AI</span>
+                            </button>
+                        </div>
+
+                        <!-- Odpowiedź Gemini AI -->
+                        <div id="gen-ai-response-box" class="gen-ai-response-box"></div>
+                    </div>
+                </div>
+
                 <!-- Szczegółowy opis krok po kroku -->
                 <div class="gen-details-box">
                     <div class="gen-details-title" style="justify-content: space-between; flex-wrap: wrap; gap: 10px;">
@@ -1078,6 +1320,7 @@
                 gene: 'TAS2R38', chr: 'chr 7q34',
                 mode: 'autosomal-dominant', modeLabel: 'Autosomalne dominujące',
                 marker: 'D7S2470', distCM: 11.2,
+                h2: 80, envFactors: 'Wiek (zanik kubków smakowych), palenie tytoniu, nawyki żywieniowe z dzieciństwa, temperatura potraw.',
                 desc: 'Allel dominujący T warunkuje ekspresję receptora goryczy glukozynolanów w brokułach i brukselce. Osoby z min. 1 kopią mutacji wyczuwają silną gorycz; osoby bez mutacji (0/0) odbierają smak brokułów jako łagodny.'
             },
             {
@@ -1086,6 +1329,7 @@
                 gene: 'OR6A2', chr: 'chr 11q12',
                 mode: 'autosomal-dominant', modeLabel: 'Autosomalne dominujące',
                 marker: 'OR6A1', distCM: 8.5,
+                h2: 60, envFactors: 'Ekspozycja kulinarna, przyzwyczajenie sensoryczne mózgu, kuchnia regionalna, skład potrawy (tłuszcze maskujące aldehydy).',
                 desc: 'Wariant receptora węchowego wiążącego aldehydy z liści kolendry. Osoby z min. 1 kopią mutacji czują w potrawach z kolendrą smak mydła lub płynu do naczyń; osoby bez mutacji czują aromat ziołowy.'
             },
             {
@@ -1094,6 +1338,7 @@
                 gene: 'OR2M7', chr: 'chr 1q44',
                 mode: 'autosomal-dominant', modeLabel: 'Autosomalne dominujące',
                 marker: 'OR2M4', distCM: 14.0,
+                h2: 85, envFactors: 'Stopień nawodnienia, ilość zjedzonych szparagów, czas trawienia, metabolizm wątrobowy.',
                 desc: 'Gen klastra receptorów węchowych umożliwiający wyczuwanie metabolitów kwasu asparagusowego. Wystarczy jedna kopia mutacji, by móc zidentyfikować ten charakterystyczny zapach.'
             },
             {
@@ -1102,6 +1347,7 @@
                 gene: 'OR7D4', chr: 'chr 19p13',
                 mode: 'codominant', modeLabel: 'Kodominacja / Addytywne',
                 marker: 'D19S418', distCM: 9.8,
+                h2: 75, envFactors: 'Zmęczenie węchowe, stężenie cząsteczek w powietrzu, tło zapachowe otoczenia.',
                 desc: 'Receptor feromonu męskiego androstenonu. W zależności od alleli zapach odbierany jest jako waniliowo-słodki, nieprzyjemny (mocz/pot) lub całkowicie bezwonny.'
             },
             {
@@ -1110,6 +1356,7 @@
                 gene: 'OR5A1', chr: 'chr 11q12',
                 mode: 'autosomal-dominant', modeLabel: 'Autosomalne dominujące',
                 marker: 'OR5A2', distCM: 7.3,
+                h2: 70, envFactors: 'Adaptacja receptorów węchowych (anosmia po kilku sekundach), wilgotność i temperatura powietrza.',
                 desc: 'Zdolność do wyczuwania subtelnego kwiatowego aromatu jononów zawartych w fiołkach i winogronach.'
             },
             {
@@ -1118,6 +1365,7 @@
                 gene: 'TAS1R2', chr: 'chr 1p36',
                 mode: 'codominant', modeLabel: 'Kodominacja / Pośrednie',
                 marker: 'TAS1R3', distCM: 16.4,
+                h2: 70, envFactors: 'Ilość cukru w codziennej diecie (desensytyzacja), poziom insuliny i glikemii, nawyki żywieniowe.',
                 desc: 'Różnice w czułości kubków smakowych na cukry proste, wpływające na naturalny próg satysfakcji ze słodyczy.'
             },
             {
@@ -1126,6 +1374,7 @@
                 gene: 'TAS1R1', chr: 'chr 1p36',
                 mode: 'codominant', modeLabel: 'Kodominacja / Pośrednie',
                 marker: 'D1S2842', distCM: 13.1,
+                h2: 65, envFactors: 'Kuchnia kulturowa (np. sos sojowy i fermentowane potrawy), zawartość soli i kwasów.',
                 desc: 'Stopień wyczuwania rosołowo-mięsnego smaku potraw bogatych w aminokwasy.'
             },
             {
@@ -1134,6 +1383,7 @@
                 gene: 'TRPV1', chr: 'chr 17p13',
                 mode: 'codominant', modeLabel: 'Kodominacja / Pośrednie',
                 marker: 'TRPV3', distCM: 10.5,
+                h2: 55, envFactors: 'Częstotliwość spożywania ostrych dań (desensytyzacja nocyceptorów TRPV1), odporność psychiczna.',
                 desc: 'Czułość nocyceptorów ciepła i bólu w jamie ustnej na pikantne przyprawy (chili, pieprz cayenne).'
             },
 
@@ -1144,6 +1394,7 @@
                 gene: 'CYP1A2', chr: 'chr 15q24',
                 mode: 'codominant', modeLabel: 'Kodominacja / Addytywne',
                 marker: 'CYP1A1', distCM: 6.2,
+                h2: 80, envFactors: 'Dym tytoniowy (silny induktor enzymu przyspieszający rozkład), leki antykoncepcyjne, ciąża, sok z grejpfruta.',
                 desc: 'Wariant CYP1A2*1F: 2 mutacje = szybki rozkład kofeiny (brak kołatania serca, kawa pita wieczorem nie zaburza snu); 0 mutacji = wolny metabolizm.'
             },
             {
@@ -1152,6 +1403,7 @@
                 gene: 'ADORA2A', chr: 'chr 22q11',
                 mode: 'autosomal-dominant', modeLabel: 'Autosomalne dominujące',
                 marker: 'D22S283', distCM: 15.0,
+                h2: 70, envFactors: 'Poziom przewlekłego stresu, jakość snu poprzedniej nocy, picie kawy na czczo vs po posiłku, nawodnienie.',
                 desc: 'Wariant receptora adenozyny decyduje, czy kawa daje skupienie i energię, czy wywołuje roztrzęsienie i lęk.'
             },
             {
@@ -1160,6 +1412,7 @@
                 gene: 'MCM6 / LCT', chr: 'chr 2q21',
                 mode: 'autosomal-dominant', modeLabel: 'Autosomalne dominujące',
                 marker: 'D2S2382', distCM: 8.7,
+                h2: 95, envFactors: 'Stan kosmków jelitowych (uszkodzenia po infekcjach lub antybiotykach), skład mikrobioty jelitowej.',
                 desc: 'Mutacja promotorowa trwałej laktazy (-13910*T) utrzymuje wydzielanie enzymu u dorosłych. 1 lub 2 kopie dają tolerancję mleka.'
             },
             {
@@ -1168,6 +1421,7 @@
                 gene: 'ALDH2', chr: 'chr 12q24',
                 mode: 'autosomal-dominant', modeLabel: 'Autosomalne dominujące (niepełna dominacja)',
                 marker: 'D12S352', distCM: 12.6,
+                h2: 95, envFactors: 'Spożycie alkoholu, leki z grupy inhibitorów ALDH, tłusty posiłek przed spożyciem (spowalniający wchłanianie).',
                 desc: 'Zmutowany enzym wolniej utlenia toksyczny aldehyd octowy. Już 1 kopia powoduje gwałtowny rumieniec i mdłości po alkoholu.'
             },
             {
@@ -1176,6 +1430,7 @@
                 gene: 'ADH1B', chr: 'chr 4q23',
                 mode: 'codominant', modeLabel: 'Kodominacja / Addytywne',
                 marker: 'ADH1C', distCM: 5.4,
+                h2: 90, envFactors: 'Masa wątroby, nawodnienie organizmu, zawartość enzymów w żołądku, płeć biologiczna.',
                 desc: 'Tempo wstępnej konwersji etanolu do aldehydu octowego w hepatocytach.'
             },
             {
@@ -1184,6 +1439,7 @@
                 gene: 'BCMO1', chr: 'chr 16q23',
                 mode: 'autosomal-recessive', modeLabel: 'Autosomalne recesywne',
                 marker: 'D16S3050', distCM: 18.2,
+                h2: 75, envFactors: 'Zawartość tłuszczu w posiłku (niezbędnego do wchłaniania karotenoidów), stan tarczycy, poziom cynku.',
                 desc: 'Wydajność enzymu przekształcającego roślinny karoten w aktywny retinol (u homozygot konwersja spada nawet o 60%).'
             },
             {
@@ -1192,6 +1448,7 @@
                 gene: 'CYP2R1', chr: 'chr 11p15',
                 mode: 'codominant', modeLabel: 'Kodominacja / Addytywne',
                 marker: 'D11S4175', distCM: 14.5,
+                h2: 70, envFactors: 'Ekspozycja skóry na słońce (UVB), szerokość geograficzna, pora roku, suplementacja D3 + K2, masa tkanki tłuszczowej.',
                 desc: 'Sprawność 25-hydroksylacji cholekalcyferolu w wątrobie po ekspozycji na słońce.'
             },
             {
@@ -1200,6 +1457,7 @@
                 gene: 'FADS1', chr: 'chr 11q12',
                 mode: 'codominant', modeLabel: 'Kodominacja / Addytywne',
                 marker: 'FADS3', distCM: 4.8,
+                h2: 70, envFactors: 'Ilość ryb morskich i siemienia lnianego w diecie, proporcja kwasów Omega-6 do Omega-3.',
                 desc: 'Wydajność syntezy długołańcuchowych kwasów EPA i DHA z roślinnych kwasów alfa-linolenowych.'
             },
             {
@@ -1208,6 +1466,7 @@
                 gene: 'FGF21', chr: 'chr 19q13',
                 mode: 'codominant', modeLabel: 'Kodominacja / Addytywne',
                 marker: 'D19S220', distCM: 11.0,
+                h2: 55, envFactors: 'Stan emocjonalny (jedzenie stresowe), poziom wypoczęcia, dostępność słodyczy w domu, mikroflora jelitowa.',
                 desc: 'Hormon wątrobowy wysyłający do mózgu sygnał nasycenia cukrami prostymi.'
             },
             {
@@ -1216,6 +1475,7 @@
                 gene: 'FTO', chr: 'chr 16q12',
                 mode: 'codominant', modeLabel: 'Kodominacja / Addytywne',
                 marker: 'IRX3', distCM: 7.9,
+                h2: 60, envFactors: 'Objętość posiłku, zawartość błonnika i białka, tempo jedzenia (czas na sygnał leptyny), aktywność fizyczna.',
                 desc: 'Wpływ na tempo odczuwania nasycenia i poziom leptyny/greliny po jedzeniu.'
             },
 
@@ -1226,6 +1486,7 @@
                 gene: 'PAX3', chr: 'chr 2q36',
                 mode: 'autosomal-dominant', modeLabel: 'Autosomalne dominujące',
                 marker: 'D2S337', distCM: 19.3,
+                h2: 90, envFactors: 'Zabiegi depilacji/regulacji, wiek, poziom hormonów androgenowych.',
                 desc: 'Wariant zagęszczający mieszki włosowe nad nasadą nosa (synophrys).'
             },
             {
@@ -1234,6 +1495,7 @@
                 gene: 'Locus 4q', chr: 'chr 4q12',
                 mode: 'autosomal-dominant', modeLabel: 'Autosomalne dominujące',
                 marker: 'D4S1575', distCM: 16.0,
+                h2: 92, envFactors: 'Wpływ środowiska znikomy (<8%), naturalne cofanie się linii włosów z wiekiem (łysienie androgenowe).',
                 desc: 'Charakterystyczny trójkątny zarys linii owłosienia czoła.'
             },
             {
@@ -1242,6 +1504,7 @@
                 gene: 'Locus 8p', chr: 'chr 8p21',
                 mode: 'autosomal-dominant', modeLabel: 'Autosomalne dominujące',
                 marker: 'D8S264', distCM: 17.5,
+                h2: 75, envFactors: 'Ćwiczenia motoryki języka w dzieciństwie (część osób bez predyspozycji genetycznej uczy się tego nawykowo).',
                 desc: 'Zdolność skoordynowanego zwijania bocznych krawędzi języka ku górze.'
             },
             {
@@ -1250,6 +1513,7 @@
                 gene: 'Locus 14q', chr: 'chr 14q24',
                 mode: 'autosomal-recessive', modeLabel: 'Autosomalne recesywne',
                 marker: 'D14S275', distCM: 13.8,
+                h2: 80, envFactors: 'Trening manualny (np. gra na instrumentach klawiszowych lub strunowych), elastyczność aparatu więzadłowego.',
                 desc: 'Cecha recesywna pozwalająca odgiąć dystalny staw kciuka o kąt bliski 90 stopni.'
             },
 
@@ -1260,6 +1524,7 @@
                 gene: 'PER2', chr: 'chr 2q37',
                 mode: 'codominant', modeLabel: 'Kodominacja / Addytywne',
                 marker: 'PER1', distCM: 15.2,
+                h2: 50, envFactors: 'Ekspozycja na światło niebieskie ekranów wieczorem, praca zmianowa, budzik, higiena snu, poranne słońce.',
                 desc: 'Długość endogennego cyklu dobowego regulująca porę naturalnego wybudzania i zasypiania.'
             },
             {
@@ -1268,6 +1533,7 @@
                 gene: 'DEC2 (BHLHE41)', chr: 'chr 12p12',
                 mode: 'autosomal-dominant', modeLabel: 'Autosomalne dominujące',
                 marker: 'D12S1631', distCM: 10.1,
+                h2: 85, envFactors: 'Wysiłek fizyczny, poziom stresu i wyczerpania, higiena sypialni, drzemki w ciągu dnia.',
                 desc: 'Rzadki wariant pozwalający na pełną regenerację po 4-6 godzinach snu bez deficytów poznawczych.'
             },
             {
@@ -1276,6 +1542,7 @@
                 gene: 'rs10427255', chr: 'chr 2q22',
                 mode: 'autosomal-dominant', modeLabel: 'Autosomalne dominujące',
                 marker: 'D2S1776', distCM: 12.0,
+                h2: 90, envFactors: 'Natężenie światła (nagłe przejście z ciemnego korytarza na słońce), noszenie okularów przeciwsłonecznych.',
                 desc: 'Krzyżowe pobudzenie nerwu wzrokowego i trójdzielnego przy wyjściu na ostre słońce.'
             },
             {
@@ -1284,6 +1551,7 @@
                 gene: 'GABRA1', chr: 'chr 5q34',
                 mode: 'codominant', modeLabel: 'Kodominacja / Addytywne',
                 marker: 'D5S424', distCM: 9.4,
+                h2: 65, envFactors: 'Stosowanie stoperów do uszu, poziom zmęczenia, temperatura sypialni, relaksacja przed snem.',
                 desc: 'Zdolność wzgórza do blokowania bodźców zewnętrznych podczas fazy NREM snu.'
             },
             {
@@ -1292,6 +1560,7 @@
                 gene: 'PER2 / Locus 2q', chr: 'chr 2q35',
                 mode: 'codominant', modeLabel: 'Kodominacja / Addytywne',
                 marker: 'D2S396', distCM: 21.0,
+                h2: 55, envFactors: 'Nieregularny grafik snu, spanie na plecach, przewlekły stres, spożywanie alkoholu i kofeiny przed snem.',
                 desc: 'Dyssynchronia między wybudzeniem kory mózgowej a powrotem napięcia mięśniowego po fazie REM.'
             },
 
@@ -1302,6 +1571,7 @@
                 gene: 'ACTN3', chr: 'chr 11q13',
                 mode: 'codominant', modeLabel: 'Kodominacja / Addytywne',
                 marker: 'D11S987', distCM: 14.6,
+                h2: 75, envFactors: 'Specjalizacja treningowa (trening siłowy/szybkościowy vs tlenowy), periodyzacja, regeneracja, dieta wysokobiałkowa.',
                 desc: 'Allel R syntetyzuje alfa-aktyninę-3 we włóknach szybkich (siła, sprint); allel X faworyzuje włókna wolne (wytrzymałość tlenowa).'
             },
             {
@@ -1310,6 +1580,7 @@
                 gene: 'ACE (I/D)', chr: 'chr 17q23',
                 mode: 'codominant', modeLabel: 'Kodominacja / Addytywne',
                 marker: 'D17S1832', distCM: 8.2,
+                h2: 70, envFactors: 'Systematyczny trening aerobowy, trening wysokogórski (hipoksja), masa ciała, pojemność życiowa płuc.',
                 desc: 'Wariant insercyjny (I) sprzyja adaptacji tlenowej, wariant delecyjny (D) sportom siłowym.'
             },
             {
@@ -1318,6 +1589,7 @@
                 gene: 'COL5A1', chr: 'chr 9q34',
                 mode: 'codominant', modeLabel: 'Kodominacja / Addytywne',
                 marker: 'COL5A2', distCM: 11.5,
+                h2: 70, envFactors: 'Trening propriocepcji, rozgrzewka, rozciąganie powięziowe, unikanie przetrenowania, obuwie sportowe.',
                 desc: 'Budowa kolagenu determinująca gibkość stawów i naturalną odporność na kontuzje ścięgien.'
             },
             {
@@ -1326,6 +1598,7 @@
                 gene: 'IL6', chr: 'chr 7p15',
                 mode: 'codominant', modeLabel: 'Kodominacja / Addytywne',
                 marker: 'D7S513', distCM: 16.8,
+                h2: 60, envFactors: 'Masaż, sen, kąpiele solankowe/sauna, suplementacja kwasami Omega-3, nawodnienie i posiłek powysiłkowy.',
                 desc: 'Poziom produkcji cytokin prozapalnych i czas trwania opóźnionej bolesności mięśni (DOMS).'
             },
             {
@@ -1334,6 +1607,7 @@
                 gene: 'HMGA2', chr: 'chr 12q14',
                 mode: 'codominant', modeLabel: 'Kodominacja / Addytywne',
                 marker: 'D12S345', distCM: 13.4,
+                h2: 80, envFactors: 'Odżywianie w dzieciństwie (podaż białka, wapnia, wit. D), brak przewlekłych chorób, długość i głębokość snu.',
                 desc: 'Główny locus regulujący proliferację komórek i tempo wzrostu kości długich.'
             },
             {
@@ -1342,6 +1616,7 @@
                 gene: 'HOXA13', chr: 'chr 7p15',
                 mode: 'codominant', modeLabel: 'Kodominacja / Addytywne',
                 marker: 'HOXA11', distCM: 6.7,
+                h2: 85, envFactors: 'Poziom testosteronu i estrogenów w łonie matki w I trymestrze ciąży (wpływ środowiska prenatalnego).',
                 desc: 'Stosunek długości palca wskazującego do serdecznego zależny od wczesnej ekspozycji prenatalnej.'
             },
 
@@ -1352,6 +1627,7 @@
                 gene: 'COMT', chr: 'chr 22q11',
                 mode: 'codominant', modeLabel: 'Kodominacja / Pośrednie',
                 marker: 'D22S446', distCM: 10.8,
+                h2: 65, envFactors: 'Techniki oddechowe i medytacja, ilość kofeiny (drastycznie nasilająca lęk u Strategów), poziom magnezu, doświadczenie życiowe.',
                 desc: 'Allel Met (wolny rozkład dopaminy) = doskonałe skupienie w spokoju; allel Val = zimna krew pod presją („wojownik”).'
             },
             {
@@ -1360,6 +1636,7 @@
                 gene: 'SCN9A', chr: 'chr 2q24',
                 mode: 'codominant', modeLabel: 'Kodominacja / Pośrednie',
                 marker: 'SCN11A', distCM: 5.9,
+                h2: 60, envFactors: 'Stan psychiczny (lęk, depresja obniżające próg), techniki relaksacyjne, zmęczenie, wcześniejsze doświadczenia z bólem.',
                 desc: 'Czułość kanałów sodowych Nav1.7 przewodzących impulsy nocyceptywne w nerwach obwodowych.'
             },
             {
@@ -1368,6 +1645,7 @@
                 gene: 'DRD4', chr: 'chr 11p15',
                 mode: 'autosomal-dominant', modeLabel: 'Autosomalne dominujące',
                 marker: 'D11S1392', distCM: 12.3,
+                h2: 50, envFactors: 'Wychowanie i styl rodzicielski, środowisko rówieśnicze, przebodźcowanie cyfrowe (gry, media społecznościowe).',
                 desc: 'Allel 7R receptora dopaminy powiązany z silną potrzebą eksploracji i nowych bodźców.'
             },
             {
@@ -1376,6 +1654,7 @@
                 gene: 'OXTR', chr: 'chr 3p25',
                 mode: 'codominant', modeLabel: 'Kodominacja / Pośrednie',
                 marker: 'D3S1262', distCM: 17.1,
+                h2: 45, envFactors: 'Bezpieczny styl przywiązania w dzieciństwie, wsparcie bliskich, poziom stresu, relacje partnerskie.',
                 desc: 'Gęstość receptorów oksytocyny wpływająca na łatwość rozpoznawania emocji u innych.'
             },
             {
@@ -1384,6 +1663,7 @@
                 gene: 'SLC6A4 (5-HTTLPR)', chr: 'chr 17q11',
                 mode: 'codominant', modeLabel: 'Kodominacja / Addytywne',
                 marker: 'D17S800', distCM: 9.1,
+                h2: 40, envFactors: 'Psychoterapia (np. poznawczo-behawioralna), aktywność fizyczna, ekspozycja na słońce, sieć wsparcia przyjaciół.',
                 desc: 'Wariant długi (L) transportera serotoniny sprzyja szybszemu powrotowi do równowagi emocjonalnej.'
             },
 
@@ -1394,6 +1674,7 @@
                 gene: 'OPN1MW', chr: 'chr Xq28',
                 mode: 'x-linked', modeLabel: 'Sprzężone z chromosomem X',
                 marker: 'OPN1LW', distCM: 3.2,
+                h2: 95, envFactors: 'Trening plastyczny i artystyczny (nauka nazywania i różnicowania subtelnych odcieni barw przez mózg).',
                 desc: 'Mutacja czopków na chromosomie X. U kobiet heterozygotycznych pozwala wykształcić 4. rodzaj fotoreceptora (widzenie 100 mln kolorów). Mężczyźni mają tylko 1 chromosom X (XY).'
             },
             {
@@ -1402,6 +1683,7 @@
                 gene: 'PCDH15 / Locus 8q', chr: 'chr 8q24',
                 mode: 'autosomal-dominant', modeLabel: 'Autosomalne dominujące',
                 marker: 'D8S550', distCM: 18.0,
+                h2: 70, envFactors: 'Kluczowe wczesne kształcenie muzyczne przed 6. rokiem życia (bez ekspozycji muzycznej w krytycznym oknie gen sam nie zadziała!).',
                 desc: 'Wrodzona zdolność rozpoznawania i nazywania wysokości dźwięków bez punktu odniesienia.'
             },
             {
@@ -1410,6 +1692,7 @@
                 gene: 'HLA-DRB1', chr: 'chr 6p21',
                 mode: 'codominant', modeLabel: 'Kodominacja / Addytywne',
                 marker: 'HLA-B', distCM: 8.4,
+                h2: 68, envFactors: 'Dieta (czosnek, piwo), poziom kwasu mlekowego po wysiłku, mikrobiom bakterii na skórze, używane mydła i perfumy.',
                 desc: 'Skład kwasów tłuszczowych i kwasu mlekowego w pocie przyciągający lub odstraszający owady.'
             },
             {
@@ -1418,6 +1701,7 @@
                 gene: 'PAX9', chr: 'chr 14q13',
                 mode: 'autosomal-dominant', modeLabel: 'Autosomalne dominujące',
                 marker: 'MSX1', distCM: 15.6,
+                h2: 88, envFactors: 'Wpływ środowiska minimalny (<12%), twardość pokarmów w dzieciństwie wpływająca na rozwój kości żuchwy.',
                 desc: 'Ewolucyjna redukcja szczęki: brak zawiązków trzecich zębów trzonowych.'
             },
             {
@@ -1426,6 +1710,7 @@
                 gene: 'TENM2', chr: 'chr 5q34',
                 mode: 'autosomal-dominant', modeLabel: 'Autosomalne dominujące',
                 marker: 'D5S424', distCM: 14.2,
+                h2: 55, envFactors: 'Poziom zmęczenia i stresu, stosowanie słuchawek z redukcją szumów (ANC), terapia dźwiękowa, techniki poznawcze.',
                 desc: 'Nadreaktywność układu limbicznego na powtarzalne dźwięki wydawane przy jedzeniu.'
             },
             {
@@ -1434,6 +1719,7 @@
                 gene: 'GPR26', chr: 'chr 10q26',
                 mode: 'autosomal-dominant', modeLabel: 'Autosomalne dominujące',
                 marker: 'D10S597', distCM: 19.5,
+                h2: 60, envFactors: 'Siedzenie przodem do kierunku jazdy, patrzenie na horyzont, nawiew chłodnego powietrza, unikanie czytania w pojeździe, imbir.',
                 desc: 'Czułość błędnika i integracja sygnałów wzrokowych z uchem wewnętrznym podczas ruchu.'
             },
             {
@@ -1442,6 +1728,7 @@
                 gene: 'UCP1', chr: 'chr 4q31',
                 mode: 'codominant', modeLabel: 'Kodominacja / Addytywne',
                 marker: 'D4S1539', distCM: 11.8,
+                h2: 70, envFactors: 'Morsowanie i adaptacja do zimnych pryszniców (aktywacja brunatnej tkanki tłuszczowej BAT), wiek, zawartość tkanki tłuszczowej.',
                 desc: 'Zdolność brunatnej tkanki tłuszczowej do bezpośredniego spalania kalorii na ciepło.'
             },
             {
@@ -1450,6 +1737,7 @@
                 gene: 'TRPM8', chr: 'chr 2q37',
                 mode: 'codominant', modeLabel: 'Kodominacja / Addytywne',
                 marker: 'D2S2216', distCM: 13.0,
+                h2: 75, envFactors: 'Częstotliwość stosowania gum i past mentolowych, temperatura otoczenia, stan śluzówki jamy ustnej.',
                 desc: 'Receptor mentolu w zakończeniach czuciowych – intensywność odczuwania orzeźwienia.'
             },
             {
@@ -1458,6 +1746,7 @@
                 gene: 'FUT2', chr: 'chr 19q13',
                 mode: 'autosomal-dominant', modeLabel: 'Autosomalne dominujące',
                 marker: 'FUT1', distCM: 4.2,
+                h2: 92, envFactors: 'Dieta bogata w błonnik i prebiotyki, probiotykoterapia, przebyte kuracje antybiotykowe.',
                 desc: 'Wydzielanie antygenów ABO do śluzu jelitowego, stanowiących pożywkę dla pożytecznych bakterii.'
             },
             {
@@ -1466,6 +1755,7 @@
                 gene: 'HLA-DQB1', chr: 'chr 6p21',
                 mode: 'autosomal-dominant', modeLabel: 'Autosomalne dominujące',
                 marker: 'HLA-DQA1', distCM: 2.5,
+                h2: 65, envFactors: 'Niedobór snu, gorączka, stres, hałas lub pełny pęcherz wybudzający z fazy N3 snu wolnofalowego.',
                 desc: 'Niepełne wybudzenie z głębokiego snu wolnofalowego (NREM) prowadzące do automatyzmów ruchowych.'
             },
             {
@@ -1474,6 +1764,7 @@
                 gene: 'MTNR1B', chr: 'chr 11q21',
                 mode: 'codominant', modeLabel: 'Kodominacja / Addytywne',
                 marker: 'D11S4175', distCM: 16.1,
+                h2: 60, envFactors: 'Ekspozycja na intensywne światło o poranku, chłodny prysznic, szklanka wody, unikanie wielokrotnego drzemania budzika.',
                 desc: 'Czas potrzebny mózgowi na osiągnięcie pełnej czujności i ustąpienie porannego zamglenia.'
             },
             {
@@ -1482,6 +1773,7 @@
                 gene: 'COMT / Placebom', chr: 'chr 22q11',
                 mode: 'codominant', modeLabel: 'Kodominacja / Addytywne',
                 marker: 'D22S280', distCM: 11.4,
+                h2: 65, envFactors: 'Relacja z lekarzem/terapeutą, autorytet, kolor i cena preparatu, nastawienie psychiczne i oczekiwania.',
                 desc: 'Wrażliwość układu dopaminowego i endorfinowego na samo przekonanie o skuteczności leczenia.'
             }
         ];
@@ -1524,9 +1816,13 @@
                         <span class="gen-spec-pill" style="border-color:#34d399; color:#34d399;">Model: ${currentTrait.modeLabel}</span>
                         <span class="gen-spec-pill" style="border-color:#c084fc; color:#c084fc;">Sprzężony marker: ${currentTrait.marker}</span>
                         <span class="gen-spec-pill" style="border-color:#fbbf24; color:#fbbf24;">Odległość: ${currentTrait.distCM} cM (${currentTrait.distCM}% crossing-over)</span>
+                        <span class="gen-spec-pill" style="border-color:#38bdf8; color:#38bdf8; background:rgba(56,189,248,0.12);">🧬 Odziedziczalność (h²): ${currentTrait.h2}%</span>
+                        <span class="gen-spec-pill" style="border-color:#fbbf24; color:#fbbf24; background:rgba(251,191,36,0.12);">🌍 Środowisko & styl życia: ${100 - currentTrait.h2}%</span>
                     </div>
                 `;
             }
+
+            updateHeritabilityWidget(currentTrait);
 
             // Obsługa cech sprzężonych z chromosomem X u ojca (mężczyzna ma tylko 1 chr X)
             const fHomoBox = document.getElementById('father-homo-box');
@@ -1929,9 +2225,244 @@
                     ${trait.desc}<br>
                     Przy obecnym stanie rodziców szansa, że kolejne dziecko wykaże tę cechę wynosi <strong>${trait.mode === 'autosomal-dominant' ? ((data.count1 + data.count2) / 10).toFixed(1) + '%' : (trait.mode === 'autosomal-recessive' ? data.p2 + '%' : data.p1 + '% (forma pośrednia)')}</strong>.
                 </div>
+
+                <div class="gen-step-item" style="border-left-color: #a855f7;">
+                    <strong>Krok 5: Siła odziedziczalności (h² = ${trait.h2}%) i czynniki środowiskowe (${100 - trait.h2}%)</strong><br>
+                    W badaniach genetycznych i analizach bliźniąt (twin studies) wykazano, że <strong>${trait.h2}%</strong> zmienności tej cechy zależy od DNA, natomiast <strong>${100 - trait.h2}%</strong> kształtują czynniki zewnętrzne: <em>${trait.envFactors}</em>.<br>
+                    Oznacza to, że genotyp wyznacza predyspozycję, ale ostateczny fenotyp u dziecka może być w znacznym stopniu modulowany stylem życia i epigenetyką.<br>
+                    <div style="margin-top: 8px;">
+                        <button type="button" class="gen-explain-btn" onclick="askQuickAiQuestion('lifestyle')" style="border-color:#a855f7; color:#d8b4fe; font-size:0.83rem; padding: 6px 14px;">
+                            ✨ Zapytaj Gemini AI, jak dieta i nawyki modyfikują gen ${trait.gene}
+                        </button>
+                    </div>
+                </div>
             `;
 
             window.lastSimulationData = data;
+        }
+
+        /* ==========================================================================
+           MODUŁ HYBRYDOWY: ODZIEDZICZALNOŚĆ PROGRAMOWA & ASYSTENT GEMINI AI
+           ========================================================================== */
+        function updateHeritabilityWidget(trait) {
+            const h2 = trait.h2 !== undefined ? trait.h2 : 70;
+            const env = 100 - h2;
+
+            const valGene = document.getElementById('h2-val-genetics');
+            const valEnv = document.getElementById('h2-val-env');
+            const barGene = document.getElementById('h2-bar-gene');
+            const barEnv = document.getElementById('h2-bar-env');
+            const descEnv = document.getElementById('h2-env-description');
+
+            if (valGene) valGene.textContent = `${h2}%`;
+            if (valEnv) valEnv.textContent = `${env}%`;
+
+            if (barGene) {
+                barGene.style.width = `${h2}%`;
+                barGene.textContent = `Genetyka: ${h2}%`;
+            }
+            if (barEnv) {
+                barEnv.style.width = `${env}%`;
+                barEnv.textContent = `Środowisko: ${env}%`;
+            }
+
+            if (descEnv) {
+                let note = '';
+                if (h2 >= 90) {
+                    note = '<strong>Bardzo wysoka odziedziczalność (bliska 100%):</strong> Cecha niemal wyłącznie uwarunkowana genetycznie. Wpływ środowiska jest znikomy i ogranicza się do nielicznych czynników fizjologicznych lub wieku.';
+                } else if (h2 >= 70) {
+                    note = '<strong>Wysoka odziedziczalność:</strong> Gen warunkuje główną podatność, jednak zidentyfikowane czynniki środowiskowe i nawyki mogą w 20-30% złagodzić lub zaostrzyć odczuwanie tej cechy.';
+                } else {
+                    note = '<strong>Cecha wieloczynnikowa (złożona):</strong> Styl życia, dieta, higiena snu i otoczenie mają niemal równie duże znaczenie w ekspresji fenotypowej co sam kod DNA.';
+                }
+
+                descEnv.innerHTML = `
+                    <div style="margin-bottom:6px;"><strong>Czynniki modyfikujące:</strong> ${trait.envFactors}</div>
+                    <div style="color:#94a3b8; font-size:0.88rem;">${note}</div>
+                `;
+            }
+        }
+
+        function checkGeminiApiKey() {
+            const statusEl = document.getElementById('gemini-key-status');
+            if (!statusEl) return;
+
+            const key = localStorage.getItem('gemini_api_key');
+            if (key && key.trim().length > 10) {
+                statusEl.innerHTML = `<span style="color:#34d399; font-weight:700;">🟢 Klucz Gemini aktywny</span> <button type="button" class="gen-ai-chip" onclick="promptForApiKey()" style="padding:2px 8px; font-size:0.75rem; margin-left:4px;">Zmień</button>`;
+            } else {
+                statusEl.innerHTML = `<span style="color:#f87171; font-weight:700;">⚠️ Brak klucza API</span> <button type="button" class="gen-ai-chip" onclick="promptForApiKey()" style="padding:2px 8px; font-size:0.75rem; margin-left:4px;">🔑 Wprowadź klucz</button>`;
+            }
+        }
+
+        function promptForApiKey() {
+            const current = localStorage.getItem('gemini_api_key') || '';
+            const entered = prompt('Wprowadź swój bezpłatny klucz API Google AI Studio (Gemini):', current);
+            if (entered !== null) {
+                const trimmed = entered.trim();
+                if (trimmed.length > 5) {
+                    localStorage.setItem('gemini_api_key', trimmed);
+                    checkGeminiApiKey();
+                    alert('Klucz API Gemini został pomyślnie zapisany w przeglądarce!');
+                } else if (trimmed.length === 0) {
+                    localStorage.removeItem('gemini_api_key');
+                    checkGeminiApiKey();
+                    alert('Klucz API został usunięty.');
+                }
+            }
+        }
+
+        async function getWorkingGeminiModel(apiKey, preferredModel) {
+            try {
+                const listUrl = `https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`;
+                const res = await fetch(listUrl);
+                if (res.ok) {
+                    const data = await res.json();
+                    const available = (data.models || [])
+                        .filter(m => m.supportedGenerationMethods && m.supportedGenerationMethods.includes('generateContent'))
+                        .map(m => m.name.replace(/^models\//, ''));
+
+                    if (preferredModel && available.includes(preferredModel)) {
+                        return preferredModel;
+                    }
+
+                    const order = [
+                        'gemini-2.5-flash',
+                        'gemini-2.0-flash',
+                        'gemini-1.5-flash',
+                        'gemini-3.8-flash',
+                        'gemini-3.7-flash',
+                        'gemini-3.5-flash'
+                    ];
+
+                    for (let opt of order) {
+                        if (available.includes(opt)) return opt;
+                    }
+
+                    const anyFlash = available.find(m => m.includes('flash') && !m.includes('image') && !m.includes('audio'));
+                    return anyFlash || available[0] || 'gemini-2.5-flash';
+                }
+            } catch (e) {
+                console.warn('Nie udało się pobrać listy modeli:', e);
+            }
+            return (preferredModel && preferredModel !== 'auto') ? preferredModel : 'gemini-2.5-flash';
+        }
+
+        function askQuickAiQuestion(type) {
+            const trait = currentTrait;
+            const input = document.getElementById('gen-ai-custom-q');
+            if (!input) return;
+
+            if (type === 'lifestyle') {
+                input.value = `W jaki sposób styl życia, dieta i nawyki mogą zmodyfikować ekspresję genu ${trait.gene} dla cechy '${trait.name}'?`;
+            } else if (type === 'epigenetics') {
+                input.value = `Jakie mechanizmy epigenetyczne (np. metylacja DNA, mikroRNA) wpływają na odziedziczalność genu ${trait.gene} (h² = ${trait.h2}%) i co mówią o tym badania bliźniąt?`;
+            } else if (type === 'phenotype') {
+                input.value = `Jeżeli rodzice przekażą dziecku ten genotyp (${trait.gene}), jak otoczenie i codzienne nawyki zadecydują o ostatecznym ujawnieniu cechy?`;
+            }
+
+            submitGeneticsAiQuestion();
+        }
+
+        async function submitGeneticsAiQuestion() {
+            const trait = currentTrait;
+            const inputEl = document.getElementById('gen-ai-custom-q');
+            const customQ = inputEl ? inputEl.value.trim() : '';
+            const responseBox = document.getElementById('gen-ai-response-box');
+            const submitBtn = document.getElementById('gen-ai-submit-btn');
+
+            const apiKey = localStorage.getItem('gemini_api_key');
+            let userModel = localStorage.getItem('gemini_selected_model') || 'auto';
+
+            if (!apiKey || apiKey.trim().length < 10) {
+                responseBox.style.display = 'block';
+                responseBox.innerHTML = `
+                    <div style="color: #fca5a5; font-weight: 700; margin-bottom: 6px;">❌ Brak zapisanego klucza Gemini API</div>
+                    <div>Aby rozmawiać z asystentem AI o odziedziczalności i epigenetyce, <a href="javascript:void(0)" onclick="promptForApiKey()" style="color:#38bdf8; text-decoration:underline; font-weight:700;">wprowadź bezpłatny klucz API Google AI Studio</a> lub skonfiguruj go na stronie <a href="pomocnicze.html" style="color:#c084fc; text-decoration:underline;">Bazy Pomocniczej</a>.</div>
+                `;
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span>⏳ Gemini analizuje...</span>';
+            responseBox.style.display = 'block';
+            responseBox.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 8px; color: #c084fc;">
+                    <span>✨</span>
+                    <span>Sztuczna inteligencja analizuje odziedziczalność (h² = ${trait.h2}%) i epigenetykę dla genu <strong>${trait.gene}</strong> (${trait.name})...</span>
+                </div>
+            `;
+
+            let promptText = '';
+            const mCount = getMotherMutCount();
+            const fCount = getFatherMutCount();
+
+            if (customQ) {
+                promptText = `Jesteś wybitnym profesorem genetyki klinicznej i populacyjnej człowieka oraz popularyzatorem nauki.
+Użytkownik bada w symulatorze cechę: "${trait.name}" (Gen: ${trait.gene}, chromosom: ${trait.chr}, model dziedziczenia: ${trait.modeLabel}).
+Odziedziczalność tej cechy w populacji wynosi h² = ${trait.h2}% (wpływ środowiska i stylu życia: ${100 - trait.h2}%).
+Znane modyfikatory środowiskowe: ${trait.envFactors}.
+Stan rodziców: Matka (${mCount} mutacji), Ojciec (${fCount} mutacji).
+
+Użytkownik zadał konkretne pytanie:
+"${customQ}"
+
+Odpowiedz rzeczowo, inspirująco i naukowo, po polsku (około 3-5 zwięzłych, bogatych merytorycznie akapitów lub punktów). Używaj formatowania HTML (<strong>, <em>, <ul>, <li>), wyjaśniając konkretne mechanizmy biologiczne (np. epigenetyka, metylacja, mikrobiom, badania bliźniąt).`;
+            } else {
+                promptText = `Jesteś ekspertem genetyki i epigenetyki człowieka. Użytkownik przeprowadził symulację krzyżówki dla cechy:
+"${trait.name}" (Gen: ${trait.gene}, chromosom: ${trait.chr}, model dziedziczenia: ${trait.modeLabel}).
+Odziedziczalność wynosi h² = ${trait.h2}% (środowisko odpowiada za ${100 - trait.h2}%).
+Zidentyfikowane czynniki środowiskowe: ${trait.envFactors}.
+
+Napisz fascynującą, profesjonalną notatkę naukową po polsku (w formacie HTML z użyciem <strong>, <em>, <ul>, <li>):
+1. <strong>Genetyka vs Środowisko:</strong> Co dokładnie oznacza wskaźnik h² = ${trait.h2}% w badaniach bliźniąt (twin studies)?
+2. <strong>Mechanizmy epigenetyczne i fizjologiczne:</strong> Jak czynniki zewnętrzne (dieta, nawyki, wiek, mikrobiom) włączają lub wyciszają ekspresję genu ${trait.gene}?
+3. <strong>Praktyczne wskazówki dla potomka:</strong> Czy i jak osoba z tym genotypem może świadomie zneutralizować lub wykorzystać tę cechę w codziennym życiu?
+4. <strong>Zaskakująca ciekawostka ewolucyjna:</strong> Dlaczego ta mutacja utrzymała się w populacji ludzkiej?`;
+            }
+
+            try {
+                const model = await getWorkingGeminiModel(apiKey, userModel);
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: promptText }] }]
+                    })
+                });
+
+                if (!res.ok) {
+                    const err = await res.json().catch(() => ({}));
+                    throw new Error(err?.error?.message || `Błąd serwera (${res.status}) dla modelu ${model}`);
+                }
+
+                const json = await res.json();
+                let aiText = json?.candidates?.[0]?.content?.parts?.[0]?.text || 'Brak odpowiedzi od modelu.';
+                aiText = aiText.replace(/```html/gi, '').replace(/```/g, '').trim();
+
+                responseBox.innerHTML = `
+                    <div style="font-weight: 700; color: #d8b4fe; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px; border-bottom: 1px solid rgba(168, 85, 247, 0.35); padding-bottom: 6px;">
+                        <span style="color: #e9d5ff;">🤖 Ekspertyza Gemini AI (${model}) dla <strong style="color: #38bdf8;">${trait.gene}</strong>:</span>
+                        <span style="font-size: 0.78rem; background: rgba(168, 85, 247, 0.25); color: #c084fc; padding: 2px 8px; border-radius: 6px;">h² = ${trait.h2}%</span>
+                    </div>
+                    <div style="font-size: 0.93rem; line-height: 1.7; color: #f1f5f9;">
+                        ${aiText}
+                    </div>
+                `;
+            } catch (err) {
+                responseBox.innerHTML = `
+                    <div style="color: #f87171; font-weight: 700; margin-bottom: 6px;">⚠️ Nie udało się uzyskać odpowiedzi od Gemini AI</div>
+                    <div style="color: #cbd5e1; font-size: 0.88rem;">${err.message || err}</div>
+                    <div style="margin-top: 8px;">
+                        <button type="button" class="gen-ai-chip" onclick="promptForApiKey()">🔑 Zaktualizuj klucz API</button>
+                    </div>
+                `;
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<span>✨ Zapytaj Gemini AI</span>';
+            }
         }
 
         /* ==========================================================================
@@ -1987,8 +2518,12 @@
             }
         });
 
-        document.addEventListener('DOMContentLoaded', initApp);
+        document.addEventListener('DOMContentLoaded', () => {
+            initApp();
+            checkGeminiApiKey();
+        });
         initApp();
+        checkGeminiApiKey();
     </script>
 </body>
 
