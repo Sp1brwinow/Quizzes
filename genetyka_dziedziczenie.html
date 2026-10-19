@@ -1199,6 +1199,9 @@
                             <button type="button" id="gen-ai-submit-btn" class="gen-ai-ask-btn" onclick="submitGeneticsAiQuestion()">
                                 <span>✨ Zapytaj Gemini AI</span>
                             </button>
+                            <button type="button" class="gen-explain-btn" style="border-color:#64748b; color:#94a3b8; font-size:0.85rem; padding:8px 14px;" onclick="clearAiSection()" title="Wyczyść ekran i pole pytania AI">
+                                <span>🗑️ Wyczyść</span>
+                            </button>
                         </div>
 
                         <!-- Odpowiedź Gemini AI -->
@@ -1932,6 +1935,7 @@
         }
 
         function onGenTraitChange() {
+            clearAiSection();
             const select = document.getElementById('gen-trait-select');
             const id = select ? select.value : GENETIC_TRAITS_50[0].id;
             currentTrait = GENETIC_TRAITS_50.find(t => t.id === id) || GENETIC_TRAITS_50[0];
@@ -2101,6 +2105,7 @@
         }
 
         function setMethodView(view) {
+            clearAiSection();
             currentMethodView = view;
             document.getElementById('tab-both').classList.toggle('active', view === 'both');
             document.getElementById('tab-mendel').classList.toggle('active', view === 'mendel');
@@ -2482,6 +2487,24 @@
                 console.warn('Nie udało się pobrać listy modeli:', e);
             }
             return (preferredModel && preferredModel !== 'auto') ? preferredModel : 'gemini-2.5-flash';
+        }
+
+        function clearAiSection() {
+            const responseBox = document.getElementById('gen-ai-response-box');
+            const inputEl = document.getElementById('gen-ai-custom-q');
+            const submitBtn = document.getElementById('gen-ai-submit-btn');
+
+            if (responseBox) {
+                responseBox.style.display = 'none';
+                responseBox.innerHTML = '';
+            }
+            if (inputEl) {
+                inputEl.value = '';
+            }
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<span>✨ Zapytaj Gemini AI</span>';
+            }
         }
 
         function askQuickAiQuestion(type) {
