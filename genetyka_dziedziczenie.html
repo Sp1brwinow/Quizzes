@@ -1014,10 +1014,15 @@
                 </div>
             </div>
 
-            <!-- Przycisk symulacji -->
-            <button type="button" id="gen-run-simulation-btn" class="gen-run-btn" onclick="runGeneticSimulation()">
-                <span>⚡ Przeprowadź analizę i symulację (1000 połączeń Monte Carlo)</span>
-            </button>
+            <!-- Przyciski akcji: Wyjaśnienie założeń oraz Uruchomienie symulacji -->
+            <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:stretch;">
+                <button type="button" class="gen-run-btn" style="flex:1; min-width:240px; background:linear-gradient(135deg, #1e293b 0%, #334155 100%); border:1px solid #64748b; box-shadow:none; display:inline-flex; align-items:center; justify-content:center; gap:8px;" onclick="openAssumptionsModal()">
+                    <span>📖 Wyjaśnij założenia i pojęcia</span>
+                </button>
+                <button type="button" id="gen-run-simulation-btn" class="gen-run-btn" style="flex:2; min-width:280px;" onclick="runGeneticSimulation()">
+                    <span>⚡ Przeprowadź analizę i symulację (1000 połączeń Monte Carlo)</span>
+                </button>
+            </div>
 
             <!-- Sekcja wyników -->
             <div id="gen-results-area" style="display:none; flex-direction:column; gap:20px;">
@@ -1303,6 +1308,131 @@
             <div style="padding: 14px 22px; border-top: 1px solid rgba(255, 255, 255, 0.1); background: rgba(15, 23, 42, 0.95); display: flex; justify-content: flex-end;">
                 <button type="button" class="gen-run-btn" style="padding: 9px 20px; font-size: 0.92rem;" onclick="closeExplanationModal()">
                     <span>Rozumiem, zamknij okno</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Okno modalne: Wyjaśnienie założeń i pojęć krzyżówki -->
+    <div id="gen-assumptions-modal" class="gen-modal-overlay" onclick="handleModalBackdropClick(event)">
+        <div class="gen-modal-container" role="dialog" aria-modal="true" aria-labelledby="assump-modal-title" style="max-width: 880px;">
+            <div class="gen-modal-header">
+                <h3 id="assump-modal-title">
+                    <span>📖 Słownik pojęć & założenia genetyczne krzyżówki</span>
+                </h3>
+                <button type="button" class="gen-modal-close" onclick="closeAssumptionsModal()" aria-label="Zamknij okno">&times;</button>
+            </div>
+            <div class="gen-modal-body">
+                <!-- Sekcja Live: Analiza bieżącej konfiguracji na ekranie -->
+                <div class="gen-explain-section" style="border-color: rgba(56, 189, 248, 0.45); background: rgba(15, 23, 42, 0.85);">
+                    <div style="font-size: 0.82rem; font-weight: 700; color: #38bdf8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">
+                        🔍 Twoja bieżąca konfiguracja na ekranie:
+                    </div>
+                    <div style="font-size: 1.1rem; font-weight: 700; color: #f8fafc; margin-bottom: 6px;" id="assump-trait-name">
+                        Ładowanie cechy...
+                    </div>
+                    <div style="font-size: 0.9rem; color: #cbd5e1; margin-bottom: 10px;" id="assump-trait-allele-desc">
+                        Opis alleli...
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; font-size: 0.88rem;">
+                        <div style="background: rgba(30, 41, 59, 0.6); padding: 8px 12px; border-radius: 6px; border: 1px solid rgba(56, 189, 248, 0.2);">
+                            <span style="color: #94a3b8;">Lokalizacja:</span> <code id="assump-trait-loc" style="color: #38bdf8; font-weight: bold;"></code>
+                        </div>
+                        <div style="background: rgba(30, 41, 59, 0.6); padding: 8px 12px; border-radius: 6px; border: 1px solid rgba(52, 211, 153, 0.2);">
+                            <span style="color: #94a3b8;">Model dziedziczenia:</span> <strong id="assump-trait-mode" style="color: #34d399;"></strong>
+                        </div>
+                        <div style="background: rgba(30, 41, 59, 0.6); padding: 8px 12px; border-radius: 6px; border: 1px solid rgba(168, 85, 247, 0.2);">
+                            <span style="color: #94a3b8;">Sprzężony marker:</span> <code id="assump-trait-marker" style="color: #c084fc; font-weight: bold;"></code>
+                        </div>
+                        <div style="background: rgba(30, 41, 59, 0.6); padding: 8px 12px; border-radius: 6px; border: 1px solid rgba(251, 191, 36, 0.2);">
+                            <span style="color: #94a3b8;">Odległość / Crossing-over:</span> <strong id="assump-trait-dist" style="color: #fbbf24;"></strong>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255, 255, 255, 0.1); font-size: 0.88rem; display: flex; flex-direction: column; gap: 4px;">
+                        <div>👩 <strong>Matka:</strong> <span id="assump-mother-summary" style="color: #f472b6;"></span></div>
+                        <div>👨 <strong>Ojciec:</strong> <span id="assump-father-summary" style="color: #38bdf8;"></span></div>
+                    </div>
+                </div>
+
+                <!-- Sekcja 1: Jak czytać parametry genu i chromosomu -->
+                <div class="gen-explain-section" style="border-color: rgba(52, 211, 153, 0.35);">
+                    <h4 style="color: #34d399;">
+                        <span>🧬 1. Jak czytać parametry genu i chromosomu?</span>
+                    </h4>
+                    <div style="display: flex; flex-direction: column; gap: 10px; font-size: 0.91rem;">
+                        <div>
+                            <strong style="color: #f1f5f9;">• Co to jest allel? (np. Allel R vs Allel X w genie ACTN3):</strong><br>
+                            Allel to po prostu jedna z możliwych „wersji” lub „odmian” tego samego genu w populacji ludzkiej. Na przykład:
+                            <ul style="margin: 4px 0; padding-left: 20px;">
+                                <li><strong>Allel funkcjonalny / dominujący (R):</strong> syntetyzuje pełnowartościowe białko alfa-aktyninę-3 we włóknach mięśniowych szybkokurczliwych (faworyzuje siłę, sprint, dynamikę).</li>
+                                <li><strong>Allel zmutowany (X):</strong> niesie mutację z przedwczesnym kodonem stop (brak białka), co powoduje, że mięśnie pracują bardziej ekonomicznie w metabolizmie tlenowym (faworyzuje włókna wolnokurczliwe, wytrzymałość i biegi długodystansowe).</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <strong style="color: #f1f5f9;">• Lokalizacja cytogenetyczna (np. <code>chr 11q13</code>):</strong><br>
+                            To międzynarodowy adres fizyczny genu w ludzkim genomie, odczytywany niczym adres pocztowy:
+                            <ul style="margin: 4px 0; padding-left: 20px;">
+                                <li><code>chr 11</code> = <strong>Numer chromosomu</strong> (jeden z 22 autosomów, czyli chromosomów niezwiązanych z płcią).</li>
+                                <li><code>q</code> = <strong>Długie ramię</strong> chromosomu (krótkie ramię oznacza się literą <code>p</code> od francuskiego <em>petit</em>).</li>
+                                <li><code>13</code> = <strong>Region i prążek</strong> widoczny pod mikroskopem po wybarwieniu metodą Giemsy (precyzyjna pozycja na ramieniu).</li>
+                                <li><code>(ACTN3)</code> = Oficjalny symbol genu w nomenklaturze HUGO (<em>Human Genome Organization</em>).</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <strong style="color: #f1f5f9;">• Modele dziedziczenia:</strong>
+                            <ul style="margin: 4px 0; padding-left: 20px;">
+                                <li><strong>Autosomalne dominujące:</strong> Wystarczy jedna zmutowana kopia (od matki lub ojca: 0/1 lub 1/1), by cecha ujawniła się w fenotypie.</li>
+                                <li><strong>Autosomalne recesywne:</strong> Cecha ujawnia się tylko wtedy, gdy dziecko otrzyma mutację od obojga rodziców jednocześnie (genotyp 1/1). Osoba 0/1 jest bezobjawowym nosicielem.</li>
+                                <li><strong>Kodominacja / Addytywne:</strong> Żaden allel nie dominuje całkowicie. Heterozygota (0/1) ma formę pośrednią (np. zbalansowane proporcje włókien szybkich i wolnych).</li>
+                                <li><strong>Sprzężone z płcią (chr X):</strong> Gen leży na chromosomie płci X. Mężczyźni (XY) mają tylko jeden chromosom X, więc są <em>hemizygotami</em> – u syna cecha zależy wyłącznie od tego, co przekaże mu matka.</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <strong style="color: #f1f5f9;">• Co oznacza sprzężony marker fizyczny (np. <code>D11S987</code> lub <code>OR6A1</code>)?</strong><br>
+                            To stały odcinek DNA leżący w fizycznym sąsiedztwie badanego genu na tym samym chromosomie:
+                            <ul style="margin: 4px 0; padding-left: 20px;">
+                                <li>Zapis <code>D11S987</code>: <strong>D</strong> = cząsteczka DNA, <strong>11</strong> = chromosom 11, <strong>S</strong> = pojedyncza unikalna sekwencja (<em>single-copy</em>), <strong>987</strong> = numer w światowym rejestrze genomu (lub nazwa sąsiedniego genu).</li>
+                                <li>Odległość genetyczna (np. <strong>8.4 cM</strong>) określa, jak często podczas mejozy dochodzi do pęknięcia chromosomu (crossing-over) między genem a markerem.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sekcja 2: Założenia dotyczące rodziców i podziałów komórkowych -->
+                <div class="gen-explain-section" style="border-color: rgba(168, 85, 247, 0.35);">
+                    <h4 style="color: #c084fc;">
+                        <span>👪 2. Co oznaczają genotypy rodziców (0/0, 0/1, 1/1, Chr 1 i Chr 2)?</span>
+                    </h4>
+                    <div style="display: flex; flex-direction: column; gap: 10px; font-size: 0.91rem;">
+                        <div>
+                            <strong style="color: #f1f5f9;">• Kariotyp człowieka (Kobieta XX, Mężczyzna XY):</strong><br>
+                            Każdy człowiek posiada 46 chromosomów (23 pary). U kobiet parę chromosomów płci tworzą dwa chromosomy X (kariotyp 46,XX), a u mężczyzn jeden chromosom X i jeden chromosom Y (kariotyp 46,XY).
+                        </div>
+
+                        <div>
+                            <strong style="color: #f1f5f9;">• Dlaczego widzisz Chr 1 i Chr 2? (Chromosomy homologiczne):</strong><br>
+                            Człowiek jest organizmem diploidalnym (2n). Każdy rodzic sam ma dwoje rodziców – dlatego posiada dwie kopie każdego chromosomu autosomalnego: jedną odziedziczył po swojej matce (Chr 1), a drugą po swoim ojcu (Chr 2).
+                        </div>
+
+                        <div>
+                            <strong style="color: #f1f5f9;">• Trzy stany zygotyczności w symulatorze:</strong>
+                            <ul style="margin: 4px 0; padding-left: 20px;">
+                                <li><strong>Brak mutacji / Homozygota dzika (0/0):</strong> Na obu chromosomach (Chr 1 i Chr 2) znajduje się wariant wyjściowy (0). Wszystkie komórki jajowe lub plemniki tego rodzica niosą wariant dziki (0% mutacji).</li>
+                                <li><strong>Heterozygota (1 kopia / 0/1):</strong> Jeden chromosom niesie mutację (1), a drugi wariant dziki (0). Podczas mejozy rodzic rozdziela chromosomy losowo do gamet – szansa na przekazanie mutacji wynosi dokładnie <strong>50%</strong> (I Prawo Mendla).</li>
+                                <li><strong>Homozygota zmutowana (2 kopie / 1/1):</strong> Oba chromosomy rodzica (Chr 1 i Chr 2) niosą mutację (1). Taki rodzic w <strong>100% swoich gamet</strong> przekaże badaną mutację każdemu swojemu potomkowi!</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="padding: 14px 22px; border-top: 1px solid rgba(255, 255, 255, 0.1); background: rgba(15, 23, 42, 0.95); display: flex; justify-content: flex-end;">
+                <button type="button" class="gen-run-btn" style="padding: 9px 20px; font-size: 0.92rem;" onclick="closeAssumptionsModal()">
+                    <span>Rozumiem założenia, zamknij okno</span>
                 </button>
             </div>
         </div>
@@ -2534,11 +2664,74 @@ Napisz fascynującą, profesjonalną notatkę naukową po polsku (w formacie HTM
             if (event.target && event.target.id === 'gen-explanation-modal') {
                 closeExplanationModal();
             }
+            if (event.target && event.target.id === 'gen-assumptions-modal') {
+                closeAssumptionsModal();
+            }
+        }
+
+        /* ==========================================================================
+           OBSŁUGA OKNA MODALNEGO (WYJAŚNIENIE ZAŁOŻEŃ I POJĘĆ)
+           ========================================================================== */
+        function openAssumptionsModal() {
+            const modal = document.getElementById('gen-assumptions-modal');
+            if (!modal) return;
+
+            const trait = currentTrait;
+            const mCount = getMotherMutCount();
+            const fCount = getFatherMutCount();
+            const isX = trait.mode === 'x-linked';
+
+            // Podstawienie dynamicznych danych bieżącej cechy
+            const tName = document.getElementById('assump-trait-name');
+            const tLoc = document.getElementById('assump-trait-loc');
+            const tMode = document.getElementById('assump-trait-mode');
+            const tMarker = document.getElementById('assump-trait-marker');
+            const tDist = document.getElementById('assump-trait-dist');
+            const tAlleleDesc = document.getElementById('assump-trait-allele-desc');
+
+            if (tName) tName.textContent = trait.name;
+            if (tLoc) tLoc.textContent = `${trait.chr} (${trait.gene})`;
+            if (tMode) tMode.textContent = trait.modeLabel;
+            if (tMarker) tMarker.textContent = trait.marker;
+            if (tDist) tDist.textContent = `${trait.distCM} cM`;
+            if (tAlleleDesc) tAlleleDesc.textContent = trait.desc;
+
+            // Podstawienie danych rodziców
+            const mSum = document.getElementById('assump-mother-summary');
+            const fSum = document.getElementById('assump-father-summary');
+
+            const mStateText = mCount === 0 ? 'Brak mutacji (0/0) [Chr 1: Dziki (0), Chr 2: Dziki (0)]' : 
+                               (mCount === 1 ? 'Heterozygota (0/1) [Chr 1: Mutacja (1), Chr 2: Dziki (0)]' : 
+                                               'Homozygota zmutowana (1/1) [Chr 1: Mutacja (1), Chr 2: Mutacja (1)]');
+            
+            let fStateText = '';
+            if (isX) {
+                fStateText = fCount === 0 ? 'Hemizygota (X Y) [Chr 1: Prawidłowy X, Chr 2: Y ojcowski]' : 
+                                            'Hemizygota zmutowany (X* Y) [Chr 1: Zmutowany X*, Chr 2: Y ojcowski]';
+            } else {
+                fStateText = fCount === 0 ? 'Brak mutacji (0/0) [Chr 1: Dziki (0), Chr 2: Dziki (0)]' : 
+                             (fCount === 1 ? 'Heterozygota (0/1) [Chr 1: Mutacja (1), Chr 2: Dziki (0)]' : 
+                                             'Homozygota zmutowana (1/1) [Chr 1: Mutacja (1), Chr 2: Mutacja (1)]');
+            }
+
+            if (mSum) mSum.textContent = mStateText;
+            if (fSum) fSum.textContent = fStateText;
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeAssumptionsModal() {
+            const modal = document.getElementById('gen-assumptions-modal');
+            if (!modal) return;
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
         }
 
         document.addEventListener('keydown', function(event) {
             if (event.key === 'Escape') {
                 closeExplanationModal();
+                closeAssumptionsModal();
             }
         });
 
