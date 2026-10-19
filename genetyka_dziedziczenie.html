@@ -543,6 +543,165 @@
 
         .gen-step-item strong { color: #f1f5f9; }
 
+        /* Przycisk otwierający okno wyjaśnienia */
+        .gen-explain-btn {
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.15), rgba(167, 139, 250, 0.15));
+            border: 1px solid rgba(56, 189, 248, 0.45);
+            color: #38bdf8;
+            padding: 7px 15px;
+            border-radius: 8px;
+            font-size: 0.88rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .gen-explain-btn:hover {
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.3), rgba(167, 139, 250, 0.3));
+            border-color: #38bdf8;
+            color: #ffffff;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px rgba(56, 189, 248, 0.25);
+        }
+
+        /* Modal wyjaśniający mechanizm dziedziczenia */
+        .gen-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(3, 7, 18, 0.85);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            opacity: 0;
+            transition: opacity 0.25s ease;
+        }
+
+        .gen-modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .gen-modal-container {
+            background: #0b1329;
+            border: 1px solid rgba(52, 211, 153, 0.45);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 840px;
+            max-height: 88vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85), 0 0 35px rgba(52, 211, 153, 0.15);
+            transform: scale(0.96) translateY(12px);
+            transition: transform 0.25s ease;
+            overflow: hidden;
+        }
+
+        .gen-modal-overlay.active .gen-modal-container {
+            transform: scale(1) translateY(0);
+        }
+
+        .gen-modal-header {
+            padding: 18px 22px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(15, 23, 42, 0.95);
+        }
+
+        .gen-modal-header h3 {
+            font-size: 1.22rem;
+            font-weight: 700;
+            color: #34d399;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .gen-modal-close {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #94a3b8;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            font-size: 1.35rem;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .gen-modal-close:hover {
+            background: rgba(239, 68, 68, 0.25);
+            border-color: #ef4444;
+            color: #ef4444;
+            transform: scale(1.05);
+        }
+
+        .gen-modal-body {
+            padding: 22px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            color: #cbd5e1;
+            line-height: 1.65;
+            font-size: 0.94rem;
+        }
+
+        .gen-modal-body::-webkit-scrollbar {
+            width: 8px;
+        }
+        .gen-modal-body::-webkit-scrollbar-track {
+            background: #070d18;
+        }
+        .gen-modal-body::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        .gen-modal-body::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+
+        .gen-explain-section {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(52, 211, 153, 0.2);
+            border-radius: 12px;
+            padding: 16px 20px;
+        }
+
+        .gen-explain-section h4 {
+            margin: 0 0 10px 0;
+            font-size: 1.05rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .gen-contrast-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 680px) {
+            .gen-contrast-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
         @media (max-width: 640px) {
             .header-card h1 { font-size: 1.6rem; }
             .gen-parents-grid { grid-template-columns: 1fr; }
@@ -801,13 +960,107 @@
 
                 <!-- Szczegółowy opis krok po kroku -->
                 <div class="gen-details-box">
-                    <div class="gen-details-title">
+                    <div class="gen-details-title" style="justify-content: space-between; flex-wrap: wrap; gap: 10px;">
                         <span>📝 Szczegółowy Raport z Przeprowadzonej Symulacji (Krok po Kroku)</span>
+                        <button type="button" class="gen-explain-btn" onclick="openExplanationModal()">
+                            <span>💡 Wyjaśnienie mechanizmu dziedziczenia</span>
+                        </button>
                     </div>
                     <div id="gen-step-by-step-content" style="display:flex; flex-direction:column; gap:10px;">
                         <!-- Dynamically generated description -->
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Okno modalne: Wyjaśnienie mechanizmu dziedziczenia & crossing-over -->
+    <div id="gen-explanation-modal" class="gen-modal-overlay" onclick="handleModalBackdropClick(event)">
+        <div class="gen-modal-container" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+            <div class="gen-modal-header">
+                <h3 id="modal-title">
+                    <span>💡 Wyjaśnienie mechanizmu dziedziczenia & crossing-over</span>
+                </h3>
+                <button type="button" class="gen-modal-close" onclick="closeExplanationModal()" aria-label="Zamknij okno">&times;</button>
+            </div>
+            <div class="gen-modal-body">
+                <!-- Sekcja 1: Kluczowy paradoks / 2 różne pytania -->
+                <div class="gen-explain-section" style="border-color: rgba(56, 189, 248, 0.4);">
+                    <h4 style="color: #38bdf8;">
+                        <span>🎯 Dlaczego szansa dziedziczenia to np. ~50%, a crossing-over tylko ~8%?</span>
+                    </h4>
+                    <p style="margin-bottom: 8px;">
+                        To pozorna sprzeczność wynikająca z faktu, że odpowiadamy na <strong>dwa zupełnie różne pytania biologiczne</strong>:
+                    </p>
+                    <div class="gen-contrast-grid">
+                        <div style="background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 8px; padding: 12px;">
+                            <div style="font-weight: 700; color: #38bdf8; margin-bottom: 4px;">Pytanie 1: Los pojedynczego genu (~50%)</div>
+                            <div style="font-size: 0.88rem; color: #cbd5e1;">
+                                <em>„Czy dziecko w ogóle dostanie zmutowany allel od rodzica?”</em><br>
+                                Jeśli matka ma 1 kopię genu (0/1), to w oogenezie losuje komórkę jajową: <strong>orzeł (0) czy reszka (1)</strong>. Szansa wynosi dokładnie <strong>50%</strong> (I Prawo Mendla).
+                            </div>
+                        </div>
+                        <div style="background: rgba(167, 139, 250, 0.1); border: 1px solid rgba(167, 139, 250, 0.3); border-radius: 8px; padding: 12px;">
+                            <div style="font-weight: 700; color: #c084fc; margin-bottom: 4px;">Pytanie 2: Relacja dwóch genów (~8%)</div>
+                            <div style="font-size: 0.88rem; color: #cbd5e1;">
+                                <em>„Gdy dziecko dostanie ten gen, czy dostanie go w parze ze starym sąsiadem?”</em><br>
+                                Wskaźnik crossing-over (np. <strong>7.9%</strong>) nie decyduje o tym, czy cecha przejdzie, lecz <strong>jak często odczepi się ona od sąsiedniego markera</strong> na tym samym chromosomie!
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sekcja 2: Metafora pociągu -->
+                <div class="gen-explain-section" style="border-color: rgba(52, 211, 153, 0.4);">
+                    <h4 style="color: #34d399;">
+                        <span>🚂 Intuicyjna metafora: Pociąg i złączone wagony</span>
+                    </h4>
+                    <p>
+                        Wyobraź sobie chromosom człowieka jako <strong>długi pociąg towarowy</strong>, a znajdujące się na nim geny jako <strong>poszczególne wagony</strong>:
+                    </p>
+                    <div style="background: #070d18; border: 1px dashed rgba(52, 211, 153, 0.4); border-radius: 8px; padding: 12px; font-family: monospace; font-size: 0.88rem; margin: 10px 0; color: #a7f3d0; line-height: 1.5; overflow-x: auto;">
+                        [LOKOMOTYWA] === [Wagon 1: <span id="modal-gene-badge">Badany gen</span>] ==== [Sprzęgło: <span id="modal-dist-text">8.4 cM</span>] ==== [Wagon 2: <span id="modal-marker-badge">Sprzężony marker</span>] ===&gt;
+                    </div>
+                    <ul style="margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; font-size: 0.91rem;">
+                        <li><strong>Wagon 1:</strong> Twój badany gen (np. <code id="modal-gene-code">HLA-DRB1</code> – zapach skóry dla komarów).</li>
+                        <li><strong>Wagon 2:</strong> Sprzężony fizycznie marker DNA (np. <code id="modal-marker-code">HLA-B</code> – zgodność tkankowa).</li>
+                        <li><strong>Odległość genetyczna (<span id="modal-dist-badge">8.4 cM</span>):</strong> To wytrzymałość sprzęgła między wagonami. Im mniejsza odległość, tym silniejsze połączenie i rzadsze rozprzężenie.</li>
+                        <li><strong>W ~92% podziałów:</strong> Sprzęgło wytrzymuje – wagony 1 i 2 jadą nienaruszone razem do dziecka (tzw. <em>układ rodzicielski</em>).</li>
+                        <li><strong>W ~8% podziałów:</strong> Pociąg pęka dokładnie na tym sprzęgle (<em>crossing-over</em>) – Wagon 1 odczepia się i łączy z wagonem drugiego chromosomu!</li>
+                    </ul>
+                </div>
+
+                <!-- Sekcja 3: Co jest wynikiem tego zjawiska dla człowieka? (3 kluczowe skutki) -->
+                <div class="gen-explain-section" style="border-color: rgba(251, 191, 36, 0.4);">
+                    <h4 style="color: #fbbf24;">
+                        <span>⚡ Co jest konkretnym wynikiem tego zjawiska dla człowieka?</span>
+                    </h4>
+                    <p style="margin-bottom: 12px;">
+                        To, że w ~8% przypadków gen „odczepia się” od sąsiadów, niesie trzy fundamentalne konsekwencje w medycynie i biologii człowieka:
+                    </p>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        <div style="background: rgba(30, 41, 59, 0.6); border-left: 3px solid #38bdf8; padding: 10px 14px; border-radius: 0 8px 8px 0;">
+                            <strong style="color: #38bdf8;">1. Rozbicie „pakietu cech” u potomka (Unikalność genetyczna):</strong><br>
+                            Dziecko nie dziedziczy sztywnego, gotowego klonu całego chromosomu matki. Może odziedziczyć zapach skóry przyciągający komary, ale w procesie rekombinacji „odczepić” od niego matczyną skłonność do alergii czy wariant odpornościowy leżący obok. Powstaje całkowicie nowy, unikalny miks cech.
+                        </div>
+
+                        <div style="background: rgba(30, 41, 59, 0.6); border-left: 3px solid #c084fc; padding: 10px 14px; border-radius: 0 8px 8px 0;">
+                            <strong style="color: #c084fc;">2. Zgodność tkankowa i przeszczepy szpiku (Układ HLA):</strong><br>
+                            Gdyby nie było crossing-over, rodzeństwo dziedziczyłoby zawsze identyczny, nierozdzielny blok antygenów zgodności tkankowej. Właśnie te kilkanaście procent pęknięć w rejonie HLA na chromosomie 6 sprawia, że rodzeństwo może mieć ten sam gen HLA-DRB1, ale różnić się genem HLA-B, przez co przeszczep szpiku wymaga dokładniejszego doboru dawcy.
+                        </div>
+
+                        <div style="background: rgba(30, 41, 59, 0.6); border-left: 3px solid #10b981; padding: 10px 14px; border-radius: 0 8px 8px 0;">
+                            <strong style="color: #10b981;">3. Dokładność testów DNA i diagnostyki laboratoryjnej:</strong><br>
+                            Wiele testów genetycznych bada tani i łatwy do wykrycia tzw. <em>marker zastępczy (proxy)</em>, zamiast sekwencjonować trudny gen. Wartość 7.9% to dosłownie <strong>margines błędu testu pośredniego</strong> – w tylu procentach przypadków marker rozłączył się z badaną cechą i test dałby fałszywy odczyt!
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="padding: 14px 22px; border-top: 1px solid rgba(255, 255, 255, 0.1); background: rgba(15, 23, 42, 0.95); display: flex; justify-content: flex-end;">
+                <button type="button" class="gen-run-btn" style="padding: 9px 20px; font-size: 0.92rem;" onclick="closeExplanationModal()">
+                    <span>Rozumiem, zamknij okno</span>
+                </button>
             </div>
         </div>
     </div>
@@ -1663,7 +1916,12 @@
                     W 1000 podziałach mejotycznych in silico:<br>
                     &bull; W <strong>${data.parentalCount} przypadkach (${data.pParental}%)</strong> chromosomy przeszły bez pęknięć (haplotypy rodzicielskie),<br>
                     &bull; W <strong>${data.recombCount} przypadkach (${data.pRecomb}%)</strong> zaszło zjawisko <em>crossing-over</em> – pęknięcie i krzyżowa wymiana chromatyd niesiostrzanych.<br>
-                    Wartość ta ściśle odpowiada zadanej odległości genetycznej w centymorganach, ilustrując, że geny leżące bliżej siebie rzadziej ulegają rozprzężeniu.
+                    Wartość ta ściśle odpowiada zadanej odległości genetycznej w centymorganach, ilustrując, że geny leżące bliżej siebie rzadziej ulegają rozprzężeniu.<br>
+                    <div style="margin-top: 8px;">
+                        <button type="button" class="gen-explain-btn" onclick="openExplanationModal()" style="font-size: 0.83rem; padding: 6px 14px;">
+                            💡 Dlaczego szansa ujawnienia cechy (${trait.mode === 'autosomal-dominant' ? ((data.count1 + data.count2) / 10).toFixed(1) + '%' : (trait.mode === 'autosomal-recessive' ? data.p2 + '%' : data.p1 + '%')}) różni się od crossing-over (${data.pRecomb}%)? Zobacz wyjaśnienie
+                        </button>
+                    </div>
                 </div>
 
                 <div class="gen-step-item" style="border-left-color: #10b981;">
@@ -1672,7 +1930,62 @@
                     Przy obecnym stanie rodziców szansa, że kolejne dziecko wykaże tę cechę wynosi <strong>${trait.mode === 'autosomal-dominant' ? ((data.count1 + data.count2) / 10).toFixed(1) + '%' : (trait.mode === 'autosomal-recessive' ? data.p2 + '%' : data.p1 + '% (forma pośrednia)')}</strong>.
                 </div>
             `;
+
+            window.lastSimulationData = data;
         }
+
+        /* ==========================================================================
+           OBSŁUGA OKNA MODALNEGO (WYJAŚNIENIE MECHANIZMU DZIEDZICZENIA)
+           ========================================================================== */
+        function openExplanationModal() {
+            const modal = document.getElementById('gen-explanation-modal');
+            if (!modal) return;
+
+            let trait = window.lastSimulationData ? window.lastSimulationData.trait : null;
+            if (!trait) {
+                const traitSelect = document.getElementById('gen-trait-select');
+                const traitId = traitSelect ? traitSelect.value : null;
+                trait = GENETIC_TRAITS_50.find(t => t.id === traitId) || GENETIC_TRAITS_50[40]; // domyślnie HLA-DRB1
+            }
+
+            if (trait) {
+                const geneBadge = document.getElementById('modal-gene-badge');
+                const markerBadge = document.getElementById('modal-marker-badge');
+                const geneCode = document.getElementById('modal-gene-code');
+                const markerCode = document.getElementById('modal-marker-code');
+                const distText = document.getElementById('modal-dist-text');
+                const distBadge = document.getElementById('modal-dist-badge');
+
+                if (geneBadge) geneBadge.textContent = trait.gene;
+                if (markerBadge) markerBadge.textContent = trait.marker;
+                if (geneCode) geneCode.textContent = `${trait.gene} (${trait.chr})`;
+                if (markerCode) markerCode.textContent = trait.marker;
+                if (distText) distText.textContent = `${trait.distCM} cM`;
+                if (distBadge) distBadge.textContent = `${trait.distCM} cM`;
+            }
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeExplanationModal() {
+            const modal = document.getElementById('gen-explanation-modal');
+            if (!modal) return;
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function handleModalBackdropClick(event) {
+            if (event.target && event.target.id === 'gen-explanation-modal') {
+                closeExplanationModal();
+            }
+        }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeExplanationModal();
+            }
+        });
 
         document.addEventListener('DOMContentLoaded', initApp);
         initApp();
