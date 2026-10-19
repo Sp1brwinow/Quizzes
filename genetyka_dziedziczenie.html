@@ -106,7 +106,7 @@
         .header-card p {
             color: #94a3b8;
             font-size: 1.02rem;
-            max-width: 800px;
+            max-width: 820px;
             margin: 0 auto;
             line-height: 1.5;
         }
@@ -186,14 +186,32 @@
             color: #94a3b8;
             background: rgba(15, 23, 42, 0.7);
             border-left: 3px solid #34d399;
-            padding: 10px 14px;
+            padding: 12px 14px;
             border-radius: 0 6px 6px 0;
             line-height: 1.5;
         }
 
+        .gen-trait-specs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 6px;
+            font-size: 0.84rem;
+        }
+
+        .gen-spec-pill {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 6px;
+            padding: 3px 10px;
+            color: #cbd5e1;
+            font-family: monospace;
+        }
+
+        /* Konfiguracja rodziców */
         .gen-parents-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             gap: 18px;
         }
 
@@ -205,6 +223,7 @@
             display: flex;
             flex-direction: column;
             gap: 12px;
+            transition: all 0.2s;
         }
 
         .gen-parent-card.mother {
@@ -226,47 +245,72 @@
         .gen-parent-card.mother .gen-parent-title { color: #f472b6; }
         .gen-parent-card.father .gen-parent-title { color: #38bdf8; }
 
-        .gen-btn-group {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-        }
-
-        .gen-choice-btn {
-            background: #0f172a;
-            border: 1px solid #334155;
-            color: #94a3b8;
-            padding: 10px 6px;
-            border-radius: 8px;
+        /* Kafelek checkbox główny */
+        .gen-checkbox-tile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #0b1324;
+            border: 2px solid #334155;
+            padding: 12px 14px;
+            border-radius: 10px;
             cursor: pointer;
-            font-size: 0.88rem;
-            font-weight: 600;
             transition: all 0.2s;
-            text-align: center;
+            user-select: none;
         }
 
-        .gen-choice-btn:hover:not(:disabled) {
+        .gen-checkbox-tile:hover {
             border-color: #64748b;
+        }
+
+        .gen-checkbox-tile input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: #10b981;
+            cursor: pointer;
+        }
+
+        .gen-parent-card.mother .gen-checkbox-tile.checked {
+            border-color: #f472b6;
+            background: rgba(244, 114, 182, 0.15);
+        }
+
+        .gen-parent-card.father .gen-checkbox-tile.checked {
+            border-color: #38bdf8;
+            background: rgba(56, 189, 248, 0.15);
+        }
+
+        .gen-checkbox-tile-label {
+            font-size: 0.95rem;
+            font-weight: 600;
             color: #f1f5f9;
         }
 
-        .gen-choice-btn:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
+        /* Opcja 2 kopie (homozygota) */
+        .gen-homo-toggle-box {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(11, 19, 36, 0.7);
+            border: 1px dashed rgba(255, 255, 255, 0.15);
+            padding: 9px 12px;
+            border-radius: 8px;
+            font-size: 0.88rem;
+            color: #cbd5e1;
         }
 
-        .gen-parent-card.mother .gen-choice-btn.active {
-            background: rgba(244, 114, 182, 0.25);
-            border-color: #f472b6;
-            color: #ffffff;
-            box-shadow: 0 0 10px rgba(244, 114, 182, 0.3);
+        .gen-homo-toggle-box label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
         }
 
-        .gen-parent-card.father .gen-choice-btn.active {
-            background: rgba(56, 189, 248, 0.25);
-            border-color: #38bdf8;
-            color: #ffffff;
-            box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+        .gen-homo-toggle-box input[type="checkbox"] {
+            width: 17px;
+            height: 17px;
+            accent-color: #f59e0b;
+            cursor: pointer;
         }
 
         .gen-genotype-badge {
@@ -281,17 +325,55 @@
             align-items: center;
         }
 
+        /* Blokada przy braku wyboru */
         .gen-alert-block {
             background: rgba(239, 68, 68, 0.15);
             border: 1px solid #ef4444;
             color: #fca5a5;
             border-radius: 10px;
             padding: 14px 18px;
-            font-size: 0.92rem;
+            font-size: 0.95rem;
             display: flex;
             align-items: center;
             gap: 12px;
             line-height: 1.4;
+        }
+
+        /* Pasek wyboru widoku metod */
+        .gen-view-tabs {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            background: rgba(11, 19, 36, 0.9);
+            padding: 6px;
+            border-radius: 10px;
+            border: 1px solid #334155;
+        }
+
+        .gen-tab-btn {
+            flex: 1;
+            min-width: 160px;
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            padding: 9px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.88rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .gen-tab-btn:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .gen-tab-btn.active {
+            background: #10b981;
+            color: #ffffff;
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.35);
         }
 
         .gen-run-btn {
@@ -324,6 +406,7 @@
             transform: none;
         }
 
+        /* Siatka wyników */
         .gen-results-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
@@ -480,7 +563,7 @@
         <!-- Nagłówek strony -->
         <header class="header-card">
             <h1>🧬 Symulator Krzyżówek Genetycznych In Silico</h1>
-            <p>Eksploruj prawa Mendla, segregację losową gamet oraz mejozę z rekombinacją (crossing-over) na próbie 1000 wirtualnych zapłodnień Monte Carlo.</p>
+            <p>Wybierz jedną z 50 cech człowieka, wskaż występowanie mutacji u matki, ojca lub obojga i porównaj klasyczny model Mendlowski z symulacją mejotyczną (crossing-over) na 1000 połączeń Monte Carlo.</p>
         </header>
 
         <!-- Główny moduł symulatora -->
@@ -490,99 +573,129 @@
                     <span>🔬 Konfiguracja Krzyżówki Genetycznej</span>
                 </div>
                 <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-                    <span class="gen-sim-badge">N = 1000 połączeń Monte Carlo</span>
-                    <span class="gen-sim-badge" style="border-color:rgba(56,189,248,0.4); color:#38bdf8;">Wariant A + B</span>
+                    <span class="gen-sim-badge">Baza: 50 cech człowieka</span>
+                    <span class="gen-sim-badge" style="border-color:rgba(56,189,248,0.4); color:#38bdf8;">N = 1000 połączeń</span>
                 </div>
             </div>
 
-            <!-- Wybór cechy / modelu dziedziczenia -->
+            <!-- Wybór cechy (50 cech) -->
             <div class="gen-select-row">
-                <label for="gen-trait-select">🎯 Wybierz badaną cechę biologiczną lub model dziedziczenia:</label>
+                <label for="gen-trait-select">🎯 Wybierz badaną mutację / cechę z listy 50-ciu cech człowieka:</label>
                 <select id="gen-trait-select" class="gen-dropdown" onchange="onGenTraitChange()">
-                    <!-- Generowane dynamicznie przez JS -->
+                    <!-- 50 cech generowane przez JS -->
                 </select>
                 <div id="gen-trait-info" class="gen-trait-desc">
-                    <!-- Opis cechy -->
+                    <!-- Opis cechy i automatycznie dobrane parametry -->
                 </div>
             </div>
 
-            <!-- Konfiguracja mutacji rodziców -->
-            <div class="gen-parents-grid">
-                <!-- Matka -->
-                <div class="gen-parent-card mother">
-                    <div class="gen-parent-title">
-                        <span>👩 Matka (Kariotyp XX)</span>
-                        <span id="mother-status-badge" style="font-size:0.8rem; color:#f472b6;">Heterozygota (0/1)</span>
-                    </div>
-                    <div style="font-size:0.85rem; color:#cbd5e1;">Liczba zmutowanych alleli w locus:</div>
-                    <div class="gen-btn-group" id="mother-btn-group">
-                        <button type="button" class="gen-choice-btn" id="m-btn-0" onclick="setMotherMutations(0)">0 mutacji<br><small>(0/0)</small></button>
-                        <button type="button" class="gen-choice-btn active" id="m-btn-1" onclick="setMotherMutations(1)">1 mutacja<br><small>(0/1)</small></button>
-                        <button type="button" class="gen-choice-btn" id="m-btn-2" onclick="setMotherMutations(2)">2 mutacje<br><small>(1/1)</small></button>
-                    </div>
-                    <div class="gen-genotype-badge">
-                        <span>Allel chr 1: <strong id="mother-chr1">Mutacja (1)</strong></span>
-                        <span>Allel chr 2: <strong id="mother-chr2">Dziki (0)</strong></span>
-                    </div>
-                </div>
+            <!-- Zaznaczenie występowania u rodziców -->
+            <div>
+                <label style="font-size:0.95rem; font-weight:600; color:#cbd5e1; display:block; margin-bottom:8px;">
+                    👪 Gdzie występuje badana mutacja? (Zaznacz matkę, ojca lub oboje):
+                </label>
+                <div class="gen-parents-grid">
+                    <!-- Matka -->
+                    <div class="gen-parent-card mother">
+                        <div class="gen-parent-title">
+                            <span>👩 Matka (Kariotyp XX)</span>
+                            <span id="mother-status-badge" style="font-size:0.8rem; color:#f472b6;">Brak mutacji (0/0)</span>
+                        </div>
 
-                <!-- Ojciec -->
-                <div class="gen-parent-card father">
-                    <div class="gen-parent-title">
-                        <span>👨 Ojciec (Kariotyp XY)</span>
-                        <span id="father-status-badge" style="font-size:0.8rem; color:#38bdf8;">Heterozygota (0/1)</span>
+                        <!-- Główny kafelek wyboru -->
+                        <div class="gen-checkbox-tile" id="mother-tile" onclick="toggleMotherMutation()">
+                            <input type="checkbox" id="mother-check" onclick="event.stopPropagation(); onMotherCheckChange()">
+                            <span class="gen-checkbox-tile-label">Występuje u Matki</span>
+                        </div>
+
+                        <!-- Opcja 2 kopie (homozygota) -->
+                        <div class="gen-homo-toggle-box" id="mother-homo-box" style="display:none;">
+                            <label>
+                                <input type="checkbox" id="mother-homo" onchange="onParentStateChange()">
+                                <span>Posiada 2 kopie (homozygota 1/1)</span>
+                            </label>
+                        </div>
+
+                        <div class="gen-genotype-badge">
+                            <span>Chr 1: <strong id="mother-chr1">Allel dziki (0)</strong></span>
+                            <span>Chr 2: <strong id="mother-chr2">Allel dziki (0)</strong></span>
+                        </div>
                     </div>
-                    <div style="font-size:0.85rem; color:#cbd5e1;">Liczba zmutowanych alleli w locus:</div>
-                    <div class="gen-btn-group" id="father-btn-group">
-                        <button type="button" class="gen-choice-btn" id="f-btn-0" onclick="setFatherMutations(0)">0 mutacji<br><small>(0/0)</small></button>
-                        <button type="button" class="gen-choice-btn active" id="f-btn-1" onclick="setFatherMutations(1)">1 mutacja<br><small>(0/1)</small></button>
-                        <button type="button" class="gen-choice-btn" id="f-btn-2" onclick="setFatherMutations(2)">2 mutacje<br><small>(1/1)</small></button>
-                    </div>
-                    <div class="gen-genotype-badge">
-                        <span>Allel chr 1: <strong id="father-chr1">Mutacja (1)</strong></span>
-                        <span>Allel chr 2: <strong id="father-chr2">Dziki (0)</strong></span>
+
+                    <!-- Ojciec -->
+                    <div class="gen-parent-card father">
+                        <div class="gen-parent-title">
+                            <span>👨 Ojciec (Kariotyp XY)</span>
+                            <span id="father-status-badge" style="font-size:0.8rem; color:#38bdf8;">Brak mutacji (0/0)</span>
+                        </div>
+
+                        <!-- Główny kafelek wyboru -->
+                        <div class="gen-checkbox-tile" id="father-tile" onclick="toggleFatherMutation()">
+                            <input type="checkbox" id="father-check" onclick="event.stopPropagation(); onFatherCheckChange()">
+                            <span class="gen-checkbox-tile-label">Występuje u Ojca</span>
+                        </div>
+
+                        <!-- Opcja 2 kopie (homozygota) -->
+                        <div class="gen-homo-toggle-box" id="father-homo-box" style="display:none;">
+                            <label id="father-homo-label">
+                                <input type="checkbox" id="father-homo" onchange="onParentStateChange()">
+                                <span>Posiada 2 kopie (homozygota 1/1)</span>
+                            </label>
+                        </div>
+
+                        <div class="gen-genotype-badge">
+                            <span>Chr 1: <strong id="father-chr1">Allel dziki (0)</strong></span>
+                            <span>Chr 2: <strong id="father-chr2">Allel dziki (0)</strong></span>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Blokada przy 0 i 0 -->
+            <!-- Komunikat gdy żaden rodzic nie jest wybrany -->
             <div id="gen-zero-alert" class="gen-alert-block" style="display:none;">
                 <span style="font-size:1.6rem; line-height:1;">⚠️</span>
                 <div>
-                    <strong>Brak mutacji u obojga rodziców (0 u Matki, 0 u Ojca)!</strong><br>
-                    Oboje rodzice posiadają wyłącznie prawidłowe allele dzikie (0/0). Zgodnie z zasadą symulacja zostaje wstrzymana, ponieważ brak mutacji do przekazania potomstwu. Wybierz co najmniej 1 mutację u matki lub ojca.
+                    <strong>Nie zaznaczono mutacji u żadnego z rodziców!</strong><br>
+                    Zaznacz opcję <em>„Występuje u Matki”</em>, <em>„Występuje u Ojca”</em> lub u obojga jednocześnie, aby przeprowadzić analizę dziedziczenia.
                 </div>
             </div>
 
-            <!-- Suwak rekombinacji dla Wariantu B -->
-            <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; background:rgba(15,23,42,0.6); padding:12px 16px; border-radius:8px; border:1px solid #334155; gap:10px;">
-                <div style="font-size:0.9rem; color:#cbd5e1;">
-                    🧬 <strong>Odległość genetyczna i częstość Crossing-over (Wariant B):</strong>
-                </div>
-                <div style="display:flex; align-items:center; gap:10px;">
-                    <input type="range" id="crossover-rate" min="1" max="45" value="15" oninput="updateCrossoverLabel(this.value)" style="cursor:pointer; accent-color:#34d399;">
-                    <span id="crossover-rate-val" style="font-family:monospace; font-weight:700; color:#34d399; min-width:75px;">15 cM (15%)</span>
+            <!-- Przełącznik widoku metod -->
+            <div style="display:flex; flex-direction:column; gap:8px;">
+                <label style="font-size:0.92rem; font-weight:600; color:#cbd5e1;">
+                    ⚙️ Wybór metody prezentacji wyników:
+                </label>
+                <div class="gen-view-tabs">
+                    <button type="button" class="gen-tab-btn active" id="tab-both" onclick="setMethodView('both')">
+                        🟢 Porównaj obie metody jednocześnie
+                    </button>
+                    <button type="button" class="gen-tab-btn" id="tab-mendel" onclick="setMethodView('mendel')">
+                        🔵 Metoda 1: Model Mendlowski (Punnett)
+                    </button>
+                    <button type="button" class="gen-tab-btn" id="tab-meiosis" onclick="setMethodView('meiosis')">
+                        🟣 Metoda 2: Symulacja Mejozy (Crossing-over)
+                    </button>
                 </div>
             </div>
 
             <!-- Przycisk symulacji -->
             <button type="button" id="gen-run-simulation-btn" class="gen-run-btn" onclick="runGeneticSimulation()">
-                <span>⚡ Przeprowadź symulację „ożenku” na 1000 połączeń (Monte Carlo)</span>
+                <span>⚡ Przeprowadź analizę i symulację (1000 połączeń Monte Carlo)</span>
             </button>
 
             <!-- Sekcja wyników -->
             <div id="gen-results-area" style="display:none; flex-direction:column; gap:20px;">
-                <div class="gen-results-grid">
+                <div class="gen-results-grid" id="results-grid">
                     <!-- Wariant A: Mendlowski / Punktowy -->
-                    <div class="gen-variant-card var-a">
+                    <div class="gen-variant-card var-a" id="card-method-a">
                         <div class="gen-variant-header">
                             <div class="gen-variant-title">
-                                <span>📊 Wariant A: Model Mendlowski</span>
+                                <span>📊 Metoda 1: Model Mendlowski</span>
                             </div>
-                            <span class="gen-sim-badge" style="color:#38bdf8; border-color:rgba(56,189,248,0.4);">Kwadrat Punnetta + 1000 zapłodnień</span>
+                            <span class="gen-sim-badge" style="color:#38bdf8; border-color:rgba(56,189,248,0.4);">Kwadrat Punnetta & Prawdopodobieństwo</span>
                         </div>
                         <div style="font-size:0.85rem; color:#94a3b8;">
-                            Klasyczna segregacja niezależna alleli wg praw Mendla – losowanie gamet i ich łączenie w diploidalną zygotę.
+                            Klasyczna segregacja niezależna alleli wg praw Mendla – rozkład gamet rodzicielskich i łączenie w zygotę.
                         </div>
                         
                         <!-- Kwadrat Punnetta -->
@@ -636,15 +749,15 @@
                     </div>
 
                     <!-- Wariant B: Mejotyczny / Rekombinacyjny -->
-                    <div class="gen-variant-card var-b">
+                    <div class="gen-variant-card var-b" id="card-method-b">
                         <div class="gen-variant-header">
                             <div class="gen-variant-title">
-                                <span>🧬 Wariant B: Model Mejotyczny</span>
+                                <span>🧬 Metoda 2: Symulacja Mejozy & Rekombinacji</span>
                             </div>
                             <span class="gen-sim-badge" style="color:#c084fc; border-color:rgba(167,139,250,0.4);">Sfazowane haplotypy & Crossing-over</span>
                         </div>
                         <div style="font-size:0.85rem; color:#94a3b8;">
-                            Symulacja pęknięć i wymiany chromatyd niesiostrzanych podczas profazy I mejozy dla 2 sprzężonych loci na chromosomie.
+                            Symulacja pęknięć chromatyd w profazie I mejozy dla chromosomu ze sprzężonym markerem dobranym dla tego genu.
                         </div>
 
                         <!-- Układ haplotypów -->
@@ -655,7 +768,7 @@
                         <!-- Procentowe wyniki rekombinacji -->
                         <div class="gen-stat-row">
                             <div style="font-size:0.88rem; font-weight:700; color:#f1f5f9; margin-top:4px;">
-                                Wyniki 1000 mejoz i zapłodnień:
+                                Wyniki 1000 podziałów mejotycznych i zapłodnień:
                             </div>
 
                             <div class="gen-stat-item">
@@ -701,255 +814,593 @@
 
     <!-- Logika JavaScript -->
     <script>
-        const GENETIC_TRAITS = [
+        /* ==========================================================================
+           KOMPLETNA BAZA 50 NIECHOROBOWYCH CECH CZŁOWIEKA Z PARAMETRAMI GENETYCZNYMI
+           ========================================================================== */
+        const GENETIC_TRAITS_50 = [
+            // I. Smak, węch i zmysły
             {
                 id: 'tas2r38',
-                name: '🥦 Odczuwanie goryczy warzyw kapustnych / brokułów (TAS2R38)',
-                gene: 'TAS2R38 (chromosom 7q34)',
-                mode: 'autosomal-dominant',
-                modeLabel: 'Autosomalne dominujące',
-                mutSymbol: 'T (taster)',
-                wtSymbol: 't (non-taster)',
-                desc: 'Allel dominujący T warunkuje ekspresję receptora wyczuwającego gorzkie glukozynolany w brokułach i brukselce. Wystarczy 1 kopia mutacji (0/1 lub 1/1), by odczuwać silną gorycz; osoby bez mutacji (0/0) uważają smak brokułów za łagodny i neutralny.'
-            },
-            {
-                id: 'mcm6',
-                name: '🥛 Trwałość laktazy / tolerancja laktozy u dorosłych (MCM6/LCT)',
-                gene: 'MCM6 / LCT (chromosom 2q21)',
-                mode: 'autosomal-dominant',
-                modeLabel: 'Autosomalne dominujące',
-                mutSymbol: 'L (trwała laktaza)',
-                wtSymbol: 'l (hipolaktazja)',
-                desc: 'Mutacja promotorowa w genie MCM6 sprawia, że gen LCT nie ulega wyciszeniu po okresie dzieciństwa. 1 lub 2 kopie mutacji gwarantują bezproblemowe trawienie mleka u dorosłych. Brak mutacji (0/0) prowadzi do wzdęć i niestrawności po produktach mlecznych.'
-            },
-            {
-                id: 'cyp1a2',
-                name: '☕ Szybkość metabolizmu kofeiny (CYP1A2)',
-                gene: 'CYP1A2 (chromosom 15q24)',
-                mode: 'codominant',
-                modeLabel: 'Kodominacja / Efekt addytywny',
-                mutSymbol: 'F (szybki CYP1A2*1F)',
-                wtSymbol: 'S (wolny metabolizator)',
-                desc: 'Wariant enzymu cytochromu P450. 0 mutacji = wolny metabolizm kofeiny (kawa pita po 16:00 zaburza sen, kołatanie serca); 1 mutacja = umiarkowany; 2 mutacje = szybki metabolizm (wysoka tolerancja na kofeinę).'
-            },
-            {
-                id: 'actn3',
-                name: '🏃 Typ włókien mięśniowych: siła vs wytrzymałość (ACTN3)',
-                gene: 'ACTN3 (chromosom 11q13 - polimorfizm R577X)',
-                mode: 'codominant',
-                modeLabel: 'Kodominacja / Efekt addytywny',
-                mutSymbol: 'R (alfa-aktynina-3)',
-                wtSymbol: 'X (brak alfa-aktyniny)',
-                desc: 'Kluczowy gen predyspozycji sportowych. 2 kopie mutacji R (RR) = maksymalna siła, skoczność i predyspozycje sprinterskie; 1 kopia (RX) = profil zrównoważony; 0 kopii R (XX) = predyspozycja do sportów czysto tlenowych/maratońskich.'
+                name: '🥦 1. Odczuwanie goryczy warzyw kapustnych / brokułów (TAS2R38)',
+                gene: 'TAS2R38', chr: 'chr 7q34',
+                mode: 'autosomal-dominant', modeLabel: 'Autosomalne dominujące',
+                marker: 'D7S2470', distCM: 11.2,
+                desc: 'Allel dominujący T warunkuje ekspresję receptora goryczy glukozynolanów w brokułach i brukselce. Osoby z min. 1 kopią mutacji wyczuwają silną gorycz; osoby bez mutacji (0/0) odbierają smak brokułów jako łagodny.'
             },
             {
                 id: 'or6a2',
-                name: '🌿 Mydlany posmak kolendry (OR6A2)',
-                gene: 'OR6A2 (chromosom 11q12)',
-                mode: 'autosomal-dominant',
-                modeLabel: 'Autosomalne dominujące',
-                mutSymbol: 'M (posmak mydła)',
-                wtSymbol: 'm (aromat ziołowy)',
-                desc: 'Wariant receptora węchowego wiążący aldehydy z liści kolendry. Osoby z 1 lub 2 kopiami odczuwają w potrawach z kolendrą smak mydła lub płynu do naczyń; osoby bez mutacji czują świeży aromat ziołowy.'
+                name: '🌿 2. „Mydlany” posmak kolendry (OR6A2)',
+                gene: 'OR6A2', chr: 'chr 11q12',
+                mode: 'autosomal-dominant', modeLabel: 'Autosomalne dominujące',
+                marker: 'OR6A1', distCM: 8.5,
+                desc: 'Wariant receptora węchowego wiążącego aldehydy z liści kolendry. Osoby z min. 1 kopią mutacji czują w potrawach z kolendrą smak mydła lub płynu do naczyń; osoby bez mutacji czują aromat ziołowy.'
             },
             {
-                id: 'mc1r',
-                name: '🦊 Rude włosy i bardzo jasna karnacja (MC1R)',
-                gene: 'MC1R (chromosom 16q24)',
-                mode: 'autosomal-recessive',
-                modeLabel: 'Autosomalne recesywne',
-                mutSymbol: 'r (feomelanina)',
-                wtSymbol: 'R (eumelanina ciemna)',
-                desc: 'Cecha recesywna. Do ujawnienia rudych włosów i jasnej cery ze skłonnością do oparzeń słonecznych wymagane są obie zmutowane kopie genu (1/1). Osoba z 1 mutacją (0/1) jest bezobjawowym nosicielem (często ma jedynie piegi).'
+                id: 'or2m7',
+                name: '🌱 3. Zapach moczu po zjedzeniu szparagów (OR2M7)',
+                gene: 'OR2M7', chr: 'chr 1q44',
+                mode: 'autosomal-dominant', modeLabel: 'Autosomalne dominujące',
+                marker: 'OR2M4', distCM: 14.0,
+                desc: 'Gen klastra receptorów węchowych umożliwiający wyczuwanie metabolitów kwasu asparagusowego. Wystarczy jedna kopia mutacji, by móc zidentyfikować ten charakterystyczny zapach.'
+            },
+            {
+                id: 'or7d4',
+                name: '👃 4. Odczuwanie zapachu androstenonu / potu (OR7D4)',
+                gene: 'OR7D4', chr: 'chr 19p13',
+                mode: 'codominant', modeLabel: 'Kodominacja / Addytywne',
+                marker: 'D19S418', distCM: 9.8,
+                desc: 'Receptor feromonu męskiego androstenonu. W zależności od alleli zapach odbierany jest jako waniliowo-słodki, nieprzyjemny (mocz/pot) lub całkowicie bezwonny.'
+            },
+            {
+                id: 'or5a1',
+                name: '🌸 5. Zapach fiołków / odczuwanie beta-jononu (OR5A1)',
+                gene: 'OR5A1', chr: 'chr 11q12',
+                mode: 'autosomal-dominant', modeLabel: 'Autosomalne dominujące',
+                marker: 'OR5A2', distCM: 7.3,
+                desc: 'Zdolność do wyczuwania subtelnego kwiatowego aromatu jononów zawartych w fiołkach i winogronach.'
+            },
+            {
+                id: 'tas1r2',
+                name: '🍬 6. Wrażliwość na smak słodki (TAS1R2)',
+                gene: 'TAS1R2', chr: 'chr 1p36',
+                mode: 'codominant', modeLabel: 'Kodominacja / Pośrednie',
+                marker: 'TAS1R3', distCM: 16.4,
+                desc: 'Różnice w czułości kubków smakowych na cukry proste, wpływające na naturalny próg satysfakcji ze słodyczy.'
+            },
+            {
+                id: 'tas1r1',
+                name: '🥩 7. Wrażliwość na smak umami / glutaminian (TAS1R1)',
+                gene: 'TAS1R1', chr: 'chr 1p36',
+                mode: 'codominant', modeLabel: 'Kodominacja / Pośrednie',
+                marker: 'D1S2842', distCM: 13.1,
+                desc: 'Stopień wyczuwania rosołowo-mięsnego smaku potraw bogatych w aminokwasy.'
+            },
+            {
+                id: 'trpv1',
+                name: '🌶️ 8. Próg odczuwania ostrości / kapsaicyny (TRPV1)',
+                gene: 'TRPV1', chr: 'chr 17p13',
+                mode: 'codominant', modeLabel: 'Kodominacja / Pośrednie',
+                marker: 'TRPV3', distCM: 10.5,
+                desc: 'Czułość nocyceptorów ciepła i bólu w jamie ustnej na pikantne przyprawy (chili, pieprz cayenne).'
+            },
+
+            // II. Metabolizm, napoje i dieta
+            {
+                id: 'cyp1a2',
+                name: '☕ 9. Szybkość metabolizmu kofeiny (CYP1A2)',
+                gene: 'CYP1A2', chr: 'chr 15q24',
+                mode: 'codominant', modeLabel: 'Kodominacja / Addytywne',
+                marker: 'CYP1A1', distCM: 6.2,
+                desc: 'Wariant CYP1A2*1F: 2 mutacje = szybki rozkład kofeiny (brak kołatania serca, kawa pita wieczorem nie zaburza snu); 0 mutacji = wolny metabolizm.'
+            },
+            {
+                id: 'adora2a',
+                name: '⚡ 10. Lęk i niepokój po kawie (ADORA2A)',
+                gene: 'ADORA2A', chr: 'chr 22q11',
+                mode: 'autosomal-dominant', modeLabel: 'Autosomalne dominujące',
+                marker: 'D22S283', distCM: 15.0,
+                desc: 'Wariant receptora adenozyny decyduje, czy kawa daje skupienie i energię, czy wywołuje roztrzęsienie i lęk.'
+            },
+            {
+                id: 'mcm6',
+                name: '🥛 11. Trwałość laktazy / tolerancja laktozy (MCM6/LCT)',
+                gene: 'MCM6 / LCT', chr: 'chr 2q21',
+                mode: 'autosomal-dominant', modeLabel: 'Autosomalne dominujące',
+                marker: 'D2S2382', distCM: 8.7,
+                desc: 'Mutacja promotorowa trwałej laktazy (-13910*T) utrzymuje wydzielanie enzymu u dorosłych. 1 lub 2 kopie dają tolerancję mleka.'
             },
             {
                 id: 'aldh2',
-                name: '🍷 Reakcja na alkohol / Asian Flush (ALDH2)',
-                gene: 'ALDH2 (chromosom 12q24)',
-                mode: 'autosomal-dominant',
-                modeLabel: 'Autosomalne dominujące (niepełna dominacja)',
-                mutSymbol: 'A (wadliwy ALDH2*2)',
-                wtSymbol: 'a (aktywny enzym)',
-                desc: 'Niedobór dehydrogenazy aldehydowej powoduje nagromadzenie toksycznego aldehydu octowego. Już 1 kopia mutacji wywołuje gwałtowny rumieniec twarzy, przyspieszone tętno i nudności po alkoholu.'
+                name: '🍷 12. Rumieniec po alkoholu / Asian Flush (ALDH2)',
+                gene: 'ALDH2', chr: 'chr 12q24',
+                mode: 'autosomal-dominant', modeLabel: 'Autosomalne dominujące (niepełna dominacja)',
+                marker: 'D12S352', distCM: 12.6,
+                desc: 'Zmutowany enzym wolniej utlenia toksyczny aldehyd octowy. Już 1 kopia powoduje gwałtowny rumieniec i mdłości po alkoholu.'
             },
             {
-                id: 'brca1',
-                name: '🧬 Predyspozycja nowotworowa (BRCA1/BRCA2)',
-                gene: 'BRCA1 (chr 17q21) / BRCA2 (chr 13q13)',
-                mode: 'autosomal-dominant',
-                modeLabel: 'Autosomalne dominujące (wysokie ryzyko)',
-                mutSymbol: 'B (mutacja patogenna)',
-                wtSymbol: 'b (prawidłowy gen naprawy)',
-                desc: 'Gen supresorowy naprawy DNA przez rekombinację homologiczną. Odziedziczenie pojedynczej zmutowanej kopii (0/1) zwiększa życiowe ryzyko nowotworu piersi/jajnika do 60-80%.'
+                id: 'adh1b',
+                name: '🍺 13. Podatność na kaca / szybkość usuwania alkoholu (ADH1B)',
+                gene: 'ADH1B', chr: 'chr 4q23',
+                mode: 'codominant', modeLabel: 'Kodominacja / Addytywne',
+                marker: 'ADH1C', distCM: 5.4,
+                desc: 'Tempo wstępnej konwersji etanolu do aldehydu octowego w hepatocytach.'
             },
+            {
+                id: 'bcmo1',
+                name: '🥕 14. Konwersja beta-karotenu do witaminy A (BCMO1)',
+                gene: 'BCMO1', chr: 'chr 16q23',
+                mode: 'autosomal-recessive', modeLabel: 'Autosomalne recesywne',
+                marker: 'D16S3050', distCM: 18.2,
+                desc: 'Wydajność enzymu przekształcającego roślinny karoten w aktywny retinol (u homozygot konwersja spada nawet o 60%).'
+            },
+            {
+                id: 'cyp2r1',
+                name: '☀️ 15. Wchłanianie i poziom witaminy D (CYP2R1/GC)',
+                gene: 'CYP2R1', chr: 'chr 11p15',
+                mode: 'codominant', modeLabel: 'Kodominacja / Addytywne',
+                marker: 'D11S4175', distCM: 14.5,
+                desc: 'Sprawność 25-hydroksylacji cholekalcyferolu w wątrobie po ekspozycji na słońce.'
+            },
+            {
+                id: 'fads1',
+                name: '🐟 16. Metabolizm kwasów tłuszczowych Omega-3 i Omega-6 (FADS1)',
+                gene: 'FADS1', chr: 'chr 11q12',
+                mode: 'codominant', modeLabel: 'Kodominacja / Addytywne',
+                marker: 'FADS3', distCM: 4.8,
+                desc: 'Wydajność syntezy długołańcuchowych kwasów EPA i DHA z roślinnych kwasów alfa-linolenowych.'
+            },
+            {
+                id: 'fgf21',
+                name: '🍩 17. Preferencja słodkiego i apetyt na cukier (FGF21)',
+                gene: 'FGF21', chr: 'chr 19q13',
+                mode: 'codominant', modeLabel: 'Kodominacja / Addytywne',
+                marker: 'D19S220', distCM: 11.0,
+                desc: 'Hormon wątrobowy wysyłający do mózgu sygnał nasycenia cukrami prostymi.'
+            },
+            {
+                id: 'fto',
+                name: '🍽️ 18. Odczuwanie sytości po posiłku (FTO)',
+                gene: 'FTO', chr: 'chr 16q12',
+                mode: 'codominant', modeLabel: 'Kodominacja / Addytywne',
+                marker: 'IRX3', distCM: 7.9,
+                desc: 'Wpływ na tempo odczuwania nasycenia i poziom leptyny/greliny po jedzeniu.'
+            },
+
+            // III. Cechy fizyczne i wygląd zewnętrzny
+            {
+                id: 'pax3',
+                name: '🤨 19. Zrastanie się brwi / monobrew (PAX3)',
+                gene: 'PAX3', chr: 'chr 2q36',
+                mode: 'autosomal-dominant', modeLabel: 'Autosomalne dominujące',
+                marker: 'D2S337', distCM: 19.3,
+                desc: 'Wariant zagęszczający mieszki włosowe nad nasadą nosa (synophrys).'
+            },
+            {
+                id: 'widows_peak',
+                name: '📐 20. Linia włosów na czole / „wdowi szpic”',
+                gene: 'Locus 4q', chr: 'chr 4q12',
+                mode: 'autosomal-dominant', modeLabel: 'Autosomalne dominujące',
+                marker: 'D4S1575', distCM: 16.0,
+                desc: 'Charakterystyczny trójkątny zarys linii owłosienia czoła.'
+            },
+            {
+                id: 'tongue_rolling',
+                name: '👅 21. Zwijanie języka w rurkę',
+                gene: 'Locus 8p', chr: 'chr 8p21',
+                mode: 'autosomal-dominant', modeLabel: 'Autosomalne dominujące',
+                marker: 'D8S264', distCM: 17.5,
+                desc: 'Zdolność skoordynowanego zwijania bocznych krawędzi języka ku górze.'
+            },
+            {
+                id: 'hitchhiker_thumb',
+                name: '👍 22. Kciuk autostopowicza (hipermobilność kciuka)',
+                gene: 'Locus 14q', chr: 'chr 14q24',
+                mode: 'autosomal-recessive', modeLabel: 'Autosomalne recesywne',
+                marker: 'D14S275', distCM: 13.8,
+                desc: 'Cecha recesywna pozwalająca odgiąć dystalny staw kciuka o kąt bliski 90 stopni.'
+            },
+
+            // IV. Sen i rytm dobowy
+            {
+                id: 'per2',
+                name: '⏰ 23. Chronotyp: ranny ptaszek vs nocny marek (PER2)',
+                gene: 'PER2', chr: 'chr 2q37',
+                mode: 'codominant', modeLabel: 'Kodominacja / Addytywne',
+                marker: 'PER1', distCM: 15.2,
+                desc: 'Długość endogennego cyklu dobowego regulująca porę naturalnego wybudzania i zasypiania.'
+            },
+            {
+                id: 'dec2',
+                name: '🛌 24. Gen naturalnego krótkiego snu (DEC2/BHLHE41)',
+                gene: 'DEC2 (BHLHE41)', chr: 'chr 12p12',
+                mode: 'autosomal-dominant', modeLabel: 'Autosomalne dominujące',
+                marker: 'D12S1631', distCM: 10.1,
+                desc: 'Rzadki wariant pozwalający na pełną regenerację po 4-6 godzinach snu bez deficytów poznawczych.'
+            },
+            {
+                id: 'achoo',
+                name: '☀️ 25. Odruch kichania na jasne światło / ACHOO (rs10427255)',
+                gene: 'rs10427255', chr: 'chr 2q22',
+                mode: 'autosomal-dominant', modeLabel: 'Autosomalne dominujące',
+                marker: 'D2S1776', distCM: 12.0,
+                desc: 'Krzyżowe pobudzenie nerwu wzrokowego i trójdzielnego przy wyjściu na ostre słońce.'
+            },
+            {
+                id: 'gabra1',
+                name: '😴 26. Wrażliwość na hałas w nocy i wrzeciona senne (GABRA1)',
+                gene: 'GABRA1', chr: 'chr 5q34',
+                mode: 'codominant', modeLabel: 'Kodominacja / Addytywne',
+                marker: 'D5S424', distCM: 9.4,
+                desc: 'Zdolność wzgórza do blokowania bodźców zewnętrznych podczas fazy NREM snu.'
+            },
+            {
+                id: 'sleep_paralysis',
+                name: '👻 27. Podatność na paraliż przysenny',
+                gene: 'PER2 / Locus 2q', chr: 'chr 2q35',
+                mode: 'codominant', modeLabel: 'Kodominacja / Addytywne',
+                marker: 'D2S396', distCM: 21.0,
+                desc: 'Dyssynchronia między wybudzeniem kory mózgowej a powrotem napięcia mięśniowego po fazie REM.'
+            },
+
+            // V. Wydolność fizyczna, mięśnie i fizjologia
+            {
+                id: 'actn3',
+                name: '🏃 28. Typ włókien mięśniowych: sprinter vs maratończyk (ACTN3)',
+                gene: 'ACTN3', chr: 'chr 11q13',
+                mode: 'codominant', modeLabel: 'Kodominacja / Addytywne',
+                marker: 'D11S987', distCM: 14.6,
+                desc: 'Allel R syntetyzuje alfa-aktyninę-3 we włóknach szybkich (siła, sprint); allel X faworyzuje włókna wolne (wytrzymałość tlenowa).'
+            },
+            {
+                id: 'ace',
+                name: '🫀 29. Odpowiedź na trening wydolnościowy VO2 max (ACE)',
+                gene: 'ACE (I/D)', chr: 'chr 17q23',
+                mode: 'codominant', modeLabel: 'Kodominacja / Addytywne',
+                marker: 'D17S1832', distCM: 8.2,
+                desc: 'Wariant insercyjny (I) sprzyja adaptacji tlenowej, wariant delecyjny (D) sportom siłowym.'
+            },
+            {
+                id: 'col5a1',
+                name: '🤸 30. Elastyczność ścięgien i więzadeł (COL5A1)',
+                gene: 'COL5A1', chr: 'chr 9q34',
+                mode: 'codominant', modeLabel: 'Kodominacja / Addytywne',
+                marker: 'COL5A2', distCM: 11.5,
+                desc: 'Budowa kolagenu determinująca gibkość stawów i naturalną odporność na kontuzje ścięgien.'
+            },
+            {
+                id: 'il6',
+                name: '🔥 31. Stan zapalny i regeneracja mięśni po treningu (IL6)',
+                gene: 'IL6', chr: 'chr 7p15',
+                mode: 'codominant', modeLabel: 'Kodominacja / Addytywne',
+                marker: 'D7S513', distCM: 16.8,
+                desc: 'Poziom produkcji cytokin prozapalnych i czas trwania opóźnionej bolesności mięśni (DOMS).'
+            },
+            {
+                id: 'hmga2',
+                name: '📏 32. Predyspozycja do wzrostu docelowego (HMGA2)',
+                gene: 'HMGA2', chr: 'chr 12q14',
+                mode: 'codominant', modeLabel: 'Kodominacja / Addytywne',
+                marker: 'D12S345', distCM: 13.4,
+                desc: 'Główny locus regulujący proliferację komórek i tempo wzrostu kości długich.'
+            },
+            {
+                id: 'hoxa',
+                name: '🖐️ 33. Proporcje długości palców dłoni / wskaźnik 2D:4D',
+                gene: 'HOXA13', chr: 'chr 7p15',
+                mode: 'codominant', modeLabel: 'Kodominacja / Addytywne',
+                marker: 'HOXA11', distCM: 6.7,
+                desc: 'Stosunek długości palca wskazującego do serdecznego zależny od wczesnej ekspozycji prenatalnej.'
+            },
+
+            // VI. Układ nerwowy, percepcja i zachowanie
+            {
+                id: 'comt_stress',
+                name: '🧠 34. Odporność na stres: Strateg vs Wojownik (COMT Val158Met)',
+                gene: 'COMT', chr: 'chr 22q11',
+                mode: 'codominant', modeLabel: 'Kodominacja / Pośrednie',
+                marker: 'D22S446', distCM: 10.8,
+                desc: 'Allel Met (wolny rozkład dopaminy) = doskonałe skupienie w spokoju; allel Val = zimna krew pod presją („wojownik”).'
+            },
+            {
+                id: 'scn9a',
+                name: '⚡ 35. Naturalny próg odczuwania bólu (SCN9A)',
+                gene: 'SCN9A', chr: 'chr 2q24',
+                mode: 'codominant', modeLabel: 'Kodominacja / Pośrednie',
+                marker: 'SCN11A', distCM: 5.9,
+                desc: 'Czułość kanałów sodowych Nav1.7 przewodzących impulsy nocyceptywne w nerwach obwodowych.'
+            },
+            {
+                id: 'drd4',
+                name: '🧭 36. Poszukiwanie nowości i ciekawość poznawcza (DRD4 7R)',
+                gene: 'DRD4', chr: 'chr 11p15',
+                mode: 'autosomal-dominant', modeLabel: 'Autosomalne dominujące',
+                marker: 'D11S1392', distCM: 12.3,
+                desc: 'Allel 7R receptora dopaminy powiązany z silną potrzebą eksploracji i nowych bodźców.'
+            },
+            {
+                id: 'oxtr',
+                name: '🤝 37. Empatia i zaufanie społeczne (OXTR)',
+                gene: 'OXTR', chr: 'chr 3p25',
+                mode: 'codominant', modeLabel: 'Kodominacja / Pośrednie',
+                marker: 'D3S1262', distCM: 17.1,
+                desc: 'Gęstość receptorów oksytocyny wpływająca na łatwość rozpoznawania emocji u innych.'
+            },
+            {
+                id: 'slc6a4',
+                name: '🌈 38. Skłonność do optymizmu i odporność psychiczna (SLC6A4)',
+                gene: 'SLC6A4 (5-HTTLPR)', chr: 'chr 17q11',
+                mode: 'codominant', modeLabel: 'Kodominacja / Addytywne',
+                marker: 'D17S800', distCM: 9.1,
+                desc: 'Wariant długi (L) transportera serotoniny sprzyja szybszemu powrotowi do równowagi emocjonalnej.'
+            },
+
+            // VII. Nowe fascynujące cechy (pozycje 39–50)
             {
                 id: 'opn1mw',
-                name: '👁️ Tetrachromatyzm / percepcja barw (OPN1MW na chr X)',
-                gene: 'OPN1MW (chromosom Xq28)',
-                mode: 'x-linked',
-                modeLabel: 'Sprzężone z chromosomem X',
-                mutSymbol: 'X* (czopek mutant)',
-                wtSymbol: 'X (czopek typowy)',
-                desc: 'Gen opsyny czopków siatkówki na chromosomie X. U kobiet heterozygotycznych (X X*) obecność dwóch różnych wariantów czopka może dać czwarty fotoreceptor (widzenie 100 mln odcieni). Mężczyźni mają tylko jeden chromosom X (XY).'
+                name: '👁️ 39. Tetrachromatyzm u kobiet / 100 mln barw (OPN1MW na chr X)',
+                gene: 'OPN1MW', chr: 'chr Xq28',
+                mode: 'x-linked', modeLabel: 'Sprzężone z chromosomem X',
+                marker: 'OPN1LW', distCM: 3.2,
+                desc: 'Mutacja czopków na chromosomie X. U kobiet heterozygotycznych pozwala wykształcić 4. rodzaj fotoreceptora (widzenie 100 mln kolorów). Mężczyźni mają tylko 1 chromosom X (XY).'
             },
             {
-                id: 'custom-dom',
-                name: '⚙️ Dowolna inna cecha: Autosomalna dominująca',
-                gene: 'Locus autosomalne (para chromosomów homologicznych)',
-                mode: 'autosomal-dominant',
-                modeLabel: 'Autosomalne dominujące',
-                mutSymbol: 'A (mutacja)',
-                wtSymbol: 'a (prawidłowy)',
-                desc: 'Cecha dominująca: 1 lub 2 kopie mutacji wystarczą do ujawnienia fenotypu u potomka.'
+                id: 'perfect_pitch',
+                name: '🎼 40. Słuch absolutny / Perfect Pitch (PCDH15)',
+                gene: 'PCDH15 / Locus 8q', chr: 'chr 8q24',
+                mode: 'autosomal-dominant', modeLabel: 'Autosomalne dominujące',
+                marker: 'D8S550', distCM: 18.0,
+                desc: 'Wrodzona zdolność rozpoznawania i nazywania wysokości dźwięków bez punktu odniesienia.'
             },
             {
-                id: 'custom-rec',
-                name: '⚙️ Dowolna inna cecha: Autosomalna recesywna',
-                gene: 'Locus autosomalne (para chromosomów homologicznych)',
-                mode: 'autosomal-recessive',
-                modeLabel: 'Autosomalne recesywne',
-                mutSymbol: 'a (mutacja)',
-                wtSymbol: 'A (prawidłowy)',
-                desc: 'Cecha recesywna: Do wystąpienia cechy wymagane są 2 zmutowane kopie (1/1). 1 kopia czyni osobnika zdrowym nosicielem.'
+                id: 'mosquito',
+                name: '🦟 41. Atrakcyjność zapachowa skóry dla komarów (HLA-DRB1)',
+                gene: 'HLA-DRB1', chr: 'chr 6p21',
+                mode: 'codominant', modeLabel: 'Kodominacja / Addytywne',
+                marker: 'HLA-B', distCM: 8.4,
+                desc: 'Skład kwasów tłuszczowych i kwasu mlekowego w pocie przyciągający lub odstraszający owady.'
             },
             {
-                id: 'custom-codom',
-                name: '⚙️ Dowolna inna cecha: Kodominacja / Pośrednie',
-                gene: 'Locus autosomalne',
-                mode: 'codominant',
-                modeLabel: 'Kodominacja / Cechy addytywne',
-                mutSymbol: 'A1 (mutacja)',
-                wtSymbol: 'A2 (prawidłowy)',
-                desc: 'Każdy allel ujawnia się równomiernie – heterozygota wykazuje fenotyp pośredni.'
+                id: 'pax9',
+                name: '🦷 42. Naturalny brak zębów mądrości / ósemek (PAX9)',
+                gene: 'PAX9', chr: 'chr 14q13',
+                mode: 'autosomal-dominant', modeLabel: 'Autosomalne dominujące',
+                marker: 'MSX1', distCM: 15.6,
+                desc: 'Ewolucyjna redukcja szczęki: brak zawiązków trzecich zębów trzonowych.'
+            },
+            {
+                id: 'tenm2',
+                name: '😡 43. Mizofonia / irytacja dźwiękiem mlaskania (TENM2)',
+                gene: 'TENM2', chr: 'chr 5q34',
+                mode: 'autosomal-dominant', modeLabel: 'Autosomalne dominujące',
+                marker: 'D5S424', distCM: 14.2,
+                desc: 'Nadreaktywność układu limbicznego na powtarzalne dźwięki wydawane przy jedzeniu.'
+            },
+            {
+                id: 'gpr26',
+                name: '🚢 44. Podatność na chorobę lokomocyjną / kinetozę (GPR26)',
+                gene: 'GPR26', chr: 'chr 10q26',
+                mode: 'autosomal-dominant', modeLabel: 'Autosomalne dominujące',
+                marker: 'D10S597', distCM: 19.5,
+                desc: 'Czułość błędnika i integracja sygnałów wzrokowych z uchem wewnętrznym podczas ruchu.'
+            },
+            {
+                id: 'ucp1',
+                name: '❄️ 45. Tolerancja na zimno i termogeneza (UCP1 / termogenina)',
+                gene: 'UCP1', chr: 'chr 4q31',
+                mode: 'codominant', modeLabel: 'Kodominacja / Addytywne',
+                marker: 'D4S1539', distCM: 11.8,
+                desc: 'Zdolność brunatnej tkanki tłuszczowej do bezpośredniego spalania kalorii na ciepło.'
+            },
+            {
+                id: 'trpm8',
+                name: '❄️ 46. Wrażliwość na chłód z mentolu (TRPM8)',
+                gene: 'TRPM8', chr: 'chr 2q37',
+                mode: 'codominant', modeLabel: 'Kodominacja / Addytywne',
+                marker: 'D2S2216', distCM: 13.0,
+                desc: 'Receptor mentolu w zakończeniach czuciowych – intensywność odczuwania orzeźwienia.'
+            },
+            {
+                id: 'fut2',
+                name: '🦠 47. Status wydzielacza a mikrobiom jelitowy (FUT2)',
+                gene: 'FUT2', chr: 'chr 19q13',
+                mode: 'autosomal-dominant', modeLabel: 'Autosomalne dominujące',
+                marker: 'FUT1', distCM: 4.2,
+                desc: 'Wydzielanie antygenów ABO do śluzu jelitowego, stanowiących pożywkę dla pożytecznych bakterii.'
+            },
+            {
+                id: 'hla_sleep',
+                name: '🚶 48. Skłonność do somnambulizmu / lunatykowania (HLA-DQB1)',
+                gene: 'HLA-DQB1', chr: 'chr 6p21',
+                mode: 'autosomal-dominant', modeLabel: 'Autosomalne dominujące',
+                marker: 'HLA-DQA1', distCM: 2.5,
+                desc: 'Niepełne wybudzenie z głębokiego snu wolnofalowego (NREM) prowadzące do automatyzmów ruchowych.'
+            },
+            {
+                id: 'mtnr1b',
+                name: '🥱 49. Trudność z rozbudzeniem / bezwładność senna (MTNR1B)',
+                gene: 'MTNR1B', chr: 'chr 11q21',
+                mode: 'codominant', modeLabel: 'Kodominacja / Addytywne',
+                marker: 'D11S4175', distCM: 16.1,
+                desc: 'Czas potrzebny mózgowi na osiągnięcie pełnej czujności i ustąpienie porannego zamglenia.'
+            },
+            {
+                id: 'placebo',
+                name: '✨ 50. Siła odczuwania efektu placebo / Placebom (COMT)',
+                gene: 'COMT / Placebom', chr: 'chr 22q11',
+                mode: 'codominant', modeLabel: 'Kodominacja / Addytywne',
+                marker: 'D22S280', distCM: 11.4,
+                desc: 'Wrażliwość układu dopaminowego i endorfinowego na samo przekonanie o skuteczności leczenia.'
             }
         ];
 
-        let genMotherMuts = 1;
-        let genFatherMuts = 1;
-        let genCrossoverRate = 15; // 15 cM = 15%
+        let currentTrait = GENETIC_TRAITS_50[0];
+        let currentMethodView = 'both'; // 'both' | 'mendel' | 'meiosis'
 
-        function initGeneticsSimulator() {
+        function initApp() {
             const select = document.getElementById('gen-trait-select');
             if (!select) return;
 
             select.innerHTML = '';
-            GENETIC_TRAITS.forEach(trait => {
+            GENETIC_TRAITS_50.forEach(t => {
                 const opt = document.createElement('option');
-                opt.value = trait.id;
-                opt.textContent = trait.name;
+                opt.value = t.id;
+                opt.textContent = t.name;
                 select.appendChild(opt);
             });
 
+            // Ustawienie domyślne: matka posiada mutację (1 kopia)
+            document.getElementById('mother-check').checked = true;
+            document.getElementById('father-check').checked = false;
+
             onGenTraitChange();
-            runGeneticSimulation();
         }
 
         function onGenTraitChange() {
             const select = document.getElementById('gen-trait-select');
-            if (!select) return;
+            const id = select ? select.value : GENETIC_TRAITS_50[0].id;
+            currentTrait = GENETIC_TRAITS_50.find(t => t.id === id) || GENETIC_TRAITS_50[0];
 
-            const trait = GENETIC_TRAITS.find(t => t.id === select.value) || GENETIC_TRAITS[0];
+            // Aktualizacja opisu i dobranych automatycznie parametrów
             const infoBox = document.getElementById('gen-trait-info');
             if (infoBox) {
-                infoBox.innerHTML = `<strong>Gen i lokalizacja:</strong> ${trait.gene} &bull; <strong>Typ dziedziczenia:</strong> <span style="color:#38bdf8;">${trait.modeLabel}</span><br>${trait.desc}`;
+                infoBox.innerHTML = `
+                    <div style="font-size:0.95rem; font-weight:700; color:#f1f5f9; margin-bottom:4px;">${currentTrait.name}</div>
+                    <div style="margin-bottom:6px;">${currentTrait.desc}</div>
+                    <div class="gen-trait-specs">
+                        <span class="gen-spec-pill" style="border-color:#38bdf8; color:#38bdf8;">Lokalizacja: ${currentTrait.chr} (${currentTrait.gene})</span>
+                        <span class="gen-spec-pill" style="border-color:#34d399; color:#34d399;">Model: ${currentTrait.modeLabel}</span>
+                        <span class="gen-spec-pill" style="border-color:#c084fc; color:#c084fc;">Sprzężony marker: ${currentTrait.marker}</span>
+                        <span class="gen-spec-pill" style="border-color:#fbbf24; color:#fbbf24;">Odległość: ${currentTrait.distCM} cM (${currentTrait.distCM}% crossing-over)</span>
+                    </div>
+                `;
             }
 
-            // Obsługa cech sprzężonych z X dla ojca (mężczyzna ma tylko 1 chr X)
-            const fBtn2 = document.getElementById('f-btn-2');
-            if (fBtn2) {
-                if (trait.mode === 'x-linked') {
-                    fBtn2.disabled = true;
-                    fBtn2.title = 'Mężczyźni mają tylko jeden chromosom X (XY)';
-                    if (genFatherMuts === 2) setFatherMutations(1);
-                } else {
-                    fBtn2.disabled = false;
-                    fBtn2.title = '';
+            // Obsługa cech sprzężonych z chromosomem X u ojca (mężczyzna ma tylko 1 chr X)
+            const fHomoBox = document.getElementById('father-homo-box');
+            const fHomoCheck = document.getElementById('father-homo');
+            if (currentTrait.mode === 'x-linked') {
+                if (fHomoBox) fHomoBox.style.display = 'none';
+                if (fHomoCheck) fHomoCheck.checked = false;
+            } else {
+                const fCheck = document.getElementById('father-check');
+                if (fHomoBox && fCheck && fCheck.checked) fHomoBox.style.display = 'flex';
+            }
+
+            onParentStateChange();
+        }
+
+        function toggleMotherMutation() {
+            const check = document.getElementById('mother-check');
+            check.checked = !check.checked;
+            onMotherCheckChange();
+        }
+
+        function onMotherCheckChange() {
+            const check = document.getElementById('mother-check');
+            const homoBox = document.getElementById('mother-homo-box');
+            const homoCheck = document.getElementById('mother-homo');
+
+            if (check.checked) {
+                homoBox.style.display = 'flex';
+            } else {
+                homoBox.style.display = 'none';
+                homoCheck.checked = false;
+            }
+            onParentStateChange();
+        }
+
+        function toggleFatherMutation() {
+            const check = document.getElementById('father-check');
+            check.checked = !check.checked;
+            onFatherCheckChange();
+        }
+
+        function onFatherCheckChange() {
+            const check = document.getElementById('father-check');
+            const homoBox = document.getElementById('father-homo-box');
+            const homoCheck = document.getElementById('father-homo');
+
+            if (check.checked) {
+                if (currentTrait.mode !== 'x-linked') {
+                    homoBox.style.display = 'flex';
                 }
+            } else {
+                homoBox.style.display = 'none';
+                homoCheck.checked = false;
             }
-
-            updateParentDisplays();
-            checkZeroCondition();
+            onParentStateChange();
         }
 
-        function setMotherMutations(n) {
-            genMotherMuts = n;
-            [0, 1, 2].forEach(val => {
-                const btn = document.getElementById(`m-btn-${val}`);
-                if (btn) btn.classList.toggle('active', val === n);
-            });
-            updateParentDisplays();
-            checkZeroCondition();
+        function getMotherMutCount() {
+            const check = document.getElementById('mother-check');
+            const homo = document.getElementById('mother-homo');
+            if (!check || !check.checked) return 0;
+            return (homo && homo.checked) ? 2 : 1;
         }
 
-        function setFatherMutations(n) {
-            genFatherMuts = n;
-            [0, 1, 2].forEach(val => {
-                const btn = document.getElementById(`f-btn-${val}`);
-                if (btn) btn.classList.toggle('active', val === n);
-            });
-            updateParentDisplays();
-            checkZeroCondition();
+        function getFatherMutCount() {
+            const check = document.getElementById('father-check');
+            const homo = document.getElementById('father-homo');
+            if (!check || !check.checked) return 0;
+            if (currentTrait.mode === 'x-linked') return 1;
+            return (homo && homo.checked) ? 2 : 1;
         }
 
-        function updateParentDisplays() {
-            const trait = getCurrentTrait();
-            const isX = trait.mode === 'x-linked';
+        function onParentStateChange() {
+            const mCount = getMotherMutCount();
+            const fCount = getFatherMutCount();
+            const isX = currentTrait.mode === 'x-linked';
 
-            // Matka
+            // Kafelki - podświetlenie
+            const mTile = document.getElementById('mother-tile');
+            const fTile = document.getElementById('father-tile');
+            if (mTile) mTile.classList.toggle('checked', mCount > 0);
+            if (fTile) fTile.classList.toggle('checked', fCount > 0);
+
+            // Matka - podgląd
             const mBadge = document.getElementById('mother-status-badge');
             const mChr1 = document.getElementById('mother-chr1');
             const mChr2 = document.getElementById('mother-chr2');
-            if (mBadge && mChr1 && mChr2) {
-                if (genMotherMuts === 0) {
-                    mBadge.textContent = 'Homozygota dzika (0/0)';
-                    mChr1.textContent = isX ? 'X (prawidłowy)' : 'Allel dziki (0)';
-                    mChr2.textContent = isX ? 'X (prawidłowy)' : 'Allel dziki (0)';
-                } else if (genMotherMuts === 1) {
-                    mBadge.textContent = 'Heterozygota (0/1 - nosicielka)';
-                    mChr1.textContent = isX ? 'X* (zmutowany)' : 'Mutacja (1)';
-                    mChr2.textContent = isX ? 'X (prawidłowy)' : 'Allel dziki (0)';
-                } else {
-                    mBadge.textContent = 'Homozygota zmutowana (1/1)';
-                    mChr1.textContent = isX ? 'X* (zmutowany)' : 'Mutacja (1)';
-                    mChr2.textContent = isX ? 'X* (zmutowany)' : 'Mutacja (1)';
-                }
+            if (mCount === 0) {
+                mBadge.textContent = 'Brak mutacji (0/0)';
+                mBadge.style.color = '#94a3b8';
+                mChr1.textContent = isX ? 'X (prawidłowy)' : 'Allel dziki (0)';
+                mChr2.textContent = isX ? 'X (prawidłowy)' : 'Allel dziki (0)';
+            } else if (mCount === 1) {
+                mBadge.textContent = 'Heterozygota (1 kopia / 0/1)';
+                mBadge.style.color = '#f472b6';
+                mChr1.textContent = isX ? 'X* (mutacja)' : 'Mutacja (1)';
+                mChr2.textContent = isX ? 'X (prawidłowy)' : 'Allel dziki (0)';
+            } else {
+                mBadge.textContent = 'Homozygota zmutowana (2 kopie / 1/1)';
+                mBadge.style.color = '#f472b6';
+                mChr1.textContent = isX ? 'X* (mutacja)' : 'Mutacja (1)';
+                mChr2.textContent = isX ? 'X* (mutacja)' : 'Mutacja (1)';
             }
 
-            // Ojciec
+            // Ojciec - podgląd
             const fBadge = document.getElementById('father-status-badge');
             const fChr1 = document.getElementById('father-chr1');
             const fChr2 = document.getElementById('father-chr2');
-            if (fBadge && fChr1 && fChr2) {
-                if (isX) {
-                    if (genFatherMuts === 0) {
-                        fBadge.textContent = 'Hemizygota dziki (X Y)';
-                        fChr1.textContent = 'X (prawidłowy)';
-                        fChr2.textContent = 'Y (chromosom ojcowski)';
-                    } else {
-                        fBadge.textContent = 'Hemizygota zmutowany (X* Y)';
-                        fChr1.textContent = 'X* (zmutowany)';
-                        fChr2.textContent = 'Y (chromosom ojcowski)';
-                    }
-                } else {
-                    if (genFatherMuts === 0) {
-                        fBadge.textContent = 'Homozygota dzika (0/0)';
-                        fChr1.textContent = 'Allel dziki (0)';
-                        fChr2.textContent = 'Allel dziki (0)';
-                    } else if (genFatherMuts === 1) {
-                        fBadge.textContent = 'Heterozygota (0/1 - nosiciel)';
-                        fChr1.textContent = 'Mutacja (1)';
-                        fChr2.textContent = 'Allel dziki (0)';
-                    } else {
-                        fBadge.textContent = 'Homozygota zmutowana (1/1)';
-                        fChr1.textContent = 'Mutacja (1)';
-                        fChr2.textContent = 'Mutacja (1)';
-                    }
-                }
+            if (fCount === 0) {
+                fBadge.textContent = isX ? 'Hemizygota (X Y)' : 'Brak mutacji (0/0)';
+                fBadge.style.color = '#94a3b8';
+                fChr1.textContent = isX ? 'X (prawidłowy)' : 'Allel dziki (0)';
+                fChr2.textContent = isX ? 'Y (chromosom ojcowski)' : 'Allel dziki (0)';
+            } else if (fCount === 1) {
+                fBadge.textContent = isX ? 'Hemizygota zmutowany (X* Y)' : 'Heterozygota (1 kopia / 0/1)';
+                fBadge.style.color = '#38bdf8';
+                fChr1.textContent = isX ? 'X* (mutacja)' : 'Mutacja (1)';
+                fChr2.textContent = isX ? 'Y (chromosom ojcowski)' : 'Allel dziki (0)';
+            } else {
+                fBadge.textContent = 'Homozygota zmutowana (2 kopie / 1/1)';
+                fBadge.style.color = '#38bdf8';
+                fChr1.textContent = 'Mutacja (1)';
+                fChr2.textContent = 'Mutacja (1)';
             }
-        }
 
-        function checkZeroCondition() {
-            const isZero = (genMotherMuts === 0 && genFatherMuts === 0);
+            // Sprawdzenie warunku braku wyboru u obojga
+            const isZero = (mCount === 0 && fCount === 0);
             const alertBox = document.getElementById('gen-zero-alert');
             const runBtn = document.getElementById('gen-run-simulation-btn');
             const resultsArea = document.getElementById('gen-results-area');
@@ -957,32 +1408,50 @@
             if (alertBox) alertBox.style.display = isZero ? 'flex' : 'none';
             if (runBtn) {
                 runBtn.disabled = isZero;
-                runBtn.title = isZero ? 'Wybierz co najmniej jedną mutację u matki lub ojca' : '';
+                runBtn.title = isZero ? 'Zaznacz występowanie mutacji u matki lub ojca' : '';
             }
             if (isZero && resultsArea) {
                 resultsArea.style.display = 'none';
             }
-            return isZero;
+
+            // Automatyczne odświeżenie symulacji, gdy wybrano min. jednego rodzica
+            if (!isZero) {
+                runGeneticSimulation();
+            }
         }
 
-        function updateCrossoverLabel(val) {
-            genCrossoverRate = parseInt(val, 10);
-            const label = document.getElementById('crossover-rate-val');
-            if (label) label.textContent = `${genCrossoverRate} cM (${genCrossoverRate}%)`;
+        function setMethodView(view) {
+            currentMethodView = view;
+            document.getElementById('tab-both').classList.toggle('active', view === 'both');
+            document.getElementById('tab-mendel').classList.toggle('active', view === 'mendel');
+            document.getElementById('tab-meiosis').classList.toggle('active', view === 'meiosis');
+
+            const cardA = document.getElementById('card-method-a');
+            const cardB = document.getElementById('card-method-b');
+            const grid = document.getElementById('results-grid');
+
+            if (view === 'both') {
+                if (cardA) cardA.style.display = 'flex';
+                if (cardB) cardB.style.display = 'flex';
+                if (grid) grid.style.gridTemplateColumns = 'repeat(auto-fit, minmax(340px, 1fr))';
+            } else if (view === 'mendel') {
+                if (cardA) cardA.style.display = 'flex';
+                if (cardB) cardB.style.display = 'none';
+                if (grid) grid.style.gridTemplateColumns = '1fr';
+            } else if (view === 'meiosis') {
+                if (cardA) cardA.style.display = 'none';
+                if (cardB) cardB.style.display = 'flex';
+                if (grid) grid.style.gridTemplateColumns = '1fr';
+            }
         }
 
-        function getCurrentTrait() {
-            const select = document.getElementById('gen-trait-select');
-            const id = select ? select.value : 'tas2r38';
-            return GENETIC_TRAITS.find(t => t.id === id) || GENETIC_TRAITS[0];
-        }
-
-        /* Główny algorytm symulacji */
+        /* Główny silnik obliczeń in silico */
         function runGeneticSimulation() {
-            if (checkZeroCondition()) return;
+            const mCount = getMotherMutCount();
+            const fCount = getFatherMutCount();
+            if (mCount === 0 && fCount === 0) return;
 
-            const trait = getCurrentTrait();
-            const isX = trait.mode === 'x-linked';
+            const isX = currentTrait.mode === 'x-linked';
             const N = 1000;
 
             const resultsArea = document.getElementById('gen-results-area');
@@ -992,25 +1461,24 @@
             // WARIANT A: MENDLOWSKI (Punnett + Monte Carlo)
             // ==========================================
             let mGametes = [];
-            if (genMotherMuts === 0) mGametes = [0, 0];
-            else if (genMotherMuts === 1) mGametes = [1, 0];
+            if (mCount === 0) mGametes = [0, 0];
+            else if (mCount === 1) mGametes = [1, 0];
             else mGametes = [1, 1];
 
             let fGametes = [];
             if (isX) {
-                fGametes = [genFatherMuts === 1 ? 1 : 0, 'Y'];
+                fGametes = [fCount === 1 ? 1 : 0, 'Y'];
             } else {
-                if (genFatherMuts === 0) fGametes = [0, 0];
-                else if (genFatherMuts === 1) fGametes = [1, 0];
+                if (fCount === 0) fGametes = [0, 0];
+                else if (fCount === 1) fGametes = [1, 0];
                 else fGametes = [1, 1];
             }
 
-            renderPunnettSquare(mGametes, fGametes, trait);
+            renderPunnettSquare(mGametes, fGametes, currentTrait);
 
             let count0 = 0;
             let count1 = 0;
             let count2 = 0;
-
             let daughtersTotal = 0;
             let daughtersMut = 0;
             let sonsTotal = 0;
@@ -1058,28 +1526,30 @@
 
             const phenoEl = document.getElementById('phenotype-summary-A');
             let phenoText = '';
-            if (trait.mode === 'autosomal-dominant') {
+            if (currentTrait.mode === 'autosomal-dominant') {
                 const affected = ((count1 + count2) / N * 100).toFixed(1);
-                phenoText = `⭐ ${affected}% potomstwa ujawni badaną cechę (${p1}% heterozygot + ${p2}% homozygot). Tylko ${p0}% osobników będzie wolnych od mutacji.`;
-            } else if (trait.mode === 'autosomal-recessive') {
-                phenoText = `⭐ ${p2}% potomstwa ujawni pełną cechę recesywną (homozygoty 1/1). Aż ${p1}% to bezobjawowi nosiciele (0/1), a ${p0}% to osoby bez mutacji (0/0).`;
-            } else if (trait.mode === 'codominant') {
-                phenoText = `⭐ 3 odrębne fenotypy: ${p0}% typ dziki (0 mutacji), ${p1}% fenotyp pośredni/zrównoważony (1 mutacja), ${p2}% silny fenotyp zmutowany (2 mutacje).`;
-            } else if (trait.mode === 'x-linked') {
+                phenoText = `⭐ <strong>${affected}% potomstwa</strong> ujawni badaną cechę (${p1}% heterozygot + ${p2}% homozygot). ${p0}% osobników to homozygota dzika (0/0) bez cechy.`;
+            } else if (currentTrait.mode === 'autosomal-recessive') {
+                phenoText = `⭐ <strong>${p2}% potomstwa</strong> ujawni pełną cechę recesywną (homozygoty 1/1). Aż <strong>${p1}%</strong> to bezobjawowi nosiciele (0/1), a ${p0}% to osoby bez mutacji (0/0).`;
+            } else if (currentTrait.mode === 'codominant') {
+                phenoText = `⭐ 3 odrębne fenotypy: <strong>${p0}%</strong> typ dziki (0 mutacji), <strong>${p1}%</strong> forma pośrednia/zbalansowana (1 mutacja), <strong>${p2}%</strong> pełny fenotyp zmutowany (2 mutacje).`;
+            } else if (currentTrait.mode === 'x-linked') {
                 const sPerc = sonsTotal > 0 ? (sonsMut / sonsTotal * 100).toFixed(1) : '0';
-                phenoText = `⭐ U synów: ${sPerc}% odziedziczy mutację na chromosomie X od matki. U córek: nosicielstwo zależy od kombinacji X matki i X ojca.`;
+                phenoText = `⭐ U synów: <strong>${sPerc}%</strong> odziedziczy mutację na chromosomie X od matki. U córek: nosicielstwo zależy od kombinacji X matki i ojca.`;
             }
             if (phenoEl) phenoEl.innerHTML = phenoText;
 
             // ==========================================
             // WARIANT B: MEJOTYCZNY Z CROSSING-OVER
             // ==========================================
+            // Automatycznie dobrana odległość genetyczna i marker dla tego genu!
+            const crossoverRate = currentTrait.distCM;
             const haploDiagram = document.getElementById('haplotypes-diagram');
             if (haploDiagram) {
                 haploDiagram.innerHTML = `
-                    <div style="color:#94a3b8; margin-bottom:4px;">Sfazowane haplotypy chromosomów rodziców (Locus 1: cecha &bull; Locus 2: marker):</div>
-                    <div>👩 Matka: Chr-A: [<span style="color:#f472b6;">${mGametes[0] === 1 ? 'Mut(1)' : 'Dziki(0)'}</span> &mdash; Marker-B] | Chr-B: [<span style="color:#f472b6;">${mGametes[1] === 1 ? 'Mut(1)' : 'Dziki(0)'}</span> &mdash; Marker-b]</div>
-                    <div>👨 Ojciec: Chr-A: [<span style="color:#38bdf8;">${fGametes[0] === 1 ? 'Mut(1)' : 'Dziki(0)'}</span> &mdash; Marker-B] | Chr-B: [<span style="color:#38bdf8;">${fGametes[1] === 'Y' ? 'Y (brak locus)' : (fGametes[1] === 1 ? 'Mut(1)' : 'Dziki(0)')}</span> &mdash; Marker-b]</div>
+                    <div style="color:#94a3b8; margin-bottom:4px;">Sfazowane haplotypy chromosomów rodziców (Locus 1: <strong>${currentTrait.gene}</strong> &bull; Locus 2: <strong>${currentTrait.marker}</strong>):</div>
+                    <div>👩 Matka: Chr-A: [<span style="color:#f472b6;">${mGametes[0] === 1 ? 'Mut(1)' : 'Dziki(0)'}</span> &mdash; ${currentTrait.marker}-A] | Chr-B: [<span style="color:#f472b6;">${mGametes[1] === 1 ? 'Mut(1)' : 'Dziki(0)'}</span> &mdash; ${currentTrait.marker}-B]</div>
+                    <div>👨 Ojciec: Chr-A: [<span style="color:#38bdf8;">${fGametes[0] === 1 ? 'Mut(1)' : 'Dziki(0)'}</span> &mdash; ${currentTrait.marker}-A] | Chr-B: [<span style="color:#38bdf8;">${fGametes[1] === 'Y' ? 'Y (brak locus)' : (fGametes[1] === 1 ? 'Mut(1)' : 'Dziki(0)')}</span> &mdash; ${currentTrait.marker}-B]</div>
                 `;
             }
 
@@ -1088,7 +1558,7 @@
 
             for (let i = 0; i < N; i++) {
                 const r = Math.random() * 100;
-                if (r < genCrossoverRate) {
+                if (r < crossoverRate) {
                     recombCount++;
                 } else {
                     parentalCount++;
@@ -1106,13 +1576,15 @@
 
             const recombEl = document.getElementById('recomb-summary-B');
             if (recombEl) {
-                recombEl.innerHTML = `Przy odległości <strong>${genCrossoverRate} cM</strong> w 1000 wirtualnych podziałach komórkowych doszło do <strong>${recombCount}</strong> pęknięć chromatyd niesiostrzanych z wymianą odcinków. <strong>${pRecomb}%</strong> potomstwa otrzymało nowy, zrekombinowany układ alleli!`;
+                recombEl.innerHTML = `Na podstawie mapy genetycznej dla genu <strong>${currentTrait.gene}</strong> dobrano odległość <strong>${crossoverRate} cM</strong> do markera <strong>${currentTrait.marker}</strong>. W 1000 wirtualnych podziałach komórkowych doszło do <strong>${recombCount}</strong> pęknięć chromatyd niesiostrzanych z wymianą odcinków. <strong>${pRecomb}%</strong> potomstwa otrzymało zrekombinowany układ alleli!`;
             }
 
             // ==========================================
             // SZCZEGÓŁOWY OPIS KROK PO KROKU
             // ==========================================
-            renderStepByStepReport(trait, {
+            renderStepByStepReport({
+                trait: currentTrait,
+                mCount, fCount,
                 p0, p1, p2, count0, count1, count2,
                 parentalCount, recombCount, pParental, pRecomb,
                 isX, daughtersTotal, daughtersMut, sonsTotal, sonsMut
@@ -1158,56 +1630,52 @@
             `;
         }
 
-        function renderStepByStepReport(trait, stats) {
+        function renderStepByStepReport(data) {
             const container = document.getElementById('gen-step-by-step-content');
             if (!container) return;
 
-            const motherGenotypeText = genMotherMuts === 0 ? 'homozygota dzika 0/0' : (genMotherMuts === 1 ? 'heterozygota 0/1' : 'homozygota zmutowana 1/1');
-            const fatherGenotypeText = genFatherMuts === 0 ? 'homozygota dzika 0/0' : (genFatherMuts === 1 ? 'heterozygota 0/1' : 'homozygota zmutowana 1/1');
+            const trait = data.trait;
+            const mText = data.mCount === 0 ? 'brak mutacji (0/0)' : (data.mCount === 1 ? '1 kopia mutacji (0/1 - heterozygota)' : '2 kopie mutacji (1/1 - homozygota)');
+            const fText = data.fCount === 0 ? 'brak mutacji (0/0)' : (data.fCount === 1 ? '1 kopia mutacji (0/1 - heterozygota)' : '2 kopie mutacji (1/1 - homozygota)');
 
             container.innerHTML = `
                 <div class="gen-step-item">
                     <strong>Krok 1: Analiza stanu wejściowego rodziców</strong><br>
-                    Badana cecha: <em>${trait.name}</em> (Gen: <code>${trait.gene}</code>, model: <strong>${trait.modeLabel}</strong>).<br>
-                    Matka posiada ${genMotherMuts} mutację/e (${motherGenotypeText}), Ojciec posiada ${genFatherMuts} mutację/e (${fatherGenotypeText}).<br>
-                    Ponieważ warunek podwójnego zera (0 u matki i 0 u ojca) nie zaszedł, symulacja rozpoczęła przetwarzanie przekazu genetycznego.
-                </div>
-
-                <div class="gen-step-item" style="border-left-color: #10b981;">
-                    <strong>Krok 2: Symulacja mejozy i losowanie gamet (Segregacja Mendlowska)</strong><br>
-                    W procesie oogenezy i spermatogenezy komórki diploidalne dzielą się, redukując liczbę chromosomów o połowę.<br>
-                    Zgodnie z I Prawem Mendla każdy rodzic przekazał losowo jeden ze swoich dwóch alleli z równym prawdopodobieństwem (50% / 50% dla heterozygot, 100% dla homozygot).
+                    Wybrana cecha: <em>${trait.name}</em> (Gen: <code>${trait.gene}</code> na chromosomie <code>${trait.chr}</code>, model: <strong>${trait.modeLabel}</strong>).<br>
+                    &bull; Matka: <strong>${mText}</strong>.<br>
+                    &bull; Ojciec: <strong>${fText}</strong>.<br>
+                    Ponieważ warunek wyboru (mutacja u matki, ojca lub obojga jednocześnie) został spełniony, przeprowadzono analizę obiema metodami.
                 </div>
 
                 <div class="gen-step-item" style="border-left-color: #38bdf8;">
-                    <strong>Krok 3: Wariant A – Wyniki 1000 połączeń Monte Carlo</strong><br>
-                    W wirtualnym eksperymencie przeprowadzono <strong>1000 niezależnych zapłodnień</strong> in silico:<br>
-                    &bull; <strong>${stats.count0} potomków (${stats.p0}%)</strong> otrzymało układ <strong>0/0</strong> (brak mutacji),<br>
-                    &bull; <strong>${stats.count1} potomków (${stats.p1}%)</strong> otrzymało układ <strong>0/1</strong> (dokładnie jedna mutacja),<br>
-                    &bull; <strong>${stats.count2} potomków (${stats.p2}%)</strong> otrzymało układ <strong>1/1</strong> (dwie mutacje).<br>
-                    Niewielkie różnice ułamkowe względem idealnych proporcji Punnetta (np. 25% / 50% / 25%) są w pełni naturalnym efektem losowości próby Monte Carlo.
+                    <strong>Krok 2: Metoda 1 – Model Mendlowski i losowanie gamet</strong><br>
+                    W oogenezie i spermatogenezie komórki diploidalne dzielą się mejotycznie, losowo rozdzielając allele do komórek jajowych i plemników (I Prawo Mendla).<br>
+                    W wirtualnym eksperymencie <strong>1000 połączeń gamet Monte Carlo</strong> uzyskano:<br>
+                    &bull; <strong>${data.count0} osobników (${data.p0}%)</strong> z genotypem <strong>0/0</strong> (brak mutacji),<br>
+                    &bull; <strong>${data.count1} osobników (${data.p1}%)</strong> z genotypem <strong>0/1</strong> (dokładnie jedna mutacja),<br>
+                    &bull; <strong>${data.count2} osobników (${data.p2}%)</strong> z genotypem <strong>1/1</strong> (dwie mutacje).<br>
+                    Zgodność z teoretycznym kwadratem Punnetta potwierdza statystyczną stabilność próby losowej.
                 </div>
 
                 <div class="gen-step-item" style="border-left-color: #c084fc;">
-                    <strong>Krok 4: Wariant B – Symulacja Crossing-Over dla chromosomu</strong><br>
-                    Podczas profazy I mejozy badano dwa sąsiadujące loci o odległości genetycznej <strong>${genCrossoverRate} cM</strong>.<br>
-                    &bull; W <strong>${stats.parentalCount} zapłodnieniach (${stats.pParental}%)</strong> chromosom przeszedł w całości bez pęknięć (układ rodzicielski).<br>
-                    &bull; W <strong>${stats.recombCount} zapłodnieniach (${stats.pRecomb}%)</strong> doszło do zjawiska <em>crossing-over</em> – wymiana odcinków między chromatydami niesiostrzanymi stworzyła nową kombinację badanej mutacji z markerem.<br>
-                    Fakt, że wskaźnik rekombinacji wynosi ok. ${genCrossoverRate}% (a nie 50%), jest empirycznym dowodem na <strong>sprzężenie genetyczne</strong> genów leżących na tym samym chromosomie!
+                    <strong>Krok 3: Metoda 2 – Symulacja Mejozy z Crossing-over dobranym dla genu</strong><br>
+                    Dla genu <code>${trait.gene}</code> na chromosomie <code>${trait.chr}</code> system automatycznie dobrał fizycznie sprzężony marker <code>${trait.marker}</code> o odległości <strong>${trait.distCM} cM</strong>.<br>
+                    W 1000 podziałach mejotycznych in silico:<br>
+                    &bull; W <strong>${data.parentalCount} przypadkach (${data.pParental}%)</strong> chromosomy przeszły bez pęknięć (haplotypy rodzicielskie),<br>
+                    &bull; W <strong>${data.recombCount} przypadkach (${data.pRecomb}%)</strong> zaszło zjawisko <em>crossing-over</em> – pęknięcie i krzyżowa wymiana chromatyd niesiostrzanych.<br>
+                    Wartość ta ściśle odpowiada zadanej odległości genetycznej w centymorganach, ilustrując, że geny leżące bliżej siebie rzadziej ulegają rozprzężeniu.
                 </div>
 
-                <div class="gen-step-item" style="border-left-color: #f59e0b;">
-                    <strong>Krok 5: Wnioski fenotypowe dla człowieka</strong><br>
+                <div class="gen-step-item" style="border-left-color: #10b981;">
+                    <strong>Krok 4: Porównanie i wnioski fenotypowe dla człowieka</strong><br>
                     ${trait.desc}<br>
-                    W codziennym życiu oznacza to, że przy takim układzie genetycznym rodziców prawdopodobieństwo wystąpienia cechy u kolejnego dziecka wynosi <strong>${trait.mode === 'autosomal-dominant' ? ((stats.count1 + stats.count2) / 10).toFixed(1) + '%' : (trait.mode === 'autosomal-recessive' ? stats.p2 + '%' : stats.p1 + '% (forma pośrednia)')}</strong>.
+                    Przy obecnym stanie rodziców szansa, że kolejne dziecko wykaże tę cechę wynosi <strong>${trait.mode === 'autosomal-dominant' ? ((data.count1 + data.count2) / 10).toFixed(1) + '%' : (trait.mode === 'autosomal-recessive' ? data.p2 + '%' : data.p1 + '% (forma pośrednia)')}</strong>.
                 </div>
             `;
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            initGeneticsSimulator();
-        });
-        initGeneticsSimulator();
+        document.addEventListener('DOMContentLoaded', initApp);
+        initApp();
     </script>
 </body>
 
