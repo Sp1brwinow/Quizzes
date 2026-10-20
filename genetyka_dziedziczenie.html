@@ -899,7 +899,7 @@
         <!-- Nagłówek strony -->
         <header class="header-card">
             <h1>🧬 Symulator Krzyżówek Genetycznych In Silico</h1>
-            <p>Wybierz jedną z 50 cech człowieka, wskaż występowanie mutacji u matki, ojca lub obojga i porównaj klasyczny model Mendlowski z symulacją mejotyczną (crossing-over) na 1000 połączeń Monte Carlo.</p>
+            <p>Wybierz jedną z 66 cech i dolegliwości człowieka, wskaż występowanie mutacji u matki, ojca lub obojga i porównaj klasyczny model Mendlowski z symulacją mejotyczną (crossing-over) na 1000 połączeń Monte Carlo.</p>
         </header>
 
         <!-- Główny moduł symulatora -->
@@ -909,16 +909,16 @@
                     <span>🔬 Konfiguracja Krzyżówki Genetycznej</span>
                 </div>
                 <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-                    <span class="gen-sim-badge">Baza: 50 cech człowieka</span>
+                    <span class="gen-sim-badge">Baza: 66 cech i dolegliwości</span>
                     <span class="gen-sim-badge" style="border-color:rgba(56,189,248,0.4); color:#38bdf8;">N = 1000 połączeń</span>
                 </div>
             </div>
 
-            <!-- Wybór cechy (50 cech) -->
+            <!-- Wybór cechy (66 cech) -->
             <div class="gen-select-row">
-                <label for="gen-trait-select">🎯 Wybierz badaną mutację / cechę z listy 50-ciu cech człowieka:</label>
+                <label for="gen-trait-select">🎯 Wybierz badaną mutację / cechę z listy 66 cech i dolegliwości człowieka:</label>
                 <select id="gen-trait-select" class="gen-dropdown" onchange="onGenTraitChange()">
-                    <!-- 50 cech generowane przez JS -->
+                    <!-- 66 cech generowanych przez JS -->
                 </select>
                 <div id="gen-trait-info" class="gen-trait-desc">
                     <!-- Opis cechy i automatycznie dobrane parametry -->
@@ -1444,7 +1444,7 @@
     <!-- Logika JavaScript -->
     <script>
         /* ==========================================================================
-           KOMPLETNA BAZA 50 NIECHOROBOWYCH CECH CZŁOWIEKA Z PARAMETRAMI GENETYCZNYMI
+           KOMPLETNA BAZA 66 CECH I DOLEGLIWOŚCI CZŁOWIEKA Z PARAMETRAMI GENETYCZNYMI
            ========================================================================== */
         const GENETIC_TRAITS_50 = [
             // I. Smak, węch i zmysły
@@ -1909,6 +1909,152 @@
                 marker: 'D22S280', distCM: 11.4,
                 h2: 65, envFactors: 'Relacja z lekarzem/terapeutą, autorytet, kolor i cena preparatu, nastawienie psychiczne i oczekiwania.',
                 desc: 'Wrażliwość układu dopaminowego i endorfinowego na samo przekonanie o skuteczności leczenia.'
+            },
+
+            // VIII. Lekkie dolegliwości chorobowe, alergie, bóle głowy i nadwrażliwości (pozycje 51–66)
+            {
+                id: 'kcnk18_migraine',
+                name: '⚡ 51. Rodzinna migrena z aurą (KCNK18 / kanał TRESK)',
+                gene: 'KCNK18', chr: 'chr 10q25',
+                mode: 'autosomal-dominant', modeLabel: 'Autosomalne dominujące (z niepełną penetracją)',
+                marker: 'D10S192', distCM: 7.8,
+                h2: 55, envFactors: 'Wyzwalacze dietetyczne (czerwone wino, dojrzałe sery, czekolada, glutaminian), zmiany ciśnienia barometrycznego, stres i nagły spadek napięcia po pracy, nieregularny rytm snu.',
+                desc: 'Mutacja kanału potasowego TRESK powoduje nadpobudliwość nocyceptorów nerwu trójdzielnego w oponach mózgu. Prowadzi do silnych, pulsujących bólów głowy z aurą wzrokową i światłowstrętem.'
+            },
+            {
+                id: 'flg_eczema',
+                name: '🧴 52. Atopowe zapalenie skóry / defekt bariery naskórka (FLG / filagryna)',
+                gene: 'FLG', chr: 'chr 1q21',
+                mode: 'codominant', modeLabel: 'Kodominacja / Addytywne',
+                marker: 'CRNN', distCM: 3.5,
+                h2: 65, envFactors: 'Systematyczne stosowanie emolientów, wilgotność powietrza, twardość wody do kąpieli, kontakt z silnymi detergentami, alergeny roztoczy i sierści zwierząt.',
+                desc: 'Utrata funkcji filagryny (mutacje null) osłabia barierę stratum corneum („nieszczelna skóra”). 1 kopia mutacji powoduje suchość i wrażliwość skóry; 2 kopie wywołują silne AZS i skłonność do marszu alergicznego (astma/katar).'
+            },
+            {
+                id: 'aoc1_histamine',
+                name: '🧀 53. Nietolerancja histaminy pokarmowej (AOC1 / DAO)',
+                gene: 'AOC1 (DAO)', chr: 'chr 7q36',
+                mode: 'codominant', modeLabel: 'Kodominacja / Addytywne',
+                marker: 'D7S2462', distCM: 9.2,
+                h2: 60, envFactors: 'Spożywanie produktów bogatych w histaminę (sery pleśniowe, tuńczyk, pomidory, wino, kiszonki), leki blokujące enzym DAO, stany zapalne jelit.',
+                desc: 'Obniżona aktywność diaminooksydazy w nabłonku jelit uniemożliwia szybką degradację histaminy z posiłku, powodując uderzenia gorąca, pokrzywkę, tachykardię i ból głowy.'
+            },
+            {
+                id: 'tlr4_nickel',
+                name: '💍 54. Alergia kontaktowa na nikiel w biżuterii (TLR4)',
+                gene: 'TLR4', chr: 'chr 9q33',
+                mode: 'autosomal-dominant', modeLabel: 'Autosomalne dominujące',
+                marker: 'D9S1826', distCM: 12.4,
+                h2: 60, envFactors: 'Długotrwały kontakt skóry z niklem (tania biżuteria, zegarki, guziki od jeansów), pot i wilgoć ułatwiające uwalnianie jonów Ni2+, mikrouszkodzenia naskórka.',
+                desc: 'Wariant receptora odporności wrodzonej TLR4 bezpośrednio wiąże jony niklu, imitując infekcję bakteryjną i uruchamiając gwałtowną wypryskową reakcję alergiczną skóry.'
+            },
+            {
+                id: 'oprm1_dental',
+                name: '🦷 55. Zapotrzebowanie na znieczulenie u dentysty (OPRM1)',
+                gene: 'OPRM1 (A118G)', chr: 'chr 6q25',
+                mode: 'codominant', modeLabel: 'Kodominacja / Addytywne',
+                marker: 'D6S1009', distCM: 8.9,
+                h2: 65, envFactors: 'Lęk stomatologiczny i poziom stresu (obniżający próg czucia), rodzaj i technika podania środka znieczulającego (artykaina vs lidokaina), stan zapalny miazgi.',
+                desc: 'Wariant G receptora mi-opioidowego obniża odpowiedź na endorfiny i leki przeciwbólowe. Osoby z wariantem G/G często wymagają 2–3 dawek znieczulenia stomatologicznego, by nie odczuwać bólu podczas zabiegu.'
+            },
+            {
+                id: 'fmo3_tma',
+                name: '🐟 56. Łagodny zespół zapachu rybnego po posiłku (FMO3)',
+                gene: 'FMO3', chr: 'chr 1q24',
+                mode: 'autosomal-recessive', modeLabel: 'Autosomalne recesywne',
+                marker: 'D1S2844', distCM: 6.8,
+                h2: 85, envFactors: 'Spożycie pokarmów bogatych w cholinę i lecytynę (jaja, podroby, ryby morskie, soja), równowaga mikrobiomu jelitowego, pH potu.',
+                desc: 'Zmniejszona wydajność enzymu FMO3 spowalnia utlenianie lotnej trimetyloaminy. Po spożyciu obfitych posiłków bogatych w cholinę nadmiar trimetyloaminy wydzielany jest z potem i oddechem.'
+            },
+            {
+                id: 'trpa1_weather',
+                name: '🌦️ 57. Meteopatia i pogodowy ból głowy przy zmianie frontu (TRPA1)',
+                gene: 'TRPA1', chr: 'chr 8q21',
+                mode: 'codominant', modeLabel: 'Kodominacja / Addytywne',
+                marker: 'D8S268', distCM: 10.3,
+                h2: 55, envFactors: 'Dynamika zmian ciśnienia atmosferycznego, ekspozycja na chłodny wiatr, nawodnienie organizmu, wypoczynek i techniki relaksacyjne.',
+                desc: 'Receptory baro- i termoczułe TRPA1 w oponach mózgowych reagują na nagłe spadki ciśnienia i fronty atmosferyczne, dając uczucie tępego ucisku i bólu głowy przed zmianą pogody.'
+            },
+            {
+                id: 'htr2a_bruxism',
+                name: '😬 58. Nocne zgrzytanie zębami / bruksizm (HTR2A)',
+                gene: 'HTR2A', chr: 'chr 13q14',
+                mode: 'autosomal-dominant', modeLabel: 'Autosomalne dominujące',
+                marker: 'D13S153', distCM: 14.7,
+                h2: 60, envFactors: 'Poziom stresu w ciągu dnia, żucie gumy przed snem, spożycie kofeiny i alkoholu wieczorem, stosowanie szyny relaksacyjnej.',
+                desc: 'Wariant receptora serotoninowego 5-HT2A powiązany z nocną nadaktywnością mięśni żwaczy, prowadzący do ścierania zębów, bólu stawów skroniowo-żuchwowych i porannych bólów głowy.'
+            },
+            {
+                id: 'il4_hayfever',
+                name: '🌾 59. Skłonność do kataru siennego / pyłkowicy (IL4 / IL13)',
+                gene: 'IL4 / IL13', chr: 'chr 5q31',
+                mode: 'codominant', modeLabel: 'Kodominacja / Addytywne',
+                marker: 'D5S436', distCM: 5.1,
+                h2: 65, envFactors: 'Stężenie pyłków roślinnych w powietrzu, zanieczyszczenie spalinami miejskimi (smog nasila reakcję), stosowanie filtrów HEPA, wczesna immunoterapia alergenowa.',
+                desc: 'Polimorfizmy w klastrze genów interleukin 4 i 13 promują nadmierną syntezę przeciwciał IgE, skutkując kichaniem, katarem i łzawieniem oczu w sezonie pylenia traw i drzew.'
+            },
+            {
+                id: 'tnf_aphtae',
+                name: '💥 60. Skłonność do nawracających aft w jamie ustnej (TNF / HLA)',
+                gene: 'TNF', chr: 'chr 6p21',
+                mode: 'autosomal-dominant', modeLabel: 'Autosomalne dominujące (niepełna penetracja)',
+                marker: 'HLA-B', distCM: 4.6,
+                h2: 50, envFactors: 'Mikrourazy mechaniczne (np. twarde pieczywo, szczoteczka do zębów), spadek odporności, niedobory żelaza/witamin B12, pasta z SLS, stres.',
+                desc: 'Nadmierna miejscowa produkcja cytokiny TNF-alfa w błonie śluzowej sprawia, że nawet niewinne zadrapanie lub stres prowadzi do powstania bolesnej, piekącej afty.'
+            },
+            {
+                id: 'slc2a5_fructose',
+                name: '🍎 61. Nietolerancja fruktozy i wzdęcia po owocach (SLC2A5 / GLUT5)',
+                gene: 'SLC2A5', chr: 'chr 1p36',
+                mode: 'autosomal-recessive', modeLabel: 'Autosomalne recesywne',
+                marker: 'D1S2667', distCM: 11.7,
+                h2: 70, envFactors: 'Ilość fruktozy w porcji, jednoczesna obecność glukozy (ułatwiającej wchłanianie fruktozy), zawartość sorbitolu w posiłku, stan flory jelitowej.',
+                desc: 'Zmniejszona ilość transporterów GLUT5 w jelicie cienkim. Niewchłonięta fruktoza fermentuje w jelicie grubym, wywołując przelewanie, wzdęcia i bóle brzucha po owocach lub miodzie.'
+            },
+            {
+                id: 'htr3a_ibs',
+                name: '⚡ 62. Reakcja jelitowa na stres / jelito drażliwe (HTR3A)',
+                gene: 'HTR3A', chr: 'chr 15q22',
+                mode: 'codominant', modeLabel: 'Kodominacja / Addytywne',
+                marker: 'D15S1007', distCM: 8.3,
+                h2: 50, envFactors: 'Przewlekły stres psychiczny, techniki wyciszania nerwu błędnego, dieta low-FODMAP, unikanie pośpiechu przy jedzeniu, regularność posiłków.',
+                desc: 'Receptory 5-HT3 na neuronach jelitowego układu nerwowego. Wyrzut neuroprzekaźników stresu z osi mózg-jelito wywołuje nagłe przyspieszenie motoryki jelit i skurcze brzucha.'
+            },
+            {
+                id: 'ugt1a1_gilbert',
+                name: '👁️ 63. Zespół Gilberta / zażółcenie białek oczu w zmęczeniu (UGT1A1)',
+                gene: 'UGT1A1', chr: 'chr 2q37',
+                mode: 'autosomal-recessive', modeLabel: 'Autosomalne recesywne',
+                marker: 'D2S125', distCM: 7.1,
+                h2: 85, envFactors: 'Głodówka i pomijanie posiłków, zarwane noce, infekcje wirusowe, intensywny wysiłek fizyczny, odwodnienie.',
+                desc: 'Wariant w promotorze genu enzymu UGT1A1 obniża sprzęganie bilirubiny w wątrobie. W warunkach przemęczenia lub głodówki białka oczu lekko żółkną (całkowicie łagodna cecha metaboliczna).'
+            },
+            {
+                id: 'mthfr_c677t',
+                name: '🧬 64. Wydajność metylacji i kwasu foliowego (MTHFR C677T)',
+                gene: 'MTHFR', chr: 'chr 1p36',
+                mode: 'codominant', modeLabel: 'Kodominacja / Addytywne',
+                marker: 'D1S2842', distCM: 15.3,
+                h2: 80, envFactors: 'Podaż zielonych warzyw liściastych, suplementacja aktywnym metylofolianem (5-MTHF) zamiast syntetycznego kwasu foliowego, witamina B12, poziom choliny.',
+                desc: 'Polimorfizm C677T obniża aktywność reduktazy folianowej o 30-70%. Osoby z wariantem T/T mają skłonność do wyższej homocysteiny i potrzebują folianów w formie zmetylowanej.'
+            },
+            {
+                id: 'adra2a_raynaud',
+                name: '🧤 65. Zimne dłonie i stopy / skurcz naczyniowy w chłodzie (ADRA2A)',
+                gene: 'ADRA2A', chr: 'chr 10q25',
+                mode: 'autosomal-dominant', modeLabel: 'Autosomalne dominujące',
+                marker: 'D10S587', distCM: 9.7,
+                h2: 65, envFactors: 'Temperatura otoczenia (sięganie do lodówki, zimny wiatr), noszenie rękawiczek termicznych, unikanie kofeiny i nikotyny (zwężających naczynia), rozgrzewka.',
+                desc: 'Nadmierna reaktywność receptorów adrenergicznych naczyń krwionośnych palców na chłód i stres – powoduje przejściowe blednięcie, lodowatość i drętwienie palców dłoni i stóp.'
+            },
+            {
+                id: 'aqp5_sweating',
+                name: '💧 66. Nadmierna potliwość dłoni w emocjach (AQP5 / akwaporyna 5)',
+                gene: 'AQP5', chr: 'chr 12q13',
+                mode: 'codominant', modeLabel: 'Kodominacja / Addytywne',
+                marker: 'D12S368', distCM: 11.1,
+                h2: 60, envFactors: 'Ekspozycja społeczna i wystąpienia publiczne (stres emocjonalny), pikantne potrawy, temperatura i wilgotność otoczenia, preparaty z chlorkiem glinu.',
+                desc: 'Wysoka gęstość kanałów wodnych akwaporyny 5 w gruczołach ekrynowych dłoni. W sytuacjach podwyższonego napięcia emocjonalnego wywołuje gwałtowne pocenie się wnętrza dłoni.'
             }
         ];
 
