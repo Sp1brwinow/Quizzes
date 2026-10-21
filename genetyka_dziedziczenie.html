@@ -1084,7 +1084,33 @@
             <p>Wybierz jeden z 3 trybów: <strong>badanie 1 genu</strong> (I Prawo Mendla), <strong>duetów niezależnych</strong> (II Prawo Mendla) lub <strong>genów sprzężonych</strong> (Czysty Crossing-over Morgana). Obliczenia oparte w 100% na ścisłych prawdopodobieństwach analitycznych (bez losowości Monte Carlo).</p>
         </header>
 
-        <!-- Główny moduł symulatora -->
+        <!-- NAWIGACJA GŁÓWNYCH TRYBÓW BIOLOGICZNYCH -->
+        <div class="gen-mode-nav" role="tablist" aria-label="Wybór trybu biologicznego symulatora">
+            <button type="button" id="btn-mode-single" class="gen-mode-tab active" onclick="switchSimulatorMode('single')" role="tab" aria-selected="true">
+                <span class="gen-mode-icon">🧬</span>
+                <div class="gen-mode-texts">
+                    <span class="gen-mode-name">1. Badanie 1 genu</span>
+                    <span class="gen-mode-sub">I Prawo Mendla &bull; Kwadrat 2×2</span>
+                </div>
+            </button>
+
+            <button type="button" id="btn-mode-dihybrid" class="gen-mode-tab" onclick="switchSimulatorMode('dihybrid')" role="tab" aria-selected="false">
+                <span class="gen-mode-icon">🌿</span>
+                <div class="gen-mode-texts">
+                    <span class="gen-mode-name">2. Duet niezależny</span>
+                    <span class="gen-mode-sub">II Prawo Mendla &bull; Kwadrat 4×4 (16 pól)</span>
+                </div>
+            </button>
+
+            <button type="button" id="btn-mode-linked" class="gen-mode-tab" onclick="switchSimulatorMode('linked')" role="tab" aria-selected="false">
+                <span class="gen-mode-icon">🔬</span>
+                <div class="gen-mode-texts">
+                    <span class="gen-mode-name">3. Geny sprzężone</span>
+                    <span class="gen-mode-sub">Morgan &bull; Czysty Crossing-over (cM)</span>
+                </div>
+            </button>
+        </div>
+
         <div class="gen-sim-box">
             <div class="gen-sim-header">
                 <div class="gen-sim-title">
@@ -1095,6 +1121,9 @@
                     <span class="gen-sim-badge" style="border-color:rgba(56,189,248,0.4); color:#38bdf8;">Analityczne Prawdopodobieństwo (100% Precyzji)</span>
                 </div>
             </div>
+
+            <!-- KONTENER KONFIGURACJI DLA TRYBU 1 (JEDEN GEN - I PRAWO MENDLA) -->
+            <div id="config-container-single" style="display:block;">
 
             <!-- Wybór cechy (66 cech) -->
             <div class="gen-select-row">
