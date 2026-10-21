@@ -339,6 +339,188 @@
             line-height: 1.4;
         }
 
+        /* Nawigacja głównych trybów (Mendel I, Mendel II, Morgan) */
+        .gen-mode-nav {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 12px;
+            margin-bottom: 22px;
+        }
+
+        .gen-mode-tab {
+            background: rgba(15, 23, 42, 0.7);
+            border: 2px solid #334155;
+            border-radius: 12px;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-align: left;
+        }
+
+        .gen-mode-tab:hover {
+            border-color: #64748b;
+            background: rgba(30, 41, 59, 0.7);
+            transform: translateY(-2px);
+        }
+
+        .gen-mode-tab.active {
+            border-color: #38bdf8;
+            background: rgba(14, 116, 144, 0.25);
+            box-shadow: 0 0 16px rgba(56, 189, 248, 0.25);
+        }
+
+        #btn-mode-dihybrid.active {
+            border-color: #c084fc;
+            background: rgba(147, 51, 234, 0.25);
+            box-shadow: 0 0 16px rgba(168, 85, 247, 0.25);
+        }
+
+        #btn-mode-linked.active {
+            border-color: #10b981;
+            background: rgba(16, 185, 129, 0.25);
+            box-shadow: 0 0 16px rgba(16, 185, 129, 0.25);
+        }
+
+        .gen-mode-icon {
+            font-size: 2rem;
+            line-height: 1;
+            flex-shrink: 0;
+        }
+
+        .gen-mode-texts {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .gen-mode-name {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #f1f5f9;
+        }
+
+        .gen-mode-sub {
+            font-size: 0.82rem;
+            color: #94a3b8;
+        }
+
+        /* Siatka Punnetta 4x4 */
+        .punnett-table-4x4 {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: monospace;
+            font-size: 0.84rem;
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .punnett-table-4x4 th, .punnett-table-4x4 td {
+            border: 1px solid #334155;
+            padding: 8px 4px;
+        }
+
+        .punnett-table-4x4 th {
+            background: rgba(30, 41, 59, 0.85);
+            color: #c084fc;
+            font-weight: 700;
+        }
+
+        .punnett-table-4x4 td {
+            background: rgba(11, 17, 32, 0.85);
+            color: #f1f5f9;
+        }
+
+        .punnett-table-4x4 td .cell-geno {
+            font-weight: 700;
+            font-size: 0.86rem;
+            display: block;
+        }
+
+        .punnett-table-4x4 td .cell-pct {
+            font-size: 0.75rem;
+            color: #94a3b8;
+        }
+
+        /* Karty super-fenotypów w Trybie 2 */
+        .gen-super-pheno-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .gen-super-pheno-card {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            border-radius: 10px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .gen-super-pheno-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .gen-super-pheno-title {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: #e2e8f0;
+        }
+
+        .gen-super-pheno-pct {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: #c084fc;
+        }
+
+        /* Karty mejozy Morgana w Trybie 3 */
+        .gen-linked-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .gen-chromosome-rail {
+            background: #070d18;
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            border-radius: 10px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .gen-meiosis-outcome-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 14px;
+        }
+
+        .gen-meiosis-outcome-card {
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 10px;
+            padding: 16px;
+            border: 1px solid #334155;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .gen-meiosis-outcome-card.parental {
+            border-color: rgba(56, 189, 248, 0.4);
+        }
+
+        .gen-meiosis-outcome-card.recomb {
+            border-color: rgba(251, 191, 36, 0.4);
+        }
+
         /* Pasek wyboru widoku metod */
         .gen-view-tabs {
             display: flex;
@@ -899,7 +1081,7 @@
         <!-- Nagłówek strony -->
         <header class="header-card">
             <h1>🧬 Symulator Krzyżówek Genetycznych In Silico</h1>
-            <p>Wybierz jedną z 66 cech i dolegliwości człowieka, wskaż występowanie mutacji u matki, ojca lub obojga i porównaj klasyczny model Mendlowski z symulacją mejotyczną (crossing-over) na 1000 połączeń Monte Carlo.</p>
+            <p>Wybierz jeden z 3 trybów: <strong>badanie 1 genu</strong> (I Prawo Mendla), <strong>duetów niezależnych</strong> (II Prawo Mendla) lub <strong>genów sprzężonych</strong> (Czysty Crossing-over Morgana). Obliczenia oparte w 100% na ścisłych prawdopodobieństwach analitycznych (bez losowości Monte Carlo).</p>
         </header>
 
         <!-- Główny moduł symulatora -->
@@ -910,7 +1092,7 @@
                 </div>
                 <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
                     <span class="gen-sim-badge">Baza: 66 cech i dolegliwości</span>
-                    <span class="gen-sim-badge" style="border-color:rgba(56,189,248,0.4); color:#38bdf8;">N = 1000 połączeń</span>
+                    <span class="gen-sim-badge" style="border-color:rgba(56,189,248,0.4); color:#38bdf8;">Analityczne Prawdopodobieństwo (100% Precyzji)</span>
                 </div>
             </div>
 
@@ -996,23 +1178,137 @@
                 </div>
             </div>
 
-            <!-- Przełącznik widoku metod -->
-            <div style="display:flex; flex-direction:column; gap:8px;">
-                <label style="font-size:0.92rem; font-weight:600; color:#cbd5e1;">
-                    ⚙️ Wybór metody prezentacji wyników:
-                </label>
-                <div class="gen-view-tabs">
-                    <button type="button" class="gen-tab-btn active" id="tab-both" onclick="setMethodView('both')">
-                        🟢 Porównaj obie metody jednocześnie
-                    </button>
-                    <button type="button" class="gen-tab-btn" id="tab-mendel" onclick="setMethodView('mendel')">
-                        🔵 Metoda 1: Model Mendlowski (Punnett)
-                    </button>
-                    <button type="button" class="gen-tab-btn" id="tab-meiosis" onclick="setMethodView('meiosis')">
-                        🟣 Metoda 2: Symulacja Mejozy (Crossing-over)
-                    </button>
+            </div>
+            <!-- KONIEC KONTENERA TRYBU 1 -->
+
+            <!-- KONTENER KONFIGURACJI DLA TRYBU 2 (DUET NIEZALEŻNY - II PRAWO MENDLA) -->
+            <div id="config-container-dihybrid" style="display:none; flex-direction:column; gap:16px;">
+                <div class="gen-select-row">
+                    <label for="dihybrid-pair-select">🎯 Wybierz gotowy pakiet funkcjonalny (2 geny na różnych chromosomach):</label>
+                    <select id="dihybrid-pair-select" class="gen-dropdown" onchange="onDihybridPairChange()">
+                        <!-- Generowane z DIHYBRID_PAIRS -->
+                    </select>
+                    <div id="dihybrid-pair-info" class="gen-trait-desc"></div>
+                </div>
+
+                <div>
+                    <label style="font-size:0.95rem; font-weight:600; color:#cbd5e1; display:block; margin-bottom:8px;">
+                        👪 Konfiguracja genotypów rodziców dla obu genów:
+                    </label>
+                    <div class="gen-parents-grid">
+                        <!-- Matka w Trybie 2 -->
+                        <div class="gen-parent-card mother">
+                            <div class="gen-parent-title">
+                                <span>👩 Matka</span>
+                                <span id="dihybrid-mother-summary" style="font-size:0.8rem; color:#f472b6;">Heterozygota AaBb</span>
+                            </div>
+                            <div style="display:flex; flex-direction:column; gap:10px; margin-top:8px;">
+                                <div>
+                                    <div style="font-size:0.85rem; font-weight:600; color:#cbd5e1; margin-bottom:4px;" id="dihybrid-m-labelA">Gen 1:</div>
+                                    <select id="dihybrid-m-geneA" class="gen-dropdown" onchange="onDihybridParentChange()" style="padding:6px 10px; font-size:0.88rem;">
+                                        <option value="0">Brak mutacji (aa)</option>
+                                        <option value="1" selected>Heterozygota (Aa)</option>
+                                        <option value="2">Homozygota zmutowana (AA)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <div style="font-size:0.85rem; font-weight:600; color:#cbd5e1; margin-bottom:4px;" id="dihybrid-m-labelB">Gen 2:</div>
+                                    <select id="dihybrid-m-geneB" class="gen-dropdown" onchange="onDihybridParentChange()" style="padding:6px 10px; font-size:0.88rem;">
+                                        <option value="0">Brak mutacji (bb)</option>
+                                        <option value="1" selected>Heterozygota (Bb)</option>
+                                        <option value="2">Homozygota zmutowana (BB)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Ojciec w Trybie 2 -->
+                        <div class="gen-parent-card father">
+                            <div class="gen-parent-title">
+                                <span>👨 Ojciec</span>
+                                <span id="dihybrid-father-summary" style="font-size:0.8rem; color:#38bdf8;">Heterozygota AaBb</span>
+                            </div>
+                            <div style="display:flex; flex-direction:column; gap:10px; margin-top:8px;">
+                                <div>
+                                    <div style="font-size:0.85rem; font-weight:600; color:#cbd5e1; margin-bottom:4px;" id="dihybrid-f-labelA">Gen 1:</div>
+                                    <select id="dihybrid-f-geneA" class="gen-dropdown" onchange="onDihybridParentChange()" style="padding:6px 10px; font-size:0.88rem;">
+                                        <option value="0">Brak mutacji (aa)</option>
+                                        <option value="1" selected>Heterozygota (Aa)</option>
+                                        <option value="2">Homozygota zmutowana (AA)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <div style="font-size:0.85rem; font-weight:600; color:#cbd5e1; margin-bottom:4px;" id="dihybrid-f-labelB">Gen 2:</div>
+                                    <select id="dihybrid-f-geneB" class="gen-dropdown" onchange="onDihybridParentChange()" style="padding:6px 10px; font-size:0.88rem;">
+                                        <option value="0">Brak mutacji (bb)</option>
+                                        <option value="1" selected>Heterozygota (Bb)</option>
+                                        <option value="2">Homozygota zmutowana (BB)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
+            <!-- KONIEC KONTENERA TRYBU 2 -->
+
+            <!-- KONTENER KONFIGURACJI DLA TRYBU 3 (DWA GENY SPRZĘŻONE - CROSSING-OVER MORGANA) -->
+            <div id="config-container-linked" style="display:none; flex-direction:column; gap:16px;">
+                <div class="gen-select-row">
+                    <label for="linked-pair-select">🎯 Wybierz parę genów leżących na TYM SAMYM chromosomie:</label>
+                    <select id="linked-pair-select" class="gen-dropdown" onchange="onLinkedPairChange()">
+                        <!-- Generowane z LINKED_PAIRS -->
+                    </select>
+                    <div id="linked-pair-info" class="gen-trait-desc"></div>
+                </div>
+
+                <div>
+                    <label style="font-size:0.95rem; font-weight:600; color:#cbd5e1; display:block; margin-bottom:8px;">
+                        👪 Układ chromosomów homologicznych rodziców (Faza sprzężenia):
+                    </label>
+                    <div class="gen-parents-grid">
+                        <!-- Matka w Trybie 3 -->
+                        <div class="gen-parent-card mother">
+                            <div class="gen-parent-title">
+                                <span>👩 Matka (Badana Mejoza)</span>
+                                <span style="font-size:0.8rem; color:#f472b6;" id="linked-m-phase-badge">Faza Cis (AB / ab)</span>
+                            </div>
+                            <div style="margin-top:8px;">
+                                <div style="font-size:0.85rem; color:#cbd5e1; margin-bottom:4px;">Układ alleli na chromatydach:</div>
+                                <select id="linked-m-phase" class="gen-dropdown" onchange="onLinkedParentChange()" style="font-size:0.88rem;">
+                                    <option value="cis" selected>Faza Cis: Chr 1 niesie obie mutacje [A-B], Chr 2 dziki [a-b]</option>
+                                    <option value="trans">Faza Trans: Chr 1 niesie [A-b], Chr 2 niesie [a-B]</option>
+                                    <option value="homo_mut">Homozygota zmutowana: Obie chromatydy [A-B] i [A-B]</option>
+                                </select>
+                            </div>
+                            <div class="gen-genotype-badge" style="margin-top:10px;">
+                                <span>Chr 1: <strong id="linked-m-chr1">Gen1 (Mut) — Gen2 (Mut)</strong></span>
+                                <span>Chr 2: <strong id="linked-m-chr2">Gen1 (Dziki) — Gen2 (Dziki)</strong></span>
+                            </div>
+                        </div>
+
+                        <!-- Ojciec w Trybie 3 -->
+                        <div class="gen-parent-card father">
+                            <div class="gen-parent-title">
+                                <span>👨 Ojciec</span>
+                                <span style="font-size:0.8rem; color:#38bdf8;">Linia czysta (Tester ab/ab)</span>
+                            </div>
+                            <div style="margin-top:8px;">
+                                <div style="font-size:0.85rem; color:#cbd5e1; margin-bottom:4px;">Układ alleli ojca:</div>
+                                <select id="linked-f-phase" class="gen-dropdown" onchange="onLinkedParentChange()" style="font-size:0.88rem;">
+                                    <option value="recessive" selected>Homozygota dzika / recesywna [a-b / a-b] (Krzyżówka testowa)</option>
+                                    <option value="carrier">Heterozygota dziki/mutacja [A-B / a-b]</option>
+                                </select>
+                            </div>
+                            <div class="gen-genotype-badge" style="margin-top:10px;">
+                                <span>Chr 1: <strong id="linked-f-chr1">Gen1 (Dziki) — Gen2 (Dziki)</strong></span>
+                                <span>Chr 2: <strong id="linked-f-chr2">Gen1 (Dziki) — Gen2 (Dziki)</strong></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- KONIEC KONTENERA TRYBU 3 -->
 
             <!-- Przyciski akcji: Wyjaśnienie założeń oraz Uruchomienie symulacji -->
             <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:stretch;">
@@ -1020,12 +1316,14 @@
                     <span>📖 Wyjaśnij założenia i pojęcia</span>
                 </button>
                 <button type="button" id="gen-run-simulation-btn" class="gen-run-btn" style="flex:2; min-width:280px;" onclick="runGeneticSimulation()">
-                    <span>⚡ Przeprowadź analizę i symulację (1000 połączeń Monte Carlo)</span>
+                    <span>⚡ Oblicz dokładne prawdopodobieństwa dziedziczenia (Analityczne)</span>
                 </button>
             </div>
 
             <!-- Sekcja wyników -->
             <div id="gen-results-area" style="display:none; flex-direction:column; gap:20px;">
+                <!-- SEKCJA WYNIKÓW DLA TRYBU 1 (JEDEN GEN) -->
+                <div id="results-mode-single" style="display:flex; flex-direction:column; gap:20px;">
                 <div class="gen-results-grid" id="results-grid">
                     <!-- Wariant A: Mendlowski / Punktowy -->
                     <div class="gen-variant-card var-a" id="card-method-a">
@@ -1045,16 +1343,16 @@
                             <div id="punnett-square-container"></div>
                         </div>
 
-                        <!-- Procentowe wyniki 1000 prób -->
+                        <!-- Dokładne prawdopodobieństwa analityczne -->
                         <div class="gen-stat-row">
                             <div style="font-size:0.88rem; font-weight:700; color:#f1f5f9; margin-top:4px;">
-                                Wyniki empiryczne (N = 1000 wirtualnych potomków):
+                                Dokładne prawdopodobieństwa teoretyczne (I Prawo Mendla):
                             </div>
                             
                             <div class="gen-stat-item">
                                 <div class="gen-stat-label">
                                     <span>Homozygota dzika (0 mutacji / 0/0):</span>
-                                    <strong id="stat-varA-0mut">0% (0 / 1000)</strong>
+                                    <strong id="stat-varA-0mut">0.0%</strong>
                                 </div>
                                 <div class="gen-progress-bg">
                                     <div id="bar-varA-0mut" class="gen-progress-fill fill-blue" style="width:0%;"></div>
@@ -1064,7 +1362,7 @@
                             <div class="gen-stat-item">
                                 <div class="gen-stat-label">
                                     <span>Heterozygota (1 mutacja / 0/1):</span>
-                                    <strong id="stat-varA-1mut">0% (0 / 1000)</strong>
+                                    <strong id="stat-varA-1mut">0.0%</strong>
                                 </div>
                                 <div class="gen-progress-bg">
                                     <div id="bar-varA-1mut" class="gen-progress-fill fill-emerald" style="width:0%;"></div>
@@ -1074,7 +1372,7 @@
                             <div class="gen-stat-item">
                                 <div class="gen-stat-label">
                                     <span>Homozygota zmutowana (2 mutacje / 1/1):</span>
-                                    <strong id="stat-varA-2mut">0% (0 / 1000)</strong>
+                                    <strong id="stat-varA-2mut">0.0%</strong>
                                 </div>
                                 <div class="gen-progress-bg">
                                     <div id="bar-varA-2mut" class="gen-progress-fill fill-purple" style="width:0%;"></div>
@@ -1089,57 +1387,7 @@
                         </div>
                     </div>
 
-                    <!-- Wariant B: Mejotyczny / Rekombinacyjny -->
-                    <div class="gen-variant-card var-b" id="card-method-b">
-                        <div class="gen-variant-header">
-                            <div class="gen-variant-title">
-                                <span>🧬 Metoda 2: Symulacja Mejozy & Rekombinacji</span>
-                            </div>
-                            <span class="gen-sim-badge" style="color:#c084fc; border-color:rgba(167,139,250,0.4);">Sfazowane haplotypy & Crossing-over</span>
-                        </div>
-                        <div style="font-size:0.85rem; color:#94a3b8;">
-                            Symulacja pęknięć chromatyd w profazie I mejozy dla chromosomu ze sprzężonym markerem dobranym dla tego genu.
-                        </div>
-
-                        <!-- Układ haplotypów -->
-                        <div id="haplotypes-diagram" style="background:#070d18; border:1px solid #334155; border-radius:8px; padding:10px; font-family:monospace; font-size:0.84rem;">
-                            <!-- Diagram -->
-                        </div>
-
-                        <!-- Procentowe wyniki rekombinacji -->
-                        <div class="gen-stat-row">
-                            <div style="font-size:0.88rem; font-weight:700; color:#f1f5f9; margin-top:4px;">
-                                Wyniki 1000 podziałów mejotycznych i zapłodnień:
-                            </div>
-
-                            <div class="gen-stat-item">
-                                <div class="gen-stat-label">
-                                    <span>Układ rodzicielski (brak rekombinacji):</span>
-                                    <strong id="stat-varB-parental">0% (0 / 1000)</strong>
-                                </div>
-                                <div class="gen-progress-bg">
-                                    <div id="bar-varB-parental" class="gen-progress-fill fill-purple" style="width:0%;"></div>
-                                </div>
-                            </div>
-
-                            <div class="gen-stat-item">
-                                <div class="gen-stat-label">
-                                    <span>Układ zrekombinowany (crossing-over):</span>
-                                    <strong id="stat-varB-recomb">0% (0 / 1000)</strong>
-                                </div>
-                                <div class="gen-progress-bg">
-                                    <div id="bar-varB-recomb" class="gen-progress-fill fill-amber" style="width:0%;"></div>
-                                </div>
-                            </div>
-
-                            <div style="background:rgba(167,139,250,0.1); border:1px solid rgba(167,139,250,0.3); border-radius:8px; padding:10px 12px; margin-top:4px;">
-                                <div style="font-size:0.82rem; color:#94a3b8;">Wpływ rekombinacji na sprzężenie z markerem:</div>
-                                <div id="recomb-summary-B" style="font-size:0.9rem; color:#e2e8f0; margin-top:2px;"></div>
-                            </div>
-                        </div>
                     </div>
-                </div>
-
                 <!-- Moduł Hybrydowy: Siła Odziedziczalności (h^2) i Asystent Gemini AI -->
                 <div class="gen-hybrid-card" id="hybrid-genetics-card">
                     <div class="gen-hybrid-header">
@@ -1221,6 +1469,167 @@
                         <!-- Dynamically generated description -->
                     </div>
                 </div>
+                </div>
+                <!-- KONIEC SEKCJI WYNIKÓW TRYBU 1 -->
+
+                <!-- SEKCJA WYNIKÓW DLA TRYBU 2 (DUET NIEZALEŻNY - II PRAWO MENDLA) -->
+                <div id="results-mode-dihybrid" style="display:none; flex-direction:column; gap:20px;">
+                    <!-- Karta Kwadratu Punnetta 4x4 -->
+                    <div class="gen-variant-card" style="border-color: rgba(192, 132, 252, 0.45);">
+                        <div class="gen-variant-header">
+                            <div class="gen-variant-title" style="color: #c084fc;">
+                                <span>📊 II Prawo Mendla: Siatka Punnetta Dihybrydy (4×4 = 16 pól)</span>
+                            </div>
+                            <span class="gen-sim-badge" style="color: #c084fc; border-color: rgba(192, 132, 252, 0.4);">Niezależna Asocjacja Genów</span>
+                        </div>
+                        <div style="font-size: 0.88rem; color: #cbd5e1;">
+                            Rozkład 4 typów gamet matki i 4 typów gamet ojca dla dwóch genów leżących na różnych chromosomach. Każde pole przedstawia wypadkowy genotyp i dokładne prawdopodobieństwo:
+                        </div>
+                        
+                        <div style="overflow-x: auto;" id="dihybrid-punnett-container">
+                            <!-- Siatka 4x4 generowana dynamicznie -->
+                        </div>
+
+                        <!-- Edukacyjny alert dlaczego brak crossing-over -->
+                        <div class="gen-alert-block" style="border-color: rgba(56, 189, 248, 0.35); background: rgba(14, 116, 144, 0.12); margin-top: 6px;">
+                            <span style="font-size: 1.5rem;">ℹ️</span>
+                            <div style="font-size: 0.88rem; color: #cbd5e1;">
+                                <strong style="color: #38bdf8;">Dlaczego w tym trybie nie występuje Crossing-over?</strong><br>
+                                Badane geny znajdują się na <strong>dwóch zupełnie różnych chromosomach</strong> (np. chr 15 i chr 22). Zgodnie z <strong>II Prawem Mendla</strong> wędrują one do gamet całkowicie niezależnie (szansa na każdą kombinację to 25%). Crossing-over zachodzi wyłącznie w obrębie tej samej cząsteczki DNA!
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Karta Rozkładu Super-Fenotypów -->
+                    <div class="gen-variant-card" style="border-color: rgba(56, 189, 248, 0.4);">
+                        <div class="gen-variant-header">
+                            <div class="gen-variant-title" style="color: #38bdf8;">
+                                <span>🏆 Wypadkowe Super-Fenotypy Potomstwa w Praktyce</span>
+                            </div>
+                            <span class="gen-sim-badge" style="color: #38bdf8; border-color: rgba(56, 189, 248, 0.4);">Interakcja 2 Cech</span>
+                        </div>
+                        <div style="font-size: 0.88rem; color: #cbd5e1;">
+                            Zestawienie połączonych efektów obu genów w życiu codziennym wraz z wyliczonym teoretycznym odsetkiem dzieci:
+                        </div>
+
+                        <div id="dihybrid-super-pheno-grid" class="gen-super-pheno-grid">
+                            <!-- 4 karty super-fenotypów generowane dynamicznie -->
+                        </div>
+                    </div>
+
+                    <!-- Asystent Gemini AI dla Duetu -->
+                    <div class="gen-ai-panel">
+                        <div style="font-size: 1rem; font-weight: 700; color: #d8b4fe; display: flex; align-items: center; gap: 8px;">
+                            <span>✨ Asystent Naukowy Gemini AI (Interpretacja Duetu Cech)</span>
+                        </div>
+                        <div style="font-size: 0.88rem; color: #cbd5e1;">
+                            Zapytaj sztuczną inteligencję o praktyczne konsekwencje połączenia tych dwóch cech u potomstwa:
+                        </div>
+                        <div class="gen-ai-chips-row">
+                            <span style="font-size: 0.8rem; color: #94a3b8;">Szybkie pytania:</span>
+                            <button type="button" class="gen-ai-chip" style="border-color:#c084fc; color:#c084fc; font-weight:700;" onclick="askDihybridAi('synergy')">👥 Jak te dwie cechy oddziałują na siebie?</button>
+                            <button type="button" class="gen-ai-chip" onclick="askDihybridAi('recommendations')">💡 Praktyczne zalecenia dietetyczne i życiowe</button>
+                            <button type="button" class="gen-ai-chip" onclick="askDihybridAi('extremes')">⚡ Co oznacza fenotyp skrajny (najsilniejszy)?</button>
+                        </div>
+                        <div class="gen-ai-input-row">
+                            <input type="text" id="gen-ai-dihybrid-q" class="gen-ai-input" placeholder="Wpisz pytanie o połączony efekt obu genów...">
+                            <button type="button" id="gen-ai-dihybrid-btn" class="gen-ai-ask-btn" onclick="submitDihybridAiQuestion()">
+                                <span>✨ Zapytaj Gemini AI</span>
+                            </button>
+                            <button type="button" class="gen-explain-btn" style="border-color:#64748b; color:#94a3b8; font-size:0.85rem; padding:8px 14px;" onclick="clearAiSection()" title="Wyczyść ekran i pole pytania">
+                                <span>🗑️ Wyczyść</span>
+                            </button>
+                        </div>
+                        <div id="gen-ai-dihybrid-response" class="gen-ai-response-box"></div>
+                    </div>
+                </div>
+                <!-- KONIEC SEKCJI WYNIKÓW TRYBU 2 -->
+
+                <!-- SEKCJA WYNIKÓW DLA TRYBU 3 (DWA GENY SPRZĘŻONE - CROSSING-OVER MORGANA) -->
+                <div id="results-mode-linked" style="display:none; flex-direction:column; gap:20px;">
+                    <!-- Karta Mejozy i Rekombinacji Morgana -->
+                    <div class="gen-variant-card" style="border-color: rgba(52, 211, 153, 0.45);">
+                        <div class="gen-variant-header">
+                            <div class="gen-variant-title" style="color: #34d399;">
+                                <span>🧬 Chromosomowa Teoria Dziedziczenia Morgana: Mejoza i Crossing-over</span>
+                            </div>
+                            <span class="gen-sim-badge" style="color: #34d399; border-color: rgba(52, 211, 153, 0.4);" id="linked-dist-badge">Odległość: 12.0 cM</span>
+                        </div>
+                        <div style="font-size: 0.88rem; color: #cbd5e1;">
+                            Geny leżą na <strong>tym samym ramieniu chromosomu</strong>. Fizyczna bliskość na nici DNA trzyma je razem, a o ich rozłączeniu decyduje wyłącznie zjawisko crossing-over w profazie I mejozy:
+                        </div>
+
+                        <!-- Wizualizacja chromosomów -->
+                        <div id="linked-chromosome-visualizer" class="gen-chromosome-rail">
+                            <!-- Generowane dynamicznie -->
+                        </div>
+
+                        <!-- Wyniki procentowe Morgana -->
+                        <div class="gen-meiosis-outcome-grid">
+                            <div class="gen-meiosis-outcome-card parental">
+                                <div style="display:flex; justify-content:space-between; align-items:center;">
+                                    <strong style="color:#38bdf8; font-size:1rem;">📦 Pakiety Rodzicielskie (Nielosowe)</strong>
+                                    <span id="linked-parental-pct" style="font-size:1.2rem; font-weight:800; color:#38bdf8;">88.0%</span>
+                                </div>
+                                <div style="font-size:0.85rem; color:#cbd5e1;" id="linked-parental-desc">
+                                    Chromosom przeszedł bez pęknięcia między badanymi genami. Potomek dziedziczy nienaruszony „pakiet” cech rodzica.
+                                </div>
+                                <div class="gen-progress-bg">
+                                    <div id="linked-parental-bar" class="gen-progress-fill fill-blue" style="width:88%;"></div>
+                                </div>
+                            </div>
+
+                            <div class="gen-meiosis-outcome-card recomb">
+                                <div style="display:flex; justify-content:space-between; align-items:center;">
+                                    <strong style="color:#fbbf24; font-size:1rem;">⚡ Rekombinanty (Po Crossing-over)</strong>
+                                    <span id="linked-recomb-pct" style="font-size:1.2rem; font-weight:800; color:#fbbf24;">12.0%</span>
+                                </div>
+                                <div style="font-size:0.85rem; color:#cbd5e1;" id="linked-recomb-desc">
+                                    Zaszło pęknięcie i wymiana fragmentów chromatyd niesiostrzanych. Potomek otrzymuje nowy, wymieszany układ alleli!
+                                </div>
+                                <div class="gen-progress-bg">
+                                    <div id="linked-recomb-bar" class="gen-progress-fill fill-amber" style="width:12%;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Edukacyjny alert dlaczego BRAK kwadratu Mendla -->
+                        <div class="gen-alert-block" style="border-color: rgba(251, 191, 36, 0.4); background: rgba(251, 191, 36, 0.08); margin-top: 6px;">
+                            <span style="font-size: 1.5rem;">⚠️</span>
+                            <div style="font-size: 0.88rem; color: #cbd5e1;">
+                                <strong style="color: #fbbf24;">Dlaczego w tym trybie NIE UŻYWAMY Kwadratu Mendla?</strong><br>
+                                Kwadrat Mendla (II Prawo) zakłada <em>niezależną segregację</em> (50% szans na każdą rekombinację). W przypadku genów leżących na tej samej cząsteczce DNA w odległości np. 12 cM, <strong>II Prawo Mendla jest złamane</strong> – geny w 88% wędrują razem niczym wagony jednego pociągu. Zastosowanie kwadratu Mendla byłoby w tym przypadku błędem naukowym!
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Asystent Gemini AI dla Mejozy -->
+                    <div class="gen-ai-panel">
+                        <div style="font-size: 1rem; font-weight: 700; color: #d8b4fe; display: flex; align-items: center; gap: 8px;">
+                            <span>✨ Asystent Naukowy Gemini AI (Crossing-over & Sprzężenie Genetyczne)</span>
+                        </div>
+                        <div style="font-size: 0.88rem; color: #cbd5e1;">
+                            Dowiedz się, dlaczego rekombinacja jest kluczem do unikalności genetycznej człowieka:
+                        </div>
+                        <div class="gen-ai-chips-row">
+                            <span style="font-size: 0.8rem; color: #94a3b8;">Szybkie pytania:</span>
+                            <button type="button" class="gen-ai-chip" style="border-color:#34d399; color:#34d399; font-weight:700;" onclick="askLinkedAi('meaning')">🧬 Co w praktyce oznacza rozbicie pakietu cech?</button>
+                            <button type="button" class="gen-ai-chip" onclick="askLinkedAi('evolution')">🌍 Dlaczego ewolucja wymyśliła crossing-over?</button>
+                            <button type="button" class="gen-ai-chip" onclick="askLinkedAi('distance')">📏 Jak odległość w cM wpływa na potomstwo?</button>
+                        </div>
+                        <div class="gen-ai-input-row">
+                            <input type="text" id="gen-ai-linked-q" class="gen-ai-input" placeholder="Wpisz pytanie o sprzężenie i crossing-over...">
+                            <button type="button" id="gen-ai-linked-btn" class="gen-ai-ask-btn" onclick="submitLinkedAiQuestion()">
+                                <span>✨ Zapytaj Gemini AI</span>
+                            </button>
+                            <button type="button" class="gen-explain-btn" style="border-color:#64748b; color:#94a3b8; font-size:0.85rem; padding:8px 14px;" onclick="clearAiSection()" title="Wyczyść ekran i pole pytania">
+                                <span>🗑️ Wyczyść</span>
+                            </button>
+                        </div>
+                        <div id="gen-ai-linked-response" class="gen-ai-response-box"></div>
+                    </div>
+                </div>
+                <!-- KONIEC SEKCJI WYNIKÓW TRYBU 3 -->
             </div>
         </div>
     </div>
@@ -2058,35 +2467,273 @@
             }
         ];
 
+        
+        /* ==========================================================================
+           NOWE PAKIETY DLA TRYBU 2 (DUETY NIEZALEŻNE - II PRAWO MENDLA)
+           ========================================================================== */
+        const DIHYBRID_PAIRS = [
+            {
+                id: 'coffee_pack',
+                name: '☕ Pakiet Kawa i Kofeina (CYP1A2 + ADORA2A)',
+                desc: 'Kompleksowy metabolizm kofeiny w wątrobie połączony z neurobiologiczną reakcją lękową mózgu.',
+                geneA_id: 'cyp1a2',
+                geneA_name: 'Metabolizm kofeiny (CYP1A2)',
+                geneA_chr: 'chr 15q24',
+                geneB_id: 'adora2a',
+                geneB_name: 'Reakcja lękowa (ADORA2A)',
+                geneB_chr: 'chr 22q11',
+                phenotypes: {
+                    'A_B_': { title: '🏆 Mistrz Kofeinowy', desc: 'Szybki metabolizm + brak lęku. Może pić mocną kawę wieczorem, ma świetną koncentrację i śpi spokojnie.' },
+                    'A_bb': { title: '⚡ Krótki Szok', desc: 'Szybki metabolizm + wrażliwość na lęk. Doświadcza krótkotrwałego, ostrego niepokoju po kawie, ale szybko mija.' },
+                    'aa_B_': { title: '⏳ Długodystansowiec', desc: 'Wolny metabolizm + brak lęku. Kawa działa na niego bardzo długo i stabilnie bez paniki, ale pita po 14:00 psuje fazę snu głębokiego.' },
+                    'aabb': { title: '😱 Koszmar Kawosza', desc: 'Wolny metabolizm + wrażliwość na lęk. Nawet mała kawa rano wywołuje roztrzęsienie rąk, palpitacje i bezsenność w nocy.' }
+                }
+            },
+            {
+                id: 'alcohol_pack',
+                name: '🍷 Pakiet Metabolizm Alkoholu i Kac (ADH1B + ALDH2)',
+                desc: 'Szybkość wstępnej konwersji etanolu zestawiona ze zdolnością utylizacji toksycznego aldehydu octowego.',
+                geneA_id: 'adh1b',
+                geneA_name: 'Tempo utleniania alkoholu (ADH1B)',
+                geneA_chr: 'chr 4q23',
+                geneB_id: 'aldh2',
+                geneB_name: 'Usuwanie aldehydu / rumieniec (ALDH2)',
+                geneB_chr: 'chr 12q24',
+                phenotypes: {
+                    'A_B_': { title: '🛡️ Naturalny Odstraszacz', desc: 'Błyskawiczne powstawanie aldehydu i rumieniec. Cierpi na natychmiastowego kaca w trakcie imprezy; niemal zerowe ryzyko nałogu.' },
+                    'A_bb': { title: '🍺 Błyskawiczny Oczyszczacz', desc: 'Szybki rozkład etanolu i sprawny rozkład aldehydu. Organizm szybko usuwa alkohol bez silnego kaca.' },
+                    'aa_B_': { title: '🤢 Wolny Rozkład z Rumieńcem', desc: 'Alkohol długo krąży we krwi, a powstający aldehyd powoduje mdłości, purpurową twarz i silne złe samopoczucie.' },
+                    'aabb': { title: '🍸 Klasyczny Biesiadnik', desc: 'Standardowe tempo utylizacji alkoholu i aldehydu octowego, typowe dla populacji europejskiej.' }
+                }
+            },
+            {
+                id: 'sport_pack',
+                name: '🏃 Pakiet Profil Sportowca i Wydolności (ACTN3 + ACE)',
+                desc: 'Typ włókien mięśniowych (szybkie sprinterskie vs wolne tlenowe) zestawiony z adaptacją naczyniową VO2 max.',
+                geneA_id: 'actn3',
+                geneA_name: 'Typ włókien mięśniowych (ACTN3)',
+                geneA_chr: 'chr 11q13',
+                geneB_id: 'ace',
+                geneB_name: 'Odpowiedź VO2 max (ACE)',
+                geneB_chr: 'chr 17q23',
+                phenotypes: {
+                    'A_B_': { title: '⚡ Eksplozywny Tlenowiec', desc: 'Włókna szybkokurczliwe (siła/sprint) połączone z wybitną adaptacją tlenową (wysoki VO2 max). Idealny profil do sportów zespołowych i crossfitu.' },
+                    'A_bb': { title: '💥 Czysty Sprinter / Siłacz', desc: 'Dominacja włókien szybkich i predyspozycja do hipertrofii siłowej (sprint 100m, trójbój siłowy, rzuty).' },
+                    'aa_B_': { title: '🚴 Maszyna Wytrzymałościowa', desc: 'Metabolizm tlenowy mięśni wolnych i doskonała kapilaryzacja naczyń. Wybitny potencjał do maratonu, kolarstwa i triathlonu.' },
+                    'aabb': { title: '🧘 Sportowiec Rekreacyjny', desc: 'Zbalansowany profil o uniwersalnych adaptacjach do regularnej aktywności prozdrowotnej.' }
+                }
+            },
+            {
+                id: 'allergy_pack',
+                name: '🛡️ Pakiet Marsz Alergiczny (FLG + IL4/IL13)',
+                desc: 'Bariera naskórkowa (zespół nieszczelnej skóry) połączona z genetyczną skłonnością do syntezy przeciwciał IgE.',
+                geneA_id: 'flg_eczema',
+                geneA_name: 'Bariera naskórkowa / AZS (FLG)',
+                geneA_chr: 'chr 1q21',
+                geneB_id: 'il4_hayfever',
+                geneB_name: 'Synteza IgE / katar sienny (IL4/IL13)',
+                geneB_chr: 'chr 5q31',
+                phenotypes: {
+                    'A_B_': { title: '🌪️ Pełny Marsz Alergiczny', desc: 'Defekt bariery naskórkowej (AZS) + nadprodukcja IgE. Wysokie ryzyko progresji od egzemy niemowlęcej do kataru siennego i astmy.' },
+                    'A_bb': { title: '🧴 Izolowana Suchość / Egzema', desc: 'Uszkodzona bariera skóry (suchość, wrażliwość), ale bez uogólnionej nadprodukcji IgE przeciw pyłkom traw.' },
+                    'aa_B_': { title: '🌾 Czysta Pyłkowica Wiosenna', desc: 'Skóra szczelna i zdrowa, lecz układ odpornościowy reaguje katarem i łzawieniem oczu w sezonie pylenia roślin.' },
+                    'aabb': { title: '🛡️ Tarcza Przeciwalergiczna', desc: 'Prawidłowa szczelność naskórka i zrównoważona odpowiedź immunologiczna bez predyspozycji do atopii.' }
+                }
+            },
+            {
+                id: 'stress_pack',
+                name: '🧠 Pakiet Odporność Psychiczna i Stres (COMT + SLC6A4)',
+                desc: 'Metabolizm dopaminy w korze czołowej (Strateg vs Wojownik) połączony z gęstością transportera serotoniny (5-HTTLPR).',
+                geneA_id: 'comt_stress',
+                geneA_name: 'Dopamina / Strateg vs Wojownik (COMT)',
+                geneA_chr: 'chr 22q11',
+                geneB_id: 'slc6a4',
+                geneB_name: 'Transporter serotoniny (SLC6A4)',
+                geneB_chr: 'chr 17q11',
+                phenotypes: {
+                    'A_B_': { title: '🧘 Niezłomny Strateg', desc: 'Wysoka dopamina w korze (doskonała pamięć robocza) + wysoka odporność serotoninowa. Wybitny analityk, który nie załamuje się porażkami.' },
+                    'A_bb': { title: '🎨 Wrażliwy Intelektualista', desc: 'Genialne skupienie w ciszy i spokoju, lecz podatność na zamartwianie się i spadek nastroju pod wpływem krytyki.' },
+                    'aa_B_': { title: '⚔️ Niezłomny Wojownik', desc: 'Zimna krew i refleks w kryzysie i stresie połączone ze stabilnym optymizmem. Idealny lider kryzysowy.' },
+                    'aabb': { title: '⚡ Reaktywny Wojownik', desc: 'Lubi silne bodźce i działa pod presją, lecz po trudnych wydarzeniach potrzebuje dłuższego wsparcia bliskich.' }
+                }
+            },
+            {
+                id: 'gut_pack',
+                name: '🍏 Pakiet Trawienie i Nietolerancje (MCM6 + SLC2A5)',
+                desc: 'Tolerancja cukru mlecznego (laktozy) połączona z wydolnością wchłaniania cukru owocowego (fruktozy).',
+                geneA_id: 'mcm6',
+                geneA_name: 'Tolerancja laktozy (MCM6)',
+                geneA_chr: 'chr 2q21',
+                geneB_id: 'slc2a5_fructose',
+                geneB_name: 'Wchłanianie fruktozy (SLC2A5)',
+                geneB_chr: 'chr 1p36',
+                phenotypes: {
+                    'A_B_': { title: '🥛🍎 Uniwersalny Brzuch', desc: 'Pełna tolerancja zarówno mleka krowiego, jak i owoców, miodu czy soków bez wzdęć i problemów jelitowych.' },
+                    'A_bb': { title: '🥛 Mleczny bez Fruktozy', desc: 'Świetnie trawi nabiał, lecz po zjedzeniu jabłek, gruszek lub miodu doświadcza fermentacji i gazów.' },
+                    'aa_B_': { title: '🍎 Owocowy bez Laktozy', desc: 'Doskonale trawi owoce, lecz słodkie mleko wywołuje skurcze i wzdęcia (wymaga produktów bez laktozy).' },
+                    'aabb': { title: '⚠️ Wrażliwy Układ Pokarmowy', desc: 'Nietolerancja zarówno laktozy, jak i fruktozy. Wymaga diety low-FODMAP i uważnego doboru posiłków.' }
+                }
+            }
+        ];
+
+        /* ==========================================================================
+           NOWE PAKIETY DLA TRYBU 3 (DWA GENY SPRZĘŻONE - CROSSING-OVER MORGANA)
+           ========================================================================== */
+        const LINKED_PAIRS = [
+            {
+                id: 'chr2_milk_sneeze',
+                chr: 'chr 2q',
+                name: '🥛☀️ Chromosom 2: Tolerancja Laktozy (MCM6) & Kichanie Słoneczne (ACHOO)',
+                geneA_name: 'Tolerancja laktozy (MCM6/LCT - chr 2q21)',
+                geneB_name: 'Kichanie słoneczne (ACHOO - chr 2q22)',
+                distCM: 12.0,
+                desc: 'Dwa słynne geny leżące w bezpośrednim sąsiedztwie na ramieniu q chromosomu 2. W 88% przypadków dziecko dziedziczy ten pakiet nienaruszony od rodzica, a w 12% crossing-over rozłącza te cechy.'
+            },
+            {
+                id: 'chr6_mosquito_aphtae',
+                chr: 'chr 6p',
+                name: '🦟💥 Chromosom 6: Zapach dla Komarów (HLA-DRB1) & Afty w Ustach (TNF)',
+                geneA_name: 'Zapach dla komarów (HLA-DRB1 - chr 6p21)',
+                geneB_name: 'Skłonność do aft (TNF - chr 6p21)',
+                distCM: 4.6,
+                desc: 'Kluczowe geny klastra odpornościowego HLA na ramieniu 6p21. Leżą tak blisko siebie, że crossing-over zachodzi niezwykle rzadko (~4.6%), trzymając ten pakiet odpornościowy niemal nierozerwalnie.'
+            },
+            {
+                id: 'chr1_skin_fish',
+                chr: 'chr 1q',
+                name: '🧴🐟 Chromosom 1: Atopowa Skóra (FLG) & Zapach Rybny (FMO3)',
+                geneA_name: 'Atopowe zapalenie skóry (FLG - chr 1q21)',
+                geneB_name: 'Zespół zapachu rybnego (FMO3 - chr 1q24)',
+                distCM: 8.5,
+                desc: 'Dwa geny na ramieniu 1q. W 91.5% przypadków allel wrażliwej skóry wędruje razem z wariantem metabolizmu choliny; w 8.5% crossing-over rozbija to sprzężenie.'
+            },
+            {
+                id: 'chr10_migraine_raynaud',
+                chr: 'chr 10q',
+                name: '⚡🧤 Chromosom 10: Migrena z Aurą (KCNK18) & Zimne Dłonie Raynauda (ADRA2A)',
+                geneA_name: 'Migrena z aurą (KCNK18 - chr 10q25)',
+                geneB_name: 'Zimne dłonie Raynauda (ADRA2A - chr 10q25)',
+                distCM: 7.8,
+                desc: 'Dwa geny naczynioruchowe leżące w tym samym prążku 10q25. Ich bliskość fizyczna sprawia, że skłonność do migren i zimnych rąk w 92.2% przypadków jest dziedziczona jako jeden wspólny pakiet.'
+            },
+            {
+                id: 'chr11_cilantro_violet',
+                chr: 'chr 11q',
+                name: '🌿🌸 Chromosom 11: Smak Kolendry (OR6A2) & Zapach Fiołków (OR5A1)',
+                geneA_name: 'Mydlany smak kolendry (OR6A2 - chr 11q12)',
+                geneB_name: 'Zapach fiołków (OR5A1 - chr 11q12)',
+                distCM: 7.3,
+                desc: 'Sąsiednie receptory węchowe w klastrze na chromosomie 11q12. Zdolność do wyczuwania aromatu fiołków i mydlanego posmaku kolendry rozłącza się w mejozie jedynie w 7.3% przypadków.'
+            }
+        ];
+
+        let currentAppMode = 'single'; // 'single' | 'dihybrid' | 'linked'
         let currentTrait = GENETIC_TRAITS_50[0];
+        let currentDihybridPair = DIHYBRID_PAIRS[0];
+        let currentLinkedPair = LINKED_PAIRS[0];
+
         let currentMethodView = 'both'; // 'both' | 'mendel' | 'meiosis'
 
         function initApp() {
+            // Inicjalizacja Trybu 1
             const select = document.getElementById('gen-trait-select');
-            if (!select) return;
+            if (select) {
+                select.innerHTML = '';
+                GENETIC_TRAITS_50.forEach(t => {
+                    const opt = document.createElement('option');
+                    opt.value = t.id;
+                    opt.textContent = t.name;
+                    select.appendChild(opt);
+                });
+            }
 
-            select.innerHTML = '';
-            GENETIC_TRAITS_50.forEach(t => {
-                const opt = document.createElement('option');
-                opt.value = t.id;
-                opt.textContent = t.name;
-                select.appendChild(opt);
-            });
+            // Inicjalizacja Trybu 2
+            const dSelect = document.getElementById('dihybrid-pair-select');
+            if (dSelect) {
+                dSelect.innerHTML = '';
+                DIHYBRID_PAIRS.forEach(p => {
+                    const opt = document.createElement('option');
+                    opt.value = p.id;
+                    opt.textContent = p.name;
+                    dSelect.appendChild(opt);
+                });
+            }
 
-            // Ustawienie domyślne: matka posiada mutację (1 kopia)
-            document.getElementById('mother-check').checked = true;
-            document.getElementById('father-check').checked = false;
+            // Inicjalizacja Trybu 3
+            const lSelect = document.getElementById('linked-pair-select');
+            if (lSelect) {
+                lSelect.innerHTML = '';
+                LINKED_PAIRS.forEach(p => {
+                    const opt = document.createElement('option');
+                    opt.value = p.id;
+                    opt.textContent = p.name;
+                    lSelect.appendChild(opt);
+                });
+            }
+
+            // Ustawienia domyślne rodziców
+            const mCheck = document.getElementById('mother-check');
+            const fCheck = document.getElementById('father-check');
+            if (mCheck) mCheck.checked = true;
+            if (fCheck) fCheck.checked = false;
 
             onGenTraitChange();
+            onDihybridPairChange();
+            onLinkedPairChange();
+            switchSimulatorMode('single');
         }
 
+        /* Przełączanie 3 głównych trybów biologicznych */
+        function switchSimulatorMode(mode) {
+            currentAppMode = mode;
+            clearAiSection();
+
+            // Przyciski zakładek
+            const bSingle = document.getElementById('btn-mode-single');
+            const bDi = document.getElementById('btn-mode-dihybrid');
+            const bLinked = document.getElementById('btn-mode-linked');
+
+            if (bSingle) bSingle.classList.toggle('active', mode === 'single');
+            if (bDi) bDi.classList.toggle('active', mode === 'dihybrid');
+            if (bLinked) bLinked.classList.toggle('active', mode === 'linked');
+
+            // Kontenery konfiguracji
+            const cSingle = document.getElementById('config-container-single');
+            const cDi = document.getElementById('config-container-dihybrid');
+            const cLinked = document.getElementById('config-container-linked');
+
+            if (cSingle) cSingle.style.display = (mode === 'single') ? 'block' : 'none';
+            if (cDi) cDi.style.display = (mode === 'dihybrid') ? 'flex' : 'none';
+            if (cLinked) cLinked.style.display = (mode === 'linked') ? 'flex' : 'none';
+
+            // Kontenery wyników
+            const rSingle = document.getElementById('results-mode-single');
+            const rDi = document.getElementById('results-mode-dihybrid');
+            const rLinked = document.getElementById('results-mode-linked');
+
+            if (rSingle) rSingle.style.display = (mode === 'single') ? 'flex' : 'none';
+            if (rDi) rDi.style.display = (mode === 'dihybrid') ? 'flex' : 'none';
+            if (rLinked) rLinked.style.display = (mode === 'linked') ? 'flex' : 'none';
+
+            // Uruchomienie wyliczeń dla aktywnego trybu
+            if (mode === 'single') {
+                onParentStateChange();
+            } else if (mode === 'dihybrid') {
+                runDihybridSimulation();
+            } else if (mode === 'linked') {
+                runLinkedSimulation();
+            }
+        }
+
+        /* ==========================================================================
+           LOGIKA TRYBU 1 (POJEDYNCZY GEN - I PRAWO MENDLA)
+           ========================================================================== */
         function onGenTraitChange() {
             clearAiSection();
             const select = document.getElementById('gen-trait-select');
             const id = select ? select.value : GENETIC_TRAITS_50[0].id;
             currentTrait = GENETIC_TRAITS_50.find(t => t.id === id) || GENETIC_TRAITS_50[0];
 
-            // Aktualizacja opisu i dobranych automatycznie parametrów
             const infoBox = document.getElementById('gen-trait-info');
             if (infoBox) {
                 infoBox.innerHTML = `
@@ -2095,8 +2742,6 @@
                     <div class="gen-trait-specs">
                         <span class="gen-spec-pill" style="border-color:#38bdf8; color:#38bdf8;">Lokalizacja: ${currentTrait.chr} (${currentTrait.gene})</span>
                         <span class="gen-spec-pill" style="border-color:#34d399; color:#34d399;">Model: ${currentTrait.modeLabel}</span>
-                        <span class="gen-spec-pill" style="border-color:#c084fc; color:#c084fc;">Sprzężony marker: ${currentTrait.marker}</span>
-                        <span class="gen-spec-pill" style="border-color:#fbbf24; color:#fbbf24;">Odległość: ${currentTrait.distCM} cM (${currentTrait.distCM}% crossing-over)</span>
                         <span class="gen-spec-pill" style="border-color:#38bdf8; color:#38bdf8; background:rgba(56,189,248,0.12);">🧬 Odziedziczalność (h²): ${currentTrait.h2}%</span>
                         <span class="gen-spec-pill" style="border-color:#fbbf24; color:#fbbf24; background:rgba(251,191,36,0.12);">🌍 Środowisko & styl życia: ${100 - currentTrait.h2}%</span>
                     </div>
@@ -2105,7 +2750,6 @@
 
             updateHeritabilityWidget(currentTrait);
 
-            // Obsługa cech sprzężonych z chromosomem X u ojca (mężczyzna ma tylko 1 chr X)
             const fHomoBox = document.getElementById('father-homo-box');
             const fHomoCheck = document.getElementById('father-homo');
             if (currentTrait.mode === 'x-linked') {
@@ -2181,55 +2825,45 @@
             const fCount = getFatherMutCount();
             const isX = currentTrait.mode === 'x-linked';
 
-            // Kafelki - podświetlenie
             const mTile = document.getElementById('mother-tile');
             const fTile = document.getElementById('father-tile');
             if (mTile) mTile.classList.toggle('checked', mCount > 0);
             if (fTile) fTile.classList.toggle('checked', fCount > 0);
 
-            // Matka - podgląd
             const mBadge = document.getElementById('mother-status-badge');
             const mChr1 = document.getElementById('mother-chr1');
             const mChr2 = document.getElementById('mother-chr2');
             if (mCount === 0) {
-                mBadge.textContent = 'Brak mutacji (0/0)';
-                mBadge.style.color = '#94a3b8';
-                mChr1.textContent = isX ? 'X (prawidłowy)' : 'Allel dziki (0)';
-                mChr2.textContent = isX ? 'X (prawidłowy)' : 'Allel dziki (0)';
+                if (mBadge) { mBadge.textContent = 'Brak mutacji (0/0)'; mBadge.style.color = '#94a3b8'; }
+                if (mChr1) mChr1.textContent = isX ? 'X (prawidłowy)' : 'Allel dziki (0)';
+                if (mChr2) mChr2.textContent = isX ? 'X (prawidłowy)' : 'Allel dziki (0)';
             } else if (mCount === 1) {
-                mBadge.textContent = 'Heterozygota (1 kopia / 0/1)';
-                mBadge.style.color = '#f472b6';
-                mChr1.textContent = isX ? 'X* (mutacja)' : 'Mutacja (1)';
-                mChr2.textContent = isX ? 'X (prawidłowy)' : 'Allel dziki (0)';
+                if (mBadge) { mBadge.textContent = 'Heterozygota (1 kopia / 0/1)'; mBadge.style.color = '#f472b6'; }
+                if (mChr1) mChr1.textContent = isX ? 'X* (mutacja)' : 'Mutacja (1)';
+                if (mChr2) mChr2.textContent = isX ? 'X (prawidłowy)' : 'Allel dziki (0)';
             } else {
-                mBadge.textContent = 'Homozygota zmutowana (2 kopie / 1/1)';
-                mBadge.style.color = '#f472b6';
-                mChr1.textContent = isX ? 'X* (mutacja)' : 'Mutacja (1)';
-                mChr2.textContent = isX ? 'X* (mutacja)' : 'Mutacja (1)';
+                if (mBadge) { mBadge.textContent = 'Homozygota zmutowana (2 kopie / 1/1)'; mBadge.style.color = '#f472b6'; }
+                if (mChr1) mChr1.textContent = isX ? 'X* (mutacja)' : 'Mutacja (1)';
+                if (mChr2) mChr2.textContent = isX ? 'X* (mutacja)' : 'Mutacja (1)';
             }
 
-            // Ojciec - podgląd
             const fBadge = document.getElementById('father-status-badge');
             const fChr1 = document.getElementById('father-chr1');
             const fChr2 = document.getElementById('father-chr2');
             if (fCount === 0) {
-                fBadge.textContent = isX ? 'Hemizygota (X Y)' : 'Brak mutacji (0/0)';
-                fBadge.style.color = '#94a3b8';
-                fChr1.textContent = isX ? 'X (prawidłowy)' : 'Allel dziki (0)';
-                fChr2.textContent = isX ? 'Y (chromosom ojcowski)' : 'Allel dziki (0)';
+                if (fBadge) { fBadge.textContent = isX ? 'Hemizygota (X Y)' : 'Brak mutacji (0/0)'; fBadge.style.color = '#94a3b8'; }
+                if (fChr1) fChr1.textContent = isX ? 'X (prawidłowy)' : 'Allel dziki (0)';
+                if (fChr2) fChr2.textContent = isX ? 'Y (chromosom ojcowski)' : 'Allel dziki (0)';
             } else if (fCount === 1) {
-                fBadge.textContent = isX ? 'Hemizygota zmutowany (X* Y)' : 'Heterozygota (1 kopia / 0/1)';
-                fBadge.style.color = '#38bdf8';
-                fChr1.textContent = isX ? 'X* (mutacja)' : 'Mutacja (1)';
-                fChr2.textContent = isX ? 'Y (chromosom ojcowski)' : 'Allel dziki (0)';
+                if (fBadge) { fBadge.textContent = isX ? 'Hemizygota zmutowany (X* Y)' : 'Heterozygota (1 kopia / 0/1)'; fBadge.style.color = '#38bdf8'; }
+                if (fChr1) fChr1.textContent = isX ? 'X* (mutacja)' : 'Mutacja (1)';
+                if (fChr2) fChr2.textContent = isX ? 'Y (chromosom ojcowski)' : 'Allel dziki (0)';
             } else {
-                fBadge.textContent = 'Homozygota zmutowana (2 kopie / 1/1)';
-                fBadge.style.color = '#38bdf8';
-                fChr1.textContent = 'Mutacja (1)';
-                fChr2.textContent = 'Mutacja (1)';
+                if (fBadge) { fBadge.textContent = 'Homozygota zmutowana (2 kopie / 1/1)'; fBadge.style.color = '#38bdf8'; }
+                if (fChr1) fChr1.textContent = 'Mutacja (1)';
+                if (fChr2) fChr2.textContent = 'Mutacja (1)';
             }
 
-            // Sprawdzenie warunku braku wyboru u obojga
             const isZero = (mCount === 0 && fCount === 0);
             const alertBox = document.getElementById('gen-zero-alert');
             const runBtn = document.getElementById('gen-run-simulation-btn');
@@ -2240,57 +2874,31 @@
                 runBtn.disabled = isZero;
                 runBtn.title = isZero ? 'Zaznacz występowanie mutacji u matki lub ojca' : '';
             }
-            if (isZero && resultsArea) {
-                resultsArea.style.display = 'none';
-            }
 
-            // Automatyczne odświeżenie symulacji, gdy wybrano min. jednego rodzica
-            if (!isZero) {
+            if (!isZero && currentAppMode === 'single') {
                 runGeneticSimulation();
             }
         }
 
-        function setMethodView(view) {
-            clearAiSection();
-            currentMethodView = view;
-            document.getElementById('tab-both').classList.toggle('active', view === 'both');
-            document.getElementById('tab-mendel').classList.toggle('active', view === 'mendel');
-            document.getElementById('tab-meiosis').classList.toggle('active', view === 'meiosis');
-
-            const cardA = document.getElementById('card-method-a');
-            const cardB = document.getElementById('card-method-b');
-            const grid = document.getElementById('results-grid');
-
-            if (view === 'both') {
-                if (cardA) cardA.style.display = 'flex';
-                if (cardB) cardB.style.display = 'flex';
-                if (grid) grid.style.gridTemplateColumns = 'repeat(auto-fit, minmax(340px, 1fr))';
-            } else if (view === 'mendel') {
-                if (cardA) cardA.style.display = 'flex';
-                if (cardB) cardB.style.display = 'none';
-                if (grid) grid.style.gridTemplateColumns = '1fr';
-            } else if (view === 'meiosis') {
-                if (cardA) cardA.style.display = 'none';
-                if (cardB) cardB.style.display = 'flex';
-                if (grid) grid.style.gridTemplateColumns = '1fr';
-            }
-        }
-
-        /* Główny silnik obliczeń in silico */
+        /* Główny silnik obliczeń analitycznych dla Trybu 1 (ZERO MONTE CARLO) */
         function runGeneticSimulation() {
+            if (currentAppMode === 'dihybrid') {
+                runDihybridSimulation();
+                return;
+            }
+            if (currentAppMode === 'linked') {
+                runLinkedSimulation();
+                return;
+            }
+
             const mCount = getMotherMutCount();
             const fCount = getFatherMutCount();
             if (mCount === 0 && fCount === 0) return;
 
             const isX = currentTrait.mode === 'x-linked';
-            const N = 1000;
-
             const resultsArea = document.getElementById('gen-results-area');
             if (resultsArea) resultsArea.style.display = 'flex';
 
-            // ==========================================
-            // WARIANT A: MENDLOWSKI (Punnett + Monte Carlo)
-            // ==========================================
             let mGametes = [];
             if (mCount === 0) mGametes = [0, 0];
             else if (mCount === 1) mGametes = [1, 0];
@@ -2307,120 +2915,311 @@
 
             renderPunnettSquare(mGametes, fGametes, currentTrait);
 
-            let count0 = 0;
-            let count1 = 0;
-            let count2 = 0;
-            let daughtersTotal = 0;
-            let daughtersMut = 0;
-            let sonsTotal = 0;
-            let sonsMut = 0;
+            // Dokładne wyliczenia analityczne (teoretyczne)
+            let p0 = 0, p1 = 0, p2 = 0;
+            let sonsTotal = 0, sonsMut = 0, daughtersTotal = 0, daughtersMut = 0;
 
-            for (let i = 0; i < N; i++) {
-                const gM = mGametes[Math.floor(Math.random() * 2)];
-                const gF = fGametes[Math.floor(Math.random() * 2)];
+            if (isX) {
+                // Matka: szansa przekazania mutacji (X*)
+                const mP_mut = mCount === 2 ? 1.0 : (mCount === 1 ? 0.5 : 0.0);
+                const mP_wt = 1.0 - mP_mut;
+                // Ojciec: 50% plemniki Y (synowie), 50% plemniki X/X* (córki)
+                const fHasMut = (fCount === 1);
 
-                if (isX) {
-                    if (gF === 'Y') {
-                        sonsTotal++;
-                        if (gM === 1) {
-                            sonsMut++;
-                            count1++;
-                        } else {
-                            count0++;
-                        }
-                    } else {
-                        daughtersTotal++;
-                        const totalMuts = gM + gF;
-                        if (totalMuts === 2) count2++;
-                        else if (totalMuts === 1) { count1++; daughtersMut++; }
-                        else count0++;
-                    }
-                } else {
-                    const totalMuts = gM + gF;
-                    if (totalMuts === 2) count2++;
-                    else if (totalMuts === 1) count1++;
-                    else count0++;
-                }
+                // Synowie (50% potomstwa): genotyp zależy w 100% od komórki jajowej matki
+                // Córki (50% potomstwa): otrzymują jeden X od matki i jeden X od ojca
+                p0 = (0.5 * mP_wt + 0.5 * mP_wt * (fHasMut ? 0 : 1)) * 100;
+                p1 = (0.5 * mP_mut + 0.5 * (mP_mut * (fHasMut ? 0 : 1) + mP_wt * (fHasMut ? 1 : 0))) * 100;
+                p2 = (0.5 * mP_mut * (fHasMut ? 1 : 0)) * 100;
+                sonsMut = mP_mut * 100;
+            } else {
+                const mP_mut = mCount === 2 ? 1.0 : (mCount === 1 ? 0.5 : 0.0);
+                const mP_wt = 1.0 - mP_mut;
+                const fP_mut = fCount === 2 ? 1.0 : (fCount === 1 ? 0.5 : 0.0);
+                const fP_wt = 1.0 - fP_mut;
+
+                p0 = (mP_wt * fP_wt) * 100;
+                p1 = (mP_mut * fP_wt + mP_wt * fP_mut) * 100;
+                p2 = (mP_mut * fP_mut) * 100;
             }
 
-            const p0 = (count0 / N * 100).toFixed(1);
-            const p1 = (count1 / N * 100).toFixed(1);
-            const p2 = (count2 / N * 100).toFixed(1);
+            const p0_str = p0.toFixed(1);
+            const p1_str = p1.toFixed(1);
+            const p2_str = p2.toFixed(1);
 
-            document.getElementById('stat-varA-0mut').textContent = `${p0}% (${count0} / ${N})`;
-            document.getElementById('stat-varA-1mut').textContent = `${p1}% (${count1} / ${N})`;
-            document.getElementById('stat-varA-2mut').textContent = `${p2}% (${count2} / ${N})`;
+            const el0 = document.getElementById('stat-varA-0mut');
+            const el1 = document.getElementById('stat-varA-1mut');
+            const el2 = document.getElementById('stat-varA-2mut');
 
-            document.getElementById('bar-varA-0mut').style.width = `${p0}%`;
-            document.getElementById('bar-varA-1mut').style.width = `${p1}%`;
-            document.getElementById('bar-varA-2mut').style.width = `${p2}%`;
+            if (el0) el0.textContent = `${p0_str}%`;
+            if (el1) el1.textContent = `${p1_str}%`;
+            if (el2) el2.textContent = `${p2_str}%`;
+
+            const b0 = document.getElementById('bar-varA-0mut');
+            const b1 = document.getElementById('bar-varA-1mut');
+            const b2 = document.getElementById('bar-varA-2mut');
+
+            if (b0) b0.style.width = `${p0_str}%`;
+            if (b1) b1.style.width = `${p1_str}%`;
+            if (b2) b2.style.width = `${p2_str}%`;
 
             const phenoEl = document.getElementById('phenotype-summary-A');
             let phenoText = '';
             if (currentTrait.mode === 'autosomal-dominant') {
-                const affected = ((count1 + count2) / N * 100).toFixed(1);
-                phenoText = `⭐ <strong>${affected}% potomstwa</strong> ujawni badaną cechę (${p1}% heterozygot + ${p2}% homozygot). ${p0}% osobników to homozygota dzika (0/0) bez cechy.`;
+                const affected = (p1 + p2).toFixed(1);
+                phenoText = `⭐ <strong>${affected}% potomstwa</strong> ujawni badaną cechę (${p1_str}% heterozygot + ${p2_str}% homozygot). ${p0_str}% osobników to homozygota dzika (0/0) bez cechy.`;
             } else if (currentTrait.mode === 'autosomal-recessive') {
-                phenoText = `⭐ <strong>${p2}% potomstwa</strong> ujawni pełną cechę recesywną (homozygoty 1/1). Aż <strong>${p1}%</strong> to bezobjawowi nosiciele (0/1), a ${p0}% to osoby bez mutacji (0/0).`;
+                phenoText = `⭐ <strong>${p2_str}% potomstwa</strong> ujawni pełną cechę recesywną (homozygoty 1/1). Aż <strong>${p1_str}%</strong> to bezobjawowi nosiciele (0/1), a ${p0_str}% to osoby bez mutacji (0/0).`;
             } else if (currentTrait.mode === 'codominant') {
-                phenoText = `⭐ 3 odrębne fenotypy: <strong>${p0}%</strong> typ dziki (0 mutacji), <strong>${p1}%</strong> forma pośrednia/zbalansowana (1 mutacja), <strong>${p2}%</strong> pełny fenotyp zmutowany (2 mutacje).`;
+                phenoText = `⭐ 3 odrębne fenotypy: <strong>${p0_str}%</strong> typ dziki (0 mutacji), <strong>${p1_str}%</strong> forma pośrednia/zbalansowana (1 mutacja), <strong>${p2_str}%</strong> pełny fenotyp zmutowany (2 mutacje).`;
             } else if (currentTrait.mode === 'x-linked') {
-                const sPerc = sonsTotal > 0 ? (sonsMut / sonsTotal * 100).toFixed(1) : '0';
-                phenoText = `⭐ U synów: <strong>${sPerc}%</strong> odziedziczy mutację na chromosomie X od matki. U córek: nosicielstwo zależy od kombinacji X matki i ojca.`;
+                phenoText = `⭐ U synów: <strong>${sonsMut.toFixed(1)}%</strong> odziedziczy mutację na chromosomie X od matki. U córek: nosicielstwo zależy od kombinacji alleli X matki i ojca.`;
             }
             if (phenoEl) phenoEl.innerHTML = phenoText;
 
-            // ==========================================
-            // WARIANT B: MEJOTYCZNY Z CROSSING-OVER
-            // ==========================================
-            // Automatycznie dobrana odległość genetyczna i marker dla tego genu!
-            const crossoverRate = currentTrait.distCM;
-            const haploDiagram = document.getElementById('haplotypes-diagram');
-            if (haploDiagram) {
-                haploDiagram.innerHTML = `
-                    <div style="color:#94a3b8; margin-bottom:4px;">Sfazowane haplotypy chromosomów rodziców (Locus 1: <strong>${currentTrait.gene}</strong> &bull; Locus 2: <strong>${currentTrait.marker}</strong>):</div>
-                    <div>👩 Matka: Chr-A: [<span style="color:#f472b6;">${mGametes[0] === 1 ? 'Mut(1)' : 'Dziki(0)'}</span> &mdash; ${currentTrait.marker}-A] | Chr-B: [<span style="color:#f472b6;">${mGametes[1] === 1 ? 'Mut(1)' : 'Dziki(0)'}</span> &mdash; ${currentTrait.marker}-B]</div>
-                    <div>👨 Ojciec: Chr-A: [<span style="color:#38bdf8;">${fGametes[0] === 1 ? 'Mut(1)' : 'Dziki(0)'}</span> &mdash; ${currentTrait.marker}-A] | Chr-B: [<span style="color:#38bdf8;">${fGametes[1] === 'Y' ? 'Y (brak locus)' : (fGametes[1] === 1 ? 'Mut(1)' : 'Dziki(0)')}</span> &mdash; ${currentTrait.marker}-B]</div>
-                `;
-            }
-
-            let parentalCount = 0;
-            let recombCount = 0;
-
-            for (let i = 0; i < N; i++) {
-                const r = Math.random() * 100;
-                if (r < crossoverRate) {
-                    recombCount++;
-                } else {
-                    parentalCount++;
-                }
-            }
-
-            const pParental = (parentalCount / N * 100).toFixed(1);
-            const pRecomb = (recombCount / N * 100).toFixed(1);
-
-            document.getElementById('stat-varB-parental').textContent = `${pParental}% (${parentalCount} / ${N})`;
-            document.getElementById('stat-varB-recomb').textContent = `${pRecomb}% (${recombCount} / ${N})`;
-
-            document.getElementById('bar-varB-parental').style.width = `${pParental}%`;
-            document.getElementById('bar-varB-recomb').style.width = `${pRecomb}%`;
-
-            const recombEl = document.getElementById('recomb-summary-B');
-            if (recombEl) {
-                recombEl.innerHTML = `Na podstawie mapy genetycznej dla genu <strong>${currentTrait.gene}</strong> dobrano odległość <strong>${crossoverRate} cM</strong> do markera <strong>${currentTrait.marker}</strong>. W 1000 wirtualnych podziałach komórkowych doszło do <strong>${recombCount}</strong> pęknięć chromatyd niesiostrzanych z wymianą odcinków. <strong>${pRecomb}%</strong> potomstwa otrzymało zrekombinowany układ alleli!`;
-            }
-
-            // ==========================================
-            // SZCZEGÓŁOWY OPIS KROK PO KROKU
-            // ==========================================
             renderStepByStepReport({
                 trait: currentTrait,
                 mCount, fCount,
-                p0, p1, p2, count0, count1, count2,
-                parentalCount, recombCount, pParental, pRecomb,
-                isX, daughtersTotal, daughtersMut, sonsTotal, sonsMut
+                p0: p0_str, p1: p1_str, p2: p2_str,
+                isX
             });
         }
+
+        /* ==========================================================================
+           LOGIKA TRYBU 2 (DUET NIEZALEŻNY - II PRAWO MENDLA, SIATKA 4x4)
+           ========================================================================== */
+        function onDihybridPairChange() {
+            clearAiSection();
+            const select = document.getElementById('dihybrid-pair-select');
+            const id = select ? select.value : DIHYBRID_PAIRS[0].id;
+            currentDihybridPair = DIHYBRID_PAIRS.find(p => p.id === id) || DIHYBRID_PAIRS[0];
+
+            const infoBox = document.getElementById('dihybrid-pair-info');
+            if (infoBox) {
+                infoBox.innerHTML = `
+                    <div style="font-weight:700; color:#c084fc; margin-bottom:4px;">${currentDihybridPair.name}</div>
+                    <div style="margin-bottom:6px;">${currentDihybridPair.desc}</div>
+                    <div class="gen-trait-specs">
+                        <span class="gen-spec-pill" style="border-color:#38bdf8; color:#38bdf8;">Gen 1 (A): ${currentDihybridPair.geneA_name} [${currentDihybridPair.geneA_chr}]</span>
+                        <span class="gen-spec-pill" style="border-color:#c084fc; color:#c084fc;">Gen 2 (B): ${currentDihybridPair.geneB_name} [${currentDihybridPair.geneB_chr}]</span>
+                        <span class="gen-spec-pill" style="border-color:#10b981; color:#10b981;">Model: II Prawo Mendla (Kwadrat 4×4)</span>
+                    </div>
+                `;
+            }
+
+            const lMA = document.getElementById('dihybrid-m-labelA');
+            const lMB = document.getElementById('dihybrid-m-labelB');
+            const lFA = document.getElementById('dihybrid-f-labelA');
+            const lFB = document.getElementById('dihybrid-f-labelB');
+
+            if (lMA) lMA.textContent = `Gen 1 (A): ${currentDihybridPair.geneA_name}`;
+            if (lMB) lMB.textContent = `Gen 2 (B): ${currentDihybridPair.geneB_name}`;
+            if (lFA) lFA.textContent = `Gen 1 (A): ${currentDihybridPair.geneA_name}`;
+            if (lFB) lFB.textContent = `Gen 2 (B): ${currentDihybridPair.geneB_name}`;
+
+            runDihybridSimulation();
+        }
+
+        function onDihybridParentChange() {
+            runDihybridSimulation();
+        }
+
+        function runDihybridSimulation() {
+            if (currentAppMode !== 'dihybrid') return;
+            const resultsArea = document.getElementById('gen-results-area');
+            if (resultsArea) resultsArea.style.display = 'flex';
+
+            const pair = currentDihybridPair;
+            const mA = parseInt(document.getElementById('dihybrid-m-geneA').value, 10);
+            const mB = parseInt(document.getElementById('dihybrid-m-geneB').value, 10);
+            const fA = parseInt(document.getElementById('dihybrid-f-geneA').value, 10);
+            const fB = parseInt(document.getElementById('dihybrid-f-geneB').value, 10);
+
+            // Aktualizacja etykiet rodziców
+            const genoStr = (a, b) => {
+                const sA = a === 2 ? 'AA' : (a === 1 ? 'Aa' : 'aa');
+                const sB = b === 2 ? 'BB' : (b === 1 ? 'Bb' : 'bb');
+                return `${sA} ${sB}`;
+            };
+
+            const mSum = document.getElementById('dihybrid-mother-summary');
+            const fSum = document.getElementById('dihybrid-father-summary');
+            if (mSum) mSum.textContent = `Genotyp: ${genoStr(mA, mB)}`;
+            if (fSum) fSum.textContent = `Genotyp: ${genoStr(fA, fB)}`;
+
+            // Rozkład gamet dla 2 genów niezależnych (II Prawo Mendla)
+            const getGameteDist = (gA, gB) => {
+                const pA = gA === 2 ? 1.0 : (gA === 1 ? 0.5 : 0.0);
+                const pa = 1.0 - pA;
+                const pB = gB === 2 ? 1.0 : (gB === 1 ? 0.5 : 0.0);
+                const pb = 1.0 - pB;
+                return [
+                    { name: 'AB', p: pA * pB },
+                    { name: 'Ab', p: pA * pb },
+                    { name: 'aB', p: pa * pB },
+                    { name: 'ab', p: pa * pb }
+                ];
+            };
+
+            const mGametes = getGameteDist(mA, mB);
+            const fGametes = getGameteDist(fA, fB);
+
+            // Budowa siatki 4x4 i sumowanie super-fenotypów
+            let phenoSums = { 'A_B_': 0, 'A_bb': 0, 'aa_B_': 0, 'aabb': 0 };
+
+            let tableHtml = '<table class="punnett-table-4x4"><thead><tr>';
+            tableHtml += '<th style="background:#070d18;">Gamety ♀ \ ♂</th>';
+            fGametes.forEach(fg => {
+                tableHtml += `<th>${fg.name}<br><span style="font-weight:normal; font-size:0.75rem; color:#94a3b8;">${(fg.p * 100).toFixed(0)}%</span></th>`;
+            });
+            tableHtml += '</tr></thead><tbody>';
+
+            mGametes.forEach(mg => {
+                tableHtml += `<tr><th>${mg.name}<br><span style="font-weight:normal; font-size:0.75rem; color:#94a3b8;">${(mg.p * 100).toFixed(0)}%</span></th>`;
+                fGametes.forEach(fg => {
+                    const cellProb = mg.p * fg.p;
+                    // Określenie literowego genotypu zygoty
+                    const hasA = (mg.name.includes('A') || fg.name.includes('A'));
+                    const hasB = (mg.name.includes('B') || fg.name.includes('B'));
+                    const phenoKey = (hasA ? 'A_' : 'aa_') + (hasB ? 'B_' : 'bb');
+                    phenoSums[phenoKey] += cellProb;
+
+                    // Budowa zapisu zygoty (np. AaBb)
+                    const letterA = (mg.name[0] === 'A' && fg.name[0] === 'A') ? 'AA' : ((mg.name[0] === 'a' && fg.name[0] === 'a') ? 'aa' : 'Aa');
+                    const letterB = (mg.name[1] === 'B' && fg.name[1] === 'B') ? 'BB' : ((mg.name[1] === 'b' && fg.name[1] === 'b') ? 'bb' : 'Bb');
+
+                    tableHtml += `<td><span class="cell-geno" style="color:${hasA && hasB ? '#38bdf8' : (hasA ? '#c084fc' : (hasB ? '#34d399' : '#94a3b8'))};">${letterA}${letterB}</span><span class="cell-pct">${(cellProb * 100).toFixed(1)}%</span></td>`;
+                });
+                tableHtml += '</tr>';
+            });
+            tableHtml += '</tbody></table>';
+
+            const container = document.getElementById('dihybrid-punnett-container');
+            if (container) container.innerHTML = tableHtml;
+
+            // Renderowanie kart 4 super-fenotypów
+            const phenoGrid = document.getElementById('dihybrid-super-pheno-grid');
+            if (phenoGrid) {
+                let cardsHtml = '';
+                for (const [key, pData] of Object.entries(pair.phenotypes)) {
+                    const pct = (phenoSums[key] * 100).toFixed(1);
+                    cardsHtml += `
+                        <div class="gen-super-pheno-card">
+                            <div class="gen-super-pheno-header">
+                                <span class="gen-super-pheno-title">${pData.title}</span>
+                                <span class="gen-super-pheno-pct">${pct}%</span>
+                            </div>
+                            <div style="font-size:0.85rem; color:#cbd5e1; line-height:1.45;">${pData.desc}</div>
+                            <div class="gen-progress-bg" style="margin-top:6px;">
+                                <div class="gen-progress-fill fill-purple" style="width:${pct}%;"></div>
+                            </div>
+                        </div>
+                    `;
+                }
+                phenoGrid.innerHTML = cardsHtml;
+            }
+
+            window.lastDihybridData = { pair, phenoSums };
+        }
+
+        /* ==========================================================================
+           LOGIKA TRYBU 3 (DWA GENY SPRZĘŻONE - CROSSING-OVER MORGANA)
+           ========================================================================== */
+        function onLinkedPairChange() {
+            clearAiSection();
+            const select = document.getElementById('linked-pair-select');
+            const id = select ? select.value : LINKED_PAIRS[0].id;
+            currentLinkedPair = LINKED_PAIRS.find(p => p.id === id) || LINKED_PAIRS[0];
+
+            const infoBox = document.getElementById('linked-pair-info');
+            const distBadge = document.getElementById('linked-dist-badge');
+            if (distBadge) distBadge.textContent = `Odległość: ${currentLinkedPair.distCM} cM`;
+
+            if (infoBox) {
+                infoBox.innerHTML = `
+                    <div style="font-weight:700; color:#34d399; margin-bottom:4px;">${currentLinkedPair.name}</div>
+                    <div style="margin-bottom:6px;">${currentLinkedPair.desc}</div>
+                    <div class="gen-trait-specs">
+                        <span class="gen-spec-pill" style="border-color:#34d399; color:#34d399;">Lokalizacja: ${currentLinkedPair.chr}</span>
+                        <span class="gen-spec-pill" style="border-color:#fbbf24; color:#fbbf24;">Odległość genetyczna: ${currentLinkedPair.distCM} cM (${currentLinkedPair.distCM}% crossing-over)</span>
+                        <span class="gen-spec-pill" style="border-color:#38bdf8; color:#38bdf8;">Pakiety rodzicielskie: ${(100 - currentLinkedPair.distCM).toFixed(1)}%</span>
+                    </div>
+                `;
+            }
+
+            onLinkedParentChange();
+        }
+
+        function onLinkedParentChange() {
+            runLinkedSimulation();
+        }
+
+        function runLinkedSimulation() {
+            if (currentAppMode !== 'linked') return;
+            const resultsArea = document.getElementById('gen-results-area');
+            if (resultsArea) resultsArea.style.display = 'flex';
+
+            const pair = currentLinkedPair;
+            const mPhase = document.getElementById('linked-m-phase').value;
+            const fPhase = document.getElementById('linked-f-phase').value;
+
+            const mChr1El = document.getElementById('linked-m-chr1');
+            const mChr2El = document.getElementById('linked-m-chr2');
+            const mBadge = document.getElementById('linked-m-phase-badge');
+
+            if (mPhase === 'cis') {
+                if (mBadge) mBadge.textContent = 'Faza Cis: [A-B] / [a-b]';
+                if (mChr1El) mChr1El.textContent = 'Gen1 (Mutacja) —— Gen2 (Mutacja)';
+                if (mChr2El) mChr2El.textContent = 'Gen1 (Dziki) —— Gen2 (Dziki)';
+            } else if (mPhase === 'trans') {
+                if (mBadge) mBadge.textContent = 'Faza Trans: [A-b] / [a-B]';
+                if (mChr1El) mChr1El.textContent = 'Gen1 (Mutacja) —— Gen2 (Dziki)';
+                if (mChr2El) mChr2El.textContent = 'Gen1 (Dziki) —— Gen2 (Mutacja)';
+            } else {
+                if (mBadge) mBadge.textContent = 'Homozygota: [A-B] / [A-B]';
+                if (mChr1El) mChr1El.textContent = 'Gen1 (Mutacja) —— Gen2 (Mutacja)';
+                if (mChr2El) mChr2El.textContent = 'Gen1 (Mutacja) —— Gen2 (Mutacja)';
+            }
+
+            const dist = pair.distCM;
+            const pRecomb = dist;
+            const pParental = 100 - dist;
+
+            const pEl = document.getElementById('linked-parental-pct');
+            const rEl = document.getElementById('linked-recomb-pct');
+            const pBar = document.getElementById('linked-parental-bar');
+            const rBar = document.getElementById('linked-recomb-bar');
+
+            if (pEl) pEl.textContent = `${pParental.toFixed(1)}%`;
+            if (rEl) rEl.textContent = `${pRecomb.toFixed(1)}%`;
+            if (pBar) pBar.style.width = `${pParental}%`;
+            if (rBar) rBar.style.width = `${pRecomb}%`;
+
+            // Wizualizacja szyny chromosomowej
+            const chrVisualizer = document.getElementById('linked-chromosome-visualizer');
+            if (chrVisualizer) {
+                chrVisualizer.innerHTML = `
+                    <div style="font-family:monospace; font-size:0.86rem; color:#a7f3d0; line-height:1.6;">
+                        <div style="color:#94a3b8; margin-bottom:4px;">Struktura badanej pary chromosomów matki (${pair.chr}):</div>
+                        <div>Chr 1: ====[ ${mPhase === 'trans' ? 'Gen 1 (A)' : 'Gen 1 (A)'} ]====[ Odległość: <strong style="color:#fbbf24;">${dist} cM</strong> ]====[ ${mPhase === 'trans' ? 'Gen 2 (b)' : 'Gen 2 (B)'} ]====&gt;</div>
+                        <div>Chr 2: ====[ ${mPhase === 'trans' ? 'Gen 1 (a)' : 'Gen 1 (a)'} ]====================================[ ${mPhase === 'trans' ? 'Gen 2 (B)' : 'Gen 2 (b)'} ]====&gt;</div>
+                    </div>
+                `;
+            }
+
+            const pDesc = document.getElementById('linked-parental-desc');
+            const rDesc = document.getElementById('linked-recomb-desc');
+
+            if (pDesc) {
+                pDesc.innerHTML = `W <strong>${pParental.toFixed(1)}%</strong> podziałów mejotycznych chromosom przechodzi bez pęknięcia. Dziecko dziedziczy nienaruszony układ rodzicielski (${(pParental/2).toFixed(1)}% dla każdej z dwóch chromatyd rodzica).`;
+            }
+            if (rDesc) {
+                rDesc.innerHTML = `W <strong>${pRecomb.toFixed(1)}%</strong> podziałów dochodzi do pęknięcia chiazmy (crossing-over). Powstają unikalne gamety rekombinowane (${(pRecomb/2).toFixed(1)}% na każdą nową kombinację).`;
+            }
+
+            window.lastLinkedData = { pair, dist, pParental, pRecomb };
+        }
+
 
         function renderPunnettSquare(mG, fG, trait) {
             const container = document.getElementById('punnett-square-container');
@@ -2469,57 +3268,55 @@
             const mText = data.mCount === 0 ? 'brak mutacji (0/0)' : (data.mCount === 1 ? '1 kopia mutacji (0/1 - heterozygota)' : '2 kopie mutacji (1/1 - homozygota)');
             const fText = data.fCount === 0 ? 'brak mutacji (0/0)' : (data.fCount === 1 ? '1 kopia mutacji (0/1 - heterozygota)' : '2 kopie mutacji (1/1 - homozygota)');
 
+            const p0Str = data.p0 !== undefined ? data.p0.toFixed(1) : '0.0';
+            const p1Str = data.p1 !== undefined ? data.p1.toFixed(1) : '0.0';
+            const p2Str = data.p2 !== undefined ? data.p2.toFixed(1) : '0.0';
+
+            let phenoChanceStr = '';
+            if (trait.mode === 'autosomal-dominant') {
+                phenoChanceStr = `${(data.p1 + data.p2).toFixed(1)}% (wymaga minimum 1 kopii mutacji)`;
+            } else if (trait.mode === 'autosomal-recessive') {
+                phenoChanceStr = `${data.p2.toFixed(1)}% (wymaga 2 kopii mutacji; heterozygoty ${data.p1.toFixed(1)}% to bezobjawowi nosiciele)`;
+            } else {
+                phenoChanceStr = `${data.p2.toFixed(1)}% (forma pełna) oraz ${data.p1.toFixed(1)}% (forma pośrednia)`;
+            }
+
             container.innerHTML = `
                 <div class="gen-step-item">
-                    <strong>Krok 1: Analiza stanu wejściowego rodziców</strong><br>
+                    <strong>Krok 1: Analiza stanu wyjściowego rodziców</strong><br>
                     Wybrana cecha: <em>${trait.name}</em> (Gen: <code>${trait.gene}</code> na chromosomie <code>${trait.chr}</code>, model: <strong>${trait.modeLabel}</strong>).<br>
                     &bull; Matka: <strong>${mText}</strong>.<br>
                     &bull; Ojciec: <strong>${fText}</strong>.<br>
-                    Ponieważ warunek wyboru (mutacja u matki, ojca lub obojga jednocześnie) został spełniony, przeprowadzono analizę obiema metodami.
+                    Dziedziczenie pojedynczego genu podlega prawu czystości gamet (I Prawo Mendla).
                 </div>
 
                 <div class="gen-step-item" style="border-left-color: #38bdf8;">
-                    <strong>Krok 2: Metoda 1 – Model Mendlowski i losowanie gamet</strong><br>
-                    W oogenezie i spermatogenezie komórki diploidalne dzielą się mejotycznie, losowo rozdzielając allele do komórek jajowych i plemników (I Prawo Mendla).<br>
-                    W wirtualnym eksperymencie <strong>1000 połączeń gamet Monte Carlo</strong> uzyskano:<br>
-                    &bull; <strong>${data.count0} osobników (${data.p0}%)</strong> z genotypem <strong>0/0</strong> (brak mutacji),<br>
-                    &bull; <strong>${data.count1} osobników (${data.p1}%)</strong> z genotypem <strong>0/1</strong> (dokładnie jedna mutacja),<br>
-                    &bull; <strong>${data.count2} osobników (${data.p2}%)</strong> z genotypem <strong>1/1</strong> (dwie mutacje).<br>
-                    Zgodność z teoretycznym kwadratem Punnetta potwierdza statystyczną stabilność próby losowej.
-                </div>
-
-                <div class="gen-step-item" style="border-left-color: #c084fc;">
-                    <strong>Krok 3: Metoda 2 – Symulacja Mejozy z Crossing-over dobranym dla genu</strong><br>
-                    Dla genu <code>${trait.gene}</code> na chromosomie <code>${trait.chr}</code> system automatycznie dobrał fizycznie sprzężony marker <code>${trait.marker}</code> o odległości <strong>${trait.distCM} cM</strong>.<br>
-                    W 1000 podziałach mejotycznych in silico:<br>
-                    &bull; W <strong>${data.parentalCount} przypadkach (${data.pParental}%)</strong> chromosomy przeszły bez pęknięć (haplotypy rodzicielskie),<br>
-                    &bull; W <strong>${data.recombCount} przypadkach (${data.pRecomb}%)</strong> zaszło zjawisko <em>crossing-over</em> – pęknięcie i krzyżowa wymiana chromatyd niesiostrzanych.<br>
-                    Wartość ta ściśle odpowiada zadanej odległości genetycznej w centymorganach, ilustrując, że geny leżące bliżej siebie rzadziej ulegają rozprzężeniu.<br>
-                    <div style="margin-top: 8px;">
-                        <button type="button" class="gen-explain-btn" onclick="openExplanationModal()" style="font-size: 0.83rem; padding: 6px 14px;">
-                            💡 Dlaczego szansa ujawnienia cechy (${trait.mode === 'autosomal-dominant' ? ((data.count1 + data.count2) / 10).toFixed(1) + '%' : (trait.mode === 'autosomal-recessive' ? data.p2 + '%' : data.p1 + '%')}) różni się od crossing-over (${data.pRecomb}%)? Zobacz wyjaśnienie
-                        </button>
-                    </div>
+                    <strong>Krok 2: Teoretyczny model Mendlowski (I Prawo Mendla – Kwadrat Punnetta 2×2)</strong><br>
+                    W oogenezie i spermatogenezie diploidalne komórki rodziców rozdzielają swoje dwa allele do haploidalnych gamet z prawdopodobieństwem 50% / 50%.<br>
+                    Na podstawie dokładnych obliczeń analitycznych bez losowości próbkowania, prawdopodobieństwa genotypów u dziecka wynoszą:<br>
+                    &bull; <strong>${p0Str}%</strong> – Homozygota dzika <strong>0/0</strong> (brak mutacji),<br>
+                    &bull; <strong>${p1Str}%</strong> – Heterozygota <strong>0/1</strong> (dokładnie jedna mutacja),<br>
+                    &bull; <strong>${p2Str}%</strong> – Homozygota zmutowana <strong>1/1</strong> (dwie mutacje).
                 </div>
 
                 <div class="gen-step-item" style="border-left-color: #10b981;">
-                    <strong>Krok 4: Porównanie i wnioski fenotypowe dla człowieka</strong><br>
+                    <strong>Krok 3: Wnioski fenotypowe dla człowieka</strong><br>
                     ${trait.desc}<br>
-                    Przy obecnym stanie rodziców szansa, że kolejne dziecko wykaże tę cechę wynosi <strong>${trait.mode === 'autosomal-dominant' ? ((data.count1 + data.count2) / 10).toFixed(1) + '%' : (trait.mode === 'autosomal-recessive' ? data.p2 + '%' : data.p1 + '% (forma pośrednia)')}</strong>.<br>
+                    Przy obecnym stanie rodziców szansa, że kolejne dziecko wykaże tę cechę wynosi <strong>${phenoChanceStr}</strong>.<br>
                     <div style="margin-top: 8px;">
                         <button type="button" class="gen-explain-btn" onclick="askQuickAiQuestion('phenotype_stats')" style="border-color:#10b981; color:#6ee7b7; font-size:0.83rem; padding: 6px 14px;">
-                            👥 Sprawdź fenotypy potomstwa w praktyce z Gemini AI (kto reaguje silnie, umiarkowanie, wcale)
+                            💡 Sprawdź fenotypy potomstwa w praktyce z Gemini AI (kto reaguje silnie, umiarkowanie, wcale)
                         </button>
                     </div>
                 </div>
 
                 <div class="gen-step-item" style="border-left-color: #a855f7;">
-                    <strong>Krok 5: Siła odziedziczalności (h² = ${trait.h2}%) i czynniki środowiskowe (${100 - trait.h2}%)</strong><br>
+                    <strong>Krok 4: Siła odziedziczalności (h² = ${trait.h2}%) i czynniki środowiskowe (${100 - trait.h2}%)</strong><br>
                     W badaniach genetycznych i analizach bliźniąt (twin studies) wykazano, że <strong>${trait.h2}%</strong> zmienności tej cechy zależy od DNA, natomiast <strong>${100 - trait.h2}%</strong> kształtują czynniki zewnętrzne: <em>${trait.envFactors}</em>.<br>
                     Oznacza to, że genotyp wyznacza predyspozycję, ale ostateczny fenotyp u dziecka może być w znacznym stopniu modulowany stylem życia i epigenetyką.<br>
                     <div style="margin-top: 8px;">
                         <button type="button" class="gen-explain-btn" onclick="askQuickAiQuestion('lifestyle')" style="border-color:#a855f7; color:#d8b4fe; font-size:0.83rem; padding: 6px 14px;">
-                            ✨ Zapytaj Gemini AI, jak dieta i nawyki modyfikują gen ${trait.gene}
+                            💡 Zapytaj Gemini AI, jak dieta i nawyki modyfikują gen ${trait.gene}
                         </button>
                     </div>
                 </div>
@@ -2716,10 +3513,10 @@ Użytkownik bada w symulatorze cechę: "${trait.name}" (Gen: ${trait.gene}, chro
 Odziedziczalność tej cechy w populacji wynosi h² = ${trait.h2}% (wpływ środowiska i stylu życia: ${100 - trait.h2}%).
 Znane modyfikatory środowiskowe: ${trait.envFactors}.
 Stan rodziców: Matka (${mCount} mutacji), Ojciec (${fCount} mutacji).
-Empiryczny rozkład genotypów potomstwa z symulacji 1000 połączeń Monte Carlo:
-• Brak mutacji (0/0): ${lastData ? lastData.p0 : '50.0'}%
-• Jedna mutacja (0/1 - heterozygota): ${lastData ? lastData.p1 : '50.0'}%
-• Dwie mutacje (1/1 - homozygota): ${lastData ? lastData.p2 : '0.0'}%
+Teoretyczny rozkład prawdopodobieństw genotypów potomstwa (I Prawo Mendla, kwadrat Punnetta):
+• Brak mutacji (0/0): ${lastData ? Number(lastData.p0).toFixed(1) : '50.0'}%
+• Jedna mutacja (0/1 - heterozygota): ${lastData ? Number(lastData.p1).toFixed(1) : '50.0'}%
+• Dwie mutacje (1/1 - homozygota): ${lastData ? Number(lastData.p2).toFixed(1) : '0.0'}%
 
 Użytkownik zadał konkretne pytanie:
 "${customQ}"
