@@ -1339,13 +1339,10 @@
             </div>
             <!-- KONIEC KONTENERA TRYBU 3 -->
 
-            <!-- Przyciski akcji: Wyjaśnienie założeń oraz Uruchomienie symulacji -->
-            <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:stretch;">
-                <button type="button" class="gen-run-btn" style="flex:1; min-width:240px; background:linear-gradient(135deg, #1e293b 0%, #334155 100%); border:1px solid #64748b; box-shadow:none; display:inline-flex; align-items:center; justify-content:center; gap:8px;" onclick="openAssumptionsModal()">
-                    <span>📖 Wyjaśnij założenia i pojęcia</span>
-                </button>
-                <button type="button" id="gen-run-simulation-btn" class="gen-run-btn" style="flex:2; min-width:280px;" onclick="runGeneticSimulation()">
-                    <span>⚡ Oblicz dokładne prawdopodobieństwa dziedziczenia (Analityczne)</span>
+            <!-- Przyciski akcji: Wyjaśnienie założeń i pojęć -->
+            <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:stretch; margin-top:6px;">
+                <button type="button" class="gen-run-btn" style="width:100%; background:linear-gradient(135deg, #1e293b 0%, #334155 100%); border:1px solid #64748b; box-shadow:none; display:inline-flex; align-items:center; justify-content:center; gap:8px;" onclick="openAssumptionsModal()">
+                    <span>📖 Wyjaśnij założenia i pojęcia genetyczne</span>
                 </button>
             </div>
 
@@ -2745,6 +2742,9 @@
             if (rLinked) rLinked.style.display = (mode === 'linked') ? 'flex' : 'none';
 
             // Uruchomienie wyliczeń dla aktywnego trybu
+            const resultsArea = document.getElementById('gen-results-area');
+            if (resultsArea) resultsArea.style.display = 'flex';
+
             if (mode === 'single') {
                 onParentStateChange();
             } else if (mode === 'dihybrid') {
@@ -2895,17 +2895,17 @@
 
             const isZero = (mCount === 0 && fCount === 0);
             const alertBox = document.getElementById('gen-zero-alert');
-            const runBtn = document.getElementById('gen-run-simulation-btn');
             const resultsArea = document.getElementById('gen-results-area');
 
             if (alertBox) alertBox.style.display = isZero ? 'flex' : 'none';
-            if (runBtn) {
-                runBtn.disabled = isZero;
-                runBtn.title = isZero ? 'Zaznacz występowanie mutacji u matki lub ojca' : '';
-            }
 
-            if (!isZero && currentAppMode === 'single') {
-                runGeneticSimulation();
+            if (currentAppMode === 'single') {
+                if (isZero) {
+                    if (resultsArea) resultsArea.style.display = 'none';
+                } else {
+                    if (resultsArea) resultsArea.style.display = 'flex';
+                    runGeneticSimulation();
+                }
             }
         }
 
