@@ -1620,6 +1620,34 @@
                             </div>
                         </div>
 
+                        <!-- 1. Dokładny rozkład 4 typów gamet mejozy -->
+                        <div style="margin-top: 14px; background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(52, 211, 153, 0.25); border-radius: 10px; padding: 14px;">
+                            <div style="font-size: 0.95rem; font-weight: 700; color: #34d399; margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between;">
+                                <span>🧬 Rozkład 4 typów gamet matki (analityczne prawdopodobieństwa mejozy):</span>
+                                <span style="font-size: 0.78rem; color: #94a3b8; font-weight: normal;">Suma = 100%</span>
+                            </div>
+                            <div style="font-size: 0.84rem; color: #94a3b8; margin-bottom: 10px;">
+                                Każda komórka jajowa otrzymuje jedną z 4 możliwych kombinacji alleli w zależności od zajścia chiazmy:
+                            </div>
+                            <div id="linked-gametes-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px;">
+                                <!-- Generowane dynamicznie przez JS -->
+                            </div>
+                        </div>
+
+                        <!-- 2. Dokładne prawdopodobieństwa fenotypów u dziecka -->
+                        <div style="margin-top: 14px; background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 10px; padding: 14px;">
+                            <div style="font-size: 0.95rem; font-weight: 700; color: #38bdf8; margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between;">
+                                <span>👶 Dokładne prawdopodobieństwa fenotypów potomstwa (Krzyżówka Morgana):</span>
+                                <span style="font-size: 0.78rem; color: #94a3b8; font-weight: normal;">Ojciec: Tester [ab/ab]</span>
+                            </div>
+                            <div style="font-size: 0.84rem; color: #94a3b8; margin-bottom: 10px;">
+                                W oparciu o odległość mapową w cM — z jakim prawdopodobieństwem dziecko odziedziczy cechy nierozerwalnie, a z jakim crossing-over rozbije pakiet:
+                            </div>
+                            <div id="linked-offspring-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 10px;">
+                                <!-- Generowane dynamicznie przez JS -->
+                            </div>
+                        </div>
+
                         <!-- Edukacyjny alert dlaczego BRAK kwadratu Mendla -->
                         <div class="gen-alert-block" style="border-color: rgba(251, 191, 36, 0.4); background: rgba(251, 191, 36, 0.08); margin-top: 6px;">
                             <span style="font-size: 1.5rem;">⚠️</span>
@@ -1640,7 +1668,8 @@
                         </div>
                         <div class="gen-ai-chips-row">
                             <span style="font-size: 0.8rem; color: #94a3b8;">Szybkie pytania:</span>
-                            <button type="button" class="gen-ai-chip" style="border-color:#34d399; color:#34d399; font-weight:700;" onclick="askLinkedAi('meaning')">🧬 Co w praktyce oznacza rozbicie pakietu cech?</button>
+                            <button type="button" class="gen-ai-chip" style="border-color:#38bdf8; color:#38bdf8; font-weight:700;" onclick="askLinkedAi('phenotype_stats')">🎯 Fenotypy potomstwa w praktyce</button>
+                            <button type="button" class="gen-ai-chip" style="border-color:#34d399; color:#34d399; font-weight:700;" onclick="askLinkedAi('consequences')">🧬 Co w praktyce oznacza rozbicie pakietu cech?</button>
                             <button type="button" class="gen-ai-chip" onclick="askLinkedAi('evolution')">🌍 Dlaczego ewolucja wymyśliła crossing-over?</button>
                             <button type="button" class="gen-ai-chip" onclick="askLinkedAi('distance')">📏 Jak odległość w cM wpływa na potomstwo?</button>
                         </div>
@@ -2747,16 +2776,28 @@
                 geneA_name: 'Tolerancja laktozy (MCM6/LCT - chr 2q21)',
                 geneB_name: 'Kichanie słoneczne (ACHOO - chr 2q22)',
                 distCM: 12.0,
-                desc: 'Dwa słynne geny leżące w bezpośrednim sąsiedztwie na ramieniu q chromosomu 2. W 88% przypadków dziecko dziedziczy ten pakiet nienaruszony od rodzica, a w 12% crossing-over rozłącza te cechy.'
+                desc: 'Dwa słynne geny leżące w bezpośrednim sąsiedztwie na ramieniu q chromosomu 2. W 88% przypadków dziecko dziedziczy ten pakiet nienaruszony od rodzica, a w 12% crossing-over rozłącza te cechy.',
+                phenotypes: {
+                    both: { title: '🥛☀️ Tolerancja laktozy + Kichanie od słońca', desc: 'Dziecko dziedziczy nienaruszony pakiet rodzicielski z obiema cechami.' },
+                    none: { title: '⚪ Brak tolerancji laktozy + Brak odruchu kichania', desc: 'Haplotyp rodzicielski bez badanych wariantów (typowe dla populacji bez mutacji laktazy).' },
+                    geneA_only: { title: '🥛 Tylko tolerancja laktozy (bez kichania)', desc: 'Crossing-over w odległości 12.0 cM odłączył gen tolerancji laktozy od genu odruchu kichania!' },
+                    geneB_only: { title: '☀️ Tylko odruch kichania (bez tolerancji laktozy)', desc: 'Skutek pęknięcia nici DNA i wymiany chromatyd niesiostrzanych w mejozie.' }
+                }
             },
             {
                 id: 'chr6_mosquito_aphtae',
                 chr: 'chr 6p',
-                name: '🦟💥 Chromosom 6: Zapach dla Komarów (HLA-DRB1) & Afty w Ustach (TNF)',
+                name: '🦟🩹 Chromosom 6: Zapach dla Komarów (HLA-DRB1) & Afty w Ustach (TNF)',
                 geneA_name: 'Zapach dla komarów (HLA-DRB1 - chr 6p21)',
                 geneB_name: 'Skłonność do aft (TNF - chr 6p21)',
                 distCM: 4.6,
-                desc: 'Kluczowe geny klastra odpornościowego HLA na ramieniu 6p21. Leżą tak blisko siebie, że crossing-over zachodzi niezwykle rzadko (~4.6%), trzymając ten pakiet odpornościowy niemal nierozerwalnie.'
+                desc: 'Kluczowe geny klastra odpornościowego HLA na ramieniu 6p21. Leżą tak blisko siebie, że crossing-over zachodzi niezwykle rzadko (~4.6%), trzymając ten pakiet odpornościowy niemal nierozerwalnie.',
+                phenotypes: {
+                    both: { title: '🦟🩹 Atrakcyjność dla komarów + Skłonność do aft', desc: 'Wspólny nienaruszony pakiet klastra odpornościowego HLA na ramieniu 6p21.' },
+                    none: { title: '⚪ Brak wabienia komarów + Brak aft', desc: 'Prawidłowy haplotyp rodzicielski o zrównoważonej odpowiedzi immunologicznej.' },
+                    geneA_only: { title: '🦟 Tylko zapach wabiący komary', desc: 'Pęknięcie nici DNA w klastrze HLA (4.6 cM) rozdzieliło gen HLA-DRB1 od genu TNF!' },
+                    geneB_only: { title: '🩹 Tylko skłonność do aft', desc: 'Dziecko ma afty w jamie ustnej, lecz nie przyciąga komarów (efekt rzadkiej rekombinacji).' }
+                }
             },
             {
                 id: 'chr1_skin_fish',
@@ -2765,7 +2806,13 @@
                 geneA_name: 'Atopowe zapalenie skóry (FLG - chr 1q21)',
                 geneB_name: 'Zespół zapachu rybnego (FMO3 - chr 1q24)',
                 distCM: 8.5,
-                desc: 'Dwa geny na ramieniu 1q. W 91.5% przypadków allel wrażliwej skóry wędruje razem z wariantem metabolizmu choliny; w 8.5% crossing-over rozbija to sprzężenie.'
+                desc: 'Dwa geny na ramieniu 1q. W 91.5% przypadków allel wrażliwej skóry wędruje razem z wariantem metabolizmu choliny; w 8.5% crossing-over rozbija to sprzężenie.',
+                phenotypes: {
+                    both: { title: '🧴🐟 Wrażliwa skóra (AZS) + Wariant FMO3', desc: 'Dziedziczone jako jeden nienaruszony blok na długim ramieniu chromosomu 1q.' },
+                    none: { title: '⚪ Szczelna skóra + Prawidłowy metabolizm FMO3', desc: 'Prawidłowy haplotyp rodzicielski z nienaruszoną barierą naskórka.' },
+                    geneA_only: { title: '🧴 Tylko atopowa skóra (bez zaburzeń FMO3)', desc: 'Crossing-over w odległości 8.5 cM uwolnił gen filagryny od wariantu FMO3!' },
+                    geneB_only: { title: '🐟 Tylko wariant FMO3 (przy zdrowej skórze)', desc: 'Skutek rekombinacji na ramieniu 1q – defekt FMO3 przy zdrowej barierze naskórkowej.' }
+                }
             },
             {
                 id: 'chr10_migraine_raynaud',
@@ -2774,7 +2821,13 @@
                 geneA_name: 'Migrena z aurą (KCNK18 - chr 10q25)',
                 geneB_name: 'Zimne dłonie Raynauda (ADRA2A - chr 10q25)',
                 distCM: 7.8,
-                desc: 'Dwa geny naczynioruchowe leżące w tym samym prążku 10q25. Ich bliskość fizyczna sprawia, że skłonność do migren i zimnych rąk w 92.2% przypadków jest dziedziczona jako jeden wspólny pakiet.'
+                desc: 'Dwa geny naczynioruchowe leżące w tym samym prążku 10q25. Ich bliskość fizyczna sprawia, że skłonność do migren i zimnych rąk w 92.2% przypadków jest dziedziczona jako jeden wspólny pakiet.',
+                phenotypes: {
+                    both: { title: '⚡🧤 Migrena z aurą + Zimne dłonie (Raynaud)', desc: 'Sprzężony pakiet naczynioruchowy na prążku 10q25 dziedziczony łącznie.' },
+                    none: { title: '⚪ Brak migren + Prawidłowe krążenie', desc: 'Prawidłowy haplotyp bez nadreaktywności receptorów naczyniowych.' },
+                    geneA_only: { title: '⚡ Tylko migrena z aurą', desc: 'Crossing-over rozbił wspólne sprzężenie naczyniowe w prążku 10q25!' },
+                    geneB_only: { title: '🧤 Tylko objaw Raynauda (zimne ręce)', desc: 'Dziecko ma napadowe blednięcie palców, lecz nie cierpi na migreny z aurą.' }
+                }
             },
             {
                 id: 'chr11_cilantro_violet',
@@ -2783,7 +2836,13 @@
                 geneA_name: 'Mydlany smak kolendry (OR6A2 - chr 11q12)',
                 geneB_name: 'Zapach fiołków (OR5A1 - chr 11q12)',
                 distCM: 7.3,
-                desc: 'Sąsiednie receptory węchowe w klastrze na chromosomie 11q12. Zdolność do wyczuwania aromatu fiołków i mydlanego posmaku kolendry rozłącza się w mejozie jedynie w 7.3% przypadków.'
+                desc: 'Sąsiednie receptory węchowe w klastrze na chromosomie 11q12. Zdolność do wyczuwania aromatu fiołków i mydlanego posmaku kolendry rozłącza się w mejozie jedynie w 7.3% przypadków.',
+                phenotypes: {
+                    both: { title: '🌿🌸 Mydlana kolendra + Wyczuwanie fiołków', desc: 'Dziedziczony nienaruszony klaster receptorów węchowych na chromosomie 11q12.' },
+                    none: { title: '⚪ Ziołowa kolendra + Brak zapachu fiołków', desc: 'Standardowy profil węchowy bez badanych mutacji receptorowych.' },
+                    geneA_only: { title: '🌿 Tylko mydlana kolendra', desc: 'Crossing-over w 7.3% podziałów oddzielił receptor kolendry od receptora beta-jononu!' },
+                    geneB_only: { title: '🌸 Tylko wyczuwanie zapachu fiołków', desc: 'Dziecko czuje delikatny kwiatowy aromat fiołków, a kolendra smakuje tradycyjnie ziołowo.' }
+                }
             }
         ];
 
@@ -3372,16 +3431,16 @@
 
             if (mPhase === 'cis') {
                 if (mBadge) mBadge.textContent = 'Faza Cis: [A-B] / [a-b]';
-                if (mChr1El) mChr1El.textContent = 'Gen1 (Mutacja) —— Gen2 (Mutacja)';
-                if (mChr2El) mChr2El.textContent = 'Gen1 (Dziki) —— Gen2 (Dziki)';
+                if (mChr1El) mChr1El.textContent = 'Gen1 (Mutacja) 🔗 Gen2 (Mutacja)';
+                if (mChr2El) mChr2El.textContent = 'Gen1 (Dziki) 🔗 Gen2 (Dziki)';
             } else if (mPhase === 'trans') {
                 if (mBadge) mBadge.textContent = 'Faza Trans: [A-b] / [a-B]';
-                if (mChr1El) mChr1El.textContent = 'Gen1 (Mutacja) —— Gen2 (Dziki)';
-                if (mChr2El) mChr2El.textContent = 'Gen1 (Dziki) —— Gen2 (Mutacja)';
+                if (mChr1El) mChr1El.textContent = 'Gen1 (Mutacja) 🔗 Gen2 (Dziki)';
+                if (mChr2El) mChr2El.textContent = 'Gen1 (Dziki) 🔗 Gen2 (Mutacja)';
             } else {
                 if (mBadge) mBadge.textContent = 'Homozygota: [A-B] / [A-B]';
-                if (mChr1El) mChr1El.textContent = 'Gen1 (Mutacja) —— Gen2 (Mutacja)';
-                if (mChr2El) mChr2El.textContent = 'Gen1 (Mutacja) —— Gen2 (Mutacja)';
+                if (mChr1El) mChr1El.textContent = 'Gen1 (Mutacja) 🔗 Gen2 (Mutacja)';
+                if (mChr2El) mChr2El.textContent = 'Gen1 (Mutacja) 🔗 Gen2 (Mutacja)';
             }
 
             const dist = pair.distCM;
@@ -3398,14 +3457,139 @@
             if (pBar) pBar.style.width = `${pParental}%`;
             if (rBar) rBar.style.width = `${pRecomb}%`;
 
+            // 1. Obliczenie 4 typów gamet matki (analityczne Morgana)
+            let gametes = [];
+            if (mPhase === 'cis') {
+                gametes = [
+                    { type: 'parental', name: 'A-B', p: pParental / 2, desc: 'Haplotyp rodzicielski 1: obie cechy przekazane razem' },
+                    { type: 'parental', name: 'a-b', p: pParental / 2, desc: 'Haplotyp rodzicielski 2: brak obu badanych cech' },
+                    { type: 'recomb', name: 'A-b', p: pRecomb / 2, desc: 'Rekombinant: crossing-over rozdzielił geny (tylko Cecha 1)' },
+                    { type: 'recomb', name: 'a-B', p: pRecomb / 2, desc: 'Rekombinant: crossing-over rozdzielił geny (tylko Cecha 2)' }
+                ];
+            } else if (mPhase === 'trans') {
+                gametes = [
+                    { type: 'parental', name: 'A-b', p: pParental / 2, desc: 'Haplotyp rodzicielski 1: Cecha 1 bez Cechy 2' },
+                    { type: 'parental', name: 'a-B', p: pParental / 2, desc: 'Haplotyp rodzicielski 2: Cecha 2 bez Cechy 1' },
+                    { type: 'recomb', name: 'A-B', p: pRecomb / 2, desc: 'Rekombinant: crossing-over połączył obie cechy razem!' },
+                    { type: 'recomb', name: 'a-b', p: pRecomb / 2, desc: 'Rekombinant: crossing-over połączył brak obu cech' }
+                ];
+            } else {
+                gametes = [
+                    { type: 'parental', name: 'A-B', p: 100.0, desc: 'Homozygota zmutowana – 100% gamet niesie obie cechy' }
+                ];
+            }
+
+            // Renderowanie siatki gamet
+            const gametesGrid = document.getElementById('linked-gametes-grid');
+            if (gametesGrid) {
+                let gHtml = '';
+                gametes.forEach(g => {
+                    const isParental = g.type === 'parental';
+                    const borderCol = isParental ? 'rgba(56, 189, 248, 0.4)' : 'rgba(251, 191, 36, 0.4)';
+                    const badgeCol = isParental ? '#38bdf8' : '#fbbf24';
+                    const badgeBg = isParental ? 'rgba(56, 189, 248, 0.12)' : 'rgba(251, 191, 36, 0.12)';
+                    const badgeText = isParental ? '📦 Rodzicielska' : '⚡ Rekombinacja';
+
+                    gHtml += `
+                        <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid ${borderCol}; border-radius: 8px; padding: 10px 12px; display: flex; flex-direction: column; gap: 4px;">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <span style="font-size:0.75rem; color:${badgeCol}; background:${badgeBg}; padding:2px 6px; border-radius:4px; font-weight:700;">${badgeText}</span>
+                                <strong style="font-size:1.15rem; color:#f8fafc;">${g.p.toFixed(1)}%</strong>
+                            </div>
+                            <div style="font-family:monospace; font-size:1rem; font-weight:700; color:#f1f5f9; margin-top:2px;">[ ${g.name} ]</div>
+                            <div style="font-size:0.8rem; color:#94a3b8; line-height:1.35;">${g.desc}</div>
+                        </div>
+                    `;
+                });
+                gametesGrid.innerHTML = gHtml;
+            }
+
+            // 2. Obliczenie fenotypów potomstwa dla krzyżówki testowej
+            const phenoDefs = pair.phenotypes || {
+                both: { title: '🧬 Obie cechy obecne', desc: 'Dziecko dziedziczy nienaruszony pakiet rodzicielski z obiema cechami.' },
+                none: { title: '⚪ Brak obu badanych cech', desc: 'Haplotyp rodzicielski bez badanych wariantów.' },
+                geneA_only: { title: '⚡ Tylko Cecha 1', desc: 'Crossing-over rozbił wspólne sprzężenie!' },
+                geneB_only: { title: '⚡ Tylko Cecha 2', desc: 'Crossing-over rozbił wspólne sprzężenie!' }
+            };
+
+            let pBoth = (mPhase === 'cis') ? pParental / 2 : pRecomb / 2;
+            let pNone = (mPhase === 'cis') ? pParental / 2 : pRecomb / 2;
+            let pGeneA = (mPhase === 'cis') ? pRecomb / 2 : pParental / 2;
+            let pGeneB = (mPhase === 'cis') ? pRecomb / 2 : pParental / 2;
+
+            if (mPhase === 'homo_mut') {
+                pBoth = 100.0; pNone = 0; pGeneA = 0; pGeneB = 0;
+            }
+
+            const offspringGrid = document.getElementById('linked-offspring-grid');
+            if (offspringGrid) {
+                const outcomes = [
+                    {
+                        title: phenoDefs.both.title,
+                        code: '[A - B] / [a - b]',
+                        pct: pBoth,
+                        desc: phenoDefs.both.desc,
+                        color: '#38bdf8',
+                        fillClass: 'fill-blue',
+                        badge: mPhase === 'cis' ? '📦 Nienaruszony pakiet rodzica' : '⚡ Nowa rekombinacja'
+                    },
+                    {
+                        title: phenoDefs.none.title,
+                        code: '[a - b] / [a - b]',
+                        pct: pNone,
+                        desc: phenoDefs.none.desc,
+                        color: '#c084fc',
+                        fillClass: 'fill-purple',
+                        badge: mPhase === 'cis' ? '📦 Nienaruszony pakiet rodzica' : '⚡ Nowa rekombinacja'
+                    },
+                    {
+                        title: phenoDefs.geneA_only.title,
+                        code: '[A - b] / [a - b]',
+                        pct: pGeneA,
+                        desc: phenoDefs.geneA_only.desc,
+                        color: '#fbbf24',
+                        fillClass: 'fill-amber',
+                        badge: mPhase === 'cis' ? '⚡ Efekt Crossing-over (Rozbicie)' : '📦 Układ rodzicielski'
+                    },
+                    {
+                        title: phenoDefs.geneB_only.title,
+                        code: '[a - B] / [a - b]',
+                        pct: pGeneB,
+                        desc: phenoDefs.geneB_only.desc,
+                        color: '#34d399',
+                        fillClass: 'fill-emerald',
+                        badge: mPhase === 'cis' ? '⚡ Efekt Crossing-over (Rozbicie)' : '📦 Układ rodzicielski'
+                    }
+                ];
+
+                let oHtml = '';
+                outcomes.forEach(o => {
+                    oHtml += `
+                        <div class="gen-super-pheno-card" style="border-color: ${o.color}45;">
+                            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:4px;">
+                                <span style="font-size:0.75rem; color:${o.color}; background:${o.color}15; padding:2px 6px; border-radius:4px; font-weight:700;">${o.badge}</span>
+                                <strong style="font-size:1.25rem; font-weight:800; color:${o.color};">${o.pct.toFixed(1)}%</strong>
+                            </div>
+                            <div style="font-weight:700; color:#f1f5f9; font-size:0.92rem; margin-top:4px;">${o.title}</div>
+                            <div style="font-family:monospace; font-size:0.78rem; color:#94a3b8; margin: 2px 0 6px 0;">Genotyp: ${o.code}</div>
+                            <div style="font-size:0.83rem; color:#cbd5e1; line-height:1.4;">${o.desc}</div>
+                            <div class="gen-progress-bg" style="margin-top:8px;">
+                                <div class="gen-progress-fill ${o.fillClass}" style="width:${o.pct}%;"></div>
+                            </div>
+                        </div>
+                    `;
+                });
+                offspringGrid.innerHTML = oHtml;
+            }
+
             // Wizualizacja szyny chromosomowej
             const chrVisualizer = document.getElementById('linked-chromosome-visualizer');
             if (chrVisualizer) {
                 chrVisualizer.innerHTML = `
                     <div style="font-family:monospace; font-size:0.86rem; color:#a7f3d0; line-height:1.6;">
                         <div style="color:#94a3b8; margin-bottom:4px;">Struktura badanej pary chromosomów matki (${pair.chr}):</div>
-                        <div>Chr 1: ====[ ${mPhase === 'trans' ? 'Gen 1 (A)' : 'Gen 1 (A)'} ]====[ Odległość: <strong style="color:#fbbf24;">${dist} cM</strong> ]====[ ${mPhase === 'trans' ? 'Gen 2 (b)' : 'Gen 2 (B)'} ]====&gt;</div>
-                        <div>Chr 2: ====[ ${mPhase === 'trans' ? 'Gen 1 (a)' : 'Gen 1 (a)'} ]====================================[ ${mPhase === 'trans' ? 'Gen 2 (B)' : 'Gen 2 (b)'} ]====&gt;</div>
+                        <div>Chr 1: ====[ ${mPhase === 'trans' ? 'Gen 1 (A)' : 'Gen 1 (A)'} ]====[ Odległość: <strong style="color:#fbbf24;">${dist} cM</strong> ]====[ ${mPhase === 'trans' ? 'Gen 2 (b)' : 'Gen 2 (B)'} ]====></div>
+                        <div>Chr 2: ====[ ${mPhase === 'trans' ? 'Gen 1 (a)' : 'Gen 1 (a)'} ]====================================[ ${mPhase === 'trans' ? 'Gen 2 (B)' : 'Gen 2 (b)'} ]====></div>
                     </div>
                 `;
             }
@@ -3420,9 +3604,8 @@
                 rDesc.innerHTML = `W <strong>${pRecomb.toFixed(1)}%</strong> podziałów dochodzi do pęknięcia chiazmy (crossing-over). Powstają unikalne gamety rekombinowane (${(pRecomb/2).toFixed(1)}% na każdą nową kombinację).`;
             }
 
-            window.lastLinkedData = { pair, dist, pParental, pRecomb };
+            window.lastLinkedData = { pair, dist, pParental, pRecomb, gametes, pBoth, pNone, pGeneA, pGeneB };
         }
-
 
         function renderPunnettSquare(mG, fG, trait) {
             const container = document.getElementById('punnett-square-container');
@@ -3936,12 +4119,28 @@ Udziel wyczerpującej, profesjonalnej, a zarazem przystępnej odpowiedzi po pols
             const input = document.getElementById('gen-ai-linked-q');
             if (!input) return;
 
-            const slider = document.getElementById('linked-dist-slider');
-            const dist = slider ? parseFloat(slider.value) : pair.distCM;
-            const pRecomb = dist;
-            const pParental = (100 - dist).toFixed(1);
+            const last = window.lastLinkedData;
+            const dist = last ? last.dist : pair.distCM;
+            const pParental = last ? last.pParental.toFixed(1) : (100 - dist).toFixed(1);
+            const pRecomb = last ? last.pRecomb.toFixed(1) : dist.toFixed(1);
 
-            if (type === 'consequences') {
+            if (type === 'phenotype_stats') {
+                const pBothStr = last ? last.pBoth.toFixed(1) : (pParental / 2).toFixed(1);
+                const pNoneStr = last ? last.pNone.toFixed(1) : (pParental / 2).toFixed(1);
+                const pAStr = last ? last.pGeneA.toFixed(1) : (pRecomb / 2).toFixed(1);
+                const pBStr = last ? last.pGeneB.toFixed(1) : (pRecomb / 2).toFixed(1);
+
+                input.value = `Przeanalizuj praktyczne fenotypy potomstwa dla genów sprzężonych '${pair.name}' na chromosomie ${pair.chr} (odległość mapowa: ${dist} cM).
+Wyliczone prawdopodobieństwa fenotypów dziecka:
+1. Obie cechy obecne (nienaruszony pakiet rodzicielski): ${pBothStr}%
+2. Brak obu cech (nienaruszony pakiet rodzicielski): ${pNoneStr}%
+3. Tylko Cecha 1 (skutek rozbicia pakietu przez crossing-over): ${pAStr}%
+4. Tylko Cecha 2 (skutek rozbicia pakietu przez crossing-over): ${pBStr}%
+
+Opisz na przykładach z życia codziennego:
+- Co w praktyce oznacza dla człowieka odziedziczenie obu tych cech razem vs rozdzielenie ich przez crossing-over?
+- Jak rzadkie jest to zjawisko przy odległości ${dist} cM i dlaczego natura nie rozdziela tych cech w 50% jak w prawie Mendla?`;
+            } else if (type === 'consequences') {
                 input.value = `Co w praktyce oznacza rozbicie pakietu cech na chromosomie ${pair.chr} (${pair.name}) przez crossing-over u potomstwa? Jaka jest różnica między dzieckiem o haplotypie rodzicielskim (${pParental}%) a rekombinowanym (${pRecomb}%)?`;
             } else if (type === 'evolution') {
                 input.value = `Dlaczego ewolucja wykształciła mechanizm crossing-over w mejozie i jakie ma to znaczenie dla zmienności genetycznej człowieka?`;
