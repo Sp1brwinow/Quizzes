@@ -1059,6 +1059,27 @@
             line-height: 1.65;
             color: #e2e8f0;
             display: none;
+            max-height: 520px;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+
+        .gen-ai-response-box::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .gen-ai-response-box::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 4px;
+        }
+
+        .gen-ai-response-box::-webkit-scrollbar-thumb {
+            background: rgba(168, 85, 247, 0.45);
+            border-radius: 4px;
+        }
+
+        .gen-ai-response-box::-webkit-scrollbar-thumb:hover {
+            background: rgba(168, 85, 247, 0.7);
         }
 
         @media (max-width: 640px) {
@@ -4019,6 +4040,38 @@ Opisz na konkretnych sytuacjach z codziennego życia (praca, sport, dieta, odpor
             submitDihybridAiQuestion();
         }
 
+        function formatMarkdown(text) {
+            if (!text) return '';
+            let t = text
+                .replace(/^```[a-z]*\s*/gim, '')
+                .replace(/```\s*$/gim, '')
+                .trim();
+
+            // Bezpieczne escapowanie < i > aby np. < 12 cM, <HLA-DRB1>, <50% nie niszczyły DOM HTML
+            t = t
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+
+            // Nagłówki Markdown (###, ##, #)
+            t = t.replace(/^### (.*$)/gim, '<h4 style="color:#d8b4fe; margin: 12px 0 4px; font-size: 0.98rem; font-weight:700;">$1</h4>');
+            t = t.replace(/^## (.*$)/gim, '<h3 style="color:#f8fafc; margin: 14px 0 6px; font-size: 1.05rem; font-weight:700;">$1</h3>');
+            t = t.replace(/^# (.*$)/gim, '<h2 style="color:#ffffff; margin: 16px 0 8px; font-size: 1.15rem; font-weight:700;">$1</h2>');
+
+            // Pogrubienia **tekst** oraz kursywy *tekst*
+            t = t.replace(/\*\*(.*?)\*\*/g, '<strong style="color: #f8fafc;">$1</strong>');
+            t = t.replace(/\*(.*?)\*/g, '<em style="color: #cbd5e1;">$1</em>');
+
+            // Listy punktowane (* lub - na początku wiersza)
+            t = t.replace(/^\s*[\*\-]\s+(.*$)/gim, '<li style="margin-left: 20px; margin-bottom: 4px; color: #f1f5f9;">$1</li>');
+
+            // Nowe linie: podwójne jako odstęp akapitowy, pojedyncze jako <br>
+            t = t.replace(/\n\n+/g, '<div style="margin-bottom: 10px;"></div>');
+            t = t.replace(/\n/g, '<br>');
+
+            return t;
+        }
+
         async function submitDihybridAiQuestion() {
             const pair = currentDihybridPair;
             const inputEl = document.getElementById('gen-ai-dihybrid-q');
@@ -4079,7 +4132,7 @@ Udziel wyczerpującej, profesjonalnej, a zarazem przystępnej odpowiedzi po pols
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         contents: [{ parts: [{ text: systemPrompt }] }],
-                        generationConfig: { temperature: 0.4, maxOutputTokens: 1400 }
+                        generationConfig: { temperature: 0.4, maxOutputTokens: 3500 }
                     })
                 });
 
@@ -4100,6 +4153,7 @@ Udziel wyczerpującej, profesjonalnej, a zarazem przystępnej odpowiedzi po pols
                         ${formatMarkdown(replyText)}
                     </div>
                 `;
+                setTimeout(() => responseBox.scrollIntoView({ behavior: "smooth", block: "nearest" }), 100);
             } catch (err) {
                 responseBox.innerHTML = `
                     <div style="color: #fca5a5; font-weight: 700; margin-bottom: 4px;">❌ Błąd połączenia z Gemini API:</div>
@@ -4210,7 +4264,7 @@ Udziel wyczerpującej, przystępnej odpowiedzi po polsku z wykorzystaniem format
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         contents: [{ parts: [{ text: systemPrompt }] }],
-                        generationConfig: { temperature: 0.4, maxOutputTokens: 1400 }
+                        generationConfig: { temperature: 0.4, maxOutputTokens: 3500 }
                     })
                 });
 
@@ -4231,6 +4285,7 @@ Udziel wyczerpującej, przystępnej odpowiedzi po polsku z wykorzystaniem format
                         ${formatMarkdown(replyText)}
                     </div>
                 `;
+                setTimeout(() => responseBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
             } catch (err) {
                 responseBox.innerHTML = `
                     <div style="color: #fca5a5; font-weight: 700; margin-bottom: 4px;">❌ Błąd połączenia z Gemini API:</div>
