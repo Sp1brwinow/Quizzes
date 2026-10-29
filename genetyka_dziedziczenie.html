@@ -1762,8 +1762,8 @@
                 <button type="button" class="gen-modal-close" onclick="closeAssumptionsModal()" aria-label="Zamknij okno">&times;</button>
             </div>
             <div class="gen-modal-body">
-                <!-- Sekcja Live: Analiza bieżącej konfiguracji na ekranie -->
-                <div class="gen-explain-section" style="border-color: rgba(56, 189, 248, 0.45); background: rgba(15, 23, 42, 0.85);">
+                <!-- Sekcja Live (Tryb 1: Jeden Gen): Analiza bieżącej konfiguracji na ekranie -->
+                <div id="assump-box-single" class="gen-explain-section" style="border-color: rgba(56, 189, 248, 0.45); background: rgba(15, 23, 42, 0.85);">
                     <div style="font-size: 0.82rem; font-weight: 700; color: #38bdf8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">
                         🔍 Twoja bieżąca konfiguracja na ekranie:
                     </div>
@@ -1795,6 +1795,52 @@
                     </div>
                 </div>
 
+                <!-- Sekcja Live (Tryb 2: Duet Niezależny) -->
+                <div id="assump-box-dihybrid" class="gen-explain-section" style="display:none; border-color: rgba(192, 132, 252, 0.45); background: rgba(15, 23, 42, 0.85);">
+                    <div style="font-size: 0.82rem; font-weight: 700; color: #c084fc; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">
+                        🎯 Twoja bieżąca konfiguracja duetu (II Prawo Mendla):
+                    </div>
+                    <div style="font-size: 1.15rem; font-weight: 700; color: #f8fafc; margin-bottom: 6px;" id="assump-dihybrid-title">
+                        Pakiet duetu...
+                    </div>
+                    <div style="font-size: 0.9rem; color: #cbd5e1; margin-bottom: 12px;" id="assump-dihybrid-desc">
+                        Opis pakietu...
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; margin-bottom: 12px;">
+                        <div style="background: rgba(30, 41, 59, 0.7); padding: 10px 14px; border-radius: 8px; border: 1px solid rgba(56, 189, 248, 0.3);">
+                            <div style="font-weight: 700; color: #38bdf8; font-size: 0.9rem; margin-bottom: 4px;">🧬 Gen 1 (Oznaczenie alleli: A / a):</div>
+                            <div id="assump-dihybrid-geneA-info" style="font-size: 0.86rem; color: #cbd5e1; line-height: 1.45;"></div>
+                        </div>
+                        <div style="background: rgba(30, 41, 59, 0.7); padding: 10px 14px; border-radius: 8px; border: 1px solid rgba(192, 132, 252, 0.3);">
+                            <div style="font-weight: 700; color: #c084fc; font-size: 0.9rem; margin-bottom: 4px;">🧬 Gen 2 (Oznaczenie alleli: B / b):</div>
+                            <div id="assump-dihybrid-geneB-info" style="font-size: 0.86rem; color: #cbd5e1; line-height: 1.45;"></div>
+                        </div>
+                    </div>
+
+                    <div style="padding-top: 10px; border-top: 1px solid rgba(255, 255, 255, 0.1); font-size: 0.88rem; display: flex; flex-direction: column; gap: 6px;">
+                        <div>👩 <strong>Matka:</strong> <span id="assump-dihybrid-mother-geno" style="color: #f472b6; font-weight: 700;"></span></div>
+                        <div>👨 <strong>Ojciec:</strong> <span id="assump-dihybrid-father-geno" style="color: #38bdf8; font-weight: 700;"></span></div>
+                    </div>
+                </div>
+
+                <!-- Sekcja Live (Tryb 3: Geny Sprzężone) -->
+                <div id="assump-box-linked" class="gen-explain-section" style="display:none; border-color: rgba(52, 211, 153, 0.45); background: rgba(15, 23, 42, 0.85);">
+                    <div style="font-size: 0.82rem; font-weight: 700; color: #34d399; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">
+                        🔬 Twoja konfiguracja genów sprzężonych (Prawo Morgana):
+                    </div>
+                    <div style="font-size: 1.15rem; font-weight: 700; color: #f8fafc; margin-bottom: 6px;" id="assump-linked-title">
+                        Para genów sprzężonych...
+                    </div>
+                    <div style="font-size: 0.9rem; color: #cbd5e1; margin-bottom: 10px;" id="assump-linked-desc"></div>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap; font-size: 0.88rem;">
+                        <span class="gen-spec-pill" style="border-color:#34d399; color:#34d399;" id="assump-linked-chr"></span>
+                        <span class="gen-spec-pill" style="border-color:#fbbf24; color:#fbbf24;" id="assump-linked-dist"></span>
+                    </div>
+                </div>
+
+                <!-- KONTENER EDUKACYJNY DLA TRYBU 1 (JEDEN GEN) -->
+                <div id="assump-section-single-guide">
                 <!-- Sekcja 1: Jak czytać parametry genu i chromosomu -->
                 <div class="gen-explain-section" style="border-color: rgba(52, 211, 153, 0.35);">
                     <h4 style="color: #34d399;">
@@ -1865,6 +1911,93 @@
                                 <li><strong>Heterozygota (1 kopia / 0/1):</strong> Jeden chromosom niesie mutację (1), a drugi wariant dziki (0). Podczas mejozy rodzic rozdziela chromosomy losowo do gamet – szansa na przekazanie mutacji wynosi dokładnie <strong>50%</strong> (I Prawo Mendla).</li>
                                 <li><strong>Homozygota zmutowana (2 kopie / 1/1):</strong> Oba chromosomy rodzica (Chr 1 i Chr 2) niosą mutację (1). Taki rodzic w <strong>100% swoich gamet</strong> przekaże badaną mutację każdemu swojemu potomkowi!</li>
                             </ul>
+                        </div>
+                    </div>
+                </div>
+                </div>
+                <!-- KONIEC KONTENERA DLA TRYBU 1 -->
+
+                <!-- KONTENER EDUKACYJNY DLA TRYBU 2 (DUET NIEZALEŻNY - SYMBOLE Aa, Bb I II PRAWO MENDLA) -->
+                <div id="assump-section-dihybrid-guide" style="display:none; flex-direction:column; gap:14px;">
+                    <div class="gen-explain-section" style="border-color: rgba(192, 132, 252, 0.45);">
+                        <h4 style="color: #c084fc; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                            <span>🌿 Przewodnik po symbolach Aa, Bb i krzyżówce dwugenowej (II Prawo Mendla)</span>
+                        </h4>
+
+                        <div style="display: flex; flex-direction: column; gap: 14px; font-size: 0.91rem; line-height: 1.55;">
+                            <!-- Punkt 1 -->
+                            <div style="background: rgba(30, 41, 59, 0.5); padding: 12px 16px; border-radius: 8px; border-left: 4px solid #38bdf8;">
+                                <strong style="color: #38bdf8; font-size: 0.96rem;">1. Co oznaczają litery A i a oraz B i b?</strong><br>
+                                W genetyce dwugenowej (dihybrydzie) używa się dwóch różnych liter, ponieważ analizujemy <strong>dwa odrębne geny</strong> leżące na <strong>dwóch różnych chromosomach</strong>:
+                                <ul style="margin: 6px 0 0 0; padding-left: 20px;">
+                                    <li><strong>Litera A / a (dotyczy Genu 1):</strong> np. genu <code>CYP1A2</code> na chromosomie 15.<br>
+                                        &bull; <code>A</code> (wielka litera) = allel dominujący (lub wariant o standardowej, pełnej aktywności enzymu).<br>
+                                        &bull; <code>a</code> (mała litera) = allel recesywny (lub wariant zmutowany / o obniżonej aktywności).</li>
+                                    <li style="margin-top: 8px;"><strong>Litera B / b (dotyczy Genu 2):</strong> np. genu <code>ADORA2A</code> na chromosomie 22.<br>
+                                        &bull; <code>B</code> (wielka litera) = allel dominujący drugiego genu (np. wysoka tolerancja/brak lęku).<br>
+                                        &bull; <code>b</code> (mała litera) = allel recesywny drugiego genu (np. podatność na lęk po kofeinie).</li>
+                                </ul>
+                            </div>
+
+                            <!-- Punkt 2 -->
+                            <div style="background: rgba(30, 41, 59, 0.5); padding: 12px 16px; border-radius: 8px; border-left: 4px solid #c084fc;">
+                                <strong style="color: #c084fc; font-size: 0.96rem;">2. Dlaczego każdy rodzic ma genotyp 4-literowy (np. Aa Bb)?</strong><br>
+                                Człowiek jest organizmem diploidalnym ($2n$) – każda komórka somatyczna posiada <strong>dwie kopie każdego chromosomu</strong> (jedną od matki, drugą od ojca):
+                                <ul style="margin: 6px 0 0 0; padding-left: 20px;">
+                                    <li>Dla Genu 1 rodzic posiada 2 allele: <code>AA</code> (homozygota dominująca), <code>Aa</code> (heterozygota) lub <code>aa</code> (homozygota recesywna).</li>
+                                    <li>Dla Genu 2 rodzic również posiada 2 allele: <code>BB</code>, <code>Bb</code> lub <code>bb</code>.</li>
+                                    <li>Złożony genotyp osobnika zapisujemy łącznie 4 literami, np. <strong><code>Aa Bb</code></strong>. Nazywamy go <strong>podwójną heterozygotą (dihybrydą)</strong>. Oznacza to, że rodzic dla obu badanych cech posiada po jednym allelu dominującym i po jednym recesywnym.</li>
+                                </ul>
+                            </div>
+
+                            <!-- Punkt 3 -->
+                            <div style="background: rgba(30, 41, 59, 0.5); padding: 12px 16px; border-radius: 8px; border-left: 4px solid #34d399;">
+                                <strong style="color: #34d399; font-size: 0.96rem;">3. Jak powstają 4 typy gamet (AB, Ab, aB, ab) i dlaczego każda ma po 25%?</strong><br>
+                                Podczas mejozy diploidalna komórka rodzica dzieli się i tworzy haploidalne gamety (komórki jajowe lub plemniki). Do każdej gamety trafia <strong>dokładnie po jednym allelu z każdego genu</strong> (jedna litera A/a i jedna litera B/b).<br>
+                                Zgodnie z <strong>II Prawem Mendla (Prawem Niezależnej Asocjacji Genów)</strong>, chromosomy rozchodzą się do biegunów wrzeciona podziałowego całkowicie niezależnie. Dla rodzica <code>Aa Bb</code> losowanie allelu A/a nie ma żadnego wpływu na losowanie allelu B/b:
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; margin-top: 10px;">
+                                    <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 8px; padding: 10px; text-align: center;">
+                                        <div style="font-weight: 700; color: #38bdf8; font-size: 1.15rem;">AB</div>
+                                        <div style="font-size: 0.78rem; color: #94a3b8; margin-top: 2px;">Allel A + Allel B<br><strong>25% szans</strong></div>
+                                    </div>
+                                    <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(192, 132, 252, 0.3); border-radius: 8px; padding: 10px; text-align: center;">
+                                        <div style="font-weight: 700; color: #c084fc; font-size: 1.15rem;">Ab</div>
+                                        <div style="font-size: 0.78rem; color: #94a3b8; margin-top: 2px;">Allel A + Allel b<br><strong>25% szans</strong></div>
+                                    </div>
+                                    <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(52, 211, 153, 0.3); border-radius: 8px; padding: 10px; text-align: center;">
+                                        <div style="font-weight: 700; color: #34d399; font-size: 1.15rem;">aB</div>
+                                        <div style="font-size: 0.78rem; color: #94a3b8; margin-top: 2px;">Allel a + Allel B<br><strong>25% szans</strong></div>
+                                    </div>
+                                    <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(148, 163, 184, 0.3); border-radius: 8px; padding: 10px; text-align: center;">
+                                        <div style="font-weight: 700; color: #94a3b8; font-size: 1.15rem;">ab</div>
+                                        <div style="font-size: 0.78rem; color: #94a3b8; margin-top: 2px;">Allel a + Allel b<br><strong>25% szans</strong></div>
+                                    </div>
+                                </div>
+                                <div style="margin-top: 8px; font-size: 0.84rem; color: #94a3b8;">
+                                    <em>Uwaga: Jeżeli rodzic jest homozygotą (np. AA BB), wszystkie jego gamety będą identyczne: AB (100%). Podział 25% dotyczy heterozygot Aa Bb.</em>
+                                </div>
+                            </div>
+
+                            <!-- Punkt 4 -->
+                            <div style="background: rgba(30, 41, 59, 0.5); padding: 12px 16px; border-radius: 8px; border-left: 4px solid #fbbf24;">
+                                <strong style="color: #fbbf24; font-size: 0.96rem;">4. Siatka Punnetta 4×4 (16 pól) i 4 Super-Fenotypy (klasyczny stosunek 9:3:3:1)</strong><br>
+                                Gdy 4 możliwe komórki jajowe matki łączą się z 4 możliwymi plemnikami ojca, powstaje $4 	imes 4 = 16$ równoprawdopodobnych kombinacji genotypowych ($1/16 = 6.25\%$ każda). Ze względu na dominację alleli, te 16 pól grupuje się w <strong>4 Super-Fenotypy</strong>:
+                                <ul style="margin: 6px 0 0 0; padding-left: 20px;">
+                                    <li><strong><code>A_ B_</code> (9 pól = 56.25%):</strong> Dziecko otrzymało minimum jeden dominujący allel A i minimum jeden dominujący allel B (np. AABB, AaBb, AaBB, AABb). Wykazuje pełną ekspresję obu cech dominujących.</li>
+                                    <li><strong><code>A_ bb</code> (3 pola = 18.75%):</strong> Minimum jeden dominujący allel A, lecz podwójna homozygota recesywna bb. Wykazuje cechę A i cechę recesywną B.</li>
+                                    <li><strong><code>aa B_</code> (3 pola = 18.75%):</strong> Podwójne recesywne aa oraz minimum jeden dominujący B. Wykazuje cechę recesywną A i cechę B.</li>
+                                    <li><strong><code>aa bb</code> (1 pole = 6.25%):</strong> Podwójna homozygota recesywna dla obu genów jednocześnie. Wykazuje warianty recesywne obu cech.</li>
+                                </ul>
+                            </div>
+
+                            <!-- Punkt 5 -->
+                            <div style="background: rgba(14, 116, 144, 0.15); border: 1px solid rgba(56, 189, 248, 0.35); padding: 12px 16px; border-radius: 8px;">
+                                <strong style="color: #38bdf8; font-size: 0.96rem;">5. Jak to wygląda w praktyce dla pakietu: <span id="assump-dihybrid-pack-name" style="color:#f8fafc;"></span>?</strong>
+                                <div style="font-size: 0.85rem; color: #94a3b8; margin-top: 4px; margin-bottom: 8px;">
+                                    Poniżej znajduje się interpretacja biologiczna każdego z 4 super-fenotypów dla wybranej przez Ciebie pary genów:
+                                </div>
+                                <div id="assump-dihybrid-pack-pheno-breakdown" style="display: flex; flex-direction: column; gap: 8px;"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -3965,46 +4098,154 @@ Udziel wyczerpującej, przystępnej odpowiedzi po polsku z wykorzystaniem format
             const modal = document.getElementById('gen-assumptions-modal');
             if (!modal) return;
 
-            const trait = currentTrait;
-            const mCount = getMotherMutCount();
-            const fCount = getFatherMutCount();
-            const isX = trait.mode === 'x-linked';
+            const modalTitle = document.getElementById('assump-modal-title');
+            const boxSingle = document.getElementById('assump-box-single');
+            const boxDihybrid = document.getElementById('assump-box-dihybrid');
+            const boxLinked = document.getElementById('assump-box-linked');
+            const secSingleGuide = document.getElementById('assump-section-single-guide');
+            const secDihybridGuide = document.getElementById('assump-section-dihybrid-guide');
 
-            // Podstawienie dynamicznych danych bieżącej cechy
-            const tName = document.getElementById('assump-trait-name');
-            const tLoc = document.getElementById('assump-trait-loc');
-            const tMode = document.getElementById('assump-trait-mode');
-            const tMarker = document.getElementById('assump-trait-marker');
-            const tDist = document.getElementById('assump-trait-dist');
-            const tAlleleDesc = document.getElementById('assump-trait-allele-desc');
+            if (currentAppMode === 'dihybrid') {
+                // TRYB 2: DUET NIEZALEŻNY
+                if (modalTitle) modalTitle.innerHTML = '<span>🌿 Założenia krzyżówki dwugenowej: Symbole Aa, Bb & II Prawo Mendla</span>';
+                if (boxSingle) boxSingle.style.display = 'none';
+                if (secSingleGuide) secSingleGuide.style.display = 'none';
+                if (boxLinked) boxLinked.style.display = 'none';
+                if (boxDihybrid) boxDihybrid.style.display = 'block';
+                if (secDihybridGuide) secDihybridGuide.style.display = 'block';
 
-            if (tName) tName.textContent = trait.name;
-            if (tLoc) tLoc.textContent = `${trait.chr} (${trait.gene})`;
-            if (tMode) tMode.textContent = trait.modeLabel;
-            if (tMarker) tMarker.textContent = trait.marker;
-            if (tDist) tDist.textContent = `${trait.distCM} cM`;
-            if (tAlleleDesc) tAlleleDesc.innerHTML = trait.desc;
+                const pair = currentDihybridPair;
+                const traitA = GENETIC_TRAITS_50.find(t => t.id === pair.geneA_id);
+                const traitB = GENETIC_TRAITS_50.find(t => t.id === pair.geneB_id);
 
-            // Podstawienie danych rodziców
-            const mSum = document.getElementById('assump-mother-summary');
-            const fSum = document.getElementById('assump-father-summary');
+                const mA = parseInt(document.getElementById('dihybrid-m-geneA').value, 10);
+                const mB = parseInt(document.getElementById('dihybrid-m-geneB').value, 10);
+                const fA = parseInt(document.getElementById('dihybrid-f-geneA').value, 10);
+                const fB = parseInt(document.getElementById('dihybrid-f-geneB').value, 10);
 
-            const mStateText = mCount === 0 ? 'Brak mutacji (0/0) [Chr 1: Dziki (0), Chr 2: Dziki (0)]' : 
-                               (mCount === 1 ? 'Heterozygota (0/1) [Chr 1: Mutacja (1), Chr 2: Dziki (0)]' : 
-                                               'Homozygota zmutowana (1/1) [Chr 1: Mutacja (1), Chr 2: Mutacja (1)]');
-            
-            let fStateText = '';
-            if (isX) {
-                fStateText = fCount === 0 ? 'Hemizygota (X Y) [Chr 1: Prawidłowy X, Chr 2: Y ojcowski]' : 
-                                            'Hemizygota zmutowany (X* Y) [Chr 1: Zmutowany X*, Chr 2: Y ojcowski]';
+                const genoLabel = (a, b) => {
+                    const sA = a === 2 ? 'AA (homozygota dominująca)' : (a === 1 ? 'Aa (heterozygota)' : 'aa (homozygota recesywna)');
+                    const sB = b === 2 ? 'BB (homozygota dominująca)' : (b === 1 ? 'Bb (heterozygota)' : 'bb (homozygota recesywna)');
+                    const code = `${a === 2 ? 'AA' : (a === 1 ? 'Aa' : 'aa')} ${b === 2 ? 'BB' : (b === 1 ? 'Bb' : 'bb')}`;
+                    return { code, desc: `Gen 1: ${sA}, Gen 2: ${sB}` };
+                };
+
+                const mGeno = genoLabel(mA, mB);
+                const fGeno = genoLabel(fA, fB);
+
+                const titleEl = document.getElementById('assump-dihybrid-title');
+                const descEl = document.getElementById('assump-dihybrid-desc');
+                const geneAInfo = document.getElementById('assump-dihybrid-geneA-info');
+                const geneBInfo = document.getElementById('assump-dihybrid-geneB-info');
+                const mGenoEl = document.getElementById('assump-dihybrid-mother-geno');
+                const fGenoEl = document.getElementById('assump-dihybrid-father-geno');
+                const packNameEl = document.getElementById('assump-dihybrid-pack-name');
+                const packBreakdownEl = document.getElementById('assump-dihybrid-pack-pheno-breakdown');
+
+                if (titleEl) titleEl.textContent = pair.name;
+                if (descEl) descEl.textContent = pair.desc;
+                if (geneAInfo) {
+                    geneAInfo.innerHTML = `<strong>${pair.geneA_name}</strong><br>Lokalizacja: <code>${traitA ? traitA.chr : pair.geneA_chr}</code> (${traitA ? traitA.gene : 'Gen 1'})<br>Odziedziczalność: <strong>h² = ${traitA ? traitA.h2 : 75}%</strong> (wpływ środowiska: ${traitA ? 100 - traitA.h2 : 25}%)`;
+                }
+                if (geneBInfo) {
+                    geneBInfo.innerHTML = `<strong>${pair.geneB_name}</strong><br>Lokalizacja: <code>${traitB ? traitB.chr : pair.geneB_chr}</code> (${traitB ? traitB.gene : 'Gen 2'})<br>Odziedziczalność: <strong>h² = ${traitB ? traitB.h2 : 70}%</strong> (wpływ środowiska: ${traitB ? 100 - traitB.h2 : 30}%)`;
+                }
+
+                if (mGenoEl) mGenoEl.textContent = `${mGeno.code} — ${mGeno.desc}`;
+                if (fGenoEl) fGenoEl.textContent = `${fGeno.code} — ${fGeno.desc}`;
+
+                if (packNameEl) packNameEl.textContent = pair.name;
+                if (packBreakdownEl) {
+                    packBreakdownEl.innerHTML = `
+                        <div style="background:rgba(15,23,42,0.6); padding:9px 13px; border-radius:6px; border-left:3px solid #38bdf8;">
+                            <strong style="color:#38bdf8; font-size:0.92rem;">A_ B_ (56.25% u podwójnej heterozygoty): ${pair.phenotypes['A_B_'].title}</strong><br>
+                            <span style="font-size:0.87rem; color:#cbd5e1;">${pair.phenotypes['A_B_'].desc}</span>
+                        </div>
+                        <div style="background:rgba(15,23,42,0.6); padding:9px 13px; border-radius:6px; border-left:3px solid #c084fc;">
+                            <strong style="color:#c084fc; font-size:0.92rem;">A_ bb (18.75%): ${pair.phenotypes['A_bb'].title}</strong><br>
+                            <span style="font-size:0.87rem; color:#cbd5e1;">${pair.phenotypes['A_bb'].desc}</span>
+                        </div>
+                        <div style="background:rgba(15,23,42,0.6); padding:9px 13px; border-radius:6px; border-left:3px solid #34d399;">
+                            <strong style="color:#34d399; font-size:0.92rem;">aa B_ (18.75%): ${pair.phenotypes['aa_B_'].title}</strong><br>
+                            <span style="font-size:0.87rem; color:#cbd5e1;">${pair.phenotypes['aa_B_'].desc}</span>
+                        </div>
+                        <div style="background:rgba(15,23,42,0.6); padding:9px 13px; border-radius:6px; border-left:3px solid #f87171;">
+                            <strong style="color:#f87171; font-size:0.92rem;">aa bb (6.25%): ${pair.phenotypes['aabb'].title}</strong><br>
+                            <span style="font-size:0.87rem; color:#cbd5e1;">${pair.phenotypes['aabb'].desc}</span>
+                        </div>
+                    `;
+                }
+
+            } else if (currentAppMode === 'linked') {
+                // TRYB 3: GENY SPRZĘŻONE
+                if (modalTitle) modalTitle.innerHTML = '<span>🔬 Założenia genów sprzężonych: Mejoza & Crossing-over (Prawa Morgana)</span>';
+                if (boxSingle) boxSingle.style.display = 'none';
+                if (secSingleGuide) secSingleGuide.style.display = 'block';
+                if (boxDihybrid) boxDihybrid.style.display = 'none';
+                if (secDihybridGuide) secDihybridGuide.style.display = 'none';
+                if (boxLinked) boxLinked.style.display = 'block';
+
+                const pair = currentLinkedPair;
+                const titleEl = document.getElementById('assump-linked-title');
+                const descEl = document.getElementById('assump-linked-desc');
+                const chrEl = document.getElementById('assump-linked-chr');
+                const distEl = document.getElementById('assump-linked-dist');
+
+                if (titleEl) titleEl.textContent = pair.name;
+                if (descEl) descEl.textContent = pair.desc;
+                if (chrEl) chrEl.textContent = `Lokalizacja: ${pair.chr}`;
+                if (distEl) distEl.textContent = `Odległość: ${pair.distCM} cM (rekombinacja: ${pair.distCM}%)`;
+
             } else {
-                fStateText = fCount === 0 ? 'Brak mutacji (0/0) [Chr 1: Dziki (0), Chr 2: Dziki (0)]' : 
-                             (fCount === 1 ? 'Heterozygota (0/1) [Chr 1: Mutacja (1), Chr 2: Dziki (0)]' : 
-                                             'Homozygota zmutowana (1/1) [Chr 1: Mutacja (1), Chr 2: Mutacja (1)]');
-            }
+                // TRYB 1: JEDEN GEN (I PRAWO MENDLA)
+                if (modalTitle) modalTitle.innerHTML = '<span>🧬 Słownik pojęć & założenia genetyczne krzyżówki (I Prawo Mendla)</span>';
+                if (boxSingle) boxSingle.style.display = 'block';
+                if (secSingleGuide) secSingleGuide.style.display = 'block';
+                if (boxDihybrid) boxDihybrid.style.display = 'none';
+                if (secDihybridGuide) secDihybridGuide.style.display = 'none';
+                if (boxLinked) boxLinked.style.display = 'none';
 
-            if (mSum) mSum.textContent = mStateText;
-            if (fSum) fSum.textContent = fStateText;
+                const trait = currentTrait;
+                const mCount = getMotherMutCount();
+                const fCount = getFatherMutCount();
+                const isX = trait.mode === 'x-linked';
+
+                // Podstawienie dynamicznych danych bieżącej cechy
+                const tName = document.getElementById('assump-trait-name');
+                const tLoc = document.getElementById('assump-trait-loc');
+                const tMode = document.getElementById('assump-trait-mode');
+                const tMarker = document.getElementById('assump-trait-marker');
+                const tDist = document.getElementById('assump-trait-dist');
+                const tAlleleDesc = document.getElementById('assump-trait-allele-desc');
+
+                if (tName) tName.textContent = trait.name;
+                if (tLoc) tLoc.textContent = `${trait.chr} (${trait.gene})`;
+                if (tMode) tMode.textContent = trait.modeLabel;
+                if (tMarker) tMarker.textContent = trait.marker;
+                if (tDist) tDist.textContent = `${trait.distCM} cM`;
+                if (tAlleleDesc) tAlleleDesc.innerHTML = trait.desc;
+
+                // Podstawienie danych rodziców
+                const mSum = document.getElementById('assump-mother-summary');
+                const fSum = document.getElementById('assump-father-summary');
+
+                const mStateText = mCount === 0 ? 'Brak mutacji (0/0) [Chr 1: Dziki (0), Chr 2: Dziki (0)]' : 
+                                   (mCount === 1 ? 'Heterozygota (0/1) [Chr 1: Mutacja (1), Chr 2: Dziki (0)]' : 
+                                                   'Homozygota zmutowana (1/1) [Chr 1: Mutacja (1), Chr 2: Mutacja (1)]');
+                
+                let fStateText = '';
+                if (isX) {
+                    fStateText = fCount === 0 ? 'Hemizygota (X Y) [Chr 1: Prawidłowy X, Chr 2: Y ojcowski]' : 
+                                                'Hemizygota zmutowany (X* Y) [Chr 1: Zmutowany X*, Chr 2: Y ojcowski]';
+                } else {
+                    fStateText = fCount === 0 ? 'Brak mutacji (0/0) [Chr 1: Dziki (0), Chr 2: Dziki (0)]' : 
+                                 (fCount === 1 ? 'Heterozygota (0/1) [Chr 1: Mutacja (1), Chr 2: Dziki (0)]' : 
+                                                 'Homozygota zmutowana (1/1) [Chr 1: Mutacja (1), Chr 2: Mutacja (1)]');
+                }
+
+                if (mSum) mSum.textContent = mStateText;
+                if (fSum) fSum.textContent = fStateText;
+            }
 
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
