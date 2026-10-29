@@ -1553,6 +1553,7 @@
                         </div>
                         <div class="gen-ai-chips-row">
                             <span style="font-size: 0.8rem; color: #94a3b8;">Szybkie pytania:</span>
+                            <button type="button" class="gen-ai-chip" style="border-color:#38bdf8; color:#38bdf8; font-weight:700;" onclick="askDihybridAi('phenotype_stats')">🎯 Fenotypy potomstwa w praktyce</button>
                             <button type="button" class="gen-ai-chip" style="border-color:#c084fc; color:#c084fc; font-weight:700;" onclick="askDihybridAi('synergy')">👥 Jak te dwie cechy oddziałują na siebie?</button>
                             <button type="button" class="gen-ai-chip" onclick="askDihybridAi('recommendations')">💡 Praktyczne zalecenia dietetyczne i życiowe</button>
                             <button type="button" class="gen-ai-chip" onclick="askDihybridAi('extremes')">⚡ Co oznacza fenotyp skrajny (najsilniejszy)?</button>
@@ -3023,28 +3024,68 @@
             const id = select ? select.value : DIHYBRID_PAIRS[0].id;
             currentDihybridPair = DIHYBRID_PAIRS.find(p => p.id === id) || DIHYBRID_PAIRS[0];
 
+            const traitA = GENETIC_TRAITS_50.find(t => t.id === currentDihybridPair.geneA_id);
+            const traitB = GENETIC_TRAITS_50.find(t => t.id === currentDihybridPair.geneB_id);
+
+            const h2A = traitA && traitA.h2 !== undefined ? traitA.h2 : 75;
+            const envA = 100 - h2A;
+            const chrA = traitA ? traitA.chr : currentDihybridPair.geneA_chr;
+            const geneA = traitA ? traitA.gene : 'Gen 1';
+            const modeA = traitA ? traitA.modeLabel : 'Autosomalne dominujące / kodominacja';
+
+            const h2B = traitB && traitB.h2 !== undefined ? traitB.h2 : 70;
+            const envB = 100 - h2B;
+            const chrB = traitB ? traitB.chr : currentDihybridPair.geneB_chr;
+            const geneB = traitB ? traitB.gene : 'Gen 2';
+            const modeB = traitB ? traitB.modeLabel : 'Autosomalne dominujące / kodominacja';
+
             const infoBox = document.getElementById('dihybrid-pair-info');
             if (infoBox) {
                 infoBox.innerHTML = `
-                    <div style="font-weight:700; color:#c084fc; margin-bottom:4px;">${currentDihybridPair.name}</div>
-                    <div style="margin-bottom:6px;">${currentDihybridPair.desc}</div>
-                    <div class="gen-trait-specs">
-                        <span class="gen-spec-pill" style="border-color:#38bdf8; color:#38bdf8;">Gen 1 (A): ${currentDihybridPair.geneA_name} [${currentDihybridPair.geneA_chr}]</span>
-                        <span class="gen-spec-pill" style="border-color:#c084fc; color:#c084fc;">Gen 2 (B): ${currentDihybridPair.geneB_name} [${currentDihybridPair.geneB_chr}]</span>
-                        <span class="gen-spec-pill" style="border-color:#10b981; color:#10b981;">Model: II Prawo Mendla (Kwadrat 4×4)</span>
+                    <div style="font-weight:700; color:#c084fc; font-size:1.05rem; margin-bottom:4px;">${currentDihybridPair.name}</div>
+                    <div style="margin-bottom:10px; color:#cbd5e1; font-size:0.9rem; line-height:1.45;">${currentDihybridPair.desc}</div>
+
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:12px; margin-top:8px; margin-bottom:8px;">
+                        <!-- Karta Genu 1 (Allel A/a) -->
+                        <div style="background:rgba(30, 41, 59, 0.7); border:1px solid rgba(56, 189, 248, 0.35); border-radius:10px; padding:12px 14px;">
+                            <div style="font-weight:700; color:#38bdf8; font-size:0.92rem; margin-bottom:6px;">🧬 Gen 1 (Allel A/a): ${currentDihybridPair.geneA_name}</div>
+                            <div class="gen-trait-specs">
+                                <span class="gen-spec-pill" style="border-color:#38bdf8; color:#38bdf8;">Lokalizacja: ${chrA} (${geneA})</span>
+                                <span class="gen-spec-pill" style="border-color:#34d399; color:#34d399;">Model: ${modeA}</span>
+                                <span class="gen-spec-pill" style="border-color:#38bdf8; color:#38bdf8; background:rgba(56,189,248,0.12);">🧬 Odziedziczalność (h²): ${h2A}%</span>
+                                <span class="gen-spec-pill" style="border-color:#fbbf24; color:#fbbf24; background:rgba(251,191,36,0.12);">🌍 Środowisko & styl życia: ${envA}%</span>
+                            </div>
+                        </div>
+
+                        <!-- Karta Genu 2 (Allel B/b) -->
+                        <div style="background:rgba(30, 41, 59, 0.7); border:1px solid rgba(192, 132, 252, 0.35); border-radius:10px; padding:12px 14px;">
+                            <div style="font-weight:700; color:#c084fc; font-size:0.92rem; margin-bottom:6px;">🧬 Gen 2 (Allel B/b): ${currentDihybridPair.geneB_name}</div>
+                            <div class="gen-trait-specs">
+                                <span class="gen-spec-pill" style="border-color:#c084fc; color:#c084fc;">Lokalizacja: ${chrB} (${geneB})</span>
+                                <span class="gen-spec-pill" style="border-color:#34d399; color:#34d399;">Model: ${modeB}</span>
+                                <span class="gen-spec-pill" style="border-color:#c084fc; color:#c084fc; background:rgba(192,132,252,0.12);">🧬 Odziedziczalność (h²): ${h2B}%</span>
+                                <span class="gen-spec-pill" style="border-color:#fbbf24; color:#fbbf24; background:rgba(251,191,36,0.12);">🌍 Środowisko & styl życia: ${envB}%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top:6px;">
+                        <span class="gen-spec-pill" style="border-color:#10b981; color:#34d399; background:rgba(16,185,129,0.12); font-weight:600;">
+                            🌿 Model krzyżówki: II Prawo Mendla (Niezależna asocjacja genów na różnych chromosomach – Kwadrat Punnetta 4×4)
+                        </span>
                     </div>
                 `;
             }
 
-            const lMA = document.getElementById('dihybrid-m-labelA');
-            const lMB = document.getElementById('dihybrid-m-labelB');
-            const lFA = document.getElementById('dihybrid-f-labelA');
-            const lFB = document.getElementById('dihybrid-f-labelB');
+            const lblMA = document.getElementById('dihybrid-m-labelA');
+            const lblMB = document.getElementById('dihybrid-m-labelB');
+            const lblFA = document.getElementById('dihybrid-f-labelA');
+            const lblFB = document.getElementById('dihybrid-f-labelB');
 
-            if (lMA) lMA.textContent = `Gen 1 (A): ${currentDihybridPair.geneA_name}`;
-            if (lMB) lMB.textContent = `Gen 2 (B): ${currentDihybridPair.geneB_name}`;
-            if (lFA) lFA.textContent = `Gen 1 (A): ${currentDihybridPair.geneA_name}`;
-            if (lFB) lFB.textContent = `Gen 2 (B): ${currentDihybridPair.geneB_name}`;
+            if (lblMA) lblMA.textContent = `Gen 1 (A): ${currentDihybridPair.geneA_name}`;
+            if (lblMB) lblMB.textContent = `Gen 2 (B): ${currentDihybridPair.geneB_name}`;
+            if (lblFA) lblFA.textContent = `Gen 1 (A): ${currentDihybridPair.geneA_name}`;
+            if (lblFB) lblFB.textContent = `Gen 2 (B): ${currentDihybridPair.geneB_name}`;
 
             runDihybridSimulation();
         }
@@ -3617,6 +3658,259 @@ Napisz fascynującą, profesjonalną notatkę naukową po polsku (w formacie HTM
         /* ==========================================================================
            OBSŁUGA OKNA MODALNEGO (WYJAŚNIENIE MECHANIZMU DZIEDZICZENIA)
            ========================================================================== */
+        
+        /* ==========================================================================
+           ASYSTENT AI DLA TRYBU 2 (DUET NIEZALEŻNY - II PRAWO MENDLA)
+           ========================================================================== */
+        function askDihybridAi(type) {
+            const pair = currentDihybridPair;
+            const input = document.getElementById('gen-ai-dihybrid-q');
+            if (!input) return;
+
+            const last = window.lastDihybridData;
+            const sums = last ? last.phenoSums : { 'A_B_': 0.5625, 'A_bb': 0.1875, 'aa_B_': 0.1875, 'aabb': 0.0625 };
+            const p1 = (sums['A_B_'] * 100).toFixed(1);
+            const p2 = (sums['A_bb'] * 100).toFixed(1);
+            const p3 = (sums['aa_B_'] * 100).toFixed(1);
+            const p4 = (sums['aabb'] * 100).toFixed(1);
+
+            const tA = GENETIC_TRAITS_50.find(t => t.id === pair.geneA_id);
+            const tB = GENETIC_TRAITS_50.find(t => t.id === pair.geneB_id);
+
+            if (type === 'phenotype_stats') {
+                input.value = `Przeanalizuj praktyczne fenotypy potomstwa dla duetu niezależnego '${pair.name}'.
+Gen 1 (A): ${pair.geneA_name} na ${tA ? tA.chr : pair.geneA_chr} (h² = ${tA ? tA.h2 : 75}%).
+Gen 2 (B): ${pair.geneB_name} na ${tB ? tB.chr : pair.geneB_chr} (h² = ${tB ? tB.h2 : 70}%).
+
+Rozkład 4 super-fenotypów wyliczony z siatki Punnetta 4×4:
+1. ${pair.phenotypes['A_B_'].title} (${p1}%): ${pair.phenotypes['A_B_'].desc}
+2. ${pair.phenotypes['A_bb'].title} (${p2}%): ${pair.phenotypes['A_bb'].desc}
+3. ${pair.phenotypes['aa_B_'].title} (${p3}%): ${pair.phenotypes['aa_B_'].desc}
+4. ${pair.phenotypes['aabb'].title} (${p4}%): ${pair.phenotypes['aabb'].desc}
+
+Opisz na konkretnych sytuacjach z codziennego życia (praca, sport, dieta, odporność na stres):
+- Jak w praktyce dziecko z każdym z tych 4 fenotypów będzie funkcjonować?
+- Kto odczuje najsilniejsze objawy, a kto najłagodniejsze?
+- Jak rodzice mogą spersonalizować nawyki i środowisko, by optymalizować funkcjonowanie każdego wariantu?`;
+            } else if (type === 'synergy') {
+                input.value = `Jak dokładnie te dwa geny (${pair.geneA_name} na ${pair.geneA_chr} oraz ${pair.geneB_name} na ${pair.geneB_chr}) współdziałają ze sobą na poziomie fizjologicznym i biochemicznym?`;
+            } else if (type === 'recommendations') {
+                input.value = `Jakie są praktyczne zalecenia dietetyczne, suplementacyjne i stylu życia dla każdego z 4 wariantów potomstwa w pakiecie '${pair.name}'?`;
+            } else if (type === 'extremes') {
+                input.value = `Co w praktyce oznacza fenotyp skrajny w tym pakiecie (${pair.phenotypes['A_B_'].title} vs ${pair.phenotypes['aabb'].title}) i jakie wyzwania niesie dla człowieka?`;
+            }
+
+            submitDihybridAiQuestion();
+        }
+
+        async function submitDihybridAiQuestion() {
+            const pair = currentDihybridPair;
+            const inputEl = document.getElementById('gen-ai-dihybrid-q');
+            const customQ = inputEl ? inputEl.value.trim() : '';
+            const responseBox = document.getElementById('gen-ai-dihybrid-response');
+            const submitBtn = document.getElementById('gen-ai-dihybrid-btn');
+
+            const apiKey = localStorage.getItem('gemini_api_key');
+            let userModel = localStorage.getItem('gemini_selected_model') || 'auto';
+
+            if (!apiKey || apiKey.trim().length < 10) {
+                responseBox.style.display = 'block';
+                responseBox.innerHTML = `
+                    <div style="color: #fca5a5; font-weight: 700; margin-bottom: 6px;">⚠️ Brak zapisanego klucza Gemini API</div>
+                    <div>Aby rozmawiać z asystentem AI o interakcjach wielogenowych, <a href="javascript:void(0)" onclick="promptForApiKey()" style="color:#38bdf8; text-decoration:underline; font-weight:700;">wprowadź bezpłatny klucz API Google AI Studio</a> lub skonfiguruj go na stronie <a href="pomocnicze.html" style="color:#c084fc; text-decoration:underline;">Bazy Pomocniczej</a>.</div>
+                `;
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span>⏳ Gemini analizuje...</span>';
+            responseBox.style.display = 'block';
+            responseBox.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 8px; color: #c084fc;">
+                    <span>🧬</span>
+                    <span>Sztuczna inteligencja analizuje interakcje w pakiecie <strong>${pair.name}</strong>...</span>
+                </div>
+            `;
+
+            const tA = GENETIC_TRAITS_50.find(t => t.id === pair.geneA_id);
+            const tB = GENETIC_TRAITS_50.find(t => t.id === pair.geneB_id);
+            const last = window.lastDihybridData;
+            const sums = last ? last.phenoSums : { 'A_B_': 0.5625, 'A_bb': 0.1875, 'aa_B_': 0.1875, 'aabb': 0.0625 };
+
+            const systemPrompt = `Jesteś ekspertem genetyki klinicznej, nutrigenomiki i epigenetyki.
+Użytkownik bada dziedziczenie dwugenowe według II Prawa Mendla (niezależna segregacja na dwóch różnych chromosomach).
+Badany pakiet: ${pair.name} (${pair.desc})
+Gen 1 (A): ${pair.geneA_name} [${tA ? tA.chr : pair.geneA_chr}], odziedziczalność h² = ${tA ? tA.h2 : 75}%.
+Gen 2 (B): ${pair.geneB_name} [${tB ? tB.chr : pair.geneB_chr}], odziedziczalność h² = ${tB ? tB.h2 : 70}%.
+
+Wyliczony rozkład 4 super-fenotypów potomstwa:
+- ${pair.phenotypes['A_B_'].title}: ${(sums['A_B_'] * 100).toFixed(1)}% (${pair.phenotypes['A_B_'].desc})
+- ${pair.phenotypes['A_bb'].title}: ${(sums['A_bb'] * 100).toFixed(1)}% (${pair.phenotypes['A_bb'].desc})
+- ${pair.phenotypes['aa_B_'].title}: ${(sums['aa_B_'] * 100).toFixed(1)}% (${pair.phenotypes['aa_B_'].desc})
+- ${pair.phenotypes['aabb'].title}: ${(sums['aabb'] * 100).toFixed(1)}% (${pair.phenotypes['aabb'].desc})
+
+Użytkownik zadał pytanie:
+"${customQ}"
+
+Udziel wyczerpującej, profesjonalnej, a zarazem przystępnej odpowiedzi po polsku. Użyj formatowania Markdown, punktorów i pogrubień.`;
+
+            try {
+                const modelToUse = await getWorkingGeminiModel(apiKey, userModel);
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelToUse}:generateContent?key=${apiKey}`;
+
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: systemPrompt }] }],
+                        generationConfig: { temperature: 0.4, maxOutputTokens: 1400 }
+                    })
+                });
+
+                if (!response.ok) {
+                    const errData = await response.json();
+                    throw new Error(errData.error?.message || 'Błąd zapytania do Gemini API');
+                }
+
+                const data = await response.json();
+                const replyText = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Brak treści odpowiedzi od modelu.';
+
+                responseBox.innerHTML = `
+                    <div style="font-weight: 700; color: #c084fc; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between;">
+                        <span>💡 Odpowiedź Asystenta Genetycznego Gemini (${modelToUse}):</span>
+                        <span style="font-size: 0.75rem; color: #94a3b8; font-weight: normal;">Pakiet: ${pair.name}</span>
+                    </div>
+                    <div class="gen-ai-response-text" style="color: #f1f5f9; line-height: 1.6; font-size: 0.92rem;">
+                        ${formatMarkdown(replyText)}
+                    </div>
+                `;
+            } catch (err) {
+                responseBox.innerHTML = `
+                    <div style="color: #fca5a5; font-weight: 700; margin-bottom: 4px;">❌ Błąd połączenia z Gemini API:</div>
+                    <div style="color: #cbd5e1; font-size: 0.88rem;">${err.message}</div>
+                `;
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<span>💬 Zapytaj Gemini AI</span>';
+            }
+        }
+
+        /* ==========================================================================
+           ASYSTENT AI DLA TRYBU 3 (GENY SPRZĘŻONE - CROSSING-OVER MORGANA)
+           ========================================================================== */
+        function askLinkedAi(type) {
+            const pair = currentLinkedPair;
+            const input = document.getElementById('gen-ai-linked-q');
+            if (!input) return;
+
+            const slider = document.getElementById('linked-dist-slider');
+            const dist = slider ? parseFloat(slider.value) : pair.distCM;
+            const pRecomb = dist;
+            const pParental = (100 - dist).toFixed(1);
+
+            if (type === 'consequences') {
+                input.value = `Co w praktyce oznacza rozbicie pakietu cech na chromosomie ${pair.chr} (${pair.name}) przez crossing-over u potomstwa? Jaka jest różnica między dzieckiem o haplotypie rodzicielskim (${pParental}%) a rekombinowanym (${pRecomb}%)?`;
+            } else if (type === 'evolution') {
+                input.value = `Dlaczego ewolucja wykształciła mechanizm crossing-over w mejozie i jakie ma to znaczenie dla zmienności genetycznej człowieka?`;
+            } else if (type === 'distance') {
+                input.value = `Jak odległość fizyczna ${dist} cM na chromosomie ${pair.chr} wpływa na prawdopodobieństwo rozprzężenia cech ${pair.geneA_name} i ${pair.geneB_name}?`;
+            }
+
+            submitLinkedAiQuestion();
+        }
+
+        async function submitLinkedAiQuestion() {
+            const pair = currentLinkedPair;
+            const inputEl = document.getElementById('gen-ai-linked-q');
+            const customQ = inputEl ? inputEl.value.trim() : '';
+            const responseBox = document.getElementById('gen-ai-linked-response');
+            const submitBtn = document.getElementById('gen-ai-linked-btn');
+
+            const apiKey = localStorage.getItem('gemini_api_key');
+            let userModel = localStorage.getItem('gemini_selected_model') || 'auto';
+
+            if (!apiKey || apiKey.trim().length < 10) {
+                responseBox.style.display = 'block';
+                responseBox.innerHTML = `
+                    <div style="color: #fca5a5; font-weight: 700; margin-bottom: 6px;">⚠️ Brak zapisanego klucza Gemini API</div>
+                    <div>Aby rozmawiać z asystentem AI o crossing-over i mejozie, <a href="javascript:void(0)" onclick="promptForApiKey()" style="color:#38bdf8; text-decoration:underline; font-weight:700;">wprowadź bezpłatny klucz API Google AI Studio</a> lub skonfiguruj go na stronie <a href="pomocnicze.html" style="color:#c084fc; text-decoration:underline;">Bazy Pomocniczej</a>.</div>
+                `;
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span>⏳ Gemini analizuje...</span>';
+            responseBox.style.display = 'block';
+            responseBox.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 8px; color: #34d399;">
+                    <span>🔬</span>
+                    <span>Sztuczna inteligencja analizuje mejozę i crossing-over dla <strong>${pair.name}</strong>...</span>
+                </div>
+            `;
+
+            const slider = document.getElementById('linked-dist-slider');
+            const dist = slider ? parseFloat(slider.value) : pair.distCM;
+            const pRecomb = dist;
+            const pParental = (100 - dist).toFixed(1);
+
+            const systemPrompt = `Jesteś ekspertem cytogenetyki i biologii molekularnej.
+Użytkownik bada zjawisko sprzężenia genów i crossing-over w mejozie (Prawa Morgana).
+Badany chromosom: ${pair.chr}
+Para genów: ${pair.name}
+- Gen 1: ${pair.geneA_name}
+- Gen 2: ${pair.geneB_name}
+Odległość genetyczna: ${dist} cM
+Wyliczone prawdopodobieństwa gamet mejozy:
+- Gamety rodzicielskie (nierozprzężone): ${pParental}%
+- Gamety zrekombinowane (crossing-over): ${pRecomb}%
+
+Użytkownik zadał pytanie:
+"${customQ}"
+
+Udziel wyczerpującej, przystępnej odpowiedzi po polsku z wykorzystaniem formatowania Markdown, punktorów i pogrubień.`;
+
+            try {
+                const modelToUse = await getWorkingGeminiModel(apiKey, userModel);
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelToUse}:generateContent?key=${apiKey}`;
+
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: systemPrompt }] }],
+                        generationConfig: { temperature: 0.4, maxOutputTokens: 1400 }
+                    })
+                });
+
+                if (!response.ok) {
+                    const errData = await response.json();
+                    throw new Error(errData.error?.message || 'Błąd zapytania do Gemini API');
+                }
+
+                const data = await response.json();
+                const replyText = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Brak treści odpowiedzi od modelu.';
+
+                responseBox.innerHTML = `
+                    <div style="font-weight: 700; color: #34d399; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between;">
+                        <span>💡 Odpowiedź Asystenta Mejozy i Morgana Gemini (${modelToUse}):</span>
+                        <span style="font-size: 0.75rem; color: #94a3b8; font-weight: normal;">${pair.name}</span>
+                    </div>
+                    <div class="gen-ai-response-text" style="color: #f1f5f9; line-height: 1.6; font-size: 0.92rem;">
+                        ${formatMarkdown(replyText)}
+                    </div>
+                `;
+            } catch (err) {
+                responseBox.innerHTML = `
+                    <div style="color: #fca5a5; font-weight: 700; margin-bottom: 4px;">❌ Błąd połączenia z Gemini API:</div>
+                    <div style="color: #cbd5e1; font-size: 0.88rem;">${err.message}</div>
+                `;
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<span>💬 Zapytaj Gemini AI</span>';
+            }
+        }
+
+
         function openExplanationModal() {
             const modal = document.getElementById('gen-explanation-modal');
             if (!modal) return;
