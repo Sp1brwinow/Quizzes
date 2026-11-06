@@ -356,78 +356,172 @@
             border-color: #c084fc;
         }
 
+        /* Czytelne wzory matematyczne HTML */
+        .formula-box {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            border-radius: 10px;
+            padding: 8px 18px;
+            margin: 8px 0;
+            display: inline-block;
+            font-size: 1.15rem;
+            color: #d8b4fe;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .formula-box.highlight {
+            background: rgba(88, 28, 135, 0.35);
+            border-color: #c084fc;
+            color: #ffffff;
+            font-size: 1.25rem;
+        }
+
+        .math-frac {
+            display: inline-flex;
+            flex-direction: column;
+            vertical-align: middle;
+            text-align: center;
+            font-size: 0.85em;
+            line-height: 1;
+            margin: 0 4px;
+        }
+
+        .math-frac .num {
+            border-bottom: 2px solid currentColor;
+            padding-bottom: 2px;
+        }
+
+        .math-frac .den {
+            padding-top: 2px;
+        }
+
+        /* Pasek przewijania (scroll bar) i pole toku rozumowania */
         .reasoning-textarea {
             width: 100%;
-            min-height: 120px;
+            min-height: 140px;
+            max-height: 350px;
             background: #090f1d;
-            border: 1px solid rgba(168, 85, 247, 0.3);
+            border: 1px solid rgba(168, 85, 247, 0.35);
             border-radius: 0 0 10px 10px;
             padding: 12px 14px;
             color: #f8fafc;
-            font-family: inherit;
-            font-size: 0.95rem;
-            line-height: 1.5;
+            font-family: 'Consolas', 'Fira Code', 'Segoe UI', monospace;
+            font-size: 1rem;
+            line-height: 1.6;
             resize: vertical;
+            overflow-y: scroll; /* Wymuszony widoczny scrollbar */
+            scrollbar-width: thin;
+            scrollbar-color: #a855f7 #090f1d;
+        }
+
+        .reasoning-textarea::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        .reasoning-textarea::-webkit-scrollbar-track {
+            background: #090f1d;
+            border-radius: 0 0 10px 0;
+        }
+
+        .reasoning-textarea::-webkit-scrollbar-thumb {
+            background: #9333ea;
+            border-radius: 5px;
+            border: 2px solid #090f1d;
+        }
+
+        .reasoning-textarea::-webkit-scrollbar-thumb:hover {
+            background: #c084fc;
         }
 
         .reasoning-textarea:focus {
             outline: none;
             border-color: #a855f7;
-            box-shadow: 0 0 10px rgba(168, 85, 247, 0.3);
+            box-shadow: 0 0 12px rgba(168, 85, 247, 0.4);
         }
 
+        /* Podgląd zapisu matematycznego z podziałem na wiersze i własnym scrollem */
         .math-preview-box {
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px dashed rgba(56, 189, 248, 0.35);
+            background: rgba(15, 23, 42, 0.75);
+            border: 1px dashed rgba(56, 189, 248, 0.4);
             border-radius: 8px;
-            padding: 10px 14px;
-            font-size: 0.92rem;
-            color: var(--accent-cyan);
-            min-height: 38px;
+            padding: 12px 16px;
+            margin-top: 8px;
+            font-size: 1.05rem;
+            min-height: 48px;
+            max-height: 220px;
             display: flex;
-            align-items: center;
+            flex-direction: column;
+            gap: 6px;
+            overflow-y: auto; /* Własny scrollbar */
             overflow-x: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #38bdf8 #090f1d;
+        }
+
+        .math-preview-box::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        .math-preview-box::-webkit-scrollbar-track {
+            background: #090f1d;
+        }
+
+        .math-preview-box::-webkit-scrollbar-thumb {
+            background: #0284c7;
+            border-radius: 4px;
+        }
+
+        .math-preview-line {
+            display: block;
+            min-height: 22px;
+            line-height: 1.5;
+            color: #38bdf8;
+            font-size: 1.05rem;
         }
 
         .final-answer-row {
             display: flex;
             align-items: center;
             gap: 12px;
-            margin-top: 4px;
+            margin-top: 6px;
+            flex-wrap: wrap;
         }
 
         .final-answer-input {
             flex: 1;
-            max-width: 300px;
+            min-width: 260px;
+            max-width: 380px;
             background: #090f1d;
             border: 1px solid rgba(56, 189, 248, 0.35);
             border-radius: 8px;
-            padding: 8px 12px;
+            padding: 10px 14px;
             color: #fff;
-            font-size: 0.95rem;
+            font-size: 1rem;
         }
 
         .final-answer-input:focus {
             outline: none;
             border-color: var(--accent-cyan);
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
         }
 
-        /* Dolny panel akcji – Sprawdź */
+        /* Dolny panel akcji – Sprawdź (NIE ZASŁANIA PÓL TEKSTOWYCH) */
         .action-bar {
-            background: linear-gradient(135deg, rgba(30, 27, 75, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%);
+            background: linear-gradient(135deg, rgba(30, 27, 75, 0.95) 0%, rgba(15, 23, 42, 0.98) 100%);
             border: 1px solid var(--card-border);
             border-radius: 16px;
-            padding: 22px 28px;
+            padding: 24px 28px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
             gap: 16px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            position: sticky;
-            bottom: 20px;
-            z-index: 10;
-            backdrop-filter: blur(12px);
+            margin-top: 24px;
+            margin-bottom: 24px;
+            position: static; /* Usunięto sticky, by nie zasłaniał ekranu */
         }
 
         .btn-submit {
@@ -667,16 +761,20 @@
                     <span class="task-pts">0–1 pkt</span>
                 </div>
                 <div class="task-desc">
-                    Sumę \(S = 1 + 2 + 3 + \dots + n\) kolejnych liczb naturalnych od \(1\) do \(n\) można obliczyć ze wzoru:
-                    <div style="text-align: center; font-size: 1.15rem; margin: 8px 0; color: #c084fc;">
-                        \(S = \frac{1}{2}n(n + 1)\)
+                    Sumę <strong style="color:#38bdf8;">S = 1 + 2 + 3 + ... + n</strong> kolejnych liczb naturalnych od <strong>1</strong> do <strong>n</strong> można obliczyć ze wzoru:
+                    <div style="text-align: center; margin: 12px 0;">
+                        <span class="formula-box highlight">
+                            S = <span class="math-frac"><span class="num">1</span><span class="den">2</span></span> · n(n + 1)
+                        </span>
                     </div>
                     <strong>Uzupełnij zdania. Wybierz odpowiedź spośród oznaczonych literami A i B oraz odpowiedź spośród oznaczonych literami C i D.</strong>
                 </div>
 
-                <div style="margin-top: 8px; display: flex; flex-direction: column; gap: 14px;">
+                <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 16px;">
                     <div>
-                        <div style="margin-bottom: 6px;">1. Suma stu kolejnych liczb naturalnych od 1 do 100 jest równa:</div>
+                        <div style="margin-bottom: 8px; font-weight:600; color:#e2e8f0;">
+                            1. Suma stu kolejnych liczb naturalnych od 1 do 100 jest równa:
+                        </div>
                         <div class="options-grid">
                             <label class="option-label" onclick="selectRadio(this)">
                                 <input type="radio" name="task2_part1" value="A">
@@ -690,21 +788,22 @@
                     </div>
 
                     <div>
-                        <div style="margin-bottom: 6px;">2. Wzór na sumę \(S\) po poprawnym przekształceniu ma postać:</div>
+                        <div style="margin-bottom: 8px; font-weight:600; color:#e2e8f0;">
+                            2. Wzór na sumę S po poprawnym przekształceniu (wymnożeniu nawiasu) ma postać:
+                        </div>
                         <div class="options-grid">
                             <label class="option-label" onclick="selectRadio(this)">
                                 <input type="radio" name="task2_part2" value="C">
-                                <span><strong>C.</strong> \(S = \frac{1}{2}n^2 + 1\)</span>
+                                <span><strong>C.</strong> S = <span class="math-frac"><span class="num">1</span><span class="den">2</span></span> n² + 1</span>
                             </label>
                             <label class="option-label" onclick="selectRadio(this)">
                                 <input type="radio" name="task2_part2" value="D">
-                                <span><strong>D.</strong> \(S = \frac{1}{2}n^2 + \frac{1}{2}n\)</span>
+                                <span><strong>D.</strong> S = <span class="math-frac"><span class="num">1</span><span class="den">2</span></span> n² + <span class="math-frac"><span class="num">1</span><span class="den">2</span></span> n</span>
                             </label>
                         </div>
                     </div>
                 </div>
             </div>
-
             <!-- ZADANIE 3 (Prawda/Fałsz - 1 pkt) -->
             <div class="task-card" id="card-task-3">
                 <div class="task-header">
@@ -714,7 +813,7 @@
                     <span class="task-pts">0–1 pkt</span>
                 </div>
                 <div class="task-desc">
-                    Dany jest trójkąt równoboczny o boku długości <strong>2 cm</strong>.<br>
+                    Dany jest trójkąt równoboczny o boku długości <strong>a = 2 cm</strong>.<br>
                     <strong>Oceń prawdziwość podanych zdań. Wybierz P, jeśli zdanie jest prawdziwe, albo F – jeśli jest fałszywe.</strong>
                 </div>
 
@@ -722,26 +821,24 @@
                     <thead>
                         <tr>
                             <th>Zdanie</th>
-                            <th>P</th>
-                            <th>F</th>
+                            <th style="width: 70px;">P (Prawda)</th>
+                            <th style="width: 70px;">F (Fałsz)</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>Wysokość tego trójkąta jest równa \(\sqrt{3}\text{ cm}\).</td>
+                            <td style="font-size: 1.02rem;">Wysokość tego trójkąta jest równa <strong>√3 cm</strong>.</td>
                             <td><button type="button" class="tf-btn" onclick="setTF(3, 1, 'P', this)">P</button></td>
                             <td><button type="button" class="tf-btn" onclick="setTF(3, 1, 'F', this)">F</button></td>
                         </tr>
                         <tr>
-                            <td>Pole tego trójkąta jest równe \(\sqrt{3}\text{ cm}^2\).</td>
+                            <td style="font-size: 1.02rem;">Pole tego trójkąta jest równe <strong>√3 cm²</strong>.</td>
                             <td><button type="button" class="tf-btn" onclick="setTF(3, 2, 'P', this)">P</button></td>
                             <td><button type="button" class="tf-btn" onclick="setTF(3, 2, 'F', this)">F</button></td>
                         </tr>
                     </tbody>
                 </table>
             </div>
-
-            <!-- ZADANIE 4 (Otwarte 0-2 pkt - Origami) -->
             <div class="task-card" id="card-task-4">
                 <div class="task-header">
                     <div class="task-title">
@@ -762,7 +859,8 @@
                         <button type="button" class="math-tool-btn" onclick="insertSymbol('task4_reasoning', '²')">x²</button>
                         <button type="button" class="math-tool-btn" onclick="insertSymbol('task4_reasoning', '√()')">√x</button>
                         <button type="button" class="math-tool-btn" onclick="insertSymbol('task4_reasoning', '·')">·</button>
-                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task4_reasoning', '/')">/</button>
+                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task4_reasoning', ' 1/2')" title="Wstaw ułamek 1/2">½</button>
+                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task4_reasoning', '/')" title="Kreska ułamkowa / dzielenie">/</button>
                         <button type="button" class="math-tool-btn" onclick="insertSymbol('task4_reasoning', 'x')">x</button>
                         <button type="button" class="math-tool-btn" onclick="insertSymbol('task4_reasoning', '( )')">( )</button>
                     </div>
@@ -774,7 +872,7 @@
 
                 <div class="final-answer-row">
                     <label for="task4_answer" style="font-weight: 600;">Odpowiedź końcowa (liczba kartek niebieskich):</label>
-                    <input type="text" id="task4_answer" class="final-answer-input" placeholder="np. 57">
+                    <input type="text" id="task4_answer" class="final-answer-input" placeholder="Wpisz liczbę, np. 24">
                 </div>
             </div>
 
@@ -798,7 +896,8 @@
                         <span style="font-size:0.8rem; color:#94a3b8; margin-right:4px;">Symbole:</span>
                         <button type="button" class="math-tool-btn" onclick="insertSymbol('task5_reasoning', 'km/h')">km/h</button>
                         <button type="button" class="math-tool-btn" onclick="insertSymbol('task5_reasoning', '·')">·</button>
-                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task5_reasoning', '/')">/</button>
+                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task5_reasoning', ' 1/2')" title="Wstaw ułamek 1/2">½</button>
+                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task5_reasoning', '/')" title="Kreska ułamkowa / dzielenie">/</button>
                         <button type="button" class="math-tool-btn" onclick="insertSymbol('task5_reasoning', '>')">&gt;</button>
                         <button type="button" class="math-tool-btn" onclick="insertSymbol('task5_reasoning', '<')">&lt;</button>
                         <button type="button" class="math-tool-btn" onclick="insertSymbol('task5_reasoning', '=')">=</button>
@@ -811,7 +910,7 @@
 
                 <div class="final-answer-row">
                     <label for="task5_answer" style="font-weight: 600;">Wniosek końcowy / czas przejazdu:</label>
-                    <input type="text" id="task5_answer" class="final-answer-input" placeholder="np. 75 km > 72 km, czas = 75/72 h > 1 h">
+                    <input type="text" id="task5_answer" class="final-answer-input" placeholder="Wpisz wniosek (np. czas wynosi ... h, co jest > 1 h)">
                 </div>
             </div>
 
@@ -845,7 +944,8 @@
                         <button type="button" class="math-tool-btn" onclick="insertSymbol('task6_reasoning', 'm²')">m²</button>
                         <button type="button" class="math-tool-btn" onclick="insertSymbol('task6_reasoning', 'zł')">zł</button>
                         <button type="button" class="math-tool-btn" onclick="insertSymbol('task6_reasoning', '·')">·</button>
-                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task6_reasoning', '/')">/</button>
+                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task6_reasoning', ' 1/2')" title="Wstaw ułamek 1/2">½</button>
+                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task6_reasoning', '/')" title="Kreska ułamkowa / dzielenie">/</button>
                         <button type="button" class="math-tool-btn" onclick="insertSymbol('task6_reasoning', '( )')">( )</button>
                     </div>
                     <textarea id="task6_reasoning" class="reasoning-textarea" placeholder="Zapisz obliczenie pola powierzchni ogródka, liczby opakowań oraz łącznego kosztu..." oninput="updateMathPreview('task6_reasoning', 'task6_preview')"></textarea>
@@ -856,7 +956,7 @@
 
                 <div class="final-answer-row">
                     <label for="task6_answer" style="font-weight: 600;">Koszt zakupu opakowań (w zł):</label>
-                    <input type="text" id="task6_answer" class="final-answer-input" placeholder="np. 142.80 zł">
+                    <input type="text" id="task6_answer" class="final-answer-input" placeholder="Wpisz kwotę w zł (np. 95,20 zł)">
                 </div>
             </div>
 
@@ -1023,37 +1123,91 @@
             const prev = document.getElementById(previewId);
             if (!ta || !prev) return;
 
-            const val = ta.value.trim();
-            if (!val) {
+            const val = ta.value;
+            if (!val.trim()) {
                 prev.innerHTML = '<span style="color:#64748b; font-style:italic;">Podgląd zapisu matematycznego pojawi się tutaj...</span>';
                 return;
             }
 
-            // Przygotowanie do wyświetlania prostych formuł
-            let formatted = val
-                .replace(/√\((.*?)\)/g, '\\sqrt{$1}')
-                .replace(/√(\d+)/g, '\\sqrt{$1}')
-                .replace(/²/g, '^2')
-                .replace(/·/g, ' \\cdot ')
-                .replace(/m²/g, '\\text{ m}^2')
-                .replace(/cm²/g, '\\text{ cm}^2');
+            // Podział tekstu na linie - każda linijka to osobny wiersz
+            const lines = val.split('\n');
+            prev.innerHTML = '';
 
-            try {
-                if (window.katex) {
-                    prev.innerHTML = '';
-                    katex.render(formatted, prev, {
-                        throwOnError: false,
-                        displayMode: false
-                    });
-                } else {
-                    prev.innerText = val;
+            lines.forEach(line => {
+                const lineDiv = document.createElement('div');
+                lineDiv.className = 'math-preview-line';
+
+                const trimmed = line.trim();
+                if (!trimmed) {
+                    lineDiv.innerHTML = '&nbsp;';
+                    prev.appendChild(lineDiv);
+                    return;
                 }
-            } catch (e) {
-                prev.innerText = val;
-            }
-        }
 
-        // --- SPRAWDZANIE ZADAŃ PRZEZ AI GEMINI ---
+                // 1. Sprawdzamy czy linia to zwykły tekst (np. "pole trapezu", "obliczenia", "odpowiedź:")
+                // Jeśli w linii nie ma operatorów arytmetycznych ani porównań, wyświetlamy jako czysty tekst z zachowaniem spacji!
+                const hasMathOperators = /[=+\-*/·^√<>]/.test(trimmed);
+                if (!hasMathOperators) {
+                    lineDiv.textContent = trimmed;
+                    lineDiv.style.color = '#e2e8f0';
+                    lineDiv.style.fontStyle = 'normal';
+                    lineDiv.style.fontWeight = '500';
+                    lineDiv.style.fontSize = '0.98rem';
+                    prev.appendChild(lineDiv);
+                    return;
+                }
+
+                // 2. Linia zawiera wzory/obliczenia - przygotowujemy do renderowania
+                let formatted = trimmed
+                    .replace(/km\/h/g, '\\text{ km/h}')
+                    .replace(/m²/g, '\\text{ m}^2')
+                    .replace(/cm²/g, '\\text{ cm}^2')
+                    .replace(/\bcm\b/g, '\\text{ cm}')
+                    .replace(/\bzł\b/g, '\\text{ zł}')
+                    .replace(/\bmin\b/g, '\\text{ min}')
+                    .replace(/·|\*/g, ' \\cdot ')
+                    .replace(/√\((.*?)\)/g, '\\sqrt{$1}')
+                    .replace(/√(\d+)/g, '\\sqrt{$1}')
+                    .replace(/²/g, '^2')
+                    .replace(/³/g, '^3');
+
+                // Obsługa ułamków i liczb mieszanych:
+                // Liczby mieszane ze spacją: np. 5 1/2 -> 5\frac{1}{2}
+                formatted = formatted.replace(/(\d+)\s+(\d+)\/(\d+)/g, '$1\\frac{$2}{$3}');
+                // Liczby mieszane ze spójnikiem 'i': np. 5 i 1/2 -> 5\frac{1}{2}
+                formatted = formatted.replace(/(\d+)\s+i\s+(\d+)\/(\d+)/g, '$1\\frac{$2}{$3}');
+                // Ułamki zwykłe: np. 1/2 -> \frac{1}{2}, 75/72 -> \frac{75}{72}
+                formatted = formatted.replace(/(?<![a-zA-Z0-9_\/])(\d+)\/(\d+)(?![a-zA-Z0-9_\/])/g, '\\frac{$1}{$2}');
+
+                // Zabezpieczenie słów wieloliterowych (np. "pole trapezu =", "czas ="), aby litery nie zlewały się w jedno słowo
+                formatted = formatted.replace(/\b(?<!\\)[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ]{2,}(?:\s+[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ]+)*\b/g, match => {
+                    if (['sqrt', 'cdot', 'frac', 'text'].includes(match)) return match;
+                    return `\\text{${match}}`;
+                });
+
+                // Formatowanie przecinka dziesiętnego (np. 1,5 -> 1{,}5 dla KaTeX)
+                formatted = formatted.replace(/(\d+),(\d+)/g, '$1{,}$2');
+
+                let rendered = false;
+                if (window.katex) {
+                    try {
+                        katex.render(formatted, lineDiv, {
+                            throwOnError: false,
+                            displayMode: false
+                        });
+                        rendered = true;
+                    } catch (e) {
+                        rendered = false;
+                    }
+                }
+
+                if (!rendered) {
+                    lineDiv.textContent = trimmed.replace(/\*/g, ' · ');
+                }
+
+                prev.appendChild(lineDiv);
+            });
+        }
         async function evaluateWithGemini(promptText) {
             const key = localStorage.getItem('gemini_api_key');
             if (!key || key.trim().length < 10) return null;
@@ -1484,6 +1638,17 @@ Odpowiedz wyłącznie poprawnym obiektem JSON:
         }
 
         window.addEventListener('DOMContentLoaded', () => {
+            if (window.renderMathInElement) {
+                try {
+                    renderMathInElement(document.body, {
+                        delimiters: [
+                            {left: '$$', right: '$$', display: true},
+                            {left: '\\(', right: '\\)', display: false}
+                        ],
+                        throwOnError: false
+                    });
+                } catch(e) {}
+            }
             checkApiBanner();
         });
     </script>
