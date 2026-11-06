@@ -143,8 +143,17 @@
         }
 
         @keyframes pulse-glow {
-            0%, 100% { box-shadow: 0 0 15px rgba(56, 189, 248, 0.3); transform: scale(1); }
-            50% { box-shadow: 0 0 28px rgba(56, 189, 248, 0.6); transform: scale(1.03); }
+
+            0%,
+            100% {
+                box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+                transform: scale(1);
+            }
+
+            50% {
+                box-shadow: 0 0 28px rgba(56, 189, 248, 0.6);
+                transform: scale(1.03);
+            }
         }
 
         .ai-text h4 {
@@ -261,6 +270,7 @@
             color: var(--accent-quiz);
             border-color: rgba(239, 68, 68, 0.35);
         }
+
         .card-quiz:hover {
             border-color: #ef4444;
         }
@@ -269,6 +279,7 @@
             color: var(--accent-strzel);
             border-color: rgba(16, 185, 129, 0.4);
         }
+
         .card-strzel:hover {
             border-color: #10b981;
         }
@@ -277,6 +288,7 @@
             color: var(--accent-rozrywka);
             border-color: rgba(245, 158, 11, 0.35);
         }
+
         .card-rozrywka:hover {
             border-color: #f59e0b;
         }
@@ -285,6 +297,7 @@
             color: var(--accent-hack);
             border-color: rgba(6, 182, 212, 0.35);
         }
+
         .card-hack:hover {
             border-color: #06b6d4;
         }
@@ -312,9 +325,18 @@
         }
 
         @media (max-width: 640px) {
-            .hero-title { font-size: 1.7rem; }
-            .ai-welcome-card { flex-direction: column; text-align: center; }
-            .cards-grid { grid-template-columns: 1fr; }
+            .hero-title {
+                font-size: 1.7rem;
+            }
+
+            .ai-welcome-card {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -328,7 +350,8 @@
         <header class="hero-header">
             <div class="badge-club">🚀 Szkoła Podstawowa nr 1 w Brwinowie</div>
             <h1 class="hero-title">Witaj w HACK CLUB</h1>
-            <p class="hero-subtitle">Centrum wiedzy, edukacji z AI, quizów szkolnych, wyzwań geograficznych i symulacji 3D</p>
+            <p class="hero-subtitle">Centrum wiedzy, edukacji z AI, quizów szkolnych, wyzwań geograficznych i symulacji
+                3D</p>
         </header>
 
         <!-- Karta powitania AI -->
@@ -345,14 +368,15 @@
 
         <!-- Siatka kart 4 głównych modułów -->
         <div class="cards-grid">
-            
+
             <!-- Karta 1: Quizy Szkolne -->
             <a href="pomocnicze.html" class="nav-card card-quiz">
                 <div>
                     <span class="card-icon">📚</span>
                     <h3 class="card-title">Quizy Szkolne</h3>
                     <p class="card-desc">
-                        Interaktywne pytania z języka angielskiego, polskiego, historii, geografii, matematyki i chemii. Ucz się z asystentem głosowym AI!
+                        Interaktywne pytania z języka angielskiego, polskiego, historii, geografii, matematyki i chemii.
+                        Ucz się z asystentem głosowym AI!
                     </p>
                 </div>
                 <div class="card-action">
@@ -367,7 +391,8 @@
                     <span class="card-icon">🎯</span>
                     <h3 class="card-title">Nie Wiem, Ale Strzelę</h3>
                     <p class="card-desc">
-                        Wyzwania geograficzne! <strong>🌡️ ClimGuesser</strong>, <strong>📸 Famous Places</strong> oraz <strong>🌋 Symulator 3D Procesów Ziemi</strong> (Cykl skalny & Pedogeneza).
+                        Wyzwania geograficzne! <strong>🌡️ ClimGuesser</strong>, <strong>📸 Famous Places</strong> oraz
+                        <strong>🌋 Symulator 3D Procesów Ziemi</strong> (Cykl skalny & Pedogeneza).
                     </p>
                 </div>
                 <div class="card-action">
@@ -382,7 +407,8 @@
                     <span class="card-icon">🪐</span>
                     <h3 class="card-title">Strefa Rozrywki</h3>
                     <p class="card-desc">
-                        Nieskończony Zoom wektorowy, Mandelbulb 3D, proceduralne góry i chmury, efekty ognia i błyskawic oraz 3D głębia jeziora!
+                        Nieskończony Zoom wektorowy, Mandelbulb 3D, proceduralne góry i chmury, efekty ognia i błyskawic
+                        oraz 3D głębia jeziora!
                     </p>
                 </div>
                 <div class="card-action">
@@ -397,7 +423,8 @@
                     <span class="card-icon">💻</span>
                     <h3 class="card-title">Hack Club</h3>
                     <p class="card-desc">
-                        Poznaj nasz klub programistyczny, projekty kodowania, warsztaty i technologiczne wyzwania dla uczniów.
+                        Poznaj nasz klub programistyczny, projekty kodowania, warsztaty i technologiczne wyzwania dla
+                        uczniów.
                     </p>
                 </div>
                 <div class="card-action">

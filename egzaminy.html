@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <!-- Google Analytics Tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZP827DTZJ5"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-ZP827DTZJ5');
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Centrum Egzaminów Ósmoklasisty (E8) – Arkusze &amp; AI</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+        :root {
+            --bg-dark: #070d18;
+            --card-bg: rgba(15, 23, 42, 0.85);
+            --card-border: rgba(168, 85, 247, 0.35);
+            --primary: #a855f7;
+            --accent-cyan: #38bdf8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: #f1f5f9;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            padding: 30px 20px 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 26px;
+        }
+
+        /* Górna belka nawigacji */
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .back-link {
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(168, 85, 247, 0.4);
+            color: #c084fc;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            backdrop-filter: blur(8px);
+        }
+
+        .back-link:hover {
+            background: #9333ea;
+            color: #ffffff;
+            transform: translateX(-2px);
+            box-shadow: 0 0 14px rgba(168, 85, 247, 0.4);
+        }
+
+        /* Główny nagłówek */
+        .header-card {
+            text-align: center;
+            background: linear-gradient(135deg, rgba(30, 27, 75, 0.7) 0%, rgba(15, 23, 42, 0.9) 100%);
+            border: 1px solid rgba(168, 85, 247, 0.4);
+            border-radius: 20px;
+            padding: 28px 30px;
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(12px);
+        }
+
+        .header-card h1 {
+            font-size: 2.1rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 0%, #c084fc 50%, #38bdf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .header-card p {
+            color: #94a3b8;
+            font-size: 1.05rem;
+            max-width: 780px;
+            margin: 0 auto;
+            line-height: 1.5;
+        }
+
+        /* Sekcja API status */
+        .api-info-bar {
+            background: rgba(15, 23, 42, 0.75);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 14px;
+            padding: 14px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            font-size: 0.92rem;
+        }
+
+        .api-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+        }
+
+        .btn-small {
+            background: rgba(56, 189, 248, 0.2);
+            border: 1px solid #38bdf8;
+            color: #38bdf8;
+            padding: 5px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-small:hover {
+            background: #38bdf8;
+            color: #040812;
+        }
+
+        /* Sekcje przedmiotów */
+        .section-box {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .section-title {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: #f8fafc;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(168, 85, 247, 0.2);
+            padding-bottom: 12px;
+        }
+
+        .exam-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 18px;
+        }
+
+        .exam-card {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            border-radius: 14px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            transition: all 0.25s ease;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .exam-card:hover {
+            border-color: #c084fc;
+            background: rgba(45, 35, 75, 0.7);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(168, 85, 247, 0.25);
+        }
+
+        .exam-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .exam-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .exam-badge {
+            background: rgba(168, 85, 247, 0.25);
+            color: #d8b4fe;
+            border: 1px solid rgba(168, 85, 247, 0.4);
+            font-size: 0.75rem;
+            padding: 3px 8px;
+            border-radius: 999px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .exam-desc {
+            font-size: 0.9rem;
+            color: #cbd5e1;
+            line-height: 1.45;
+        }
+
+        .exam-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 4px;
+        }
+
+        .feature-tag {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            color: #38bdf8;
+            font-size: 0.76rem;
+            padding: 2px 8px;
+            border-radius: 6px;
+        }
+
+        .exam-btn {
+            margin-top: 6px;
+            background: linear-gradient(135deg, #9333ea, #7c3aed);
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 0.92rem;
+            padding: 10px 16px;
+            border-radius: 10px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .exam-card:hover .exam-btn {
+            background: linear-gradient(135deg, #a855f7, #8b5cf6);
+            box-shadow: 0 0 14px rgba(168, 85, 247, 0.5);
+        }
+
+        /* Pudełko informacyjne o kryteriach CKE */
+        .info-box {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px dashed rgba(56, 189, 248, 0.4);
+            border-radius: 14px;
+            padding: 18px 22px;
+            font-size: 0.9rem;
+            color: #94a3b8;
+            line-height: 1.5;
+        }
+
+        .info-box strong {
+            color: #38bdf8;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Nawigacja -->
+        <div class="top-nav">
+            <a href="pomocnicze.html" class="back-link">← Powrót do bazy quizów</a>
+            <a href="index.html" class="back-link">🏠 Strona główna</a>
+        </div>
+
+        <!-- Nagłówek -->
+        <div class="header-card">
+            <h1>🎓 Centrum Egzaminów Ósmoklasisty (E8)</h1>
+            <p>
+                Rzeczywiste arkusze egzaminacyjne zgodne z formułą CKE od roku 2024/2025. 
+                Rozwiązuj zadania, wpisuj pełny tok obliczeń i pozwól modelowi AI ocenić Twoje odpowiedzi punkt po punkcie!
+            </p>
+        </div>
+
+        <!-- Pasek stanu AI -->
+        <div class="api-info-bar">
+            <div>
+                <span>Silnik oceniania toku rozumowania: </span>
+                <span id="api-status" class="api-badge" style="background:#334155; color:#fca5a5;">Sprawdzanie klucza...</span>
+            </div>
+            <div>
+                <button type="button" class="btn-small" onclick="configureApiKey()">⚙️ Zarządzaj kluczem Gemini API</button>
+            </div>
+        </div>
+
+        <!-- Sekcja: Matematyka -->
+        <div class="section-box">
+            <div class="section-title">
+                <span>📐 Matematyka – Egzamin Ósmoklasisty</span>
+                <span style="font-size:0.85rem; color:#94a3b8; font-weight:normal;">Zgodne z najnowszym Informatorem CKE</span>
+            </div>
+
+            <div class="exam-cards-grid">
+                <!-- Egzamin 2025 skrócony -->
+                <a href="egzmat2025skot.html" class="exam-card">
+                    <div class="exam-card-header">
+                        <div class="exam-title">Egzamin 2025 skrócony</div>
+                        <span class="exam-badge">Wersja testowa</span>
+                    </div>
+                    <div class="exam-desc">
+                        Zestaw reprezentatywnych zadań zamkniętych i otwartych z arkusza E8.
+                        Zawiera zadania ABCD, prawda/fałsz oraz rozbudowane zadania otwarte z pełnym tokiem rozumowania.
+                    </div>
+                    <div class="exam-features">
+                        <span class="feature-tag">✍️ Edytor symboli matematycznych</span>
+                        <span class="feature-tag">🤖 AI weryfikuje etapy CKE</span>
+                        <span class="feature-tag">📄 Raport PDF z tabelą punktów</span>
+                        <span class="feature-tag">⏱️ Sprawdzanie na końcu</span>
+                    </div>
+                    <div class="exam-btn">
+                        <span>Rozpocznij egzamin skrócony</span>
+                        <span>→</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Informator o ocenianiu -->
+        <div class="info-box">
+            <strong>📌 Jak oceniane są zadania otwarte?</strong><br>
+            Wszystkie zadania otwarte są weryfikowane według oficjalnych kryteriów CKE:
+            <ul style="margin: 6px 0 6px 22px;">
+                <li><strong>1 pkt</strong> – za istotny postęp (np. ułożenie poprawnego równania lub wyznaczenie kluczowej wielkości pośredniej).</li>
+                <li><strong>2 pkt</strong> – za pokonanie zasadniczych trudności zadania (poprawna metoda, doprowadzenie do przedostatniego kroku).</li>
+                <li><strong>Maksimum punktów (2 lub 3 pkt)</strong> – za pełne, bezbłędne rozwiązanie z poprawnym wynikiem i wnioskiem.</li>
+            </ul>
+            Po zakończeniu sprawdzania możesz od razu pobrać <strong>oficjalny raport w formacie PDF</strong>.
+        </div>
+    </div>
+
+    <script>
+        function checkApiStatus() {
+            const statusEl = document.getElementById('api-status');
+            const key = localStorage.getItem('gemini_api_key');
+            if (key && key.trim().length > 10) {
+                statusEl.style.background = 'rgba(34, 197, 94, 0.2)';
+                statusEl.style.color = '#4ade80';
+                statusEl.innerHTML = '🟢 Gemini AI aktywne (Klucz gotowy)';
+            } else {
+                statusEl.style.background = 'rgba(239, 68, 68, 0.2)';
+                statusEl.style.color = '#f87171';
+                statusEl.innerHTML = '⚠️ Brak klucza API (Ocena heurystyczna)';
+            }
+        }
+
+        function configureApiKey() {
+            const current = localStorage.getItem('gemini_api_key') || '';
+            const key = prompt('Wprowadź swój bezpłatny klucz API Google Gemini (AI Studio):', current);
+            if (key !== null) {
+                const trimmed = key.trim();
+                if (trimmed.length > 5) {
+                    localStorage.setItem('gemini_api_key', trimmed);
+                    alert('Klucz API Gemini został pomyślnie zapisany w przeglądarce!');
+                } else if (trimmed.length === 0) {
+                    localStorage.removeItem('gemini_api_key');
+                    alert('Klucz API usunięty.');
+                }
+                checkApiStatus();
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', checkApiStatus);
+    </script>
+</body>
+
+</html>

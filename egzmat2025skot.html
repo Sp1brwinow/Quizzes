@@ -1,0 +1,1492 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <!-- Google Analytics Tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZP827DTZJ5"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-ZP827DTZJ5');
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Egzamin Ósmoklasisty – Matematyka 2025 (Wersja Skrócona)</title>
+
+    <!-- KaTeX do pięknego renderowania matematyki -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+    <!-- jsPDF do generowania raportu PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+
+    <style>
+        :root {
+            --bg-dark: #070d18;
+            --panel-bg: rgba(15, 23, 42, 0.92);
+            --card-border: rgba(168, 85, 247, 0.35);
+            --primary: #a855f7;
+            --primary-hover: #9333ea;
+            --accent-cyan: #38bdf8;
+            --accent-green: #22c55e;
+            --accent-red: #ef4444;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            padding: 24px 16px 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 920px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+        }
+
+        /* Górna belka nawigacji i timer */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .nav-link {
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid var(--card-border);
+            color: #d8b4fe;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .nav-link:hover {
+            background: #7e22ce;
+            color: #fff;
+            transform: translateX(-2px);
+        }
+
+        .timer-badge {
+            background: rgba(30, 41, 59, 0.9);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            color: var(--accent-cyan);
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Nagłówek arkusza CKE */
+        .exam-header {
+            background: linear-gradient(135deg, rgba(30, 27, 75, 0.75) 0%, rgba(15, 23, 42, 0.95) 100%);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 24px 28px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        }
+
+        .exam-header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(168, 85, 247, 0.25);
+            padding-bottom: 12px;
+            margin-bottom: 14px;
+        }
+
+        .cke-badge {
+            font-size: 0.82rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            background: #a855f7;
+            color: #fff;
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+
+        .exam-header h1 {
+            font-size: 1.85rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 0%, #c084fc 60%, #38bdf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 6px;
+        }
+
+        .exam-header p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        /* Pasek statusu AI */
+        .ai-banner {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            border-radius: 12px;
+            padding: 10px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            font-size: 0.88rem;
+        }
+
+        .ai-status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 700;
+        }
+
+        /* Karta zadania */
+        .task-card {
+            background: var(--panel-bg);
+            border: 1px solid rgba(168, 85, 247, 0.25);
+            border-radius: 16px;
+            padding: 22px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+            transition: border-color 0.2s;
+        }
+
+        .task-card:focus-within {
+            border-color: rgba(168, 85, 247, 0.6);
+        }
+
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 10px;
+        }
+
+        .task-title {
+            font-size: 1.12rem;
+            font-weight: 700;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .task-pts {
+            font-size: 0.82rem;
+            font-weight: 700;
+            background: rgba(168, 85, 247, 0.2);
+            color: #c084fc;
+            border: 1px solid rgba(168, 85, 247, 0.4);
+            padding: 3px 10px;
+            border-radius: 999px;
+        }
+
+        .task-desc {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #e2e8f0;
+        }
+
+        .diagram-container {
+            display: flex;
+            justify-content: center;
+            margin: 10px 0;
+        }
+
+        /* Opcje ABCD */
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 10px;
+            margin-top: 6px;
+        }
+
+        .option-label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 12px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.96rem;
+            user-select: none;
+        }
+
+        .option-label:hover {
+            background: rgba(45, 35, 75, 0.7);
+            border-color: #a855f7;
+        }
+
+        .option-label input[type="radio"] {
+            accent-color: #a855f7;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .option-label.selected {
+            background: rgba(168, 85, 247, 0.25);
+            border-color: #c084fc;
+            box-shadow: 0 0 10px rgba(168, 85, 247, 0.3);
+        }
+
+        /* Tabela Prawda / Fałsz */
+        .tf-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 8px;
+            font-size: 0.95rem;
+        }
+
+        .tf-table th,
+        .tf-table td {
+            padding: 12px 14px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .tf-table th {
+            background: rgba(30, 41, 59, 0.8);
+            color: #cbd5e1;
+            text-align: center;
+        }
+
+        .tf-table td:first-child {
+            width: 76%;
+        }
+
+        .tf-table td:not(:first-child) {
+            text-align: center;
+            width: 12%;
+        }
+
+        .tf-btn {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #e2e8f0;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tf-btn:hover {
+            border-color: var(--primary);
+        }
+
+        .tf-btn.active-p {
+            background: #16a34a;
+            color: #fff;
+            border-color: #22c55e;
+            box-shadow: 0 0 8px rgba(34, 197, 94, 0.4);
+        }
+
+        .tf-btn.active-f {
+            background: #dc2626;
+            color: #fff;
+            border-color: #ef4444;
+            box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+        }
+
+        /* Narzędzia matematyczne i edytor wzorów dla zadań otwartych */
+        .math-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            background: rgba(30, 41, 59, 0.85);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            border-bottom: none;
+            padding: 8px 12px;
+            border-radius: 10px 10px 0 0;
+            align-items: center;
+        }
+
+        .math-tool-btn {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #e2e8f0;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .math-tool-btn:hover {
+            background: #9333ea;
+            color: #fff;
+            border-color: #c084fc;
+        }
+
+        .reasoning-textarea {
+            width: 100%;
+            min-height: 120px;
+            background: #090f1d;
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            border-radius: 0 0 10px 10px;
+            padding: 12px 14px;
+            color: #f8fafc;
+            font-family: inherit;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            resize: vertical;
+        }
+
+        .reasoning-textarea:focus {
+            outline: none;
+            border-color: #a855f7;
+            box-shadow: 0 0 10px rgba(168, 85, 247, 0.3);
+        }
+
+        .math-preview-box {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px dashed rgba(56, 189, 248, 0.35);
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 0.92rem;
+            color: var(--accent-cyan);
+            min-height: 38px;
+            display: flex;
+            align-items: center;
+            overflow-x: auto;
+        }
+
+        .final-answer-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 4px;
+        }
+
+        .final-answer-input {
+            flex: 1;
+            max-width: 300px;
+            background: #090f1d;
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            border-radius: 8px;
+            padding: 8px 12px;
+            color: #fff;
+            font-size: 0.95rem;
+        }
+
+        .final-answer-input:focus {
+            outline: none;
+            border-color: var(--accent-cyan);
+        }
+
+        /* Dolny panel akcji – Sprawdź */
+        .action-bar {
+            background: linear-gradient(135deg, rgba(30, 27, 75, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 22px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            position: sticky;
+            bottom: 20px;
+            z-index: 10;
+            backdrop-filter: blur(12px);
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #9333ea, #7c3aed);
+            color: #ffffff;
+            border: none;
+            padding: 14px 28px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 4px 18px rgba(147, 51, 234, 0.5);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.25s;
+        }
+
+        .btn-submit:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(168, 85, 247, 0.6);
+            background: linear-gradient(135deg, #a855f7, #8b5cf6);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Sekcja wyników i raportu (po sprawdzeniu) */
+        #results-container {
+            display: none;
+            background: var(--panel-bg);
+            border: 2px solid #a855f7;
+            border-radius: 18px;
+            padding: 28px;
+            box-shadow: 0 10px 40px rgba(168, 85, 247, 0.35);
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .score-summary-card {
+            background: linear-gradient(135deg, rgba(88, 28, 135, 0.35) 0%, rgba(30, 41, 59, 0.5) 100%);
+            border: 1px solid rgba(168, 85, 247, 0.4);
+            border-radius: 14px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .score-big {
+            font-size: 3rem;
+            font-weight: 900;
+            color: #c084fc;
+            margin: 6px 0;
+        }
+
+        .pdf-download-btn {
+            background: #2563eb;
+            color: #fff;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: 700;
+            border-radius: 10px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .pdf-download-btn:hover {
+            background: #1d4ed8;
+            box-shadow: 0 0 14px rgba(37, 99, 235, 0.5);
+        }
+
+        /* Tabela punktacji CKE w podsumowaniu */
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 0.95rem;
+        }
+
+        .summary-table th,
+        .summary-table td {
+            padding: 10px 14px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            text-align: left;
+        }
+
+        .summary-table th {
+            background: rgba(30, 41, 59, 0.9);
+            color: #cbd5e1;
+        }
+
+        .status-badge-ok {
+            color: #4ade80;
+            font-weight: 700;
+        }
+
+        .status-badge-part {
+            color: #fbbf24;
+            font-weight: 700;
+        }
+
+        .status-badge-err {
+            color: #f87171;
+            font-weight: 700;
+        }
+
+        /* Modal podglądu rozwiązania */
+        .solution-box {
+            background: rgba(30, 41, 59, 0.7);
+            border-left: 4px solid var(--accent-cyan);
+            border-radius: 0 8px 8px 0;
+            padding: 14px 18px;
+            margin-top: 10px;
+            font-size: 0.92rem;
+            line-height: 1.5;
+        }
+
+        .solution-box strong {
+            color: #38bdf8;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Belka górna -->
+        <div class="top-bar">
+            <a href="egzaminy.html" class="nav-link">← Wybór egzaminów</a>
+            <div class="timer-badge">
+                <span>⏱️ Czas egzaminu:</span>
+                <span id="exam-timer">45:00</span>
+            </div>
+            <button type="button" class="nav-link" onclick="toggleKeySettings()" style="cursor:pointer;">
+                🔑 Klucz API Gemini
+            </button>
+        </div>
+
+        <!-- Nagłówek Arkusza -->
+        <div class="exam-header">
+            <div class="exam-header-top">
+                <span class="cke-badge">CKE OMAP-100-2605</span>
+                <span style="font-size: 0.85rem; color: #cbd5e1;">Formuła 2024/2025</span>
+            </div>
+            <h1>Egzamin Ósmoklasisty – Matematyka</h1>
+            <p>
+                <strong>Wersja skrócona (testowa)</strong> – 6 reprezentatywnych zadań z oficjalnego arkusza.
+                Rozwiąż zadania w dowolnej kolejności. W zadaniach otwartych zapisz swój pełny tok myślenia oraz odpowiedź końcową.
+                Ocena i raport PDF zostaną wygenerowane dopiero po naciśnięciu przycisku na dole strony.
+            </p>
+        </div>
+
+        <!-- Pasek AI -->
+        <div class="ai-banner">
+            <div>
+                <span>🤖 Weryfikator toku rozumowania AI: </span>
+                <span id="ai-status-text" class="ai-status-indicator" style="color: #4ade80;">Sprawdzanie...</span>
+            </div>
+            <div style="font-size: 0.82rem; color: #94a3b8;">
+                Wykorzystywany do precyzyjnej oceny etapów w zadaniach otwartych wg CKE.
+            </div>
+        </div>
+
+        <!-- FORMULARZ ZADAŃ -->
+        <form id="exam-form">
+
+            <!-- ZADANIE 1 (ABCD - 1 pkt) -->
+            <div class="task-card" id="card-task-1">
+                <div class="task-header">
+                    <div class="task-title">
+                        <span>Zadanie 1.</span>
+                    </div>
+                    <span class="task-pts">0–1 pkt</span>
+                </div>
+                <div class="task-desc">
+                    Test z matematyki składa się z <strong>40 zadań</strong>. Na diagramie przedstawiono procentowy podział
+                    liczby zadań w teście na zadania z pięciu działów: algebry, planimetrii, stereometrii, arytmetyki, statystyki.
+                </div>
+
+                <div class="diagram-container">
+                    <!-- SVG Diagram kołowy CKE -->
+                    <svg width="220" height="220" viewBox="0 0 200 200">
+                        <circle r="90" cx="100" cy="100" fill="#1e293b" />
+                        <!-- Statystyka 20% (72 deg) -->
+                        <path d="M100,100 L100,10 A90,90 0 0,1 185.6,72.2 Z" fill="#6366f1" />
+                        <!-- Algebra 25% (90 deg) -->
+                        <path d="M100,100 L185.6,72.2 A90,90 0 0,1 163.6,163.6 Z" fill="#10b981" />
+                        <!-- Planimetria 15% (54 deg) -->
+                        <path d="M100,100 L163.6,163.6 A90,90 0 0,1 100,190 Z" fill="#64748b" />
+                        <!-- Stereometria 5% (18 deg) -->
+                        <path d="M100,100 L100,190 A90,90 0 0,1 72.2,185.6 Z" fill="#f59e0b" />
+                        <!-- Arytmetyka 35% (126 deg) -->
+                        <path d="M100,100 L72.2,185.6 A90,90 0 0,1 100,10 Z" fill="#38bdf8" />
+                        <circle r="35" cx="100" cy="100" fill="#0f172a" stroke="#334155" stroke-width="2" />
+                        <text x="100" y="96" fill="#cbd5e1" font-size="11" text-anchor="middle" font-weight="bold">Test</text>
+                        <text x="100" y="112" fill="#38bdf8" font-size="12" text-anchor="middle" font-weight="bold">40 zad.</text>
+                    </svg>
+                </div>
+                <div style="font-size: 0.85rem; color: #94a3b8; text-align: center; margin-top:-8px;">
+                    Statystyka: 20% | Algebra: 25% | Planimetria: 15% | Stereometria: 5% | Arytmetyka: ?
+                </div>
+
+                <div class="task-desc">
+                    <strong>Dokończ zdanie. Wybierz właściwą odpowiedź spośród podanych.</strong><br>
+                    Liczba zadań z arytmetyki w tym teście jest równa:
+                </div>
+                <div class="options-grid">
+                    <label class="option-label" onclick="selectRadio(this)">
+                        <input type="radio" name="task1" value="A">
+                        <span><strong>A.</strong> 14</span>
+                    </label>
+                    <label class="option-label" onclick="selectRadio(this)">
+                        <input type="radio" name="task1" value="B">
+                        <span><strong>B.</strong> 18</span>
+                    </label>
+                    <label class="option-label" onclick="selectRadio(this)">
+                        <input type="radio" name="task1" value="C">
+                        <span><strong>C.</strong> 26</span>
+                    </label>
+                    <label class="option-label" onclick="selectRadio(this)">
+                        <input type="radio" name="task1" value="D">
+                        <span><strong>D.</strong> 35</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- ZADANIE 2 (A/B oraz C/D - 1 pkt) -->
+            <div class="task-card" id="card-task-2">
+                <div class="task-header">
+                    <div class="task-title">
+                        <span>Zadanie 2.</span>
+                    </div>
+                    <span class="task-pts">0–1 pkt</span>
+                </div>
+                <div class="task-desc">
+                    Sumę \(S = 1 + 2 + 3 + \dots + n\) kolejnych liczb naturalnych od \(1\) do \(n\) można obliczyć ze wzoru:
+                    <div style="text-align: center; font-size: 1.15rem; margin: 8px 0; color: #c084fc;">
+                        \(S = \frac{1}{2}n(n + 1)\)
+                    </div>
+                    <strong>Uzupełnij zdania. Wybierz odpowiedź spośród oznaczonych literami A i B oraz odpowiedź spośród oznaczonych literami C i D.</strong>
+                </div>
+
+                <div style="margin-top: 8px; display: flex; flex-direction: column; gap: 14px;">
+                    <div>
+                        <div style="margin-bottom: 6px;">1. Suma stu kolejnych liczb naturalnych od 1 do 100 jest równa:</div>
+                        <div class="options-grid">
+                            <label class="option-label" onclick="selectRadio(this)">
+                                <input type="radio" name="task2_part1" value="A">
+                                <span><strong>A.</strong> 5001</span>
+                            </label>
+                            <label class="option-label" onclick="selectRadio(this)">
+                                <input type="radio" name="task2_part1" value="B">
+                                <span><strong>B.</strong> 5050</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div style="margin-bottom: 6px;">2. Wzór na sumę \(S\) po poprawnym przekształceniu ma postać:</div>
+                        <div class="options-grid">
+                            <label class="option-label" onclick="selectRadio(this)">
+                                <input type="radio" name="task2_part2" value="C">
+                                <span><strong>C.</strong> \(S = \frac{1}{2}n^2 + 1\)</span>
+                            </label>
+                            <label class="option-label" onclick="selectRadio(this)">
+                                <input type="radio" name="task2_part2" value="D">
+                                <span><strong>D.</strong> \(S = \frac{1}{2}n^2 + \frac{1}{2}n\)</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ZADANIE 3 (Prawda/Fałsz - 1 pkt) -->
+            <div class="task-card" id="card-task-3">
+                <div class="task-header">
+                    <div class="task-title">
+                        <span>Zadanie 3.</span>
+                    </div>
+                    <span class="task-pts">0–1 pkt</span>
+                </div>
+                <div class="task-desc">
+                    Dany jest trójkąt równoboczny o boku długości <strong>2 cm</strong>.<br>
+                    <strong>Oceń prawdziwość podanych zdań. Wybierz P, jeśli zdanie jest prawdziwe, albo F – jeśli jest fałszywe.</strong>
+                </div>
+
+                <table class="tf-table">
+                    <thead>
+                        <tr>
+                            <th>Zdanie</th>
+                            <th>P</th>
+                            <th>F</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Wysokość tego trójkąta jest równa \(\sqrt{3}\text{ cm}\).</td>
+                            <td><button type="button" class="tf-btn" onclick="setTF(3, 1, 'P', this)">P</button></td>
+                            <td><button type="button" class="tf-btn" onclick="setTF(3, 1, 'F', this)">F</button></td>
+                        </tr>
+                        <tr>
+                            <td>Pole tego trójkąta jest równe \(\sqrt{3}\text{ cm}^2\).</td>
+                            <td><button type="button" class="tf-btn" onclick="setTF(3, 2, 'P', this)">P</button></td>
+                            <td><button type="button" class="tf-btn" onclick="setTF(3, 2, 'F', this)">F</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- ZADANIE 4 (Otwarte 0-2 pkt - Origami) -->
+            <div class="task-card" id="card-task-4">
+                <div class="task-header">
+                    <div class="task-title">
+                        <span>Zadanie 4. (Otwarte)</span>
+                    </div>
+                    <span class="task-pts">0–2 pkt</span>
+                </div>
+                <div class="task-desc">
+                    Do wykonania origami Ela przygotowała łącznie <strong>160 kartek</strong>. Każda z tych kartek była w jednym z czterech kolorów:
+                    białym, niebieskim, zielonym lub czerwonym. Kartek białych było <strong>37</strong>. Kartek niebieskich było <strong>1,5 raza więcej</strong> niż czerwonych, a kartek zielonych było <strong>o 10 mniej</strong> niż czerwonych.<br><br>
+                    <strong>Oblicz, ile kartek niebieskich przygotowała Ela. Zapisz obliczenia.</strong>
+                </div>
+
+                <!-- Edytor toku rozumowania -->
+                <div>
+                    <div class="math-toolbar">
+                        <span style="font-size:0.8rem; color:#94a3b8; margin-right:4px;">Symbole:</span>
+                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task4_reasoning', '²')">x²</button>
+                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task4_reasoning', '√()')">√x</button>
+                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task4_reasoning', '·')">·</button>
+                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task4_reasoning', '/')">/</button>
+                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task4_reasoning', 'x')">x</button>
+                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task4_reasoning', '( )')">( )</button>
+                    </div>
+                    <textarea id="task4_reasoning" class="reasoning-textarea" placeholder="Wpisz pełny tok rozumowania, ułożone równanie i kolejne kroki obliczeń..." oninput="updateMathPreview('task4_reasoning', 'task4_preview')"></textarea>
+                    <div id="task4_preview" class="math-preview-box">
+                        <span style="color:#64748b; font-style:italic;">Podgląd zapisu matematycznego pojawi się tutaj...</span>
+                    </div>
+                </div>
+
+                <div class="final-answer-row">
+                    <label for="task4_answer" style="font-weight: 600;">Odpowiedź końcowa (liczba kartek niebieskich):</label>
+                    <input type="text" id="task4_answer" class="final-answer-input" placeholder="np. 57">
+                </div>
+            </div>
+
+            <!-- ZADANIE 5 (Otwarte 0-3 pkt - Prędkość i Uzasadnienie) -->
+            <div class="task-card" id="card-task-5">
+                <div class="task-header">
+                    <div class="task-title">
+                        <span>Zadanie 5. (Otwarte – Uzasadnienie)</span>
+                    </div>
+                    <span class="task-pts">0–3 pkt</span>
+                </div>
+                <div class="task-desc">
+                    Z Polanki do Dębiny prowadzi jedna droga przez Jodłowo i ma długość <strong>123 km</strong>.
+                    Droga z Polanki do Jodłowa ma długość <strong>48 km</strong> i samochód przejechał ją w czasie <strong>40 minut</strong>.
+                    Drogę z Jodłowa do Dębiny ten samochód pokonał z taką samą prędkością, jak drogę z Polanki do Jodłowa.<br><br>
+                    <strong>Uzasadnij, że przejazd tego samochodu z Jodłowa do Dębiny trwał dłużej niż godzinę. Zapisz obliczenia.</strong>
+                </div>
+
+                <div>
+                    <div class="math-toolbar">
+                        <span style="font-size:0.8rem; color:#94a3b8; margin-right:4px;">Symbole:</span>
+                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task5_reasoning', 'km/h')">km/h</button>
+                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task5_reasoning', '·')">·</button>
+                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task5_reasoning', '/')">/</button>
+                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task5_reasoning', '>')">&gt;</button>
+                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task5_reasoning', '<')">&lt;</button>
+                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task5_reasoning', '=')">=</button>
+                    </div>
+                    <textarea id="task5_reasoning" class="reasoning-textarea" placeholder="Zapisz obliczenie prędkości samochodu, długości drogi Jodłowo–Dębina, czasu przejazdu oraz sformułuj uzasadnienie..." oninput="updateMathPreview('task5_reasoning', 'task5_preview')"></textarea>
+                    <div id="task5_preview" class="math-preview-box">
+                        <span style="color:#64748b; font-style:italic;">Podgląd zapisu matematycznego pojawi się tutaj...</span>
+                    </div>
+                </div>
+
+                <div class="final-answer-row">
+                    <label for="task5_answer" style="font-weight: 600;">Wniosek końcowy / czas przejazdu:</label>
+                    <input type="text" id="task5_answer" class="final-answer-input" placeholder="np. 75 km > 72 km, czas = 75/72 h > 1 h">
+                </div>
+            </div>
+
+            <!-- ZADANIE 6 (Otwarte 0-3 pkt - Ogródek Pani Anny) -->
+            <div class="task-card" id="card-task-6">
+                <div class="task-header">
+                    <div class="task-title">
+                        <span>Zadanie 6. (Otwarte)</span>
+                    </div>
+                    <span class="task-pts">0–3 pkt</span>
+                </div>
+                <div class="task-desc">
+                    Ogródek pani Anny ma kształt <strong>trapezu</strong>, którego podstawy mają długości <strong>18 m</strong> i <strong>12 m</strong>, a wysokość jest równa <strong>9 m</strong>.
+                    Pani Anna chce zmienić swój ogródek w łąkę kwietną. Jedno opakowanie z nasionami wybrane przez panią Annę wystarcza na obsianie <strong>25 m²</strong> powierzchni i kosztuje <strong>23,80 zł</strong>.<br><br>
+                    <strong>Oblicz, ile złotych musi zapłacić pani Anna za najmniejszą liczbę opakowań z nasionami potrzebnych na obsianie całej powierzchni tego ogródka. Zapisz obliczenia.</strong>
+                </div>
+
+                <div class="diagram-container">
+                    <svg width="260" height="130" viewBox="0 0 260 130">
+                        <polygon points="50,20 170,20 220,110 20,110" fill="rgba(168, 85, 247, 0.15)" stroke="#c084fc" stroke-width="2" />
+                        <line x1="50" y1="20" x2="50" y2="110" stroke="#38bdf8" stroke-dasharray="4,4" stroke-width="1.5" />
+                        <text x="110" y="16" fill="#cbd5e1" font-size="12" text-anchor="middle">12 m</text>
+                        <text x="120" y="125" fill="#cbd5e1" font-size="12" text-anchor="middle">18 m</text>
+                        <text x="42" y="70" fill="#38bdf8" font-size="12" text-anchor="end">h = 9 m</text>
+                    </svg>
+                </div>
+
+                <div>
+                    <div class="math-toolbar">
+                        <span style="font-size:0.8rem; color:#94a3b8; margin-right:4px;">Symbole:</span>
+                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task6_reasoning', 'm²')">m²</button>
+                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task6_reasoning', 'zł')">zł</button>
+                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task6_reasoning', '·')">·</button>
+                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task6_reasoning', '/')">/</button>
+                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task6_reasoning', '( )')">( )</button>
+                    </div>
+                    <textarea id="task6_reasoning" class="reasoning-textarea" placeholder="Zapisz obliczenie pola powierzchni ogródka, liczby opakowań oraz łącznego kosztu..." oninput="updateMathPreview('task6_reasoning', 'task6_preview')"></textarea>
+                    <div id="task6_preview" class="math-preview-box">
+                        <span style="color:#64748b; font-style:italic;">Podgląd zapisu matematycznego pojawi się tutaj...</span>
+                    </div>
+                </div>
+
+                <div class="final-answer-row">
+                    <label for="task6_answer" style="font-weight: 600;">Koszt zakupu opakowań (w zł):</label>
+                    <input type="text" id="task6_answer" class="final-answer-input" placeholder="np. 142.80 zł">
+                </div>
+            </div>
+
+            <!-- Pasek akcji Zakończ egzamin -->
+            <div class="action-bar">
+                <div>
+                    <div style="font-weight: 700; font-size: 1.05rem;">Zakończyłeś rozwiązywanie zadań?</div>
+                    <div style="font-size: 0.85rem; color: #94a3b8;">
+                        AI zweryfikuje tok rozumowania zadań otwartych wg kryteriów CKE i wygeneruje raport PDF.
+                    </div>
+                </div>
+                <button type="button" id="submit-btn" class="btn-submit" onclick="gradeExam()">
+                    <span>🏁 Zakończ i sprawdź egzamin</span>
+                </button>
+            </div>
+        </form>
+
+        <!-- KONTENER WYNIKÓW I RAPORTU PDF -->
+        <div id="results-container">
+            <div class="score-summary-card">
+                <span class="cke-badge">WYNIK OFICJALNY</span>
+                <div class="score-big" id="final-score-display">0 / 11 pkt</div>
+                <div style="font-size: 1.25rem; font-weight: 700; color: #38bdf8;" id="final-percent-display">0%</div>
+                <p style="color: #cbd5e1; margin-top: 8px;" id="final-comment-display">
+                    Trwa analiza rozwiązań...
+                </p>
+                <div style="margin-top: 18px; display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">
+                    <button type="button" class="pdf-download-btn" onclick="generatePdfReport()">
+                        📄 Pobierz oficjalny raport PDF
+                    </button>
+                    <button type="button" class="nav-link" onclick="window.scrollTo({top:0, behavior:'smooth'})" style="cursor:pointer;">
+                        ⬆️ Przeglądaj odpowiedzi
+                    </button>
+                </div>
+            </div>
+
+            <h3 style="color:#f8fafc; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:8px;">
+                📊 Tabela Zbiorcza Wyników wg Zasad CKE
+            </h3>
+            <table class="summary-table">
+                <thead>
+                    <tr>
+                        <th>Zadanie</th>
+                        <th>Typ</th>
+                        <th>Twoja odpowiedź</th>
+                        <th>Punkty</th>
+                        <th>Ocena / Etap CKE</th>
+                    </tr>
+                </thead>
+                <tbody id="summary-table-body">
+                    <!-- Wiersze generowane dynamicznie -->
+                </tbody>
+            </table>
+
+            <h3 style="color:#f8fafc; margin-top: 12px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:8px;">
+                🔍 Szczegółowa ocena toku rozumowania &amp; Wzorcowe rozwiązania CKE
+            </h3>
+            <div id="detailed-feedback-list" style="display:flex; flex-direction:column; gap:16px;">
+                <!-- Karty szczegółowe zadań -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- STAN EGZAMINU ---
+        let examResults = {
+            totalPoints: 0,
+            maxPoints: 11,
+            tasks: []
+        };
+
+        const tfState = {
+            3: { 1: null, 2: null }
+        };
+
+        // --- ZARZĄDZANIE CZASEM (45 min) ---
+        let timeLeft = 45 * 60;
+        let timerInterval = setInterval(() => {
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                document.getElementById('exam-timer').innerText = "00:00 (Czas minął!)";
+                return;
+            }
+            timeLeft--;
+            const mins = String(Math.floor(timeLeft / 60)).padStart(2, '0');
+            const secs = String(timeLeft % 60).padStart(2, '0');
+            document.getElementById('exam-timer').innerText = `${mins}:${secs}`;
+        }, 1000);
+
+        // --- ZARZĄDZANIE KLUCZEM GEMINI API ---
+        function checkApiBanner() {
+            const key = localStorage.getItem('gemini_api_key');
+            const label = document.getElementById('ai-status-text');
+            if (key && key.trim().length > 10) {
+                label.style.color = '#4ade80';
+                label.innerText = '🟢 Klucz Gemini aktywny (model Flash)';
+            } else {
+                label.style.color = '#f87171';
+                label.innerText = '⚠️ Brak klucza (ocena lokalna)';
+            }
+        }
+
+        function toggleKeySettings() {
+            const current = localStorage.getItem('gemini_api_key') || '';
+            const entered = prompt('Wprowadź swój bezpłatny klucz API Google Gemini (AI Studio):', current);
+            if (entered !== null) {
+                const trimmed = entered.trim();
+                if (trimmed.length > 5) {
+                    localStorage.setItem('gemini_api_key', trimmed);
+                    alert('Klucz API Gemini został zapisany!');
+                } else if (trimmed.length === 0) {
+                    localStorage.removeItem('gemini_api_key');
+                    alert('Klucz API został usunięty.');
+                }
+                checkApiBanner();
+            }
+        }
+
+        // --- OBSŁUGA KLAWISZY I POLA TEKSTOWEGO ---
+        function selectRadio(labelEl) {
+            const radio = labelEl.querySelector('input[type="radio"]');
+            if (radio) {
+                radio.checked = true;
+                const name = radio.name;
+                document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
+                    const l = r.closest('.option-label');
+                    if (l) l.classList.remove('selected');
+                });
+                labelEl.classList.add('selected');
+            }
+        }
+
+        function setTF(taskNum, rowNum, val, btn) {
+            tfState[taskNum][rowNum] = val;
+            const parentRow = btn.closest('tr');
+            parentRow.querySelectorAll('.tf-btn').forEach(b => {
+                b.classList.remove('active-p', 'active-f');
+            });
+            if (val === 'P') btn.classList.add('active-p');
+            if (val === 'F') btn.classList.add('active-f');
+        }
+
+        function insertSymbol(textareaId, symbol) {
+            const ta = document.getElementById(textareaId);
+            if (!ta) return;
+            const start = ta.selectionStart;
+            const end = ta.selectionEnd;
+            const text = ta.value;
+
+            let insertText = symbol;
+            if (symbol === '√()') {
+                insertText = '√(';
+            }
+
+            ta.value = text.substring(0, start) + insertText + text.substring(end);
+            ta.focus();
+            const newPos = start + insertText.length;
+            ta.setSelectionRange(newPos, newPos);
+            updateMathPreview(textareaId, textareaId.replace('_reasoning', '_preview'));
+        }
+
+        function updateMathPreview(textareaId, previewId) {
+            const ta = document.getElementById(textareaId);
+            const prev = document.getElementById(previewId);
+            if (!ta || !prev) return;
+
+            const val = ta.value.trim();
+            if (!val) {
+                prev.innerHTML = '<span style="color:#64748b; font-style:italic;">Podgląd zapisu matematycznego pojawi się tutaj...</span>';
+                return;
+            }
+
+            // Przygotowanie do wyświetlania prostych formuł
+            let formatted = val
+                .replace(/√\((.*?)\)/g, '\\sqrt{$1}')
+                .replace(/√(\d+)/g, '\\sqrt{$1}')
+                .replace(/²/g, '^2')
+                .replace(/·/g, ' \\cdot ')
+                .replace(/m²/g, '\\text{ m}^2')
+                .replace(/cm²/g, '\\text{ cm}^2');
+
+            try {
+                if (window.katex) {
+                    prev.innerHTML = '';
+                    katex.render(formatted, prev, {
+                        throwOnError: false,
+                        displayMode: false
+                    });
+                } else {
+                    prev.innerText = val;
+                }
+            } catch (e) {
+                prev.innerText = val;
+            }
+        }
+
+        // --- SPRAWDZANIE ZADAŃ PRZEZ AI GEMINI ---
+        async function evaluateWithGemini(promptText) {
+            const key = localStorage.getItem('gemini_api_key');
+            if (!key || key.trim().length < 10) return null;
+
+            const model = localStorage.getItem('gemini_selected_model') || 'gemini-2.5-flash';
+            const cleanModel = model.includes('gemini') ? model : 'gemini-2.5-flash';
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${cleanModel}:generateContent?key=${key}`;
+
+            try {
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{ text: promptText }]
+                        }],
+                        generationConfig: {
+                            temperature: 0.1,
+                            responseMimeType: "application/json"
+                        }
+                    })
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                    if (text) {
+                        return JSON.parse(text);
+                    }
+                }
+            } catch (err) {
+                console.warn('Błąd wywołania Gemini API:', err);
+            }
+            return null;
+        }
+
+        // --- GŁÓWNA PROCEDURA OCENIANIA (PO KLIKNIĘCIU "ZAKOŃCZ") ---
+        async function gradeExam() {
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '⏳ Trwa sprawdzanie toku rozumowania przez AI...';
+
+            examResults.tasks = [];
+            let total = 0;
+
+            // 1. Zadanie 1 (ABCD, 1 pkt) - poprawna: A
+            const t1Input = document.querySelector('input[name="task1"]:checked');
+            const t1Val = t1Input ? t1Input.value : 'brak';
+            const t1Pts = (t1Val === 'A') ? 1 : 0;
+            total += t1Pts;
+            examResults.tasks.push({
+                nr: 1,
+                type: 'Zamknięte (ABCD)',
+                max: 1,
+                score: t1Pts,
+                userAns: t1Val,
+                correct: 'A (14 zadań)',
+                feedback: t1Pts === 1 ? 'Poprawna odpowiedź!' : 'Odpowiedź niepoprawna.',
+                solution: 'Arytmetyka stanowi: 100% - (20+25+15+5)% = 35% całości. Liczba zadań: 0,35 · 40 = 14.'
+            });
+
+            // 2. Zadanie 2 (A/B oraz C/D, 1 pkt) - poprawne: B oraz D
+            const t2p1 = document.querySelector('input[name="task2_part1"]:checked')?.value || 'brak';
+            const t2p2 = document.querySelector('input[name="task2_part2"]:checked')?.value || 'brak';
+            const t2Pts = (t2p1 === 'B' && t2p2 === 'D') ? 1 : 0;
+            total += t2Pts;
+            examResults.tasks.push({
+                nr: 2,
+                type: 'Zamknięte (A/B i C/D)',
+                max: 1,
+                score: t2Pts,
+                userAns: `Część 1: ${t2p1}, Część 2: ${t2p2}`,
+                correct: 'B (5050) oraz D (1/2 n² + 1/2 n)',
+                feedback: t2Pts === 1 ? 'Obie części poprawnie zaznaczone!' : 'Błędny lub niepełny wybór (wymagane obie poprawne odpowiedzi dla 1 pkt).',
+                solution: 'Dla n=100: S = 1/2 · 100 · 101 = 5050. Po przekształceniu: 1/2 n(n+1) = 1/2 n² + 1/2 n.'
+            });
+
+            // 3. Zadanie 3 (Prawda/Fałsz, 1 pkt) - poprawne: P, P
+            const t3r1 = tfState[3][1] || 'brak';
+            const t3r2 = tfState[3][2] || 'brak';
+            const t3Pts = (t3r1 === 'P' && t3r2 === 'P') ? 1 : 0;
+            total += t3Pts;
+            examResults.tasks.push({
+                nr: 3,
+                type: 'Zamknięte (Prawda/Fałsz)',
+                max: 1,
+                score: t3Pts,
+                userAns: `Zdanie 1: ${t3r1}, Zdanie 2: ${t3r2}`,
+                correct: 'Zdanie 1: P, Zdanie 2: P',
+                feedback: t3Pts === 1 ? 'Poprawnie oceniono oba zdania!' : 'Błędna lub niepełna ocena zdań.',
+                solution: 'Wysokość trójkąta równobocznego h = a√3/2 = 2√3/2 = √3 cm (Prawda). Pole P = a²√3/4 = 4√3/4 = √3 cm² (Prawda).'
+            });
+
+            // 4. Zadanie 4 (Otwarte 0-2 pkt, Origami) - poprawny wynik: 57
+            const t4Reason = document.getElementById('task4_reasoning').value.trim();
+            const t4Ans = document.getElementById('task4_answer').value.trim();
+            let t4Result = await gradeTask4(t4Reason, t4Ans);
+            total += t4Result.score;
+            examResults.tasks.push({
+                nr: 4,
+                type: 'Otwarte (0–2 pkt)',
+                max: 2,
+                score: t4Result.score,
+                userAns: `Wynik: ${t4Ans || 'brak'} | Zapis: ${t4Reason || 'brak'}`,
+                correct: '57 kartek niebieskich',
+                feedback: t4Result.feedback,
+                solution: 'Niech c oznacza liczbę kartek czerwonych: 37 + 1,5c + (c - 10) + c = 160 => 3,5c + 27 = 160 => 3,5c = 133 => c = 38. Liczba kartek niebieskich: 1,5 · 38 = 57.'
+            });
+
+            // 5. Zadanie 5 (Otwarte 0-3 pkt, Polanka-Dębina) - uzasadnienie
+            const t5Reason = document.getElementById('task5_reasoning').value.trim();
+            const t5Ans = document.getElementById('task5_answer').value.trim();
+            let t5Result = await gradeTask5(t5Reason, t5Ans);
+            total += t5Result.score;
+            examResults.tasks.push({
+                nr: 5,
+                type: 'Otwarte – Uzasadnienie (0–3 pkt)',
+                max: 3,
+                score: t5Result.score,
+                userAns: `Wniosek: ${t5Ans || 'brak'} | Zapis: ${t5Reason || 'brak'}`,
+                correct: 'v = 72 km/h, s = 75 km, czas = 75/72 h > 1 h',
+                feedback: t5Result.feedback,
+                solution: '1) Prędkość samochodu: v = 48 km / (2/3 h) = 72 km/h. 2) Droga Jodłowo–Dębina: 123 km - 48 km = 75 km. 3) Czas przejazdu t = 75/72 h > 1 h (lub: w 1 h przejedzie 72 km < 75 km).'
+            });
+
+            // 6. Zadanie 6 (Otwarte 0-3 pkt, Ogródek) - poprawny wynik: 142,80 zł
+            const t6Reason = document.getElementById('task6_reasoning').value.trim();
+            const t6Ans = document.getElementById('task6_answer').value.trim();
+            let t6Result = await gradeTask6(t6Reason, t6Ans);
+            total += t6Result.score;
+            examResults.tasks.push({
+                nr: 6,
+                type: 'Otwarte (0–3 pkt)',
+                max: 3,
+                score: t6Result.score,
+                userAns: `Koszt: ${t6Ans || 'brak'} | Zapis: ${t6Reason || 'brak'}`,
+                correct: '142,80 zł (6 opakowań po 23,80 zł)',
+                feedback: t6Result.feedback,
+                solution: '1) Pole trapezu: P = (18 + 12) · 9 / 2 = 135 m². 2) Liczba opakowań: 135 : 25 = 5,4 => należy kupić 6 opakowań. 3) Koszt: 6 · 23,80 zł = 142,80 zł.'
+            });
+
+            examResults.totalPoints = total;
+
+            // Wyświetlenie wyników na stronie
+            renderResultsUI();
+
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '✅ Egzamin oceniony! Zobacz podsumowanie poniżej';
+            document.getElementById('results-container').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // --- OCENA ZADANIA 4 Z ASYSTĄ AI / HEURYSTYKĄ ---
+        async function gradeTask4(reason, ans) {
+            const has57 = ans.includes('57') || reason.includes('57');
+            const has38 = reason.includes('38');
+            const hasEq = reason.includes('160') && (reason.includes('1,5') || reason.includes('1.5'));
+
+            // Sprawdzenie przez Gemini AI
+            const prompt = `Jesteś egzaminatorem CKE sprawdzającym egzamin ósmoklasisty z matematyki.
+Oceń rozwiązanie ucznia dla zadania:
+"Do origami przygotowano 160 kartek w 4 kolorach. Białych: 37. Niebieskich 1,5 raza więcej niż czerwonych, zielonych o 10 mniej niż czerwonych. Oblicz liczbę kartek niebieskich."
+Kryteria punktowania CKE (max 2 pkt):
+- 2 pkt: pełne rozwiązanie, poprawny wynik (57).
+- 1 pkt: istotny postęp (poprawne ułożenie równania z jedną niewiadomą LUB wyznaczenie liczby kartek czerwonych: 38).
+- 0 pkt: rozwiązanie błędne lub brak.
+
+Zapis ucznia:
+Tok rozumowania: "${reason}"
+Odpowiedź końcowa: "${ans}"
+
+Odpowiedz wyłącznie poprawnym obiektem JSON:
+{"score": liczba_0_1_lub_2, "stage": "pełne rozwiązanie / istotny postęp / błędne", "feedback": "krótkie uzasadnienie przyznanych punktów wg CKE"}`;
+
+            const aiResp = await evaluateWithGemini(prompt);
+            if (aiResp && typeof aiResp.score === 'number') {
+                return { score: aiResp.score, feedback: `🤖 Ocena AI (${aiResp.stage}): ${aiResp.feedback}` };
+            }
+
+            // Fallback lokalny
+            if (has57 && (has38 || hasEq)) {
+                return { score: 2, feedback: '2/2 pkt – Pełne rozwiązanie: poprawny wynik 57 oraz zapisany tok obliczeń.' };
+            } else if (has57) {
+                return { score: 2, feedback: '2/2 pkt – Podano poprawny wynik końcowy (57).' };
+            } else if (has38 || hasEq) {
+                return { score: 1, feedback: '1/2 pkt – Istotny postęp: ułożenie równania lub obliczenie liczby kartek czerwonych (38), brak dokończenia zadania.' };
+            }
+            return { score: 0, feedback: '0/2 pkt – Brak istotnego postępu lub brak obliczeń.' };
+        }
+
+        // --- OCENA ZADANIA 5 Z ASYSTĄ AI / HEURYSTYKĄ ---
+        async function gradeTask5(reason, ans) {
+            const fullText = (reason + " " + ans).toLowerCase();
+            const has72 = fullText.includes('72');
+            const has75 = fullText.includes('75');
+            const hasLogic = fullText.includes('>') || fullText.includes('dłużej') || fullText.includes('więcej') || fullText.includes('1 h') || fullText.includes('godzin');
+
+            const prompt = `Jesteś egzaminatorem CKE sprawdzającym egzamin ósmoklasisty z matematyki.
+Oceń rozwiązanie ucznia dla zadania:
+"Droga Polanka-Dębina przez Jodłowo ma 123 km. Polanka-Jodłowo: 48 km w 40 min. Prędkość na odcinku Jodłowo-Dębina jest taka sama. Uzasadnij, że przejazd Jodłowo-Dębina trwał dłużej niż godzinę."
+Kryteria punktowania CKE (max 3 pkt):
+- 3 pkt: pełne uzasadnienie (droga 75 km, prędkość 72 km/h oraz poprawne wykazanie, że czas > 1 h lub droga 75 km > 72 km).
+- 2 pkt: obliczenie prędkości (72 km/h) oraz drogi (75 km), ale brak końcowego wniosku lub błąd rachunkowy w obliczeniu czasu.
+- 1 pkt: obliczenie prędkości (72 km/h) LUB obliczenie drogi (75 km).
+- 0 pkt: rozwiązanie błędne lub brak.
+
+Zapis ucznia:
+Tok rozumowania: "${reason}"
+Odpowiedź / wniosek: "${ans}"
+
+Odpowiedz wyłącznie poprawnym obiektem JSON:
+{"score": liczba_0_1_2_lub_3, "stage": "pełne uzasadnienie / pokonane trudności / istotny postęp / błędne", "feedback": "krótkie uzasadnienie punktacji wg CKE"}`;
+
+            const aiResp = await evaluateWithGemini(prompt);
+            if (aiResp && typeof aiResp.score === 'number') {
+                return { score: aiResp.score, feedback: `🤖 Ocena AI (${aiResp.stage}): ${aiResp.feedback}` };
+            }
+
+            // Fallback lokalny
+            if (has72 && has75 && hasLogic) {
+                return { score: 3, feedback: '3/3 pkt – Pełne uzasadnienie: wyznaczono drogę (75 km), prędkość (72 km/h) oraz sformułowano prawidłowy wniosek.' };
+            } else if (has72 && has75) {
+                return { score: 2, feedback: '2/3 pkt – Pokonano zasadnicze trudności: obliczono drogę (75 km) i prędkość (72 km/h), brak pełnego wniosku.' };
+            } else if (has72 || has75) {
+                return { score: 1, feedback: '1/3 pkt – Dokonano istotnego postępu: obliczono prędkość lub pozostałą drogę.' };
+            }
+            return { score: 0, feedback: '0/3 pkt – Brak istotnego postępu.' };
+        }
+
+        // --- OCENA ZADANIA 6 Z ASYSTĄ AI / HEURYSTYKĄ ---
+        async function gradeTask6(reason, ans) {
+            const fullText = (reason + " " + ans).toLowerCase().replace(',', '.');
+            const has142 = fullText.includes('142.8') || fullText.includes('142.80') || fullText.includes('143');
+            const has135 = fullText.includes('135');
+            const has6 = fullText.includes('6 opak') || fullText.includes('6 szt') || fullText.includes(' 6 ');
+
+            const prompt = `Jesteś egzaminatorem CKE sprawdzającym egzamin ósmoklasisty z matematyki.
+Oceń rozwiązanie ucznia dla zadania:
+"Ogródek trapezu: podstawy 18 m i 12 m, wysokość 9 m. Jedno opakowanie wystarcza na 25 m2 i kosztuje 23,80 zł. Oblicz koszt najmniejszej liczby opakowań na cały ogródek."
+Kryteria punktowania CKE (max 3 pkt):
+- 3 pkt: pełne rozwiązanie, poprawny koszt (142,80 zł).
+- 2 pkt: obliczenie pola (135 m2) i wyznaczenie liczby opakowań (6), z błędem w końcowym mnożeniu LUB zaokrąglenie w dół do 5 opakowań i policzenie 119 zł.
+- 1 pkt: poprawne obliczenie pola trapezu (135 m2).
+- 0 pkt: rozwiązanie błędne lub brak.
+
+Zapis ucznia:
+Tok rozumowania: "${reason}"
+Odpowiedź / koszt: "${ans}"
+
+Odpowiedz wyłącznie poprawnym obiektem JSON:
+{"score": liczba_0_1_2_lub_3, "stage": "pełne rozwiązanie / pokonane trudności / istotny postęp / błędne", "feedback": "krótkie uzasadnienie punktacji wg CKE"}`;
+
+            const aiResp = await evaluateWithGemini(prompt);
+            if (aiResp && typeof aiResp.score === 'number') {
+                return { score: aiResp.score, feedback: `🤖 Ocena AI (${aiResp.stage}): ${aiResp.feedback}` };
+            }
+
+            // Fallback lokalny
+            if (has142) {
+                return { score: 3, feedback: '3/3 pkt – Pełne rozwiązanie: poprawny koszt (142,80 zł) oraz kompletne obliczenia.' };
+            } else if (has135 && has6) {
+                return { score: 2, feedback: '2/3 pkt – Pokonano trudności: obliczono pole (135 m²) i liczbę opakowań (6), błąd w koszcie.' };
+            } else if (has135) {
+                return { score: 1, feedback: '1/3 pkt – Istotny postęp: poprawne obliczenie pola powierzchni trapezu (135 m²).' };
+            }
+            return { score: 0, feedback: '0/3 pkt – Brak istotnego postępu.' };
+        }
+
+        // --- PREZENTACJA WYNIKÓW W UI ---
+        function renderResultsUI() {
+            const container = document.getElementById('results-container');
+            container.style.display = 'flex';
+
+            const percent = Math.round((examResults.totalPoints / examResults.maxPoints) * 100);
+            document.getElementById('final-score-display').innerText = `${examResults.totalPoints} / ${examResults.maxPoints} pkt`;
+            document.getElementById('final-percent-display').innerText = `${percent}%`;
+
+            let comment = "Świetny wynik! Twoje umiejętności matematyczne są na bardzo wysokim poziomie.";
+            if (percent < 50) {
+                comment = "Warto przećwiczyć trudniejsze zagadnienia i zapoznać się ze wzorcowymi rozwiązaniami poniżej.";
+            } else if (percent < 80) {
+                comment = "Dobry wynik! Przeanalizuj popełnione drobne błędy i kryteria CKE.";
+            }
+            document.getElementById('final-comment-display').innerText = comment;
+
+            // Tabela zbiorcza
+            const tbody = document.getElementById('summary-table-body');
+            tbody.innerHTML = '';
+
+            examResults.tasks.forEach(t => {
+                let badgeClass = 'status-badge-err';
+                let statusText = '0 pkt';
+                if (t.score === t.max) {
+                    badgeClass = 'status-badge-ok';
+                    statusText = 'Maksimum punktów';
+                } else if (t.score > 0) {
+                    badgeClass = 'status-badge-part';
+                    statusText = 'Częściowe punkty';
+                }
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>Zadanie ${t.nr}</strong></td>
+                    <td style="color:#94a3b8; font-size:0.85rem;">${t.type}</td>
+                    <td style="max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${t.userAns}">${t.userAns}</td>
+                    <td><strong>${t.score} / ${t.max}</strong></td>
+                    <td><span class="${badgeClass}">${statusText}</span></td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // Karty szczegółowe
+            const detailsDiv = document.getElementById('detailed-feedback-list');
+            detailsDiv.innerHTML = '';
+
+            examResults.tasks.forEach(t => {
+                const card = document.createElement('div');
+                card.style.background = 'rgba(15, 23, 42, 0.7)';
+                card.style.border = '1px solid rgba(255, 255, 255, 0.1)';
+                card.style.borderRadius = '12px';
+                card.style.padding = '16px';
+
+                let scoreColor = t.score === t.max ? '#4ade80' : (t.score > 0 ? '#fbbf24' : '#f87171');
+
+                card.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                        <h4 style="color:#ffffff;">Zadanie ${t.nr} (${t.type})</h4>
+                        <span style="font-weight:bold; color:${scoreColor}; font-size:1.05rem;">${t.score} / ${t.max} pkt</span>
+                    </div>
+                    <div style="font-size:0.92rem; color:#cbd5e1; margin-bottom:6px;">
+                        <strong>Twoja odpowiedź:</strong> ${t.userAns}
+                    </div>
+                    <div style="font-size:0.92rem; color:#a855f7; margin-bottom:8px;">
+                        <strong>Komentarz egzaminatora CKE:</strong> ${t.feedback}
+                    </div>
+                    ${t.score < t.max ? `
+                        <div class="solution-box">
+                            <strong>Wzorcowe rozwiązanie CKE i poprawna odpowiedź:</strong><br>
+                            ${t.solution}<br>
+                            <em>Poprawna odpowiedź: ${t.correct}</em>
+                        </div>
+                    ` : ''}
+                `;
+                detailsDiv.appendChild(card);
+            });
+        }
+
+        // --- GENEROWANIE RAPORTU PDF ---
+        function generatePdfReport() {
+            if (!window.jspdf) {
+                alert('Biblioteka PDF ładuje się, spróbuj za chwilę...');
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a4'
+            });
+
+            const percent = Math.round((examResults.totalPoints / examResults.maxPoints) * 100);
+            const dateStr = new Date().toLocaleDateString('pl-PL');
+
+            // Nagłówek raportu
+            doc.setFontSize(18);
+            doc.text('OFICJALNY RAPORT Z EGZAMINU OSMOKLASISTY', 14, 20);
+            doc.setFontSize(11);
+            doc.setTextColor(100);
+            doc.text(`Przedmiot: Matematyka (Wersja skrocona 2025) | Data: ${dateStr}`, 14, 27);
+            doc.text(`Wynik koncowy: ${examResults.totalPoints} / ${examResults.maxPoints} pkt (${percent}%)`, 14, 33);
+            doc.setDrawColor(168, 85, 247);
+            doc.setLineWidth(0.8);
+            doc.line(14, 36, 196, 36);
+
+            // Tabela zbiorcza punktów
+            const tableRows = examResults.tasks.map(t => [
+                `Zadanie ${t.nr}`,
+                t.type,
+                `${t.score} / ${t.max}`,
+                t.score === t.max ? 'Maksimum' : (t.score > 0 ? 'Czesciowe' : '0 pkt')
+            ]);
+
+            doc.autoTable({
+                startY: 42,
+                head: [['Zadanie', 'Typ zadania', 'Punkty', 'Status']],
+                body: tableRows,
+                theme: 'striped',
+                headStyles: { fillColor: [88, 28, 135] },
+                styles: { fontSize: 9 }
+            });
+
+            let finalY = doc.lastAutoTable.finalY + 10;
+
+            // Szczegółowe omówienie zadań
+            doc.setFontSize(13);
+            doc.setTextColor(0);
+            doc.text('Szczegolowa ocena i wzorcowe rozwiazania:', 14, finalY);
+            finalY += 6;
+
+            examResults.tasks.forEach(t => {
+                if (finalY > 260) {
+                    doc.addPage();
+                    finalY = 20;
+                }
+
+                doc.setFontSize(10);
+                doc.setFont(undefined, 'bold');
+                doc.text(`Zadanie ${t.nr} - Wynik: ${t.score} / ${t.max} pkt`, 14, finalY);
+                finalY += 5;
+
+                doc.setFont(undefined, 'normal');
+                doc.setFontSize(9);
+                const feedbackLines = doc.splitTextToSize(`Ocena: ${t.feedback}`, 180);
+                doc.text(feedbackLines, 14, finalY);
+                finalY += feedbackLines.length * 4.5;
+
+                if (t.score < t.max) {
+                    doc.setTextColor(180, 0, 0);
+                    const solLines = doc.splitTextToSize(`Wzorzec CKE: ${t.solution}`, 180);
+                    doc.text(solLines, 14, finalY);
+                    finalY += solLines.length * 4.5;
+                    doc.setTextColor(0);
+                }
+                finalY += 3;
+            });
+
+            doc.save(`Raport_E8_Matematyka_${dateStr.replace(/\./g, '_')}.pdf`);
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            checkApiBanner();
+        });
+    </script>
+</body>
+
+</html>
