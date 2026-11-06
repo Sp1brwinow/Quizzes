@@ -647,6 +647,74 @@
         .solution-box strong {
             color: #38bdf8;
         }
+
+        /* --- STYLIZACJA WYDRUKU I RAPORTU PDF DLA PRZEGLĄDARKI --- */
+        @media print {
+            body {
+                background: #ffffff !important;
+                color: #000000 !important;
+                padding: 0 !important;
+            }
+            .top-bar, .exam-header, .ai-banner, #exam-form, .action-bar, .pdf-download-btn, .nav-link, button {
+                display: none !important;
+            }
+            #results-container {
+                display: block !important;
+                background: #ffffff !important;
+                border: none !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+                color: #000000 !important;
+            }
+            .score-summary-card {
+                background: #f8fafc !important;
+                border: 2px solid #7c3aed !important;
+                color: #000000 !important;
+                padding: 16px !important;
+                margin-bottom: 20px !important;
+            }
+            .score-big {
+                color: #7c3aed !important;
+                font-size: 2.4rem !important;
+            }
+            .summary-table {
+                color: #000000 !important;
+                page-break-inside: avoid;
+                margin-bottom: 20px !important;
+            }
+            .summary-table th {
+                background: #f1f5f9 !important;
+                color: #000000 !important;
+                border: 1px solid #cbd5e1 !important;
+            }
+            .summary-table td {
+                border: 1px solid #cbd5e1 !important;
+                color: #000000 !important;
+            }
+            .solution-box {
+                background: #f8fafc !important;
+                border-left: 4px solid #7c3aed !important;
+                color: #000000 !important;
+            }
+            #detailed-feedback-list > div {
+                background: #ffffff !important;
+                border: 1px solid #cbd5e1 !important;
+                color: #000000 !important;
+                page-break-inside: avoid;
+                margin-bottom: 14px !important;
+                padding: 14px !important;
+            }
+            #detailed-feedback-list h4 {
+                color: #000000 !important;
+            }
+            #detailed-feedback-list div {
+                color: #1e293b !important;
+            }
+            @page {
+                size: A4 portrait;
+                margin: 12mm 15mm;
+            }
+        }
     </style>
 </head>
 
@@ -984,8 +1052,11 @@
                     Trwa analiza rozwiązań...
                 </p>
                 <div style="margin-top: 18px; display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">
-                    <button type="button" class="pdf-download-btn" onclick="generatePdfReport()">
-                        📄 Pobierz oficjalny raport PDF
+                    <button type="button" class="pdf-download-btn" onclick="generatePdfReport()" id="pdf-btn">
+                        📄 Pobierz plik PDF (.pdf)
+                    </button>
+                    <button type="button" class="pdf-download-btn" onclick="window.print()" style="background: linear-gradient(135deg, #9333ea, #7c3aed);">
+                        🖨️ Zapisz jako PDF / Drukuj
                     </button>
                     <button type="button" class="nav-link" onclick="window.scrollTo({top:0, behavior:'smooth'})" style="cursor:pointer;">
                         ⬆️ Przeglądaj odpowiedzi
@@ -1554,11 +1625,33 @@ Odpowiedz wyłącznie poprawnym obiektem JSON:
             });
         }
 
+        // --- FUNKCJE POMOCNICZE DLA PDF (POLSKIE ZNAKI & MARGINESY) ---
+        function transliteratePolish(str) {
+            if (!str) return '';
+            return str
+                .replace(/ą/g, 'a').replace(/Ą/g, 'A')
+                .replace(/ć/g, 'c').replace(/Ć/g, 'C')
+                .replace(/ę/g, 'e').replace(/Ę/g, 'E')
+                .replace(/ł/g, 'l').replace(/Ł/g, 'L')
+                .replace(/ń/g, 'n').replace(/Ń/g, 'N')
+                .replace(/ó/g, 'o').replace(/Ó/g, 'O')
+                .replace(/ś/g, 's').replace(/Ś/g, 'S')
+                .replace(/ź/g, 'z').replace(/Ź/g, 'Z')
+                .replace(/ż/g, 'z').replace(/Ż/g, 'Z');
+        }
+
         // --- GENEROWANIE RAPORTU PDF ---
-        function generatePdfReport() {
+        async function generatePdfReport() {
             if (!window.jspdf) {
                 alert('Biblioteka PDF ładuje się, spróbuj za chwilę...');
                 return;
+            }
+
+            const btn = document.getElementById('pdf-btn');
+            const originalText = btn ? btn.innerHTML : '';
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '⏳ Generowanie raportu PDF...';
             }
 
             const { jsPDF } = window.jspdf;
@@ -1568,73 +1661,146 @@ Odpowiedz wyłącznie poprawnym obiektem JSON:
                 format: 'a4'
             });
 
+            // Próba załadowania czcionki Roboto wspierającej polskie znaki diakrytyczne
+            let fontLoaded = false;
+            try {
+                const fontUrl = 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Regular.ttf';
+                const fontRes = await fetch(fontUrl);
+                if (fontRes.ok) {
+                    const buf = await fontRes.arrayBuffer();
+                    const bytes = new Uint8Array(buf);
+                    let binary = '';
+                    const chunk = 8192;
+                    for (let i = 0; i < bytes.length; i += chunk) {
+                        binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
+                    }
+                    const base64 = window.btoa(binary);
+                    doc.addFileToVFS('Roboto-Regular.ttf', base64);
+                    doc.addFont('Roboto-Regular.ttf', 'Roboto', 'normal');
+                    doc.setFont('Roboto');
+                    fontLoaded = true;
+                }
+            } catch (err) {
+                console.warn('Ładowanie czcionki Roboto z CDN nie powiodło się, używam bezpiecznego kodowania:', err);
+            }
+
+            const sanitize = (text) => {
+                if (!text) return '';
+                return fontLoaded ? text : transliteratePolish(text);
+            };
+
             const percent = Math.round((examResults.totalPoints / examResults.maxPoints) * 100);
             const dateStr = new Date().toLocaleDateString('pl-PL');
 
-            // Nagłówek raportu
-            doc.setFontSize(18);
-            doc.text('OFICJALNY RAPORT Z EGZAMINU OSMOKLASISTY', 14, 20);
-            doc.setFontSize(11);
-            doc.setTextColor(100);
-            doc.text(`Przedmiot: Matematyka (Wersja skrocona 2025) | Data: ${dateStr}`, 14, 27);
-            doc.text(`Wynik koncowy: ${examResults.totalPoints} / ${examResults.maxPoints} pkt (${percent}%)`, 14, 33);
-            doc.setDrawColor(168, 85, 247);
-            doc.setLineWidth(0.8);
-            doc.line(14, 36, 196, 36);
+            // 1. Nagłówek raportu
+            doc.setFontSize(16);
+            if (!fontLoaded) doc.setFont(undefined, 'bold');
+            doc.text(sanitize('OFICJALNY RAPORT Z EGZAMINU ÓSMOKLASISTY'), 14, 18);
 
-            // Tabela zbiorcza punktów
+            doc.setFontSize(10);
+            if (!fontLoaded) doc.setFont(undefined, 'normal');
+            doc.setTextColor(80);
+            doc.text(sanitize(`Przedmiot: Matematyka (Wersja skrócona 2025)  |  Data: ${dateStr}`), 14, 25);
+            doc.text(sanitize(`Wynik sumaryczny: ${examResults.totalPoints} / ${examResults.maxPoints} pkt (${percent}%)`), 14, 31);
+
+            doc.setDrawColor(147, 51, 234);
+            doc.setLineWidth(0.8);
+            doc.line(14, 34, 196, 34);
+
+            // 2. Tabela 1: Zbiorcze podsumowanie zadań (AutoTable dba o marginesy)
             const tableRows = examResults.tasks.map(t => [
-                `Zadanie ${t.nr}`,
-                t.type,
+                sanitize(`Zadanie ${t.nr}`),
+                sanitize(t.type),
                 `${t.score} / ${t.max}`,
-                t.score === t.max ? 'Maksimum' : (t.score > 0 ? 'Czesciowe' : '0 pkt')
+                sanitize(t.score === t.max ? 'Maksimum punktów' : (t.score > 0 ? 'Częściowe punkty' : '0 pkt'))
             ]);
 
             doc.autoTable({
-                startY: 42,
-                head: [['Zadanie', 'Typ zadania', 'Punkty', 'Status']],
+                startY: 38,
+                head: [[sanitize('Zadanie'), sanitize('Typ zadania'), sanitize('Punkty'), sanitize('Ocena etapu')]],
                 body: tableRows,
                 theme: 'striped',
-                headStyles: { fillColor: [88, 28, 135] },
-                styles: { fontSize: 9 }
+                headStyles: { 
+                    fillColor: [88, 28, 135], 
+                    textColor: 255, 
+                    font: fontLoaded ? 'Roboto' : 'helvetica',
+                    fontStyle: 'bold' 
+                },
+                styles: { 
+                    font: fontLoaded ? 'Roboto' : 'helvetica',
+                    fontSize: 9, 
+                    cellPadding: 3, 
+                    overflow: 'linebreak' 
+                },
+                margin: { left: 14, right: 14 }
             });
 
-            let finalY = doc.lastAutoTable.finalY + 10;
+            // 3. Tabela 2: Szczegółowa ocena toku rozumowania i wzorcowe rozwiązania
+            // Używamy AutoTable, co GWARANTUJE, że żaden tekst ani linia nie wyjdzie poza stronę!
+            const detailedRows = examResults.tasks.map(t => {
+                let textBlock = `${sanitize('Twoja odpowiedź / tok:')}
+${sanitize(t.userAns)}
 
-            // Szczegółowe omówienie zadań
-            doc.setFontSize(13);
-            doc.setTextColor(0);
-            doc.text('Szczegolowa ocena i wzorcowe rozwiazania:', 14, finalY);
-            finalY += 6;
-
-            examResults.tasks.forEach(t => {
-                if (finalY > 260) {
-                    doc.addPage();
-                    finalY = 20;
-                }
-
-                doc.setFontSize(10);
-                doc.setFont(undefined, 'bold');
-                doc.text(`Zadanie ${t.nr} - Wynik: ${t.score} / ${t.max} pkt`, 14, finalY);
-                finalY += 5;
-
-                doc.setFont(undefined, 'normal');
-                doc.setFontSize(9);
-                const feedbackLines = doc.splitTextToSize(`Ocena: ${t.feedback}`, 180);
-                doc.text(feedbackLines, 14, finalY);
-                finalY += feedbackLines.length * 4.5;
-
+${sanitize('Komentarz egzaminatora CKE:')}
+${sanitize(t.feedback)}`;
                 if (t.score < t.max) {
-                    doc.setTextColor(180, 0, 0);
-                    const solLines = doc.splitTextToSize(`Wzorzec CKE: ${t.solution}`, 180);
-                    doc.text(solLines, 14, finalY);
-                    finalY += solLines.length * 4.5;
-                    doc.setTextColor(0);
+                    textBlock += `
+
+${sanitize('Wzorcowe rozwiązanie CKE:')}
+${sanitize(t.solution)}
+${sanitize('Poprawny wynik:')} ${sanitize(t.correct)}`;
                 }
-                finalY += 3;
+                return [
+                    sanitize(`Zadanie ${t.nr}
+(${t.type})`),
+                    `${t.score} / ${t.max} pkt`,
+                    textBlock
+                ];
+            });
+
+            doc.autoTable({
+                startY: doc.lastAutoTable.finalY + 8,
+                head: [[sanitize('Zadanie'), sanitize('Wynik'), sanitize('Szczegółowa weryfikacja toku rozumowania & Wzorzec CKE')]],
+                body: detailedRows,
+                theme: 'grid',
+                headStyles: { 
+                    fillColor: [59, 130, 246], 
+                    textColor: 255, 
+                    font: fontLoaded ? 'Roboto' : 'helvetica',
+                    fontStyle: 'bold' 
+                },
+                columnStyles: {
+                    0: { cellWidth: 32, fontStyle: 'bold' },
+                    1: { cellWidth: 24, fontStyle: 'bold', halign: 'center' },
+                    2: { cellWidth: 'auto' }
+                },
+                styles: { 
+                    font: fontLoaded ? 'Roboto' : 'helvetica',
+                    fontSize: 8.5, 
+                    cellPadding: 4, 
+                    overflow: 'linebreak' 
+                },
+                margin: { left: 14, right: 14, top: 16, bottom: 16 },
+                didDrawPage: (data) => {
+                    // Stopka ze stronami na każdej wygenerowanej karcie A4
+                    const totalPages = doc.internal.getNumberOfPages();
+                    doc.setFontSize(8);
+                    doc.setTextColor(140);
+                    doc.text(
+                        sanitize(`Strona ${data.pageNumber}  |  Egzamin Ósmoklasisty CKE`), 
+                        196, 
+                        290, 
+                        { align: 'right' }
+                    );
+                }
             });
 
             doc.save(`Raport_E8_Matematyka_${dateStr.replace(/\./g, '_')}.pdf`);
+
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
         }
 
         window.addEventListener('DOMContentLoaded', () => {
