@@ -23,6 +23,8 @@
     <!-- jsPDF do generowania raportu PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    <!-- html2canvas do renderowania wzorów KaTeX jako grafika w PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
         :root {
@@ -710,6 +712,18 @@
             #detailed-feedback-list div {
                 color: #1e293b !important;
             }
+            
+            .math-preview-box {
+                background: #f8fafc !important;
+                border: 1px solid #cbd5e1 !important;
+                color: #0f172a !important;
+            }
+            .math-preview-line {
+                color: #0f172a !important;
+            }
+            .katex {
+                color: #0f172a !important;
+            }
             @page {
                 size: A4 portrait;
                 margin: 12mm 15mm;
@@ -1189,6 +1203,81 @@
             updateMathPreview(textareaId, textareaId.replace('_reasoning', '_preview'));
         }
 
+        function escapeHtml(str) {
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+        }
+
+        function formatMathLineToLatex(trimmed) {
+            let formatted = trimmed
+                .replace(/½/g, '1/2')
+                .replace(/¼/g, '1/4')
+                .replace(/¾/g, '3/4')
+                .replace(/km\/h/g, '___0___')
+                .replace(/m²/g, '___1___')
+                .replace(/cm²/g, '___2___')
+                .replace(/\bcm\b/g, '___3___')
+                .replace(/\bzł\b/g, '___4___')
+                .replace(/\bmin\b/g, '___5___')
+                .replace(/·|\*/g, ' \\cdot ')
+                .replace(/√\(([^)]+)\)/g, '\\sqrt{$1}')
+                .replace(/√([a-zA-Z0-9]+)/g, '\\sqrt{$1}')
+                .replace(/²/g, '^2')
+                .replace(/³/g, '^3');
+
+            // Liczby mieszane i ułamki (w tym wyrażenia w nawiasach np. (12+10)/(x+1) oraz 2/3c)
+            formatted = formatted
+                .replace(/(\d+)\s+(\d+)\/(\d+)/g, '$1\\frac{$2}{$3}')
+                .replace(/(\d+)\s+i\s+(\d+)\/(\d+)/g, '$1\\frac{$2}{$3}')
+                .replace(/\(([^()]+)\)\s*\/\s*\(([^()]+)\)/g, '\\frac{$1}{$2}')
+                .replace(/\(([^()]+)\)\s*\/\s*([a-zA-Z0-9]+)/g, '\\frac{$1}{$2}')
+                .replace(/([a-zA-Z0-9]+)\s*\/\s*\(([^()]+)\)/g, '\\frac{$1}{$2}')
+                .replace(/(?<![a-zA-Z0-9_\/])(\d+)\/(\d+)(?![0-9_\/])/g, '\\frac{$1}{$2}');
+
+            // Zabezpieczenie słów wieloliterowych (np. "pole trapezu =", "czas ="), aby spacje nie znikały
+            formatted = formatted.replace(/\b(?<!\\)[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ]{2,}(?:\s+[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ]+)*\b/g, match => {
+                if (['sqrt', 'cdot', 'frac', 'text'].includes(match)) return match;
+                return `\\text{${match}}`;
+            });
+
+            // Formatowanie przecinka dziesiętnego (np. 1,5 -> 1{,}5 dla KaTeX)
+            formatted = formatted.replace(/(\d+),(\d+)/g, '$1{,}$2');
+
+            return formatted
+                .replace(/___0___/g, '\\text{ km/h}')
+                .replace(/___1___/g, '\\text{ m}^2')
+                .replace(/___2___/g, '\\text{ cm}^2')
+                .replace(/___3___/g, '\\text{ cm}')
+                .replace(/___4___/g, '\\text{ zł}')
+                .replace(/___5___/g, '\\text{ min}');
+        }
+
+        function renderMathLinesToHtml(text, isLightTheme = false) {
+            const textColor = isLightTheme ? '#0f172a' : '#e2e8f0';
+            const mathColor = isLightTheme ? '#1e3a8a' : '#38bdf8';
+
+            return (text || '').split('\n').map(line => {
+                const tr = line.trim();
+                if (!tr) return '<div class="math-preview-line" style="min-height:14px;">&nbsp;</div>';
+
+                const hasMathOperators = /[=+\-*/·^√<>²³½¼¾]/.test(tr);
+                if (!hasMathOperators) {
+                    return `<div class="math-preview-line" style="color:${textColor}; font-style:normal; font-weight:500; font-size:0.96rem;">${escapeHtml(tr)}</div>`;
+                }
+
+                const latex = formatMathLineToLatex(tr);
+                if (window.katex) {
+                    try {
+                        const rendered = katex.renderToString(latex, { throwOnError: false, displayMode: false });
+                        return `<div class="math-preview-line" style="color:${mathColor};">${rendered}</div>`;
+                    } catch (e) {}
+                }
+                return `<div class="math-preview-line" style="color:${mathColor};">${escapeHtml(tr.replace(/\*/g, ' · '))}</div>`;
+            }).join('');
+        }
+
         function updateMathPreview(textareaId, previewId) {
             const ta = document.getElementById(textareaId);
             const prev = document.getElementById(previewId);
@@ -1199,86 +1288,71 @@
                 prev.innerHTML = '<span style="color:#64748b; font-style:italic;">Podgląd zapisu matematycznego pojawi się tutaj...</span>';
                 return;
             }
+            prev.innerHTML = renderMathLinesToHtml(val, false);
+        }
 
-            // Podział tekstu na linie - każda linijka to osobny wiersz
-            const lines = val.split('\n');
-            prev.innerHTML = '';
-
-            lines.forEach(line => {
-                const lineDiv = document.createElement('div');
-                lineDiv.className = 'math-preview-line';
-
-                const trimmed = line.trim();
-                if (!trimmed) {
-                    lineDiv.innerHTML = '&nbsp;';
-                    prev.appendChild(lineDiv);
-                    return;
+        async function renderMathBoxToImage(reasoningText) {
+            if (!window.html2canvas || !reasoningText || reasoningText === 'brak zapisu obliczeń') {
+                return null;
+            }
+            try {
+                if (document.fonts && document.fonts.ready) {
+                    await document.fonts.ready;
                 }
+                const host = document.createElement('div');
+                host.style.cssText = [
+                    'position: fixed',
+                    'left: -10000px',
+                    'top: 0',
+                    'width: 560px',
+                    'background: #f8fafc',
+                    'color: #0f172a',
+                    'padding: 12px 16px',
+                    'border: 1px solid #cbd5e1',
+                    'border-radius: 8px',
+                    'font-family: "Segoe UI", system-ui, -apple-system, sans-serif',
+                    'font-size: 15px',
+                    'line-height: 1.65',
+                    'display: flex',
+                    'flex-direction: column',
+                    'gap: 6px',
+                    'z-index: -1'
+                ].join(';');
 
-                // 1. Sprawdzamy czy linia to zwykły tekst (np. "pole trapezu", "obliczenia", "odpowiedź:")
-                // Jeśli w linii nie ma operatorów arytmetycznych ani porównań, wyświetlamy jako czysty tekst z zachowaniem spacji!
-                const hasMathOperators = /[=+\-*/·^√<>]/.test(trimmed);
-                if (!hasMathOperators) {
-                    lineDiv.textContent = trimmed;
-                    lineDiv.style.color = '#e2e8f0';
-                    lineDiv.style.fontStyle = 'normal';
-                    lineDiv.style.fontWeight = '500';
-                    lineDiv.style.fontSize = '0.98rem';
-                    prev.appendChild(lineDiv);
-                    return;
-                }
+                host.innerHTML = renderMathLinesToHtml(reasoningText, true);
 
-                // 2. Linia zawiera wzory/obliczenia - przygotowujemy do renderowania
-                let formatted = trimmed
-                    .replace(/km\/h/g, '\\text{ km/h}')
-                    .replace(/m²/g, '\\text{ m}^2')
-                    .replace(/cm²/g, '\\text{ cm}^2')
-                    .replace(/\bcm\b/g, '\\text{ cm}')
-                    .replace(/\bzł\b/g, '\\text{ zł}')
-                    .replace(/\bmin\b/g, '\\text{ min}')
-                    .replace(/·|\*/g, ' \\cdot ')
-                    .replace(/√\((.*?)\)/g, '\\sqrt{$1}')
-                    .replace(/√(\d+)/g, '\\sqrt{$1}')
-                    .replace(/²/g, '^2')
-                    .replace(/³/g, '^3');
-
-                // Obsługa ułamków i liczb mieszanych:
-                // Liczby mieszane ze spacją: np. 5 1/2 -> 5\frac{1}{2}
-                formatted = formatted.replace(/(\d+)\s+(\d+)\/(\d+)/g, '$1\\frac{$2}{$3}');
-                // Liczby mieszane ze spójnikiem 'i': np. 5 i 1/2 -> 5\frac{1}{2}
-                formatted = formatted.replace(/(\d+)\s+i\s+(\d+)\/(\d+)/g, '$1\\frac{$2}{$3}');
-                // Ułamki zwykłe: np. 1/2 -> \frac{1}{2}, 75/72 -> \frac{75}{72}
-                formatted = formatted.replace(/(?<![a-zA-Z0-9_\/])(\d+)\/(\d+)(?![a-zA-Z0-9_\/])/g, '\\frac{$1}{$2}');
-
-                // Zabezpieczenie słów wieloliterowych (np. "pole trapezu =", "czas ="), aby litery nie zlewały się w jedno słowo
-                formatted = formatted.replace(/\b(?<!\\)[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ]{2,}(?:\s+[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ]+)*\b/g, match => {
-                    if (['sqrt', 'cdot', 'frac', 'text'].includes(match)) return match;
-                    return `\\text{${match}}`;
+                host.querySelectorAll('.math-preview-line').forEach(el => {
+                    el.style.whiteSpace = 'normal';
+                    el.style.wordBreak = 'break-word';
+                    el.style.margin = '0';
+                });
+                host.querySelectorAll('.katex').forEach(el => {
+                    el.style.color = '#1e3a8a';
+                    el.style.fontSize = '1.08em';
                 });
 
-                // Formatowanie przecinka dziesiętnego (np. 1,5 -> 1{,}5 dla KaTeX)
-                formatted = formatted.replace(/(\d+),(\d+)/g, '$1{,}$2');
+                document.body.appendChild(host);
+                await new Promise(r => requestAnimationFrame(() => setTimeout(r, 40)));
 
-                let rendered = false;
-                if (window.katex) {
-                    try {
-                        katex.render(formatted, lineDiv, {
-                            throwOnError: false,
-                            displayMode: false
-                        });
-                        rendered = true;
-                    } catch (e) {
-                        rendered = false;
-                    }
-                }
+                const canvas = await window.html2canvas(host, {
+                    scale: 2,
+                    backgroundColor: '#f8fafc',
+                    useCORS: true,
+                    logging: false
+                });
+                document.body.removeChild(host);
 
-                if (!rendered) {
-                    lineDiv.textContent = trimmed.replace(/\*/g, ' · ');
-                }
-
-                prev.appendChild(lineDiv);
-            });
+                return {
+                    dataUrl: canvas.toDataURL('image/png'),
+                    widthPx: canvas.width,
+                    heightPx: canvas.height
+                };
+            } catch (err) {
+                console.warn('Nie udało się wyrenderować grafiki KaTeX do PDF:', err);
+                return null;
+            }
         }
+
         async function evaluateWithGemini(promptText) {
             const key = localStorage.getItem('gemini_api_key');
             if (!key || key.trim().length < 10) return null;
@@ -1379,10 +1453,13 @@
             total += t4Result.score;
             examResults.tasks.push({
                 nr: 4,
+                isOpen: true,
                 type: 'Otwarte (0–2 pkt)',
                 max: 2,
                 score: t4Result.score,
-                userAns: `Wynik: ${t4Ans || 'brak'} | Zapis: ${t4Reason || 'brak'}`,
+                finalAns: t4Ans || 'brak',
+                reasoning: t4Reason || 'brak zapisu obliczeń',
+                userAns: t4Ans ? `${t4Ans} (zapis: ${t4Reason.replace(/\n/g, '; ')})` : 'brak',
                 correct: '57 kartek niebieskich',
                 feedback: t4Result.feedback,
                 solution: 'Niech c oznacza liczbę kartek czerwonych: 37 + 1,5c + (c - 10) + c = 160 => 3,5c + 27 = 160 => 3,5c = 133 => c = 38. Liczba kartek niebieskich: 1,5 · 38 = 57.'
@@ -1395,10 +1472,13 @@
             total += t5Result.score;
             examResults.tasks.push({
                 nr: 5,
+                isOpen: true,
                 type: 'Otwarte – Uzasadnienie (0–3 pkt)',
                 max: 3,
                 score: t5Result.score,
-                userAns: `Wniosek: ${t5Ans || 'brak'} | Zapis: ${t5Reason || 'brak'}`,
+                finalAns: t5Ans || 'brak',
+                reasoning: t5Reason || 'brak zapisu obliczeń',
+                userAns: t5Ans ? `${t5Ans} (zapis: ${t5Reason.replace(/\n/g, '; ')})` : 'brak',
                 correct: 'v = 72 km/h, s = 75 km, czas = 75/72 h > 1 h',
                 feedback: t5Result.feedback,
                 solution: '1) Prędkość samochodu: v = 48 km / (2/3 h) = 72 km/h. 2) Droga Jodłowo–Dębina: 123 km - 48 km = 75 km. 3) Czas przejazdu t = 75/72 h > 1 h (lub: w 1 h przejedzie 72 km < 75 km).'
@@ -1411,10 +1491,13 @@
             total += t6Result.score;
             examResults.tasks.push({
                 nr: 6,
+                isOpen: true,
                 type: 'Otwarte (0–3 pkt)',
                 max: 3,
                 score: t6Result.score,
-                userAns: `Koszt: ${t6Ans || 'brak'} | Zapis: ${t6Reason || 'brak'}`,
+                finalAns: t6Ans || 'brak',
+                reasoning: t6Reason || 'brak zapisu obliczeń',
+                userAns: t6Ans ? `${t6Ans} (zapis: ${t6Reason.replace(/\n/g, '; ')})` : 'brak',
                 correct: '142,80 zł (6 opakowań po 23,80 zł)',
                 feedback: t6Result.feedback,
                 solution: '1) Pole trapezu: P = (18 + 12) · 9 / 2 = 135 m². 2) Liczba opakowań: 135 : 25 = 5,4 => należy kupić 6 opakowań. 3) Koszt: 6 · 23,80 zł = 142,80 zł.'
@@ -1595,29 +1678,51 @@ Odpowiedz wyłącznie poprawnym obiektem JSON:
 
             examResults.tasks.forEach(t => {
                 const card = document.createElement('div');
-                card.style.background = 'rgba(15, 23, 42, 0.7)';
-                card.style.border = '1px solid rgba(255, 255, 255, 0.1)';
-                card.style.borderRadius = '12px';
-                card.style.padding = '16px';
+                card.style.background = 'rgba(15, 23, 42, 0.75)';
+                card.style.border = '1px solid rgba(168, 85, 247, 0.25)';
+                card.style.borderRadius = '14px';
+                card.style.padding = '18px';
 
                 let scoreColor = t.score === t.max ? '#4ade80' : (t.score > 0 ? '#fbbf24' : '#f87171');
 
+                let studentAnswerHtml = '';
+                if (t.isOpen) {
+                    // Dla zadań otwartych: rozdzielamy odpowiedź końcową i wieloliniowy tok rozumowania
+                    studentAnswerHtml = `
+                        <div style="background: rgba(30, 41, 59, 0.65); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 10px; padding: 12px 14px; margin: 10px 0;">
+                            <div style="margin-bottom: 8px;">
+                                <span style="color:#94a3b8; font-size:0.88rem; font-weight:600;">Odpowiedź końcowa ucznia:</span>
+                                <strong style="color:#38bdf8; font-size:1.05rem; margin-left: 6px;">${t.finalAns || 'brak'}</strong>
+                            </div>
+                            <div style="color:#94a3b8; font-size:0.88rem; font-weight:600; margin-bottom: 6px;">Zapisany tok rozumowania i obliczenia (wieloliniowy):</div>
+                            <div class="math-preview-box" style="margin-top:4px; max-height:none; background:rgba(9, 15, 29, 0.8);">
+                                ${renderMathLinesToHtml(t.reasoning, false)}
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    studentAnswerHtml = `
+                        <div style="font-size:0.92rem; color:#cbd5e1; margin-bottom:8px;">
+                            <strong>Twoja odpowiedź:</strong> <span style="color:#38bdf8; font-weight:bold;">${t.userAns}</span>
+                        </div>
+                    `;
+                }
+
                 card.innerHTML = `
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                        <h4 style="color:#ffffff;">Zadanie ${t.nr} (${t.type})</h4>
-                        <span style="font-weight:bold; color:${scoreColor}; font-size:1.05rem;">${t.score} / ${t.max} pkt</span>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:8px;">
+                        <h4 style="color:#ffffff; font-size:1.1rem;">Zadanie ${t.nr} <span style="font-size:0.85rem; font-weight:normal; color:#94a3b8;">(${t.type})</span></h4>
+                        <span style="font-weight:bold; color:${scoreColor}; font-size:1.15rem; background:rgba(0,0,0,0.3); padding:4px 12px; border-radius:8px;">${t.score} / ${t.max} pkt</span>
                     </div>
-                    <div style="font-size:0.92rem; color:#cbd5e1; margin-bottom:6px;">
-                        <strong>Twoja odpowiedź:</strong> ${t.userAns}
-                    </div>
-                    <div style="font-size:0.92rem; color:#a855f7; margin-bottom:8px;">
-                        <strong>Komentarz egzaminatora CKE:</strong> ${t.feedback}
+                    ${studentAnswerHtml}
+                    <div style="background: rgba(147, 51, 234, 0.12); border: 1px solid rgba(168, 85, 247, 0.35); border-radius: 8px; padding: 10px 14px; font-size:0.93rem; color:#d8b4fe; margin-bottom:10px; line-height:1.5;">
+                        <strong style="color:#c084fc;">Komentarz egzaminatora CKE (AI):</strong><br>
+                        ${t.feedback}
                     </div>
                     ${t.score < t.max ? `
-                        <div class="solution-box">
-                            <strong>Wzorcowe rozwiązanie CKE i poprawna odpowiedź:</strong><br>
+                        <div class="solution-box" style="margin-top:8px;">
+                            <strong style="color:#38bdf8;">Wzorcowe rozwiązanie CKE i poprawna odpowiedź:</strong><br>
                             ${t.solution}<br>
-                            <em>Poprawna odpowiedź: ${t.correct}</em>
+                            <span style="display:inline-block; margin-top:4px; color:#4ade80; font-weight:600;">Poprawny wynik: ${t.correct}</span>
                         </div>
                     ` : ''}
                 `;
@@ -1637,7 +1742,10 @@ Odpowiedz wyłącznie poprawnym obiektem JSON:
                 .replace(/ó/g, 'o').replace(/Ó/g, 'O')
                 .replace(/ś/g, 's').replace(/Ś/g, 'S')
                 .replace(/ź/g, 'z').replace(/Ź/g, 'Z')
-                .replace(/ż/g, 'z').replace(/Ż/g, 'Z');
+                .replace(/ż/g, 'z').replace(/Ż/g, 'Z')
+                .replace(/•/g, '-')
+                .replace(/√/g, 'sqrt')
+                .replace(/·/g, '*');
         }
 
         // --- GENEROWANIE RAPORTU PDF ---
@@ -1686,7 +1794,12 @@ Odpowiedz wyłącznie poprawnym obiektem JSON:
 
             const sanitize = (text) => {
                 if (!text) return '';
-                return fontLoaded ? text : transliteratePolish(text);
+                // Zamiana emoji na czytelne znaczniki tekstowe (czcionki PDF nie obsługują kolorowych emoji)
+                let clean = String(text)
+                    .replace(/🤖\s*/g, '[AI] ')
+                    .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, '')
+                    .trim();
+                return fontLoaded ? clean : transliteratePolish(clean);
             };
 
             const percent = Math.round((examResults.totalPoints / examResults.maxPoints) * 100);
@@ -1707,7 +1820,7 @@ Odpowiedz wyłącznie poprawnym obiektem JSON:
             doc.setLineWidth(0.8);
             doc.line(14, 34, 196, 34);
 
-            // 2. Tabela 1: Zbiorcze podsumowanie zadań (AutoTable dba o marginesy)
+            // 2. Tabela 1: Zbiorcze podsumowanie zadań
             const tableRows = examResults.tasks.map(t => [
                 sanitize(`Zadanie ${t.nr}`),
                 sanitize(t.type),
@@ -1720,80 +1833,177 @@ Odpowiedz wyłącznie poprawnym obiektem JSON:
                 head: [[sanitize('Zadanie'), sanitize('Typ zadania'), sanitize('Punkty'), sanitize('Ocena etapu')]],
                 body: tableRows,
                 theme: 'striped',
-                headStyles: { 
-                    fillColor: [88, 28, 135], 
-                    textColor: 255, 
+                headStyles: {
+                    fillColor: [88, 28, 135],
+                    textColor: 255,
                     font: fontLoaded ? 'Roboto' : 'helvetica',
-                    fontStyle: 'bold' 
+                    fontStyle: 'bold'
                 },
-                styles: { 
+                styles: {
                     font: fontLoaded ? 'Roboto' : 'helvetica',
-                    fontSize: 9, 
-                    cellPadding: 3, 
-                    overflow: 'linebreak' 
+                    fontSize: 9,
+                    cellPadding: 3,
+                    overflow: 'linebreak'
                 },
                 margin: { left: 14, right: 14 }
             });
 
-            // 3. Tabela 2: Szczegółowa ocena toku rozumowania i wzorcowe rozwiązania
-            // Używamy AutoTable, co GWARANTUJE, że żaden tekst ani linia nie wyjdzie poza stronę!
-            const detailedRows = examResults.tasks.map(t => {
-                let textBlock = `${sanitize('Twoja odpowiedź / tok:')}
-${sanitize(t.userAns)}
+            // 3. Szczegółowa weryfikacja zadań (z graficznym zapisem matematycznym KaTeX dla zadań otwartych)
+            let currentY = doc.lastAutoTable.finalY + 8;
 
-${sanitize('Komentarz egzaminatora CKE:')}
-${sanitize(t.feedback)}`;
+            for (const t of examResults.tasks) {
+                if (currentY > 245) {
+                    doc.addPage();
+                    currentY = 16;
+                }
+
+                let headFill = [220, 38, 38];
+                if (t.score === t.max) headFill = [22, 163, 74];
+                else if (t.score > 0) headFill = [217, 119, 6];
+
+                const taskBody = [];
+
+                if (t.isOpen) {
+                    const mathImg = await renderMathBoxToImage(t.reasoning);
+                    taskBody.push([
+                        {
+                            content: sanitize(`ODPOWIEDŹ KOŃCOWA UCZNIA:  ${t.finalAns || 'brak'}`),
+                            colSpan: 2,
+                            styles: { fontStyle: 'bold', fillColor: [241, 245, 249], textColor: [15, 23, 42] }
+                        }
+                    ]);
+
+                    if (mathImg) {
+                        const maxImgW = 148;
+                        let imgW = maxImgW;
+                        let imgH = mathImg.heightPx * (imgW / mathImg.widthPx);
+
+                        if (imgH > 210) {
+                            const ratio = 210 / imgH;
+                            imgH = 210;
+                            imgW = imgW * ratio;
+                        }
+
+                        taskBody.push([
+                            {
+                                content: sanitize('TOK ROZUMOWANIA UCZNIA (ZAPIS MATEMATYCZNY):'),
+                                colSpan: 2,
+                                _isMathImgCell: true,
+                                _mathImg: mathImg,
+                                _imgW: imgW,
+                                _imgH: imgH,
+                                styles: {
+                                    minCellHeight: imgH + 13,
+                                    fillColor: [255, 255, 255],
+                                    textColor: [71, 85, 105],
+                                    valign: 'top'
+                                }
+                            }
+                        ]);
+                    } else {
+                        const formattedReasoning = (t.reasoning || '')
+                            .split('\n')
+                            .map(l => l.trim())
+                            .filter(l => l.length > 0)
+                            .map(l => '  • ' + l.replace(/\*/g, ' · '))
+                            .join('\n');
+                        taskBody.push([
+                            {
+                                content: sanitize(`TOK ROZUMOWANIA UCZNIA:\n${formattedReasoning || '  • (brak zapisu toku rozumowania)'}`),
+                                colSpan: 2,
+                                styles: { fillColor: [255, 255, 255] }
+                            }
+                        ]);
+                    }
+
+                    taskBody.push([
+                        {
+                            content: sanitize(`KOMENTARZ EGZAMINATORA CKE (AI):\n${t.feedback}`),
+                            colSpan: 2,
+                            styles: { fillColor: [250, 245, 255], textColor: [88, 28, 135] }
+                        }
+                    ]);
+                } else {
+                    taskBody.push([
+                        {
+                            content: sanitize(`ODPOWIEDŹ UCZNIA:  ${t.userAns}`),
+                            colSpan: 2,
+                            styles: { fillColor: [255, 255, 255] }
+                        }
+                    ]);
+                    taskBody.push([
+                        {
+                            content: sanitize(`KOMENTARZ EGZAMINATORA CKE:\n${t.feedback}`),
+                            colSpan: 2,
+                            styles: { fillColor: [250, 245, 255], textColor: [88, 28, 135] }
+                        }
+                    ]);
+                }
+
                 if (t.score < t.max) {
-                    textBlock += `
-
-${sanitize('Wzorcowe rozwiązanie CKE:')}
-${sanitize(t.solution)}
-${sanitize('Poprawny wynik:')} ${sanitize(t.correct)}`;
+                    taskBody.push([
+                        {
+                            content: sanitize(`WZORCOWE ROZWIĄZANIE CKE:\n${t.solution}\nPoprawny wynik: ${t.correct}`),
+                            colSpan: 2,
+                            styles: { fillColor: [239, 246, 255], textColor: [30, 58, 138] }
+                        }
+                    ]);
                 }
-                return [
-                    sanitize(`Zadanie ${t.nr}
-(${t.type})`),
-                    `${t.score} / ${t.max} pkt`,
-                    textBlock
-                ];
-            });
 
-            doc.autoTable({
-                startY: doc.lastAutoTable.finalY + 8,
-                head: [[sanitize('Zadanie'), sanitize('Wynik'), sanitize('Szczegółowa weryfikacja toku rozumowania & Wzorzec CKE')]],
-                body: detailedRows,
-                theme: 'grid',
-                headStyles: { 
-                    fillColor: [59, 130, 246], 
-                    textColor: 255, 
-                    font: fontLoaded ? 'Roboto' : 'helvetica',
-                    fontStyle: 'bold' 
-                },
-                columnStyles: {
-                    0: { cellWidth: 32, fontStyle: 'bold' },
-                    1: { cellWidth: 24, fontStyle: 'bold', halign: 'center' },
-                    2: { cellWidth: 'auto' }
-                },
-                styles: { 
-                    font: fontLoaded ? 'Roboto' : 'helvetica',
-                    fontSize: 8.5, 
-                    cellPadding: 4, 
-                    overflow: 'linebreak' 
-                },
-                margin: { left: 14, right: 14, top: 16, bottom: 16 },
-                didDrawPage: (data) => {
-                    // Stopka ze stronami na każdej wygenerowanej karcie A4
-                    const totalPages = doc.internal.getNumberOfPages();
-                    doc.setFontSize(8);
-                    doc.setTextColor(140);
-                    doc.text(
-                        sanitize(`Strona ${data.pageNumber}  |  Egzamin Ósmoklasisty CKE`), 
-                        196, 
-                        290, 
-                        { align: 'right' }
-                    );
-                }
-            });
+                doc.autoTable({
+                    startY: currentY,
+                    head: [[
+                        sanitize(`Zadanie ${t.nr}  (${t.type})`),
+                        { content: sanitize(`Wynik: ${t.score} / ${t.max} pkt`), styles: { halign: 'right' } }
+                    ]],
+                    body: taskBody,
+                    theme: 'grid',
+                    rowPageBreak: 'avoid',
+                    headStyles: {
+                        fillColor: headFill,
+                        textColor: 255,
+                        font: fontLoaded ? 'Roboto' : 'helvetica',
+                        fontStyle: 'bold',
+                        fontSize: 9.5
+                    },
+                    styles: {
+                        font: fontLoaded ? 'Roboto' : 'helvetica',
+                        fontSize: 8.5,
+                        cellPadding: 3.5,
+                        overflow: 'linebreak'
+                    },
+                    margin: { left: 14, right: 14, top: 14, bottom: 16 },
+                    didDrawCell: (data) => {
+                        if (data.section === 'body' && data.cell.raw && data.cell.raw._isMathImgCell) {
+                            const raw = data.cell.raw;
+                            doc.addImage(
+                                raw._mathImg.dataUrl,
+                                'PNG',
+                                data.cell.x + 3.5,
+                                data.cell.y + 9.5,
+                                raw._imgW,
+                                raw._imgH
+                            );
+                        }
+                    }
+                });
+
+                currentY = doc.lastAutoTable.finalY + 6;
+            }
+
+            // Stopka ze stronami na wszystkich stronach dokumentu
+            const totalPages = doc.internal.getNumberOfPages();
+            for (let p = 1; p <= totalPages; p++) {
+                doc.setPage(p);
+                doc.setFontSize(8);
+                doc.setTextColor(140);
+                doc.text(
+                    sanitize(`Strona ${p} z ${totalPages}  |  Egzamin Ósmoklasisty CKE`),
+                    196,
+                    290,
+                    { align: 'right' }
+                );
+            }
 
             doc.save(`Raport_E8_Matematyka_${dateStr.replace(/\./g, '_')}.pdf`);
 
