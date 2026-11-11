@@ -174,6 +174,71 @@
             font-weight: 700;
         }
 
+        /* Pasek zapisu / wznawiania postępu */
+        .save-banner {
+            background: rgba(15, 23, 42, 0.72);
+            border: 1px solid rgba(168, 85, 247, 0.28);
+            border-radius: 12px;
+            padding: 10px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            font-size: 0.86rem;
+        }
+
+        .draft-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .draft-btn {
+            background: rgba(30, 41, 59, 0.9);
+            border: 1px solid rgba(148, 163, 184, 0.35);
+            color: #e2e8f0;
+            padding: 6px 11px;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .draft-btn:hover {
+            background: rgba(56, 189, 248, 0.16);
+            border-color: #38bdf8;
+            color: #ffffff;
+        }
+
+        .draft-btn-danger:hover {
+            background: rgba(239, 68, 68, 0.18);
+            border-color: #ef4444;
+            color: #fca5a5;
+        }
+
+        .timer-pause-btn {
+            background: rgba(56, 189, 248, 0.12);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            color: #38bdf8;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-left: 4px;
+            transition: all 0.2s;
+        }
+
+        .timer-pause-btn:hover {
+            background: rgba(56, 189, 248, 0.25);
+        }
+
         /* Karta zadania */
         .task-card {
             background: var(--panel-bg);
@@ -657,7 +722,7 @@
                 color: #000000 !important;
                 padding: 0 !important;
             }
-            .top-bar, .exam-header, .ai-banner, #exam-form, .action-bar, .pdf-download-btn, .nav-link, button {
+            .top-bar, .exam-header, .ai-banner, .save-banner, #exam-form, .action-bar, .pdf-download-btn, .nav-link, button {
                 display: none !important;
             }
             #results-container {
@@ -740,6 +805,7 @@
             <div class="timer-badge">
                 <span>⏱️ Czas egzaminu:</span>
                 <span id="exam-timer">45:00</span>
+                <button type="button" id="timer-pause-btn" class="timer-pause-btn" onclick="toggleTimerPause()" title="Wstrzymaj lub wznów odliczanie">⏸️ Pauza</button>
             </div>
             <button type="button" class="nav-link" onclick="toggleKeySettings()" style="cursor:pointer;">
                 🔑 Klucz API Gemini
@@ -768,6 +834,21 @@
             </div>
             <div style="font-size: 0.82rem; color: #94a3b8;">
                 Wykorzystywany do precyzyjnej oceny etapów w zadaniach otwartych wg CKE.
+            </div>
+        </div>
+
+        <!-- Pasek zapisu postępu (przerwanie i powrót później) -->
+        <div class="save-banner">
+            <div>
+                <span>💾 Postęp egzaminu: </span>
+                <span id="draft-status-text" style="color: #38bdf8; font-weight: 600;">Autozapis włączony</span>
+            </div>
+            <div class="draft-actions">
+                <button type="button" class="draft-btn" onclick="manualSaveDraft(this)" title="Zapisz bieżący stan w przeglądarce">💾 Zapisz teraz</button>
+                <button type="button" class="draft-btn" onclick="exportDraftFile()" title="Pobierz plik z odpowiedziami na dysk, aby dokończyć później">📥 Pobierz plik (.json)</button>
+                <button type="button" class="draft-btn" onclick="document.getElementById('draft-file-input').click()" title="Wczytaj wcześniej pobrany plik z odpowiedziami">📤 Wczytaj z pliku</button>
+                <button type="button" class="draft-btn draft-btn-danger" onclick="resetExamDraft()" title="Wyczyść wszystkie odpowiedzi i zacznij od nowa">🗑️ Od nowa</button>
+                <input type="file" id="draft-file-input" accept=".json,application/json" style="display:none" onchange="importDraftFile(event)">
             </div>
         </div>
 
@@ -1117,19 +1198,227 @@
             3: { 1: null, 2: null }
         };
 
-        // --- ZARZĄDZANIE CZASEM (45 min) ---
+        // --- ZARZĄDZANIE CZASEM (45 min) & PAUZA ---
+        const EXAM_DRAFT_KEY = 'egzmat2025skot_draft_v1';
         let timeLeft = 45 * 60;
+        let isTimerPaused = false;
+
+        function updateTimerDisplay() {
+            const el = document.getElementById('exam-timer');
+            if (!el) return;
+            if (timeLeft <= 0) {
+                el.innerText = "00:00 (Czas minął!)";
+                return;
+            }
+            const mins = String(Math.floor(timeLeft / 60)).padStart(2, '0');
+            const secs = String(timeLeft % 60).padStart(2, '0');
+            el.innerText = isTimerPaused ? `${mins}:${secs} (Pauza)` : `${mins}:${secs}`;
+        }
+
+        function toggleTimerPause() {
+            isTimerPaused = !isTimerPaused;
+            const btn = document.getElementById('timer-pause-btn');
+            if (btn) {
+                btn.innerText = isTimerPaused ? '▶️ Wznów' : '⏸️ Pauza';
+            }
+            updateTimerDisplay();
+            saveExamDraft(true);
+        }
+
         let timerInterval = setInterval(() => {
+            if (isTimerPaused) return;
             if (timeLeft <= 0) {
                 clearInterval(timerInterval);
-                document.getElementById('exam-timer').innerText = "00:00 (Czas minął!)";
+                updateTimerDisplay();
                 return;
             }
             timeLeft--;
-            const mins = String(Math.floor(timeLeft / 60)).padStart(2, '0');
-            const secs = String(timeLeft % 60).padStart(2, '0');
-            document.getElementById('exam-timer').innerText = `${mins}:${secs}`;
+            updateTimerDisplay();
+            if (timeLeft % 5 === 0 && localStorage.getItem(EXAM_DRAFT_KEY)) {
+                saveExamDraft(true);
+            }
         }, 1000);
+
+        // --- ZAPISYWANIE I ODTWARZANIE STANU EGZAMINU ---
+        function collectExamState() {
+            const t1 = document.querySelector('input[name="task1"]:checked');
+            const t2p1 = document.querySelector('input[name="task2_part1"]:checked');
+            const t2p2 = document.querySelector('input[name="task2_part2"]:checked');
+
+            return {
+                version: 1,
+                savedAt: new Date().toLocaleString('pl-PL'),
+                timeLeft: timeLeft,
+                isTimerPaused: isTimerPaused,
+                task1: t1 ? t1.value : null,
+                task2_part1: t2p1 ? t2p1.value : null,
+                task2_part2: t2p2 ? t2p2.value : null,
+                tfState: {
+                    3: {
+                        1: tfState[3][1] || null,
+                        2: tfState[3][2] || null
+                    }
+                },
+                task4_reasoning: (document.getElementById('task4_reasoning')?.value || ''),
+                task4_answer: (document.getElementById('task4_answer')?.value || ''),
+                task5_reasoning: (document.getElementById('task5_reasoning')?.value || ''),
+                task5_answer: (document.getElementById('task5_answer')?.value || ''),
+                task6_reasoning: (document.getElementById('task6_reasoning')?.value || ''),
+                task6_answer: (document.getElementById('task6_answer')?.value || '')
+            };
+        }
+
+        function setDraftStatus(msg, color = '#4ade80') {
+            const label = document.getElementById('draft-status-text');
+            if (label) {
+                label.style.color = color;
+                label.innerText = msg;
+            }
+        }
+
+        function saveExamDraft(silent = false) {
+            try {
+                const state = collectExamState();
+                localStorage.setItem(EXAM_DRAFT_KEY, JSON.stringify(state));
+                const timeOnly = new Date().toLocaleTimeString('pl-PL');
+                if (!silent) {
+                    setDraftStatus(`Zapisano w przeglądarce (${timeOnly})`, '#4ade80');
+                }
+            } catch (e) {
+                console.warn('Nie udało się zapisać postępu w localStorage:', e);
+            }
+        }
+
+        function manualSaveDraft(btn) {
+            saveExamDraft(false);
+            if (btn) {
+                const old = btn.innerText;
+                btn.innerText = '✅ Zapisano!';
+                setTimeout(() => { btn.innerText = old; }, 1400);
+            }
+        }
+
+        function applyExamState(state) {
+            if (!state || typeof state !== 'object') return;
+
+            // Reset dotychczasowego zaznaczenia radio
+            document.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
+            document.querySelectorAll('#exam-form input[type="radio"]').forEach(r => { r.checked = false; });
+
+            const restoreRadio = (name, val) => {
+                if (!val) return;
+                const radio = document.querySelector(`input[name="${name}"][value="${val}"]`);
+                if (radio) {
+                    radio.checked = true;
+                    const label = radio.closest('.option-label');
+                    if (label) label.classList.add('selected');
+                }
+            };
+
+            restoreRadio('task1', state.task1);
+            restoreRadio('task2_part1', state.task2_part1);
+            restoreRadio('task2_part2', state.task2_part2);
+
+            // Przywrócenie P/F w zadaniu 3
+            document.querySelectorAll('#card-task-3 .tf-btn').forEach(b => b.classList.remove('active-p', 'active-f'));
+            [1, 2].forEach(rowNum => {
+                const val = state.tfState && state.tfState[3] ? state.tfState[3][rowNum] : null;
+                tfState[3][rowNum] = val || null;
+                if (val === 'P' || val === 'F') {
+                    const btn = document.querySelector(`#card-task-3 button[onclick*="setTF(3, ${rowNum}, '${val}'"]`);
+                    if (btn) btn.classList.add(val === 'P' ? 'active-p' : 'active-f');
+                }
+            });
+
+            // Przywrócenie pól tekstowych zadań otwartych i podglądów KaTeX
+            const setVal = (id, val) => {
+                const el = document.getElementById(id);
+                if (el) el.value = val || '';
+            };
+
+            setVal('task4_reasoning', state.task4_reasoning);
+            setVal('task4_answer', state.task4_answer);
+            setVal('task5_reasoning', state.task5_reasoning);
+            setVal('task5_answer', state.task5_answer);
+            setVal('task6_reasoning', state.task6_reasoning);
+            setVal('task6_answer', state.task6_answer);
+
+            updateMathPreview('task4_reasoning', 'task4_preview');
+            updateMathPreview('task5_reasoning', 'task5_preview');
+            updateMathPreview('task6_reasoning', 'task6_preview');
+
+            // Przywrócenie czasu i stanu pauzy
+            if (typeof state.timeLeft === 'number' && state.timeLeft >= 0) {
+                timeLeft = state.timeLeft;
+            }
+            if (typeof state.isTimerPaused === 'boolean') {
+                isTimerPaused = state.isTimerPaused;
+                const pBtn = document.getElementById('timer-pause-btn');
+                if (pBtn) pBtn.innerText = isTimerPaused ? '▶️ Wznów' : '⏸️ Pauza';
+            }
+            updateTimerDisplay();
+        }
+
+        function exportDraftFile() {
+            const state = collectExamState();
+            saveExamDraft(false);
+            const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            const now = new Date();
+            const stamp = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}`;
+            a.href = url;
+            a.download = `E8_Matematyka_Zapis_${stamp}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            setDraftStatus('Pobrano kopię zapasową (.json)', '#38bdf8');
+        }
+
+        function importDraftFile(event) {
+            const file = event.target.files && event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const parsed = JSON.parse(e.target.result);
+                    applyExamState(parsed);
+                    saveExamDraft(true);
+                    setDraftStatus(`Wczytano z pliku (${parsed.savedAt || file.name})`, '#4ade80');
+                } catch (err) {
+                    alert('Nieprawidłowy plik zapisu egzaminu (.json).');
+                }
+            };
+            reader.readAsText(file, 'utf-8');
+            event.target.value = '';
+        }
+
+        function resetExamDraft() {
+            if (!confirm('Czy na pewno chcesz wyczyścić wszystkie wpisane odpowiedzi i zresetować czas do 45:00?')) {
+                return;
+            }
+            localStorage.removeItem(EXAM_DRAFT_KEY);
+            isTimerPaused = false;
+            timeLeft = 45 * 60;
+            const pBtn = document.getElementById('timer-pause-btn');
+            if (pBtn) pBtn.innerText = '⏸️ Pauza';
+
+            applyExamState({
+                timeLeft: 45 * 60,
+                isTimerPaused: false,
+                task1: null,
+                task2_part1: null,
+                task2_part2: null,
+                tfState: { 3: { 1: null, 2: null } },
+                task4_reasoning: '', task4_answer: '',
+                task5_reasoning: '', task5_answer: '',
+                task6_reasoning: '', task6_answer: ''
+            });
+            const res = document.getElementById('results-container');
+            if (res) res.style.display = 'none';
+            setDraftStatus('Wyczyszczono (nowe podejście)', '#94a3b8');
+        }
 
         // --- ZARZĄDZANIE KLUCZEM GEMINI API ---
         function checkApiBanner() {
@@ -1171,6 +1460,7 @@
                     if (l) l.classList.remove('selected');
                 });
                 labelEl.classList.add('selected');
+                saveExamDraft();
             }
         }
 
@@ -1182,6 +1472,7 @@
             });
             if (val === 'P') btn.classList.add('active-p');
             if (val === 'F') btn.classList.add('active-f');
+            saveExamDraft();
         }
 
         function insertSymbol(textareaId, symbol) {
@@ -1201,6 +1492,7 @@
             const newPos = start + insertText.length;
             ta.setSelectionRange(newPos, newPos);
             updateMathPreview(textareaId, textareaId.replace('_reasoning', '_preview'));
+            saveExamDraft();
         }
 
         function escapeHtml(str) {
@@ -2026,6 +2318,25 @@ Odpowiedz wyłącznie poprawnym obiektem JSON:
                 } catch(e) {}
             }
             checkApiBanner();
+
+            // Automatyczne przywracanie zapisanego postępu po powrocie na stronę
+            try {
+                const rawDraft = localStorage.getItem(EXAM_DRAFT_KEY);
+                if (rawDraft) {
+                    const parsedDraft = JSON.parse(rawDraft);
+                    applyExamState(parsedDraft);
+                    setDraftStatus(`Przywrócono sesję z ${parsedDraft.savedAt || 'ostatniej wizyty'}`, '#4ade80');
+                }
+            } catch (e) {
+                console.warn('Błąd odczytu zapisanego stanu egzaminu:', e);
+            }
+
+            // Autozapis przy każdym wpisywaniu tekstu lub zmianie pola w formularzu
+            const examForm = document.getElementById('exam-form');
+            if (examForm) {
+                examForm.addEventListener('input', () => saveExamDraft());
+                examForm.addEventListener('change', () => saveExamDraft());
+            }
         });
     </script>
 </body>
