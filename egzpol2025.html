@@ -1,0 +1,2648 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <!-- Google Analytics Tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZP827DTZJ5"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-ZP827DTZJ5');
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Egzamin Ósmoklasisty – Język polski 2025 (Pełny Arkusz)</title>
+
+    <!-- jsPDF do generowania raportu PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+
+    <style>
+        :root {
+            --bg-dark: #070d18;
+            --panel-bg: rgba(15, 23, 42, 0.92);
+            --card-border: rgba(168, 85, 247, 0.35);
+            --primary: #a855f7;
+            --primary-hover: #9333ea;
+            --accent-cyan: #38bdf8;
+            --accent-green: #22c55e;
+            --accent-red: #ef4444;
+            --accent-amber: #f59e0b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            padding: 24px 16px 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 920px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Belka górna */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .nav-link {
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(168, 85, 247, 0.4);
+            color: #c084fc;
+            text-decoration: none;
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .nav-link:hover {
+            background: #7e22ce;
+            color: #fff;
+            transform: translateX(-2px);
+        }
+
+        .timer-badge {
+            background: rgba(30, 41, 59, 0.9);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            color: #38bdf8;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1rem;
+            font-variant-numeric: tabular-nums;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .timer-pause-btn {
+            background: rgba(56, 189, 248, 0.14);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            color: #bae6fd;
+            border-radius: 7px;
+            padding: 3px 9px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .timer-pause-btn:hover {
+            background: rgba(56, 189, 248, 0.28);
+            color: #fff;
+        }
+
+        /* Pasek zapisu / wczytywania postępu */
+        .draft-bar {
+            background: rgba(15, 23, 42, 0.88);
+            border: 1px solid rgba(34, 197, 94, 0.35);
+            border-radius: 14px;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .draft-info {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .draft-status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #22c55e;
+            box-shadow: 0 0 8px rgba(34, 197, 94, 0.7);
+            display: inline-block;
+        }
+
+        .draft-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .draft-btn {
+            background: rgba(30, 41, 59, 0.95);
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            color: #e2e8f0;
+            border-radius: 8px;
+            padding: 6px 11px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .draft-btn:hover {
+            border-color: var(--accent-cyan);
+            color: #fff;
+            background: rgba(56, 189, 248, 0.14);
+        }
+
+        .draft-btn.danger:hover {
+            border-color: var(--accent-red);
+            background: rgba(239, 68, 68, 0.15);
+            color: #fecaca;
+        }
+
+        /* Nagłówek */
+        .exam-header {
+            background: linear-gradient(135deg, rgba(22, 101, 52, 0.28), rgba(15, 23, 42, 0.95));
+            border: 1px solid rgba(34, 197, 94, 0.35);
+            border-radius: 20px;
+            padding: 26px 28px;
+            text-align: center;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.45);
+        }
+
+        .exam-header h1 {
+            font-size: 1.75rem;
+            background: linear-gradient(135deg, #f8fafc, #4ade80);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .exam-header p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .exam-meta {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .meta-pill {
+            background: rgba(30, 41, 59, 0.85);
+            border: 1px solid rgba(148, 163, 184, 0.25);
+            padding: 5px 12px;
+            border-radius: 999px;
+            font-size: 0.82rem;
+            color: #cbd5e1;
+        }
+
+        /* Dane ucznia do raportu PDF */
+        .student-card {
+            background: var(--panel-bg);
+            border: 1px solid rgba(56, 189, 248, 0.32);
+            border-radius: 16px;
+            padding: 16px 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr 140px;
+            gap: 12px;
+            align-items: end;
+        }
+
+        .student-field label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #93c5fd;
+            margin-bottom: 5px;
+        }
+
+        .student-field input {
+            width: 100%;
+            background: rgba(2, 6, 23, 0.8);
+            border: 1px solid rgba(148, 163, 184, 0.35);
+            color: #fff;
+            padding: 9px 12px;
+            border-radius: 10px;
+            font-size: 0.92rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .student-field input:focus {
+            border-color: var(--accent-cyan);
+        }
+
+        /* Sekcja konfiguracji klucza API */
+        .api-banner {
+            background: rgba(30, 41, 59, 0.75);
+            border: 1px solid rgba(245, 158, 11, 0.4);
+            border-radius: 14px;
+            padding: 14px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            font-size: 0.88rem;
+        }
+
+        .api-banner.connected {
+            border-color: rgba(34, 197, 94, 0.45);
+            background: rgba(20, 83, 45, 0.2);
+        }
+
+        .btn-small {
+            background: rgba(168, 85, 247, 0.2);
+            border: 1px solid rgba(168, 85, 247, 0.5);
+            color: #e9d5ff;
+            padding: 6px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.82rem;
+            font-weight: 600;
+        }
+
+        .btn-small:hover {
+            background: var(--primary);
+            color: #fff;
+        }
+
+        /* Rozwijana lista lektur */
+        details.lektury-box {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            border-radius: 14px;
+            padding: 14px 18px;
+        }
+
+        details.lektury-box summary {
+            cursor: pointer;
+            font-weight: 700;
+            color: #e2e8f0;
+            font-size: 0.95rem;
+            list-style: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        details.lektury-box summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .lektury-grid {
+            margin-top: 14px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+            font-size: 0.86rem;
+            color: #cbd5e1;
+            line-height: 1.55;
+        }
+
+        .lektury-grid h4 {
+            color: #4ade80;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+        }
+
+        .lektury-grid ol {
+            padding-left: 18px;
+        }
+
+        /* Teksty źródłowe */
+        .reading-card {
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.96), rgba(10, 16, 30, 0.98));
+            border: 1px solid rgba(56, 189, 248, 0.38);
+            border-radius: 18px;
+            padding: 24px 26px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35);
+        }
+
+        .reading-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 14px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        .reading-tag {
+            background: rgba(56, 189, 248, 0.16);
+            color: #38bdf8;
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        .reading-author {
+            font-size: 0.95rem;
+            color: #cbd5e1;
+            font-weight: 600;
+        }
+
+        .reading-title {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #f8fafc;
+            margin-bottom: 14px;
+            letter-spacing: 0.3px;
+        }
+
+        .reading-body {
+            color: #e2e8f0;
+            font-size: 0.98rem;
+            line-height: 1.72;
+        }
+
+        .reading-body p {
+            margin-bottom: 10px;
+            text-indent: 1.2em;
+        }
+
+        .reading-body p.dialogue {
+            text-indent: 0.6em;
+        }
+
+        .reading-source {
+            margin-top: 14px;
+            padding-top: 10px;
+            border-top: 1px dashed rgba(148, 163, 184, 0.25);
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        /* Karta zadania */
+        .task-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 22px 24px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            transition: border-color 0.25s;
+        }
+
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+        }
+
+        .task-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .task-points {
+            background: rgba(168, 85, 247, 0.18);
+            color: #d8b4fe;
+            border: 1px solid rgba(168, 85, 247, 0.4);
+            padding: 3px 10px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .task-content {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #e2e8f0;
+            margin-bottom: 16px;
+        }
+
+        .task-question {
+            font-weight: 600;
+            color: #fff;
+            margin-top: 10px;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .quote-box {
+            background: rgba(2, 6, 23, 0.65);
+            border-left: 3px solid var(--accent-cyan);
+            padding: 12px 16px;
+            border-radius: 0 10px 10px 0;
+            margin: 10px 0 14px;
+            font-style: italic;
+            color: #e2e8f0;
+            line-height: 1.6;
+        }
+
+        /* Opcje wyboru ABCD */
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 10px;
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(30, 41, 59, 0.65);
+            border: 1px solid rgba(148, 163, 184, 0.25);
+            padding: 12px 14px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.96rem;
+        }
+
+        .option-label:hover {
+            border-color: var(--primary);
+            background: rgba(168, 85, 247, 0.12);
+        }
+
+        .option-label input[type="radio"] {
+            accent-color: var(--primary);
+            width: 17px;
+            height: 17px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .option-label.selected {
+            border-color: var(--primary);
+            background: rgba(168, 85, 247, 0.22);
+            box-shadow: 0 0 12px rgba(168, 85, 247, 0.2);
+        }
+
+        /* Podwójny wybór (Zadanie 8, 9) */
+        .dual-choice-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .dual-part {
+            background: rgba(30, 41, 59, 0.4);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 12px;
+            padding: 14px;
+        }
+
+        .dual-part-title {
+            font-size: 0.9rem;
+            color: #38bdf8;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        /* Prawda / Fałsz */
+        .tf-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 8px;
+        }
+
+        .tf-table td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .tf-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .tf-choices {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            min-width: 120px;
+        }
+
+        .tf-btn {
+            background: rgba(30, 41, 59, 0.85);
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            color: #cbd5e1;
+            padding: 6px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.2s;
+        }
+
+        .tf-btn.active-p {
+            background: rgba(34, 197, 94, 0.25);
+            border-color: #22c55e;
+            color: #4ade80;
+        }
+
+        .tf-btn.active-f {
+            background: rgba(239, 68, 68, 0.25);
+            border-color: #ef4444;
+            color: #f87171;
+        }
+
+        /* Zwykłe pola tekstowe do zadań otwartych */
+        .text-area-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .field-label {
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: #93c5fd;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .plain-input {
+            width: 100%;
+            background: rgba(2, 6, 23, 0.8);
+            border: 1px solid rgba(148, 163, 184, 0.35);
+            color: #fff;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 0.96rem;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .plain-input:focus {
+            border-color: var(--primary);
+        }
+
+        .plain-textarea {
+            width: 100%;
+            min-height: 110px;
+            background: rgba(2, 6, 23, 0.8);
+            border: 1px solid rgba(148, 163, 184, 0.35);
+            color: #f8fafc;
+            border-radius: 12px;
+            padding: 12px 14px;
+            font-size: 0.96rem;
+            font-family: inherit;
+            line-height: 1.6;
+            resize: vertical;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .plain-textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.2);
+        }
+
+        .essay-textarea {
+            min-height: 320px;
+        }
+
+        .word-counter-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            font-size: 0.85rem;
+            padding: 8px 12px;
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(148, 163, 184, 0.25);
+            border-radius: 10px;
+        }
+
+        .word-count-badge {
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 999px;
+            background: rgba(245, 158, 11, 0.18);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.4);
+        }
+
+        .word-count-badge.ok {
+            background: rgba(34, 197, 94, 0.18);
+            color: #4ade80;
+            border-color: rgba(34, 197, 94, 0.45);
+        }
+
+        /* Karty do gry (Zadanie 11) */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin: 14px 0 18px;
+        }
+
+        .game-card {
+            background: rgba(2, 6, 23, 0.75);
+            border: 1px solid rgba(148, 163, 184, 0.35);
+            border-radius: 14px;
+            padding: 12px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .game-card-letter {
+            font-weight: 800;
+            font-size: 1rem;
+            color: #38bdf8;
+        }
+
+        .game-card-caption {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            line-height: 1.35;
+        }
+
+        /* Ilustracje do Tematu 2 (Zadanie 19) */
+        .illustrations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 14px;
+            margin-top: 12px;
+        }
+
+        .illustration-box {
+            background: rgba(2, 6, 23, 0.75);
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            border-radius: 14px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .illustration-box p {
+            margin-top: 8px;
+            font-size: 0.83rem;
+            color: #cbd5e1;
+        }
+
+        .row-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        /* Przycisk wyślij */
+        .submit-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+            margin-top: 10px;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            color: #fff;
+            border: none;
+            padding: 16px 36px;
+            border-radius: 14px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(124, 58, 237, 0.4);
+            transition: all 0.25s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 30px rgba(124, 58, 237, 0.55);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: wait;
+        }
+
+        /* Sekcja wyników */
+        #results-container {
+            display: none;
+            flex-direction: column;
+            gap: 18px;
+            margin-top: 10px;
+        }
+
+        .score-summary-card {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(88, 28, 135, 0.35));
+            border: 1px solid rgba(168, 85, 247, 0.5);
+            border-radius: 20px;
+            padding: 26px;
+            text-align: center;
+        }
+
+        .big-score {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: #4ade80;
+            margin: 10px 0;
+        }
+
+        .pdf-btn {
+            background: linear-gradient(135deg, #16a34a, #15803d);
+            color: #fff;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 6px 18px rgba(22, 163, 74, 0.35);
+            transition: all 0.2s;
+        }
+
+        .pdf-btn:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+        }
+
+        .result-task-item {
+            background: rgba(15, 23, 42, 0.9);
+            border-radius: 14px;
+            padding: 18px;
+            border-left: 5px solid var(--primary);
+        }
+
+        .result-task-item.correct {
+            border-left-color: var(--accent-green);
+        }
+
+        .result-task-item.partial {
+            border-left-color: var(--accent-amber);
+        }
+
+        .result-task-item.wrong {
+            border-left-color: var(--accent-red);
+        }
+
+        .result-item-head {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .result-feedback {
+            font-size: 0.92rem;
+            color: #cbd5e1;
+            line-height: 1.55;
+            white-space: pre-line;
+        }
+
+        .result-solution {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed rgba(148, 163, 184, 0.25);
+            font-size: 0.88rem;
+            color: #93c5fd;
+            white-space: pre-line;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.75);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-box {
+            background: #0f172a;
+            border: 1px solid var(--primary);
+            border-radius: 18px;
+            max-width: 480px;
+            width: 100%;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .modal-box input {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(148, 163, 184, 0.4);
+            background: #020617;
+            color: #fff;
+        }
+
+        @media (max-width: 680px) {
+            .student-card {
+                grid-template-columns: 1fr;
+            }
+            .cards-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .row-2col {
+                grid-template-columns: 1fr;
+            }
+            .tf-table tr {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+            .tf-choices {
+                justify-content: flex-start;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Górna nawigacja i stoper -->
+        <div class="top-bar">
+            <a href="egzaminy.html" class="nav-link">← Centrum Egzaminów</a>
+            <div class="timer-badge" id="timer-display">
+                <span>⏱️ Pozostały czas:</span>
+                <span id="time-left">150:00</span>
+                <button type="button" class="timer-pause-btn" id="timer-pause-btn" onclick="toggleTimerPause()">⏸️ Pauza</button>
+            </div>
+        </div>
+
+        <!-- Pasek zapisu / wznowienia -->
+        <div class="draft-bar">
+            <div class="draft-info">
+                <span class="draft-status-dot"></span>
+                <span>Autozapis w przeglądarce:</span>
+                <strong id="draft-status-text" style="color: #cbd5e1;">gotowy</strong>
+            </div>
+            <div class="draft-actions">
+                <button type="button" class="draft-btn" onclick="manualSaveDraft(this)">💾 Zapisz teraz</button>
+                <button type="button" class="draft-btn" onclick="exportDraftFile()">📥 Pobierz zapis (.json)</button>
+                <button type="button" class="draft-btn" onclick="document.getElementById('draft-file-input').click()">📂 Wczytaj z pliku</button>
+                <button type="button" class="draft-btn danger" onclick="resetExamDraft()">🔄 Resetuj</button>
+                <input type="file" id="draft-file-input" accept=".json,application/json" style="display: none;" onchange="importDraftFile(event)">
+            </div>
+        </div>
+
+        <!-- Nagłówek -->
+        <div class="exam-header">
+            <h1>Egzamin Ósmoklasisty – Język polski 2025</h1>
+            <p>Oficjalny arkusz CKE z 13 maja 2025 r. (OPOP-100-2505). Część I: zadania 1–18 (25 pkt) • Część II: wypracowanie (20 pkt).<br>
+               Wpisuj odpowiedzi zwykłym tekstem. Zadania otwarte i wypracowanie ocenia AI według kryteriów Informatora CKE 2024/2025.</p>
+            <div class="exam-meta">
+                <span class="meta-pill">📚 19 zadań (wszystkie)</span>
+                <span class="meta-pill">🏆 Maks. 45 punktów</span>
+                <span class="meta-pill">🤖 Sprawdzanie AI wg CKE</span>
+                <span class="meta-pill">📄 Eksport raportu do PDF</span>
+            </div>
+        </div>
+
+        <!-- Dane ucznia -->
+        <div class="student-card">
+            <div class="student-field">
+                <label for="student_first_name">Imię ucznia (do raportu PDF)</label>
+                <input type="text" id="student_first_name" placeholder="np. Jan" oninput="saveExamDraft()">
+            </div>
+            <div class="student-field">
+                <label for="student_last_name">Nazwisko ucznia</label>
+                <input type="text" id="student_last_name" placeholder="np. Kowalski" oninput="saveExamDraft()">
+            </div>
+            <div class="student-field">
+                <label for="student_class">Klasa</label>
+                <input type="text" id="student_class" placeholder="np. 8b" oninput="saveExamDraft()">
+            </div>
+        </div>
+
+        <!-- Status klucza AI -->
+        <div class="api-banner" id="api-banner">
+            <span id="api-status-text">⚠️ Brak klucza Gemini API – zadania zamknięte (1–4, 8–9, 13–14, 16–17) i interpunkcja (zad. 10) sprawdzą się automatycznie, a do oceny zadań otwartych i wypracowania zalecamy podanie klucza AI.</span>
+            <button type="button" class="btn-small" onclick="toggleKeySettings()">🔑 Ustaw klucz AI</button>
+        </div>
+
+        <!-- Lista lektur obowiązkowych (str. 3–4 arkusza) -->
+        <details class="lektury-box">
+            <summary>
+                <span>📖 Lista lektur obowiązkowych w roku szkolnym 2024/2025 (kliknij, aby rozwinąć)</span>
+                <span style="color: #94a3b8; font-size: 0.82rem;">str. 3–4 arkusza CKE</span>
+            </summary>
+            <div class="lektury-grid">
+                <div>
+                    <h4>Klasy IV–VI</h4>
+                    <ol>
+                        <li>Jan Brzechwa, <em>Akademia Pana Kleksa</em></li>
+                        <li>Janusz Christa, <em>Kajko i Kokosz. Szkoła latania</em> (komiks)</li>
+                        <li>Clive Staples Lewis, <em>Opowieści z Narnii. Lew, czarownica i stara szafa</em></li>
+                        <li>Ferenc Molnár, <em>Chłopcy z Placu Broni</em></li>
+                        <li>John Ronald Reuel Tolkien, <em>Hobbit, czyli tam i z powrotem</em></li>
+                    </ol>
+                </div>
+                <div>
+                    <h4>Klasy VII i VIII</h4>
+                    <ol>
+                        <li>Charles Dickens, <em>Opowieść wigilijna</em></li>
+                        <li>Aleksander Fredro, <em>Zemsta</em></li>
+                        <li>Aleksander Kamiński, <em>Kamienie na szaniec</em></li>
+                        <li>Jan Kochanowski, wybór fraszek, wybrana pieśń, treny VII i VIII</li>
+                        <li>Adam Mickiewicz, <em>Reduta Ordona</em>, <em>Świtezianka</em>, <em>Dziady</em> cz. II, <em>Pan Tadeusz</em> (księgi: I, II, IV, X, XI, XII)</li>
+                        <li>Sławomir Mrożek, <em>Artysta</em></li>
+                        <li>Antoine de Saint-Exupéry, <em>Mały Książę</em></li>
+                        <li>Henryk Sienkiewicz, <em>Latarnik</em>, <em>Quo vadis</em> (fragmenty)</li>
+                        <li>Juliusz Słowacki, <em>Balladyna</em></li>
+                        <li>Stefan Żeromski, <em>Syzyfowe prace</em> (fragmenty)</li>
+                    </ol>
+                </div>
+                <div>
+                    <h4>Inne lektury obowiązkowe (do zadań otwartych i wypracowania)</h4>
+                    <ol>
+                        <li>R. Goscinny, J.-J. Sempé, <em>Mikołajek</em></li>
+                        <li>Ignacy Krasicki, wybrane bajki; <em>Żona modna</em></li>
+                        <li>Józef Wybicki, <em>Mazurek Dąbrowskiego</em>; Maria Konopnicka, <em>Rota</em></li>
+                        <li>Wybrane mity greckie (m.in. o Prometeuszu, Syzyfie, Demeter i Korze, Dedalu i Ikarze, Heraklesie, Tezeuszu i Ariadnie, Orfeuszu i Eurydyce)</li>
+                        <li>Biblia (stworzenie świata i człowieka, przypowieści: o talentach, o miłosiernym Samarytaninie, o siewcy, o pannach roztropnych)</li>
+                        <li>Wybrane podania, legendy polskie (o Lechu, Piaście, Kraku i Wandzie) i baśnie (np. <em>Kopciuszek</em>)</li>
+                        <li>B. Prus <em>Katarynka</em>, H. Sienkiewicz <em>W pustyni i w puszczy</em>, A. Puszkin <em>Bajka o rybaku i rybce</em>, A. Mickiewicz <em>Powrót taty</em>, <em>Pani Twardowska</em>, <em>Śmierć pułkownika</em>, <em>Sonety krymskie</em>, J. Kochanowski treny I i V, M. Wańkowicz <em>Tędy i owędy</em></li>
+                    </ol>
+                </div>
+            </div>
+        </details>
+
+        <!-- FORMULARZ EGZAMINACYJNY -->
+        <form id="exam-form">
+
+            <!-- ================= TEKST 1 ================= -->
+            <div class="reading-card">
+                <div class="reading-header">
+                    <span class="reading-tag">Tekst 1 • Zadania 1–11</span>
+                    <span class="reading-author">Ferenc Molnár</span>
+                </div>
+                <div class="reading-title">CHŁOPCY Z PLACU BRONI</div>
+                <div class="reading-body">
+                    <p>Wreszcie Pastorowie puścili go i Nemeczek wygramolił się ze stawu. Kiedy ujrzano go w ociekającym i zabłoconym ubraniu, wesołość wybuchła ze zdwojoną siłą. […] Prześcigano się w szyderstwach. […]</p>
+                    <p>Nemeczek nie reagował na te kpiny. Gorzko się uśmiechał i wygładzał mokrą kurtkę. Wtedy podszedł do niego Gereb i, szczerząc zęby w szerokim uśmiechu i kiwając głową, zapytał:</p>
+                    <p class="dialogue">– No i co, dobrze było?</p>
+                    <p>Nemeczek podniósł na niego swoje duże, niebieskie oczy i odparł:</p>
+                    <p class="dialogue">– Dobrze – powiedział cicho i już głośniej dodał: – Było mi znacznie lepiej niż tobie, kiedy stałeś na brzegu i wyśmiewałeś się ze słabszego. I wolałbym siedzieć w tej wodzie po szyję nawet do nowego roku, niż knuć z wrogami moich przyjaciół. Nie żałuję, że zanurzyliście mnie w wodzie. Poprzednim razem, kiedy sam wpadłem do wody, też cię widziałem wśród nich na tej wyspie. I choćbyście mnie zapraszali, przypochlebiali się, a nawet dawali prezenty, nie chcę mieć z wami nic wspólnego. Możecie mnie wsadzić do wody po sto i po tysiąc razy, ja i tak przyjdę tu jutro i pojutrze! I schowam się gdzieś tak, że mnie nie znajdziecie. Nie boję się nikogo z was. A gdy przyjdziecie do nas, na Plac Broni, zabrać nam naszą ziemię, to będziemy na was czekać. I pokażę wam, że kiedy będzie nas dziesięciu, tyle samo co was, to zupełnie inaczej porozmawiamy. Teraz jestem tu sam. Łatwo było mnie pokonać! Silniejszy zawsze wygrywa. Pastorowie ukradli mi moje kulki¹ w Ogrodzie Muzealnym, bo byli silniejsi. W dziesięciu łatwo stawać przeciw jednemu. Ale ja nie żałuję. Możecie mnie nawet zabić, jeśli wam się tak spodoba. Nie musiałem przecież włazić do tej wody. Wystarczyłoby przystać do was. Ale ja tego nie chciałem. Możecie mnie utopić, zatłuc na śmierć, ale ja nigdy nie będę zdrajcą, jak ten ktoś, kto stoi wśród was, o… tam…</p>
+                    <p>W tym momencie wyciągnął rękę i wskazał na Gereba, któremu śmiech uwiązł w gardle. Światło latarni padło na ładną, jasną głowę Nemeczka, oświetliło ociekające wodą ubranie. Odważnie, dumnie i ze spokojem patrzył Nemeczek Gerebowi prosto w oczy, a ten poczuł nagle jakiś ogromny ciężar na duszy. Spochmurniał i opuścił głowę. W tym momencie wszyscy umilkli i zapadła cisza niczym w kościele. Wyraźnie było słychać, jak z ubrania Nemeczka spadają na twardą ziemię krople wody.</p>
+                    <p>Milczenie przerwał głos Nemeczka:</p>
+                    <p class="dialogue">– Czy mogę odejść?</p>
+                    <p>Nikt mu nie odpowiedział. Zapytał więc raz jeszcze:</p>
+                    <p class="dialogue">– Nie zbijecie mnie? Mogę odejść?</p>
+                    <p>A ponieważ nadal nikt nie odpowiedział, Nemeczek powoli ruszył w stronę mostku. Wszyscy stali nieruchomo, nikt nie drgnął, żeby go zatrzymać. […] Stojący przy moście dwaj wartownicy, którzy widzieli wszystko, co zaszło, patrzyli w milczeniu na Nemeczka. Nie śmieli go nawet dotknąć.</p>
+                    <p>Kiedy Nemeczek wszedł na most, rozległ się grzmiący, głęboki głos Acza:</p>
+                    <p class="dialogue">– Prezentuj broń!</p>
+                    <p>Obaj wartownicy stanęli na baczność i unieśli wysoko w górę włócznie ze srebrnymi grotami. A w ślad za nimi wszyscy chłopcy trzasnęli obcasami i podnieśli swoje włócznie. I nikt nie odzywał się, jedynie ostrza włóczni błyszczały w poświacie księżyca.</p>
+                </div>
+                <div class="reading-source">
+                    <span>¹ Kulki – używane w popularnej dawniej grze. • Ferenc Molnár, <em>Chłopcy z Placu Broni</em>, tłum. Tadeusz Olszański, Warszawa 2007.</span>
+                    <span>[492 wyrazy]</span>
+                </div>
+            </div>
+
+            <!-- ZADANIE 1 -->
+            <div class="task-card" id="card-task-1">
+                <div class="task-header">
+                    <span class="task-title">Zadanie 1. (Prawda / Fałsz)</span>
+                    <span class="task-points">0–1 pkt</span>
+                </div>
+                <div class="task-content">
+                    Na podstawie przytoczonego fragmentu utworu <em>Chłopcy z Placu Broni</em> oceń prawdziwość poniższych stwierdzeń. Wybierz <strong>P</strong>, jeśli stwierdzenie jest prawdziwe, albo <strong>F</strong> – jeśli jest fałszywe.
+                </div>
+                <table class="tf-table">
+                    <tr>
+                        <td>Postawa Nemeczka świadczy o tym, że dochowanie wierności przyjaciołom wymaga odwagi.</td>
+                        <td>
+                            <div class="tf-choices">
+                                <button type="button" class="tf-btn" onclick="setTF(1, 1, 'P', this)">P</button>
+                                <button type="button" class="tf-btn" onclick="setTF(1, 1, 'F', this)">F</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Zachowanie Acza wobec Nemeczka jest wyrazem lekceważenia przeciwnika.</td>
+                        <td>
+                            <div class="tf-choices">
+                                <button type="button" class="tf-btn" onclick="setTF(1, 2, 'P', this)">P</button>
+                                <button type="button" class="tf-btn" onclick="setTF(1, 2, 'F', this)">F</button>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- ZADANIE 2 -->
+            <div class="task-card" id="card-task-2">
+                <div class="task-header">
+                    <span class="task-title">Zadanie 2. (Prawda / Fałsz)</span>
+                    <span class="task-points">0–1 pkt</span>
+                </div>
+                <div class="task-content">
+                    Na podstawie przytoczonego fragmentu utworu <em>Chłopcy z Placu Broni</em> oceń prawdziwość poniższych stwierdzeń. Wybierz <strong>P</strong>, jeśli stwierdzenie jest prawdziwe, albo <strong>F</strong> – jeśli jest fałszywe.
+                </div>
+                <table class="tf-table">
+                    <tr>
+                        <td>Postawa Nemeczka wpłynęła na zmianę zachowania jego przeciwników.</td>
+                        <td>
+                            <div class="tf-choices">
+                                <button type="button" class="tf-btn" onclick="setTF(2, 1, 'P', this)">P</button>
+                                <button type="button" class="tf-btn" onclick="setTF(2, 1, 'F', this)">F</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Nemeczek nie był pewny reakcji swoich przeciwników na wypowiedziane przez siebie słowa.</td>
+                        <td>
+                            <div class="tf-choices">
+                                <button type="button" class="tf-btn" onclick="setTF(2, 2, 'P', this)">P</button>
+                                <button type="button" class="tf-btn" onclick="setTF(2, 2, 'F', this)">F</button>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- ZADANIE 3 -->
+            <div class="task-card">
+                <div class="task-header">
+                    <span class="task-title">Zadanie 3. (Wybór wielokrotny)</span>
+                    <span class="task-points">0–1 pkt</span>
+                </div>
+                <div class="task-content">
+                    Na podstawie przytoczonego fragmentu utworu <em>Chłopcy z Placu Broni</em> dokończ zdanie. Wybierz właściwą odpowiedź spośród podanych.
+                    <span class="task-question">W przytoczonym fragmencie utworu postawę Nemeczka charakteryzuje</span>
+                </div>
+                <div class="options-grid">
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task3" value="A"> <span><strong>A.</strong> zawiść.</span></label>
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task3" value="B"> <span><strong>B.</strong> ciekawość.</span></label>
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task3" value="C"> <span><strong>C.</strong> nieugiętość.</span></label>
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task3" value="D"> <span><strong>D.</strong> nieodpowiedzialność.</span></label>
+                </div>
+            </div>
+
+            <!-- ZADANIE 4 -->
+            <div class="task-card">
+                <div class="task-header">
+                    <span class="task-title">Zadanie 4. (Wybór wielokrotny)</span>
+                    <span class="task-points">0–1 pkt</span>
+                </div>
+                <div class="task-content">
+                    Spośród podanych pytań wskaż to, na które <strong>nie można</strong> znaleźć odpowiedzi w przytoczonym fragmencie utworu <em>Chłopcy z Placu Broni</em>. Wybierz właściwą odpowiedź spośród podanych.
+                </div>
+                <div class="options-list">
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task4" value="A"> <span><strong>A.</strong> Kto siłą przytrzymywał Nemeczka w wodzie?</span></label>
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task4" value="B"> <span><strong>B.</strong> W jakim celu Nemeczek pojawił się na wyspie?</span></label>
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task4" value="C"> <span><strong>C.</strong> W jaki sposób Feri Acz zareagował na słowa Nemeczka?</span></label>
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task4" value="D"> <span><strong>D.</strong> Kogo Nemeczek oskarżył o nielojalność wobec chłopców z Placu Broni?</span></label>
+                </div>
+            </div>
+
+            <!-- ZADANIE 5 -->
+            <div class="task-card">
+                <div class="task-header">
+                    <span class="task-title">Zadanie 5. (Otwarte)</span>
+                    <span class="task-points">0–1 pkt</span>
+                </div>
+                <div class="task-content">
+                    W przytoczonym fragmencie utworu <em>Chłopcy z Placu Broni</em> Nemeczek stwierdza, że <em>silniejszy zawsze wygrywa</em>.
+                    <span class="task-question">Uzasadnij, że w sytuacji opisanej w przytoczonym fragmencie utworu to Nemeczek okazał się silniejszy.</span>
+                </div>
+                <div class="text-area-wrap">
+                    <textarea class="plain-textarea" id="task5_answer" placeholder="Wpisz uzasadnienie..."></textarea>
+                </div>
+            </div>
+
+            <!-- ZADANIE 6 -->
+            <div class="task-card">
+                <div class="task-header">
+                    <span class="task-title">Zadanie 6. (Otwarte)</span>
+                    <span class="task-points">0–1 pkt</span>
+                </div>
+                <div class="task-content">
+                    Na podstawie przytoczonego fragmentu utworu <em>Chłopcy z Placu Broni</em> wyjaśnij, dlaczego podczas spotkania z Nemeczkiem Gereb najpierw <em>szczerzył zęby w uśmiechu</em>, a potem <em>śmiech uwiązł mu w gardle</em>.
+                </div>
+                <div class="text-area-wrap">
+                    <textarea class="plain-textarea" id="task6_answer" placeholder="Wpisz wyjaśnienie..."></textarea>
+                </div>
+            </div>
+
+            <!-- ZADANIE 7 -->
+            <div class="task-card">
+                <div class="task-header">
+                    <span class="task-title">Zadanie 7. (Otwarte – odwołanie do lektury)</span>
+                    <span class="task-points">0–2 pkt</span>
+                </div>
+                <div class="task-content">
+                    Spośród lektur obowiązkowych – innych niż <em>Chłopcy z Placu Broni</em> – wybierz tę, której bohater w sytuacji zagrożenia zachował godną postawę. Podaj tytuł tej lektury oraz jej bohatera.<br>
+                    <strong>Uzasadnij swój wybór.</strong> W uzasadnieniu przywołaj sytuację z tej lektury, ilustrującą Twoją argumentację.
+                </div>
+                <div class="text-area-wrap">
+                    <div class="row-2col">
+                        <div>
+                            <label class="field-label" for="task7_title">Tytuł lektury:</label>
+                            <input type="text" class="plain-input" id="task7_title" placeholder="np. Kamienie na szaniec">
+                        </div>
+                        <div>
+                            <label class="field-label" for="task7_hero">Bohater lektury:</label>
+                            <input type="text" class="plain-input" id="task7_hero" placeholder="np. Jan Bytnar (Rudy)">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="field-label" for="task7_answer">Uzasadnienie wyboru (z przywołaniem sytuacji z lektury):</label>
+                        <textarea class="plain-textarea" id="task7_answer" placeholder="Opisz sytuację zagrożenia i uzasadnij godną postawę bohatera..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ZADANIE 8 -->
+            <div class="task-card">
+                <div class="task-header">
+                    <span class="task-title">Zadanie 8. (Złożone wielokrotnego wyboru)</span>
+                    <span class="task-points">0–1 pkt</span>
+                </div>
+                <div class="task-content">
+                    Uzupełnij poniższe zdania. Wybierz odpowiedź spośród oznaczonych literami <strong>A</strong> i <strong>B</strong> oraz odpowiedź spośród oznaczonych literami <strong>C</strong> i <strong>D</strong>.
+                    <span class="task-question">Znaczenia wyrazu podkreślonego w zdaniu <em>Prześcigano się w <u>szyderstwach</u></em> należy szukać w słowniku [A / B]. Aby zachować sens tego zdania, podkreślony wyraz można zastąpić wyrazem [C / D].</span>
+                </div>
+                <div class="dual-choice-container">
+                    <div class="dual-part">
+                        <div class="dual-part-title">Wybierz słownik (A lub B):</div>
+                        <div class="options-grid">
+                            <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task8_part1" value="A"> <span><strong>A.</strong> frazeologicznym</span></label>
+                            <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task8_part1" value="B"> <span><strong>B.</strong> języka polskiego</span></label>
+                        </div>
+                    </div>
+                    <div class="dual-part">
+                        <div class="dual-part-title">Wybierz wyraz bliskoznaczny (C lub D):</div>
+                        <div class="options-grid">
+                            <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task8_part2" value="C"> <span><strong>C.</strong> drwinach</span></label>
+                            <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task8_part2" value="D"> <span><strong>D.</strong> napominaniach</span></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ZADANIE 9 -->
+            <div class="task-card">
+                <div class="task-header">
+                    <span class="task-title">Zadanie 9. (Złożone wielokrotnego wyboru)</span>
+                    <span class="task-points">0–1 pkt</span>
+                </div>
+                <div class="task-content">
+                    Uzupełnij poniższe zdania. Wybierz odpowiedź spośród oznaczonych literami <strong>A</strong> i <strong>B</strong> oraz odpowiedź spośród oznaczonych literami <strong>C</strong> i <strong>D</strong>.
+                    <span class="task-question">W zdaniu <em>Wystarczyłoby <u>przystać</u> do was</em> podkreślony czasownik wystąpił w formie [A / B]. W trzeciej osobie liczby pojedynczej czasu przeszłego ten czasownik ma postać [C / D].</span>
+                </div>
+                <div class="dual-choice-container">
+                    <div class="dual-part">
+                        <div class="dual-part-title">Forma czasownika (A lub B):</div>
+                        <div class="options-grid">
+                            <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task9_part1" value="A"> <span><strong>A.</strong> osobowej</span></label>
+                            <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task9_part1" value="B"> <span><strong>B.</strong> nieosobowej</span></label>
+                        </div>
+                    </div>
+                    <div class="dual-part">
+                        <div class="dual-part-title">3. os. lp. czasu przeszłego (C lub D):</div>
+                        <div class="options-grid">
+                            <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task9_part2" value="C"> <span><strong>C.</strong> przystał</span></label>
+                            <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task9_part2" value="D"> <span><strong>D.</strong> przystanął</span></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ZADANIE 10 -->
+            <div class="task-card">
+                <div class="task-header">
+                    <span class="task-title">Zadanie 10. (Otwarte – interpunkcja)</span>
+                    <span class="task-points">0–1 pkt</span>
+                </div>
+                <div class="task-content">
+                    Uczniowie w ramach projektu przygotowali krótkie notatki na temat okoliczności powstania wybranych lektur szkolnych. W jednej z notatek zabrakło <strong>trzech przecinków</strong>.
+                    <span class="task-question">Uzupełnij poniższy zapis tak, aby był zgodny z zasadami interpunkcji (wstaw dokładnie 3 brakujące przecinki w odpowiednich miejscach tekstu).</span>
+                </div>
+                <div class="text-area-wrap">
+                    <textarea class="plain-textarea" id="task10_answer" style="min-height: 130px;">W 1906 r. profesor Kornel Rupp poprosił Ferenca Molnára, który był już wtedy znanym dziennikarzem o pomoc. Chodziło o wsparcie szkolnego tygodnika, którego Rupp był redaktorem. Wspólnie wpadli na pomysł aby w czasopiśmie publikować w odcinkach powieść dla młodzieży. Rok później ukazało się pierwsze wydanie „Chłopców z Placu Broni”, książki, która przyniosła autorowi sławę. Utwór został przetłumaczony na ponad 40 języków co przyczyniło się do jego popularności na świecie.</textarea>
+                </div>
+            </div>
+
+            <!-- ZADANIE 11 -->
+            <div class="task-card">
+                <div class="task-header">
+                    <span class="task-title">Zadanie 11. (Otwarte – karty do gry)</span>
+                    <span class="task-points">0–3 pkt</span>
+                </div>
+                <div class="task-content">
+                    Na lekcji języka polskiego uczniowie jednej z klas otrzymali karty do gry przygotowanej na podstawie utworów literackich. Poniżej znajdują się wybrane karty do tej gry.
+                    <div class="cards-grid">
+                        <!-- Karta A -->
+                        <div class="game-card">
+                            <div class="game-card-letter">Karta A</div>
+                            <svg width="84" height="84" viewBox="0 0 84 84">
+                                <rect width="84" height="84" rx="10" fill="#1e293b" stroke="#475569"/>
+                                <path d="M0 64 Q42 54 84 64 L84 84 L0 84 Z" fill="#d97706" opacity="0.45"/>
+                                <!-- Samolot -->
+                                <path d="M18 22 L66 18 L54 24 L26 24 Z" fill="#e2e8f0"/>
+                                <rect x="38" y="14" width="6" height="14" rx="2" fill="#94a3b8"/>
+                                <!-- Studnia -->
+                                <rect x="28" y="42" width="28" height="24" rx="3" fill="#94a3b8" stroke="#cbd5e1" stroke-width="1.5"/>
+                                <line x1="28" y1="50" x2="56" y2="50" stroke="#475569" stroke-width="1.5"/>
+                                <line x1="28" y1="58" x2="56" y2="58" stroke="#475569" stroke-width="1.5"/>
+                                <ellipse cx="42" cy="42" rx="14" ry="4" fill="#334155" stroke="#cbd5e1" stroke-width="1.5"/>
+                            </svg>
+                            <div class="game-card-caption">Kamienna studnia i dwupłatowiec na pustyni</div>
+                        </div>
+                        <!-- Karta B -->
+                        <div class="game-card">
+                            <div class="game-card-letter">Karta B</div>
+                            <svg width="84" height="84" viewBox="0 0 84 84">
+                                <rect width="84" height="84" rx="10" fill="#1e293b" stroke="#475569"/>
+                                <path d="M0 68 L84 68 L84 84 L0 84 Z" fill="#15803d" opacity="0.5"/>
+                                <!-- Ruiny zamku -->
+                                <rect x="22" y="34" width="16" height="34" fill="#94a3b8"/>
+                                <rect x="44" y="20" width="18" height="48" fill="#cbd5e1"/>
+                                <path d="M38 44 L44 44 L44 68 L38 68 Z" fill="#64748b"/>
+                                <rect x="44" y="15" width="4" height="6" fill="#cbd5e1"/>
+                                <rect x="51" y="15" width="4" height="6" fill="#cbd5e1"/>
+                                <rect x="58" y="15" width="4" height="6" fill="#cbd5e1"/>
+                                <rect x="49" y="32" width="6" height="10" rx="3" fill="#0f172a"/>
+                            </svg>
+                            <div class="game-card-caption">Stare ruiny zamku i muru</div>
+                        </div>
+                        <!-- Karta C -->
+                        <div class="game-card">
+                            <div class="game-card-letter">Karta C</div>
+                            <svg width="84" height="84" viewBox="0 0 84 84">
+                                <rect width="84" height="84" rx="10" fill="#1e293b" stroke="#475569"/>
+                                <!-- Las i niedźwiedź -->
+                                <rect x="14" y="16" width="5" height="52" fill="#78350f"/>
+                                <rect x="64" y="14" width="6" height="54" fill="#78350f"/>
+                                <circle cx="16" cy="18" r="10" fill="#166534"/>
+                                <circle cx="67" cy="16" r="12" fill="#15803d"/>
+                                <ellipse cx="44" cy="54" rx="14" ry="10" fill="#78350f"/>
+                                <circle cx="33" cy="48" r="6" fill="#78350f"/>
+                                <rect x="34" y="60" width="5" height="8" fill="#451a03"/>
+                                <rect x="48" y="60" width="5" height="8" fill="#451a03"/>
+                            </svg>
+                            <div class="game-card-caption">Niedźwiedź w gęstym lesie</div>
+                        </div>
+                        <!-- Karta D -->
+                        <div class="game-card">
+                            <div class="game-card-letter">Karta D</div>
+                            <svg width="84" height="84" viewBox="0 0 84 84">
+                                <rect width="84" height="84" rx="10" fill="#1e293b" stroke="#475569"/>
+                                <!-- Duch w łańcuchach -->
+                                <path d="M28 66 Q30 30 42 26 Q54 30 56 66 Z" fill="#94a3b8" opacity="0.85"/>
+                                <circle cx="42" cy="24" r="9" fill="#cbd5e1"/>
+                                <circle cx="39" cy="23" r="1.8" fill="#0f172a"/>
+                                <circle cx="45" cy="23" r="1.8" fill="#0f172a"/>
+                                <path d="M26 42 Q42 52 58 42" fill="none" stroke="#475569" stroke-width="3" stroke-dasharray="4 2"/>
+                                <path d="M24 56 Q42 66 60 56" fill="none" stroke="#64748b" stroke-width="3" stroke-dasharray="4 2"/>
+                            </svg>
+                            <div class="game-card-caption">Zjawa / duch spowity w ciężkie łańcuchy</div>
+                        </div>
+                        <!-- Karta E -->
+                        <div class="game-card">
+                            <div class="game-card-letter">Karta E</div>
+                            <svg width="84" height="84" viewBox="0 0 84 84">
+                                <rect width="84" height="84" rx="10" fill="#1e293b" stroke="#475569"/>
+                                <circle cx="20" cy="20" r="8" fill="#e2e8f0" opacity="0.85"/>
+                                <!-- Nagrobki -->
+                                <rect x="36" y="34" width="16" height="32" rx="2" fill="#94a3b8"/>
+                                <line x1="44" y1="22" x2="44" y2="34" stroke="#cbd5e1" stroke-width="2.5"/>
+                                <line x1="39" y1="27" x2="49" y2="27" stroke="#cbd5e1" stroke-width="2.5"/>
+                                <rect x="56" y="46" width="12" height="20" rx="2" fill="#64748b"/>
+                                <path d="M0 66 L84 66 L84 84 L0 84 Z" fill="#0f172a"/>
+                            </svg>
+                            <div class="game-card-caption">Cmentarz z nagrobkami nocą w świetle księżyca</div>
+                        </div>
+                        <!-- Karta F -->
+                        <div class="game-card">
+                            <div class="game-card-letter">Karta F</div>
+                            <svg width="84" height="84" viewBox="0 0 84 84">
+                                <rect width="84" height="84" rx="10" fill="#1e293b" stroke="#475569"/>
+                                <!-- Planeta i król na tronie -->
+                                <circle cx="42" cy="74" r="24" fill="#38bdf8" opacity="0.35"/>
+                                <rect x="33" y="26" width="18" height="28" rx="3" fill="#f59e0b"/>
+                                <circle cx="42" cy="24" r="6" fill="#fde68a"/>
+                                <path d="M36 18 L39 14 L42 18 L45 14 L48 18 Z" fill="#fbbf24"/>
+                                <path d="M32 34 L52 34 L56 54 L28 54 Z" fill="#dc2626"/>
+                            </svg>
+                            <div class="game-card-caption">Król w purpurowym płaszczu na tronie na małej planecie</div>
+                        </div>
+                    </div>
+                    Spośród zaprezentowanych kart do gry <strong>wybierz dwie</strong>, na których umieszczono elementy graficzne nawiązujące tematycznie do <strong>jednej lektury obowiązkowej</strong>. Podaj tytuł tej lektury i wyjaśnij związek wybranych przez Ciebie kart z treścią utworu.
+                </div>
+                <div class="text-area-wrap">
+                    <div class="row-2col">
+                        <div>
+                            <label class="field-label" for="task11_card1">Wybieram karty oznaczone literami (pierwsza):</label>
+                            <input type="text" class="plain-input" id="task11_card1" placeholder="np. A">
+                        </div>
+                        <div>
+                            <label class="field-label" for="task11_card2">oraz (druga):</label>
+                            <input type="text" class="plain-input" id="task11_card2" placeholder="np. F">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="field-label" for="task11_title">Tytuł lektury obowiązkowej:</label>
+                        <input type="text" class="plain-input" id="task11_title" placeholder="np. Mały Książę">
+                    </div>
+                    <div>
+                        <label class="field-label" for="task11_answer">Wyjaśnienie związku obu kart z treścią utworu:</label>
+                        <textarea class="plain-textarea" id="task11_answer" placeholder="Wyjaśnij szczegółowo, do jakich wydarzeń lub postaci w utworze odnosi się każda z dwóch wybranych kart..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= TEKST 2 ================= -->
+            <div class="reading-card">
+                <div class="reading-header">
+                    <span class="reading-tag">Tekst 2 • Zadania 12–18</span>
+                    <span class="reading-author">Anna Vivarelli</span>
+                </div>
+                <div class="reading-title">CZYIM JESTEŚ PRZYJACIELEM?</div>
+                <div class="reading-body">
+                    <p>Przyjaźń fascynuje filozofów od najdawniejszych czasów. Może uznasz, że to dziwne, bo przecież nie ma nic prostszego niż przyjaźń: ja jestem twoją przyjaciółką, ty jesteś moim przyjacielem. Zapraszam cię do grona znajomych jednym kliknięciem, a ty jednym kliknięciem akceptujesz zaproszenie.</p>
+                    <p>Dlaczego zatem tak wielu filozofów poświęciło tyle czasu i trudu, aby zdefiniować pojęcie przyjaźni? Może dlatego, że bycie czyimś przyjacielem wcale nie jest takie proste, jak się na ogół wydaje. Starożytny myśliciel Empedokles był przekonany, że przyjaźń jest siłą kosmiczną, rodzajem bóstwa, które utrzymuje w harmonii cały wszechświat i wszystkie jego żywioły: ziemię, powietrze, wodę, ogień. Dziś zapewne uznamy tę wizję za nieco przesadną. Trudno się jednak nie zgodzić, że przyjaźń między dwiema osobami to rodzaj harmonii, która potrafi połączyć zupełnie różne charaktery.</p>
+                    <p>Filozofem, który bliżej przyjrzał się przyjaźni, był Arystoteles – jeden z najznakomitszych umysłów wszech czasów. Twierdził on, że przyjaźń jest potrzebna każdemu człowiekowi i dlatego nikt nie chciałby żyć bez przyjaciół, nawet gdyby posiadł wszystkie inne dobra. Według tego wybitnego filozofa przyjaźń jest ważna w każdym momencie życia, ale najbardziej potrzebujemy jej w młodości – by nie popełniać błędów i stawać się lepszymi ludźmi. „Kiedy dwóch idzie razem, każdy z nich lepiej działa i myśli” – tak mówił o przyjaciołach.</p>
+                    <p>Arystoteles wyróżnił trzy rodzaje przyjaźni. Pierwszy to ten, który opiera się na użyteczności. Dwie osoby zostają przyjaciółmi, ponieważ czerpią z tej relacji wspólną korzyść. Jest to jednak przyjaźń już u swych podstaw wadliwa. Szybko się kończy, ponieważ nie wynika z prawdziwego uczucia. Istnieją tysiące przykładów takiej udawanej przyjaźni: czasem zaczynamy się z kimś kolegować, bo jest lubiany w klasie, a my sądzimy, że dzięki niemu też zdobędziemy popularność. Albo dlatego, że jest dobry z jakichś przedmiotów, a my mamy nadzieję, że pomoże nam na sprawdzianie. Zazwyczaj nie zdarza się ani jedno, ani drugie…</p>
+                    <p>Drugi rodzaj przyjaźni jest z pewnością bardziej wartościowy: to ten, który opiera się na przyjemności przebywania w czyimś towarzystwie. Zostajemy przyjaciółmi, ponieważ lubimy spędzać razem czas, bo kiedy jesteśmy razem, śmiejemy się i nigdy się nie nudzimy. Ale… jest jedno „ale”. Przyjaźń, która opiera się wyłącznie na przyjemności przebywania razem, zawsze w końcu wygasa. Dorastamy, zainteresowania się zmieniają i nagle przepada wszystko, co nas łączyło. Przestajemy się widywać i kiedy znów po jakimś czasie wpadamy na siebie, zazwyczaj mamy już nowych przyjaciół.</p>
+                    <p>Jest wreszcie trzeci rodzaj przyjaźni: przyjaźń doskonała, taka, którą można przeżyć jedynie z nielicznymi osobami. Dzieje się tak wtedy, kiedy żywimy względem drugiej osoby bezinteresowne uczucia. To przyjaźń, która nie zna ani zazdrości, ani zawiści. Pozwala nam cieszyć się sukcesami przyjaciela, sprawia, że potrafimy dzielić z nim także ból. Zapuszcza w nas głęboko korzenie i nie przemija. Daje odwagę, aby upomnieć przyjaciela, kiedy popełnia błąd, i pozwala przyjąć krytykę, gdy sami zbłądzimy.</p>
+                    <p>To bardzo rzadko spotykane uczucie i Arystoteles dobrze o tym wiedział.</p>
+                </div>
+                <div class="reading-source">
+                    <span>Na podstawie: Anna Vivarelli, <em>Czyim jesteś przyjacielem?</em>, [w:] tejże, <em>Kto by pomyślał</em>, tłum. E. Nicewicz-Staszowska, Wrocław 2018.</span>
+                    <span>[475 wyrazów]</span>
+                </div>
+            </div>
+
+            <!-- ZADANIE 12 -->
+            <div class="task-card">
+                <div class="task-header">
+                    <span class="task-title">Zadanie 12. (Otwarte – streszczenie)</span>
+                    <span class="task-points">0–2 pkt</span>
+                </div>
+                <div class="task-content">
+                    Uzupełnij poniższe zdania tak, aby powstało streszczenie tekstu <em>Czyim jesteś przyjacielem?</em>.
+                </div>
+                <div class="text-area-wrap">
+                    <div>
+                        <label class="field-label" for="task12_1">Tematem tekstu Anny Vivarelli jest…</label>
+                        <input type="text" class="plain-input" id="task12_1" placeholder="np. pojęcie przyjaźni oraz jej rodzaje w ujęciu filozofów.">
+                    </div>
+                    <div>
+                        <label class="field-label" for="task12_2">Na początku autorka zastanawia się…</label>
+                        <input type="text" class="plain-input" id="task12_2" placeholder="np. dlaczego tak wielu filozofów próbowało zdefiniować przyjaźń, choć wydaje się ona prosta.">
+                    </div>
+                    <div>
+                        <label class="field-label" for="task12_3">W kolejnych akapitach…</label>
+                        <textarea class="plain-textarea" id="task12_3" style="min-height: 85px;" placeholder="np. przedstawia poglądy Empedoklesa oraz omawia trzy rodzaje przyjaźni wyróżnione przez Arystotelesa (opartą na użyteczności, przyjemności i przyjaźń doskonałą)."></textarea>
+                    </div>
+                    <div>
+                        <label class="field-label" for="task12_4">W zakończeniu…</label>
+                        <input type="text" class="plain-input" id="task12_4" placeholder="np. podkreśla, że prawdziwa, bezinteresowna przyjaźń jest uczuciem niezwykle rzadkim.">
+                    </div>
+                </div>
+            </div>
+
+            <!-- ZADANIE 13 -->
+            <div class="task-card" id="card-task-13">
+                <div class="task-header">
+                    <span class="task-title">Zadanie 13. (Prawda / Fałsz)</span>
+                    <span class="task-points">0–1 pkt</span>
+                </div>
+                <div class="task-content">
+                    Na podstawie przytoczonego tekstu <em>Czyim jesteś przyjacielem?</em> oceń prawdziwość poniższych stwierdzeń. Wybierz <strong>P</strong>, jeśli stwierdzenie jest prawdziwe, albo <strong>F</strong> – jeśli jest fałszywe.
+                </div>
+                <table class="tf-table">
+                    <tr>
+                        <td>Według Empedoklesa przyjaźń pozwala na harmonijne współistnienie przeciwieństw.</td>
+                        <td>
+                            <div class="tf-choices">
+                                <button type="button" class="tf-btn" onclick="setTF(13, 1, 'P', this)">P</button>
+                                <button type="button" class="tf-btn" onclick="setTF(13, 1, 'F', this)">F</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Według Arystotelesa przyjaźń zobowiązuje do przemilczenia błędów popełnionych przez przyjaciela.</td>
+                        <td>
+                            <div class="tf-choices">
+                                <button type="button" class="tf-btn" onclick="setTF(13, 2, 'P', this)">P</button>
+                                <button type="button" class="tf-btn" onclick="setTF(13, 2, 'F', this)">F</button>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- ZADANIE 14 -->
+            <div class="task-card">
+                <div class="task-header">
+                    <span class="task-title">Zadanie 14. (Wybór wielokrotny)</span>
+                    <span class="task-points">0–1 pkt</span>
+                </div>
+                <div class="task-content">
+                    Które z podanych niżej zdań jest <strong>niezgodne</strong> z treścią tekstu <em>Czyim jesteś przyjacielem?</em> Wybierz właściwą odpowiedź spośród podanych.
+                </div>
+                <div class="options-list">
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task14" value="A"> <span><strong>A.</strong> Różnica charakterów nie przeszkadza w zawarciu trwałej przyjaźni.</span></label>
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task14" value="B"> <span><strong>B.</strong> Prawdziwie bezinteresowna przyjaźń nie jest powszechnym zjawiskiem.</span></label>
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task14" value="C"> <span><strong>C.</strong> Radość z przebywania z przyjacielem wystarczy, aby taka relacja nie wygasła.</span></label>
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task14" value="D"> <span><strong>D.</strong> O wartości przyjaźni przekonuje fakt, że dla wielu filozofów było to ważne zagadnienie.</span></label>
+                </div>
+            </div>
+
+            <!-- ZADANIE 15 -->
+            <div class="task-card">
+                <div class="task-header">
+                    <span class="task-title">Zadanie 15. (Otwarte – lektura obowiązkowa)</span>
+                    <span class="task-points">0–2 pkt</span>
+                </div>
+                <div class="task-content">
+                    Przeczytaj poniższy fragment utworu.
+                    <div class="quote-box">
+                        – Proszę, oswój mnie – powiedział. […] – Ludzie nie mają czasu na poznawanie czegokolwiek. Kupują gotowe rzeczy w sklepach. Ponieważ jednak nie istnieją sklepy z przyjaciółmi, ludzie nie mają przyjaciół. Jeśli chcesz mieć przyjaciela, oswój mnie!
+                    </div>
+                </div>
+                <div class="text-area-wrap">
+                    <div>
+                        <label class="field-label" for="task15_1">15.1. Podaj tytuł lektury obowiązkowej, z której pochodzi powyższy fragment utworu:</label>
+                        <input type="text" class="plain-input" id="task15_1" placeholder="Wpisz tytuł lektury...">
+                    </div>
+                    <div>
+                        <label class="field-label" for="task15_2">15.2. Na podstawie znajomości całego utworu, z którego pochodzi powyższy fragment, napisz, co jest niezbędne, aby zyskać przyjaciela. Swoją odpowiedź zilustruj odpowiednim przykładem z tego utworu.</label>
+                        <textarea class="plain-textarea" id="task15_2" placeholder="Wpisz odpowiedź i konkretny przykład z utworu..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ZADANIE 16 -->
+            <div class="task-card">
+                <div class="task-header">
+                    <span class="task-title">Zadanie 16. (Składnia)</span>
+                    <span class="task-points">0–1 pkt</span>
+                </div>
+                <div class="task-content">
+                    Dokończ zdanie. Wybierz właściwą odpowiedź spośród podanych.
+                    <span class="task-question">Wypowiedzenie <em>Kiedy dwóch idzie razem, każdy z nich lepiej działa i myśli</em> jest zdaniem</span>
+                </div>
+                <div class="options-grid">
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task16" value="A"> <span><strong>A.</strong> pojedynczym.</span></label>
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task16" value="B"> <span><strong>B.</strong> złożonym podrzędnie.</span></label>
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task16" value="C"> <span><strong>C.</strong> wielokrotnie złożonym.</span></label>
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task16" value="D"> <span><strong>D.</strong> złożonym współrzędnie.</span></label>
+                </div>
+            </div>
+
+            <!-- ZADANIE 17 -->
+            <div class="task-card">
+                <div class="task-header">
+                    <span class="task-title">Zadanie 17. (Frazeologia)</span>
+                    <span class="task-points">0–1 pkt</span>
+                </div>
+                <div class="task-content">
+                    Które z podanych niżej powiedzeń wyraża podobną myśl, co słowa Arystotelesa <em>Kiedy dwóch idzie razem, każdy z nich lepiej działa i myśli</em>? Wybierz właściwą odpowiedź spośród podanych.
+                </div>
+                <div class="options-grid">
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task17" value="A"> <span><strong>A.</strong> Działać na dwa fronty.</span></label>
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task17" value="B"> <span><strong>B.</strong> Co dwie głowy, to nie jedna.</span></label>
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task17" value="C"> <span><strong>C.</strong> Trzymać dwie sroki za ogon.</span></label>
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task17" value="D"> <span><strong>D.</strong> Upiec dwie pieczenie na jednym ogniu.</span></label>
+                </div>
+            </div>
+
+            <!-- ZADANIE 18 -->
+            <div class="task-card">
+                <div class="task-header">
+                    <span class="task-title">Zadanie 18. (Forma użytkowa – Ogłoszenie)</span>
+                    <span class="task-points">0–3 pkt</span>
+                </div>
+                <div class="task-content">
+                    Zredaguj <strong>ogłoszenie</strong> informujące o spotkaniu uczniów chętnych do udziału w szkolnym przedstawieniu pt. <em>Przyjaciel na zawsze</em>. Zachęć do przyjścia na spotkanie, używając <strong>dwóch argumentów</strong>, z których co najmniej jeden będzie nawiązywał do tematyki spotkania.<br>
+                    <span style="color: var(--text-muted); font-size: 0.9rem;">Uwaga: w ocenie wypowiedzi będzie brana pod uwagę poprawność językowa, ortograficzna i interpunkcyjna.</span>
+                </div>
+                <div class="text-area-wrap">
+                    <label class="field-label" for="task18_answer">OGŁOSZENIE:</label>
+                    <textarea class="plain-textarea" id="task18_answer" style="min-height: 170px;" placeholder="OGŁOSZENIE&#10;&#10;Serdecznie zapraszamy wszystkich uczniów na spotkanie organizacyjne dotyczące szkolnego przedstawienia pt. „Przyjaciel na zawsze”..."></textarea>
+                </div>
+            </div>
+
+            <!-- ================= CZĘŚĆ II: ZADANIE 19 (WYPRACOWANIE) ================= -->
+            <div class="task-card" style="border-color: rgba(34, 197, 94, 0.45);">
+                <div class="task-header">
+                    <span class="task-title">Część II • Zadanie 19. (Wypracowanie)</span>
+                    <span class="task-points" style="background: rgba(34, 197, 94, 0.2); color: #4ade80; border-color: rgba(34, 197, 94, 0.45);">0–20 pkt</span>
+                </div>
+                <div class="task-content">
+                    Wybierz <strong>jeden</strong> z podanych tematów i napisz wypracowanie:
+                    <ul style="padding-left: 20px; margin: 10px 0; color: #cbd5e1; font-size: 0.94rem;">
+                        <li>Pamiętaj o zachowaniu formy wypowiedzi wskazanej w temacie: napisz <strong>przemówienie</strong> albo <strong>opowiadanie</strong>.</li>
+                        <li>W wypracowaniu odwołaj się do wybranej <strong>lektury obowiązkowej</strong> (lista lektur znajduje się na górze strony).</li>
+                        <li>Innym utworem literackim w przemówieniu może być także lektura obowiązkowa.</li>
+                        <li>Twoja praca powinna liczyć <strong>co najmniej 200 wyrazów</strong>.</li>
+                    </ul>
+
+                    <div class="dual-choice-container" style="margin-top: 14px;">
+                        <label class="option-label" onclick="selectRadio(this)" style="align-items: flex-start;">
+                            <input type="radio" name="task19_topic" value="1" style="margin-top: 4px;">
+                            <div>
+                                <strong style="color: #38bdf8;">Temat 1. (Przemówienie)</strong><br>
+                                Napisz przemówienie, w którym przekonasz rówieśników, że przyjaźń między dwiema osobami to rodzaj harmonii, która potrafi połączyć zupełnie różne charaktery. W argumentacji odwołaj się do wybranej lektury obowiązkowej oraz do innego utworu literackiego.
+                            </div>
+                        </label>
+                        <label class="option-label" onclick="selectRadio(this)" style="align-items: flex-start;">
+                            <input type="radio" name="task19_topic" value="2" style="margin-top: 4px;">
+                            <div style="width: 100%;">
+                                <strong style="color: #4ade80;">Temat 2. (Opowiadanie twórcze)</strong><br>
+                                Wyobraź sobie, że spotkałeś bohatera jednej z lektur obowiązkowych. Podczas Waszej wspólnej przygody dokonał on czynu godnego podziwu. Napisz o tym opowiadanie. Wypracowanie powinno dowodzić, że dobrze znasz wybranego bohatera.<br>
+                                <strong>Elementem fabuły opowiadania uczyń sytuację przedstawioną na jednej z poniższych ilustracji:</strong>
+                                <div class="illustrations-grid">
+                                    <div class="illustration-box">
+                                        <svg width="160" height="100" viewBox="0 0 160 100">
+                                            <rect width="160" height="100" rx="8" fill="#0f172a"/>
+                                            <path d="M0 70 L50 30 L90 60 L130 25 L160 55 L160 100 L0 100 Z" fill="#1e293b"/>
+                                            <path d="M0 78 Q70 60 160 82 L160 100 L0 100 Z" fill="#15803d" opacity="0.5"/>
+                                            <path d="M40 100 Q75 72 95 62" fill="none" stroke="#d97706" stroke-width="5"/>
+                                            <!-- Drogowskaz -->
+                                            <rect x="30" y="34" width="4" height="44" fill="#92400e"/>
+                                            <polygon points="18,38 34,38 34,45 18,45 13,41.5" fill="#fbbf24"/>
+                                            <polygon points="34,46 50,46 55,49.5 50,53 34,53" fill="#fbbf24"/>
+                                            <!-- Dwóch wędrowców -->
+                                            <circle cx="72" cy="68" r="4" fill="#e2e8f0"/>
+                                            <rect x="69" y="72" width="6" height="12" rx="2" fill="#38bdf8"/>
+                                            <circle cx="96" cy="72" r="4" fill="#e2e8f0"/>
+                                            <rect x="93" y="76" width="8" height="9" rx="2" fill="#f97316"/>
+                                        </svg>
+                                        <p>Ilustracja 1: Górski szlak z drogowskazem i dwoma wędrowcami</p>
+                                    </div>
+                                    <div class="illustration-box">
+                                        <svg width="160" height="100" viewBox="0 0 160 100">
+                                            <rect width="160" height="100" rx="8" fill="#0c4a6e"/>
+                                            <path d="M0 80 L45 55 L95 75 L135 50 L160 72 L160 100 L0 100 Z" fill="#1e293b"/>
+                                            <!-- Balon 1 -->
+                                            <ellipse cx="52" cy="34" rx="20" ry="23" fill="#f97316"/>
+                                            <path d="M44 55 L46 66 L58 66 L60 55" fill="none" stroke="#cbd5e1" stroke-width="1.5"/>
+                                            <rect x="44" y="66" width="16" height="10" rx="2" fill="#92400e"/>
+                                            <!-- Balon 2 -->
+                                            <ellipse cx="114" cy="40" rx="16" ry="19" fill="#22c55e"/>
+                                            <path d="M108 58 L110 67 L118 67 L120 58" fill="none" stroke="#cbd5e1" stroke-width="1.5"/>
+                                            <rect x="108" y="67" width="12" height="8" rx="2" fill="#92400e"/>
+                                        </svg>
+                                        <p>Ilustracja 2: Lot kolorowymi balonami nad górami</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="text-area-wrap">
+                    <div class="word-counter-bar">
+                        <span style="color: #cbd5e1;">Twoje wypracowanie (zwykły edytor tekstowy):</span>
+                        <span class="word-count-badge" id="essay-word-count">Liczba wyrazów: 0 / min. 200</span>
+                    </div>
+                    <textarea class="plain-textarea essay-textarea" id="task19_answer" placeholder="Wpisz treść wypracowania (przemówienia albo opowiadania)...&#10;Pamiętaj o akapitach, zachowaniu formy oraz minimum 200 wyrazach." oninput="updateEssayWordCount()"></textarea>
+                </div>
+            </div>
+
+            <!-- PRZYCISK ZAKOŃCZ -->
+            <div class="submit-section">
+                <button type="button" class="submit-btn" id="submit-btn" onclick="gradeExam()">
+                    ✅ Zakończ i sprawdź egzamin
+                </button>
+            </div>
+        </form>
+
+        <!-- WYNIKI -->
+        <div id="results-container">
+            <div class="score-summary-card">
+                <h2>Twój wynik z Egzaminu Ósmoklasisty (Język polski 2025)</h2>
+                <div class="big-score" id="final-score-text">0 / 45 pkt</div>
+                <p id="final-percent-text" style="color: var(--text-muted); font-size: 1.05rem;">0%</p>
+                <button type="button" class="pdf-btn" id="pdf-btn" onclick="generatePdfReport()">
+                    📄 Pobierz oficjalny raport PDF
+                </button>
+            </div>
+            <div id="results-list"></div>
+        </div>
+    </div>
+
+    <!-- Modal ustawień klucza API -->
+    <div class="modal-overlay" id="api-modal">
+        <div class="modal-box">
+            <h3>🔑 Klucz Google Gemini API</h3>
+            <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.5;">
+                Klucz jest zapisywany wyłącznie lokalnie w Twojej przeglądarce (<code>localStorage</code>) i służy do oceny zadań otwartych (5–7, 11–12, 15, 18) oraz wypracowania (19) zgodnie z kryteriami CKE z Informatora 2024/2025.
+            </p>
+            <input type="password" id="api-key-input" placeholder="AIza...">
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button type="button" class="btn-small" onclick="closeKeyModal()">Anuluj</button>
+                <button type="button" class="btn-small" style="background: var(--primary); color: #fff;" onclick="saveKeyModal()">Zapisz klucz</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.GEMINI_API_KEY = localStorage.getItem('gemini_api_key') || '';
+        const EXAM_DRAFT_KEY = 'e8_pol_2025_draft_v1';
+
+        const tfState = {
+            1: { 1: null, 2: null },
+            2: { 1: null, 2: null },
+            13: { 1: null, 2: null }
+        };
+
+        let examResults = {
+            totalPoints: 0,
+            maxPoints: 45,
+            tasks: []
+        };
+
+        // --- STOPER EGZAMINACYJNY (150 minut) ---
+        let timeLeft = 150 * 60;
+        let isTimerPaused = false;
+
+        function updateTimerDisplay() {
+            const m = Math.floor(timeLeft / 60);
+            const s = timeLeft % 60;
+            const el = document.getElementById('time-left');
+            if (el) el.innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        }
+
+        function toggleTimerPause() {
+            isTimerPaused = !isTimerPaused;
+            const btn = document.getElementById('timer-pause-btn');
+            if (btn) btn.innerText = isTimerPaused ? '▶️ Wznów' : '⏸️ Pauza';
+            saveExamDraft(true);
+        }
+
+        const timerInterval = setInterval(() => {
+            if (isTimerPaused) return;
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                const el = document.getElementById('time-left');
+                if (el) el.innerText = '00:00';
+                return;
+            }
+            timeLeft--;
+            updateTimerDisplay();
+        }, 1000);
+
+        // --- LICZNIK SŁÓW WYPRACOWANIA ---
+        function countWords(text) {
+            const cleaned = (text || '').trim();
+            if (!cleaned) return 0;
+            return cleaned.split(/\s+/).filter(Boolean).length;
+        }
+
+        function updateEssayWordCount() {
+            const text = document.getElementById('task19_answer')?.value || '';
+            const words = countWords(text);
+            const badge = document.getElementById('essay-word-count');
+            if (badge) {
+                badge.innerText = `Liczba wyrazów: ${words} / min. 200`;
+                if (words >= 200) {
+                    badge.classList.add('ok');
+                } else {
+                    badge.classList.remove('ok');
+                }
+            }
+        }
+
+        // --- ZAPISYWANIE I ODTWARZANIE STANU EGZAMINU ---
+        function getStudentInfo() {
+            const first = (document.getElementById('student_first_name')?.value || '').trim();
+            const last = (document.getElementById('student_last_name')?.value || '').trim();
+            const cls = (document.getElementById('student_class')?.value || '').trim();
+            const fullName = [first, last].filter(Boolean).join(' ') || 'nie podano';
+            return {
+                first,
+                last,
+                cls: cls || 'nie podano',
+                fullName,
+                hasAny: Boolean(first || last || cls)
+            };
+        }
+
+        const TEXT_INPUT_IDS = [
+            'task5_answer', 'task6_answer',
+            'task7_title', 'task7_hero', 'task7_answer',
+            'task10_answer',
+            'task11_card1', 'task11_card2', 'task11_title', 'task11_answer',
+            'task12_1', 'task12_2', 'task12_3', 'task12_4',
+            'task15_1', 'task15_2',
+            'task18_answer', 'task19_answer'
+        ];
+
+        const RADIO_NAMES = [
+            'task3', 'task4',
+            'task8_part1', 'task8_part2',
+            'task9_part1', 'task9_part2',
+            'task14', 'task16', 'task17', 'task19_topic'
+        ];
+
+        const DEFAULT_TASK10_TEXT = 'W 1906 r. profesor Kornel Rupp poprosił Ferenca Molnára, który był już wtedy znanym dziennikarzem o pomoc. Chodziło o wsparcie szkolnego tygodnika, którego Rupp był redaktorem. Wspólnie wpadli na pomysł aby w czasopiśmie publikować w odcinkach powieść dla młodzieży. Rok później ukazało się pierwsze wydanie „Chłopców z Placu Broni”, książki, która przyniosła autorowi sławę. Utwór został przetłumaczony na ponad 40 języków co przyczyniło się do jego popularności na świecie.';
+
+        function collectExamState() {
+            const radios = {};
+            RADIO_NAMES.forEach(name => {
+                const checked = document.querySelector(`input[name="${name}"]:checked`);
+                radios[name] = checked ? checked.value : null;
+            });
+
+            const textInputs = {};
+            TEXT_INPUT_IDS.forEach(id => {
+                textInputs[id] = document.getElementById(id)?.value ?? '';
+            });
+
+            return {
+                version: 1,
+                savedAt: new Date().toLocaleString('pl-PL'),
+                timeLeft: timeLeft,
+                isTimerPaused: isTimerPaused,
+                radios: radios,
+                tfState: {
+                    1: { 1: tfState[1][1] || null, 2: tfState[1][2] || null },
+                    2: { 1: tfState[2][1] || null, 2: tfState[2][2] || null },
+                    13: { 1: tfState[13][1] || null, 2: tfState[13][2] || null }
+                },
+                textInputs: textInputs,
+                student_first_name: (document.getElementById('student_first_name')?.value || ''),
+                student_last_name: (document.getElementById('student_last_name')?.value || ''),
+                student_class: (document.getElementById('student_class')?.value || '')
+            };
+        }
+
+        function setDraftStatus(msg, color = '#4ade80') {
+            const label = document.getElementById('draft-status-text');
+            if (label) {
+                label.style.color = color;
+                label.innerText = msg;
+            }
+        }
+
+        function saveExamDraft(silent = false) {
+            try {
+                const state = collectExamState();
+                localStorage.setItem(EXAM_DRAFT_KEY, JSON.stringify(state));
+                const timeOnly = new Date().toLocaleTimeString('pl-PL');
+                if (!silent) {
+                    setDraftStatus(`Zapisano w przeglądarce (${timeOnly})`, '#4ade80');
+                }
+            } catch (e) {
+                console.warn('Nie udało się zapisać postępu:', e);
+            }
+        }
+
+        function manualSaveDraft(btn) {
+            saveExamDraft(false);
+            if (btn) {
+                const old = btn.innerText;
+                btn.innerText = '✅ Zapisano!';
+                setTimeout(() => { btn.innerText = old; }, 1400);
+            }
+        }
+
+        function applyExamState(state) {
+            if (!state || typeof state !== 'object') return;
+
+            document.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
+            document.querySelectorAll('#exam-form input[type="radio"]').forEach(r => { r.checked = false; });
+
+            if (state.radios) {
+                Object.entries(state.radios).forEach(([name, val]) => {
+                    if (!val) return;
+                    const radio = document.querySelector(`input[name="${name}"][value="${val}"]`);
+                    if (radio) {
+                        radio.checked = true;
+                        const label = radio.closest('.option-label');
+                        if (label) label.classList.add('selected');
+                    }
+                });
+            }
+
+            [1, 2, 13].forEach(tNum => {
+                document.querySelectorAll(`#card-task-${tNum} .tf-btn`).forEach(b => b.classList.remove('active-p', 'active-f'));
+                [1, 2].forEach(rowNum => {
+                    const val = state.tfState && state.tfState[tNum] ? state.tfState[tNum][rowNum] : null;
+                    tfState[tNum][rowNum] = val || null;
+                    if (val === 'P' || val === 'F') {
+                        const btn = document.querySelector(`#card-task-${tNum} button[onclick*="setTF(${tNum}, ${rowNum}, '${val}'"]`);
+                        if (btn) btn.classList.add(val === 'P' ? 'active-p' : 'active-f');
+                    }
+                });
+            });
+
+            const setVal = (id, val) => {
+                const el = document.getElementById(id);
+                if (el) el.value = val !== undefined ? val : '';
+            };
+
+            TEXT_INPUT_IDS.forEach(id => {
+                const savedVal = state.textInputs ? state.textInputs[id] : undefined;
+                if (id === 'task10_answer' && (savedVal === undefined || savedVal === '')) {
+                    setVal(id, DEFAULT_TASK10_TEXT);
+                } else {
+                    setVal(id, savedVal || '');
+                }
+            });
+
+            setVal('student_first_name', state.student_first_name || '');
+            setVal('student_last_name', state.student_last_name || '');
+            setVal('student_class', state.student_class || '');
+
+            if (typeof state.timeLeft === 'number' && state.timeLeft >= 0) {
+                timeLeft = state.timeLeft;
+            }
+            if (typeof state.isTimerPaused === 'boolean') {
+                isTimerPaused = state.isTimerPaused;
+                const pBtn = document.getElementById('timer-pause-btn');
+                if (pBtn) pBtn.innerText = isTimerPaused ? '▶️ Wznów' : '⏸️ Pauza';
+            }
+            updateTimerDisplay();
+            updateEssayWordCount();
+        }
+
+        function exportDraftFile() {
+            const state = collectExamState();
+            saveExamDraft(false);
+            const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            const now = new Date();
+            const stamp = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}`;
+            a.href = url;
+            a.download = `E8_Polski_2025_Zapis_${stamp}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            setDraftStatus('Pobrano kopię zapasową (.json)', '#38bdf8');
+        }
+
+        function importDraftFile(event) {
+            const file = event.target.files && event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const parsed = JSON.parse(e.target.result);
+                    applyExamState(parsed);
+                    saveExamDraft(true);
+                    setDraftStatus(`Wczytano z pliku (${parsed.savedAt || file.name})`, '#4ade80');
+                } catch (err) {
+                    alert('Nieprawidłowy plik zapisu egzaminu (.json).');
+                }
+            };
+            reader.readAsText(file, 'utf-8');
+            event.target.value = '';
+        }
+
+        function resetExamDraft() {
+            if (!confirm('Czy na pewno chcesz wyczyścić wszystkie wpisane odpowiedzi oraz dane ucznia i zresetować czas do 150:00?')) {
+                return;
+            }
+            localStorage.removeItem(EXAM_DRAFT_KEY);
+            isTimerPaused = false;
+            timeLeft = 150 * 60;
+            const pBtn = document.getElementById('timer-pause-btn');
+            if (pBtn) pBtn.innerText = '⏸️ Pauza';
+
+            applyExamState({
+                timeLeft: 150 * 60,
+                isTimerPaused: false,
+                radios: {},
+                tfState: { 1: { 1: null, 2: null }, 2: { 1: null, 2: null }, 13: { 1: null, 2: null } },
+                textInputs: { task10_answer: DEFAULT_TASK10_TEXT },
+                student_first_name: '',
+                student_last_name: '',
+                student_class: ''
+            });
+            const res = document.getElementById('results-container');
+            if (res) res.style.display = 'none';
+            setDraftStatus('Wyczyszczono (nowe podejście)', '#94a3b8');
+        }
+
+        // --- ZARZĄDZANIE KLUCZEM GEMINI API ---
+        function checkApiBanner() {
+            const key = localStorage.getItem('gemini_api_key');
+            window.GEMINI_API_KEY = key || '';
+            const banner = document.getElementById('api-banner');
+            const text = document.getElementById('api-status-text');
+            if (key && key.startsWith('AIza')) {
+                banner.classList.add('connected');
+                text.innerHTML = '✅ <strong>Klucz Gemini AI aktywny</strong> – zadania otwarte (5–7, 11–12, 15, 18) i wypracowanie (19) oceni egzaminator AI według kryteriów CKE.';
+            } else {
+                banner.classList.remove('connected');
+                text.innerHTML = '⚠️ Brak klucza Gemini API – zadania zamknięte i interpunkcja (zad. 10) sprawdzą się automatycznie, a do oceny zadań otwartych i wypracowania zalecamy podanie klucza AI.';
+            }
+        }
+
+        function toggleKeySettings() {
+            document.getElementById('api-key-input').value = window.GEMINI_API_KEY || '';
+            document.getElementById('api-modal').style.display = 'flex';
+        }
+        function closeKeyModal() {
+            document.getElementById('api-modal').style.display = 'none';
+        }
+        function saveKeyModal() {
+            const val = document.getElementById('api-key-input').value.trim();
+            if (val) localStorage.setItem('gemini_api_key', val);
+            else localStorage.removeItem('gemini_api_key');
+            closeKeyModal();
+            checkApiBanner();
+        }
+
+        // --- OBSŁUGA INTERFEJSU ZADAŃ ---
+        function selectRadio(labelEl) {
+            const input = labelEl.querySelector('input[type="radio"]');
+            const groupName = input.name;
+            document.querySelectorAll(`input[name="${groupName}"]`).forEach(r => {
+                r.closest('.option-label').classList.remove('selected');
+            });
+            input.checked = true;
+            labelEl.classList.add('selected');
+            saveExamDraft();
+        }
+
+        function setTF(taskNum, rowNum, val, btn) {
+            tfState[taskNum][rowNum] = val;
+            const row = btn.closest('tr');
+            row.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('active-p', 'active-f'));
+            btn.classList.add(val === 'P' ? 'active-p' : 'active-f');
+            saveExamDraft();
+        }
+
+        // --- SPECYFIKACJA ZADAŃ ZAMKNIĘTYCH (1-4, 8-9, 13-14, 16-17) ---
+        const CLOSED_TASKS_SPEC = [
+            {
+                nr: 1, kind: 'tf', taskNum: 1, type: 'Zamknięte P/F', correct1: 'P', correct2: 'F',
+                correctDesc: '1-P, 2-F',
+                okMsg: 'Poprawnie oceniono oba stwierdzenia (PF).',
+                errMsg: 'Błąd: 1. jest prawdziwe (P) – Nemeczek nie ugiął się przed silniejszymi; 2. jest fałszywe (F) – rozkaz „Prezentuj broń!” był wyrazem szacunku, a nie lekceważenia.',
+                solution: 'Zdanie 1: Prawda (P) – mimo przewagi liczebnej wrogów Nemeczek pozostał wierny przyjaciołom. Zdanie 2: Fałsz (F) – Feri Acz oddał Nemeczkowi honor wojskowy.'
+            },
+            {
+                nr: 2, kind: 'tf', taskNum: 2, type: 'Zamknięte P/F', correct1: 'P', correct2: 'P',
+                correctDesc: '1-P, 2-P',
+                okMsg: 'Poprawnie oceniono oba stwierdzenia (PP).',
+                errMsg: 'Błąd: Oba stwierdzenia są prawdziwe (PP). Chłopcy zamilkli i oddali hołd, a Nemeczek pytał „Nie zbijecie mnie? Mogę odejść?”.',
+                solution: 'Zdanie 1: Prawda (P) – po słowach Nemeczka zapadła cisza, nikt go nie zatrzymywał. Zdanie 2: Prawda (P) – dopytywał dwukrotnie, czy może odejść i czy go nie zbiją.'
+            },
+            {
+                nr: 3, kind: 'radio', name: 'task3', type: 'Zamknięte ABCD', correct: 'C',
+                correctDesc: 'C (nieugiętość)',
+                okMsg: 'Poprawna odpowiedź: C (nieugiętość).',
+                errMsg: 'Błędna odpowiedź. Postawę Nemeczka charakteryzuje nieugiętość (C).',
+                solution: 'Nemeczek mimo kąpieli w stawie i gróźb nie zgadza się na zdradę przyjaciół – jest nieugięty (C).'
+            },
+            {
+                nr: 4, kind: 'radio', name: 'task4', type: 'Zamknięte ABCD', correct: 'B',
+                correctDesc: 'B (W jakim celu Nemeczek pojawił się na wyspie?)',
+                okMsg: 'Poprawna odpowiedź: B.',
+                errMsg: 'Błędna odpowiedź. W przytoczonym fragmencie nie ma informacji, po co Nemeczek przyszedł na wyspę (B).',
+                solution: 'Wiemy, że Pastorowie trzymali go w wodzie (A), Acz rozkazał prezentować broń (C), a Gereba oskarżono o zdradę (D). Brak tylko celu przybycia na wyspę (B).'
+            },
+            {
+                nr: 8, kind: 'dual', name1: 'task8_part1', name2: 'task8_part2', type: 'Zamknięte A/B + C/D', correct1: 'B', correct2: 'C',
+                correctDesc: 'B (języka polskiego), C (drwinach)',
+                okMsg: 'Poprawna odpowiedź: B (języka polskiego) oraz C (drwinach).',
+                errMsg: 'Błędna odpowiedź. Poprawnie: słownik języka polskiego (B) oraz wyraz „drwinach” (C).',
+                solution: 'Znaczenia pojedynczego wyrazu „szyderstwa” szukamy w słowniku języka polskiego (B), a jego synonimem jest „drwiny” (C).'
+            },
+            {
+                nr: 9, kind: 'dual', name1: 'task9_part1', name2: 'task9_part2', type: 'Zamknięte A/B + C/D', correct1: 'B', correct2: 'C',
+                correctDesc: 'B (nieosobowej), C (przystał)',
+                okMsg: 'Poprawna odpowiedź: B (nieosobowej) oraz C (przystał).',
+                errMsg: 'Błędna odpowiedź. Bezokolicznik „przystać” to forma nieosobowa (B), a 3. os. lp. cz. przeszłego od „przystać” to „przystał” (C).',
+                solution: '„Przystać” to bezokolicznik – forma nieosobowa (B). Czasownik „przystać” (dołączyć do kogoś) w 3. os. lp. cz. przeszłego ma formę „przystał” (C), nie „przystanął” (od: przystanąć).'
+            },
+            {
+                nr: 13, kind: 'tf', taskNum: 13, type: 'Zamknięte P/F', correct1: 'P', correct2: 'F',
+                correctDesc: '1-P, 2-F',
+                okMsg: 'Poprawnie oceniono oba stwierdzenia (PF).',
+                errMsg: 'Błąd: 1. jest prawdziwe (P) – Empedokles mówił o harmonii czterech żywiołów i różnych charakterów; 2. jest fałszywe (F) – przyjaźń doskonała daje odwagę, by upomnieć przyjaciela.',
+                solution: 'Zdanie 1: Prawda (P). Zdanie 2: Fałsz (F) – według tekstu przyjaźń doskonała daje odwagę, aby upomnieć przyjaciela, gdy popełnia błąd.'
+            },
+            {
+                nr: 14, kind: 'radio', name: 'task14', type: 'Zamknięte ABCD', correct: 'C',
+                correctDesc: 'C',
+                okMsg: 'Poprawna odpowiedź: C.',
+                errMsg: 'Błędna odpowiedź. Niezgodne z tekstem jest zdanie C.',
+                solution: 'Autorka wyraźnie zaznacza, że przyjaźń oparta wyłącznie na przyjemności przebywania razem zawsze w końcu wygasa (C jest niezgodne z tekstem).'
+            },
+            {
+                nr: 16, kind: 'radio', name: 'task16', type: 'Zamknięte ABCD', correct: 'C',
+                correctDesc: 'C (wielokrotnie złożonym)',
+                okMsg: 'Poprawna odpowiedź: C (wielokrotnie złożonym).',
+                errMsg: 'Błędna odpowiedź. W zdaniu są trzy orzeczenia (idzie, działa, myśli), więc jest to zdanie wielokrotnie złożone (C).',
+                solution: 'Orzeczenia: „idzie”, „działa”, „myśli” – trzy zdania składowe tworzą wypowiedzenie wielokrotnie złożone (C).'
+            },
+            {
+                nr: 17, kind: 'radio', name: 'task17', type: 'Zamknięte ABCD', correct: 'B',
+                correctDesc: 'B (Co dwie głowy, to nie jedna.)',
+                okMsg: 'Poprawna odpowiedź: B (Co dwie głowy, to nie jedna.).',
+                errMsg: 'Błędna odpowiedź. Podobną myśl wyraża powiedzenie „Co dwie głowy, to nie jedna.” (B).',
+                solution: 'Słowa Arystotelesa mówią o sile współdziałania i wspólnego myślenia dwóch osób – odpowiada temu przysłowie „Co dwie głowy, to nie jedna.” (B).'
+            }
+        ];
+
+        // --- ZADANIE 10 (INTERPUNKCJA - DETERMINISTYCZNE) ---
+        function gradeTask10(userText) {
+            const norm = (userText || '').replace(/\s+/g, ' ').trim();
+            if (!norm || norm === DEFAULT_TASK10_TEXT) {
+                return {
+                    score: 0,
+                    feedback: 'Nie wprowadzono żadnych zmian w tekście (brak 3 wymaganych przecinków).'
+                };
+            }
+            const expected = 'W 1906 r. profesor Kornel Rupp poprosił Ferenca Molnára, który był już wtedy znanym dziennikarzem, o pomoc. Chodziło o wsparcie szkolnego tygodnika, którego Rupp był redaktorem. Wspólnie wpadli na pomysł, aby w czasopiśmie publikować w odcinkach powieść dla młodzieży. Rok później ukazało się pierwsze wydanie „Chłopców z Placu Broni”, książki, która przyniosła autorowi sławę. Utwór został przetłumaczony na ponad 40 języków, co przyczyniło się do jego popularności na świecie.';
+            const clean = s => s.replace(/\s*,\s*/g, ', ').replace(/\s+/g, ' ').trim();
+            if (clean(norm) === clean(expected)) {
+                return {
+                    score: 1,
+                    feedback: 'Poprawnie wstawiono wszystkie 3 brakujące przecinki (po „dziennikarzem,”, po „pomysł,” oraz po „jęków,”).'
+                };
+            }
+            const has1 = /dziennikarzem\s*,/.test(norm);
+            const has2 = /pomysł\s*,/.test(norm);
+            const has3 = /języków\s*,/.test(norm);
+            const countCommas = (norm.match(/,/g) || []).length;
+            const missing = [];
+            if (!has1) missing.push('po „dziennikarzem” (zamyka zdanie podrzędne)');
+            if (!has2) missing.push('po „pomysł” (przed „aby”)');
+            if (!has3) missing.push('po „języków” (przed „co”)');
+            return {
+                score: 0,
+                feedback: `Brak poprawnego kompletu 3 przecinków (w tekście wykryto ${countCommas} przecinków; w oryginale było 5, powinno być 8). ${missing.length ? 'Brakuje: ' + missing.join('; ') + '.' : 'Sprawdź, czy nie dodano zbędnych przecinków lub nie zmieniono treści.'}`
+            };
+        }
+
+        // --- OCENA ZADAŃ OTWARTYCH PRZEZ GEMINI AI ---
+        async function evaluateWithGemini(taskDescription, rubric, studentAnswer, maxPoints, isEssay = false) {
+            const apiKey = window.GEMINI_API_KEY || '';
+            if (!apiKey || !apiKey.startsWith('AIza')) return null;
+
+            try {
+                const jsonInstruction = isEssay
+                    ? `Odpowiedz WYŁĄCZNIE poprawnym obiektem JSON w formacie (bez markdownowych znaczników \`\`\`json):
+{
+  "score": <suma punktów 0..20>,
+  "breakdown": {
+    "realizacja_tematu": <0..2>,
+    "elementy_tworcze_retoryczne": <0..5>,
+    "kompetencje_literackie": <0..2>,
+    "kompozycja": <0..2>,
+    "styl": <0..2>,
+    "jezyk": <0..4>,
+    "ortografia": <0..2>,
+    "interpunkcja": <0..1>
+  },
+  "feedback": "<szczegółowa recenzja egzaminatora CKE po polsku: mocne strony, ewentualne błędy rzeczowe/językowe/ortograficzne oraz uzasadnienie punktacji>"
+}`
+                    : `Odpowiedz WYŁĄCZNIE poprawnym obiektem JSON w formacie (bez markdownowych znaczników \`\`\`json):
+{"score": <liczba całkowita od 0 do ${maxPoints}>, "feedback": "<krótki, merytoryczny komentarz egzaminatora CKE po polsku, maks. 3 zdania>"}`;
+
+                const prompt = `Jesteś doświadczonym egzaminatorem CKE oceniającym Egzamin Ósmoklasisty z języka polskiego zgodnie z Informatorem CKE od roku szkolnego 2024/2025.
+Oceń odpowiedź ucznia ściśle według podanych kryteriów punktowania CKE (skala 0 do ${maxPoints} pkt).
+
+TREŚĆ ZADANIA:
+${taskDescription}
+
+KRYTERIA OCENIANIA CKE (0-${maxPoints} pkt):
+${rubric}
+
+ODPOWIEDŹ UCZNIA:
+"${studentAnswer || '(brak)'}"
+
+${jsonInstruction}`;
+
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: prompt }] }],
+                        generationConfig: { temperature: 0.1, responseMimeType: "application/json" }
+                    })
+                });
+                if (!response.ok) return null;
+                const data = await response.json();
+                let text = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+                text = text.replace(/```json/g, '').replace(/```/g, '').trim();
+                const parsed = JSON.parse(text);
+                if (typeof parsed.score === 'number') {
+                    let fb = `🤖 Ocena AI: ${parsed.feedback}`;
+                    if (isEssay && parsed.breakdown) {
+                        const b = parsed.breakdown;
+                        fb += `\n\nSzczegółowa punktacja CKE:\n• Realizacja tematu: ${b.realizacja_tematu ?? '?'}/2 pkt\n• Elementy twórcze/retoryczne: ${b.elementy_tworcze_retoryczne ?? '?'}/5 pkt\n• Kompetencje literackie i kulturowe: ${b.kompetencje_literackie ?? '?'}/2 pkt\n• Kompozycja tekstu: ${b.kompozycja ?? '?'}/2 pkt\n• Styl: ${b.styl ?? '?'}/2 pkt\n• Język: ${b.jezyk ?? '?'}/4 pkt\n• Ortografia: ${b.ortografia ?? '?'}/2 pkt\n• Interpunkcja: ${b.interpunkcja ?? '?'}/1 pkt`;
+                    }
+                    return {
+                        score: Math.max(0, Math.min(maxPoints, Math.round(parsed.score))),
+                        feedback: fb
+                    };
+                }
+            } catch (err) {
+                console.warn('Gemini eval error:', err);
+            }
+            return null;
+        }
+
+        async function gradeOpenPolishTask(taskDesc, rubric, studentAnswer, maxPoints, isEssay = false) {
+            const clean = (studentAnswer || '').trim();
+            if (!clean) {
+                return { score: 0, feedback: 'Brak odpowiedzi ucznia.' };
+            }
+            const aiRes = await evaluateWithGemini(taskDesc, rubric, clean, maxPoints, isEssay);
+            if (aiRes) return aiRes;
+
+            return {
+                score: 0,
+                feedback: '⚠️ Nie udało się połączyć z Gemini AI (brak klucza API lub błąd połączenia). Ustaw klucz Gemini API u góry strony, aby AI sprawdziło tę odpowiedź.'
+            };
+        }
+
+        // --- GŁÓWNA PROCEDURA OCENIANIA ---
+        async function gradeExam() {
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '⏳ Trwa sprawdzanie zadań otwartych i wypracowania przez AI...';
+
+            examResults.tasks = [];
+            let total = 0;
+
+            // 1. Zbieramy wyniki zadań zamkniętych w kolejności
+            const closedMap = {};
+            CLOSED_TASKS_SPEC.forEach(spec => {
+                let score = 0;
+                let userAns = 'brak';
+                if (spec.kind === 'radio') {
+                    const inp = document.querySelector(`input[name="${spec.name}"]:checked`);
+                    userAns = inp ? inp.value : 'brak';
+                    score = (userAns === spec.correct) ? 1 : 0;
+                } else if (spec.kind === 'dual') {
+                    const p1 = document.querySelector(`input[name="${spec.name1}"]:checked`)?.value || 'brak';
+                    const p2 = document.querySelector(`input[name="${spec.name2}"]:checked`)?.value || 'brak';
+                    userAns = `Część 1: ${p1}, Część 2: ${p2}`;
+                    score = (p1 === spec.correct1 && p2 === spec.correct2) ? 1 : 0;
+                } else if (spec.kind === 'tf') {
+                    const r1 = tfState[spec.taskNum][1] || 'brak';
+                    const r2 = tfState[spec.taskNum][2] || 'brak';
+                    userAns = `Zdanie 1: ${r1}, Zdanie 2: ${r2}`;
+                    score = (r1 === spec.correct1 && r2 === spec.correct2) ? 1 : 0;
+                }
+                closedMap[spec.nr] = {
+                    nr: spec.nr,
+                    type: spec.type,
+                    max: 1,
+                    score: score,
+                    userAns: userAns,
+                    correct: spec.correctDesc,
+                    feedback: score === 1 ? spec.okMsg : spec.errMsg,
+                    solution: spec.solution
+                };
+            });
+
+            // 2. Zadanie 10 (interpunkcja)
+            const t10Val = document.getElementById('task10_answer').value;
+            const r10 = gradeTask10(t10Val);
+
+            // 3. Zadania otwarte AI (5, 6, 7, 11, 12, 15, 18, 19)
+            const t5Val = document.getElementById('task5_answer').value.trim();
+            const t6Val = document.getElementById('task6_answer').value.trim();
+            const t7Title = document.getElementById('task7_title').value.trim();
+            const t7Hero = document.getElementById('task7_hero').value.trim();
+            const t7Reason = document.getElementById('task7_answer').value.trim();
+            const t7Combined = (t7Title || t7Hero || t7Reason)
+                ? `Tytuł lektury: ${t7Title || '(brak)'}\nBohater: ${t7Hero || '(brak)'}\nUzasadnienie: ${t7Reason || '(brak)'}`
+                : '';
+
+            const t11c1 = document.getElementById('task11_card1').value.trim();
+            const t11c2 = document.getElementById('task11_card2').value.trim();
+            const t11Title = document.getElementById('task11_title').value.trim();
+            const t11Reason = document.getElementById('task11_answer').value.trim();
+            const t11Combined = (t11c1 || t11c2 || t11Title || t11Reason)
+                ? `Wybrane karty: ${t11c1 || '?'} oraz ${t11c2 || '?'}\nTytuł lektury: ${t11Title || '(brak)'}\nWyjaśnienie: ${t11Reason || '(brak)'}`
+                : '';
+
+            const t12_1 = document.getElementById('task12_1').value.trim();
+            const t12_2 = document.getElementById('task12_2').value.trim();
+            const t12_3 = document.getElementById('task12_3').value.trim();
+            const t12_4 = document.getElementById('task12_4').value.trim();
+            const t12Combined = (t12_1 || t12_2 || t12_3 || t12_4)
+                ? `Tematem tekstu Anny Vivarelli jest ${t12_1 || '(brak)'}\nNa początku autorka zastanawia się ${t12_2 || '(brak)'}\nW kolejnych akapitach ${t12_3 || '(brak)'}\nW zakończeniu ${t12_4 || '(brak)'}`
+                : '';
+
+            const t15_1 = document.getElementById('task15_1').value.trim();
+            const t15_2 = document.getElementById('task15_2').value.trim();
+            const t15Combined = (t15_1 || t15_2)
+                ? `15.1. Tytuł lektury: ${t15_1 || '(brak)'}\n15.2. Odpowiedź i przykład: ${t15_2 || '(brak)'}`
+                : '';
+
+            const t18Val = document.getElementById('task18_answer').value.trim();
+
+            const t19Topic = document.querySelector('input[name="task19_topic"]:checked')?.value || 'nie wybrano';
+            const t19Text = document.getElementById('task19_answer').value.trim();
+            const t19Words = countWords(t19Text);
+            const t19Combined = t19Text
+                ? `Wybrany temat: Temat ${t19Topic}\nLiczba wyrazów: ${t19Words}\n\nTreść wypracowania:\n${t19Text}`
+                : '';
+
+            const [r5, r6, r7, r11, r12, r15, r18, r19] = await Promise.all([
+                gradeOpenPolishTask(
+                    'Uzasadnij, że w sytuacji opisanej w przytoczonym fragmencie "Chłopców z Placu Broni" to Nemeczek okazał się silniejszy (mimo że fizycznie był jeden przeciwko dziesięciu i został wrzucony do stawu).',
+                    '1 pkt: poprawne uzasadnienie odwołujące się do siły moralnej/duchowej/odwagi Nemeczka (nie dał się zastraszyć, nie zdradził przyjaciół, jego postawa zawstydziła Gereba i wzbudziła szacunek u wrogów, którzy oddali mu honory). 0 pkt: odpowiedź niepoprawna lub brak odniesienia do fragmentu.',
+                    t5Val, 1
+                ),
+                gradeOpenPolishTask(
+                    'Na podstawie fragmentu "Chłopców z Placu Broni" wyjaśnij, dlaczego Gereb najpierw szczerzył zęby w uśmiechu, a potem śmiech uwiązł mu w gardle.',
+                    '1 pkt: poprawne wyjaśnienie obu etapów – najpierw drwił/kpił z pokonanego, mokrego Nemeczka i czuł przewagę, a potem Nemeczek publicznie nazwał go zdrajcą i spojrzał mu prosto w oczy, przez co Gereb poczuł wstyd/wyrzuty sumienia. 0 pkt: odpowiedź częściowa lub błędna.',
+                    t6Val, 1
+                ),
+                gradeOpenPolishTask(
+                    'Spośród lektur obowiązkowych (innych niż Chłopcy z Placu Broni) wybierz tę, której bohater w sytuacji zagrożenia zachował godną postawę. Podaj tytuł, bohatera i uzasadnienie z przywołaniem sytuacji z lektury.',
+                    '2 pkt: poprawny tytuł lektury obowiązkowej + bohater + trafne uzasadnienie godnej postawy z przywołaniem konkretnej sytuacji zagrożenia z lektury. 1 pkt: spełnienie tylko części wymagań (np. trafna lektura i bohater, ale ogólnikowe uzasadnienie lub brak sytuacji). 0 pkt: brak, lektura spoza listy lub Chłopcy z Placu Broni.',
+                    t7Combined, 2
+                ),
+                gradeOpenPolishTask(
+                    'Zadanie 11: Spośród 6 kart (A: studnia+samolot na pustyni, B: ruiny zamku, C: niedźwiedź w lesie, D: duch w łańcuchach, E: cmentarz nocą, F: król na planecie) wybierz 2 karty pasujące do JEDNEJ lektury obowiązkowej, podaj tytuł i wyjaśnij związek obu kart z treścią utworu.',
+                    '3 pkt: poprawne 2 karty (np. A i F -> Mały Książę; lub D i E -> Opowieść wigilijna) + poprawny tytuł lektury obowiązkowej + trafne wyjaśnienie związku OBU kart z treścią. 2 pkt: poprawne 2 karty i tytuł, ale pełne wyjaśnienie tylko dla jednej karty (lub powierzchowne dla obu). 1 pkt: poprawne 2 karty i tytuł bez wyjaśnienia albo poprawna tylko 1 karta z wyjaśnieniem.',
+                    t11Combined, 3
+                ),
+                gradeOpenPolishTask(
+                    'Zadanie 12: Uzupełnij 4 zdania, aby powstało streszczenie tekstu Anny Vivarelli "Czyim jesteś przyjacielem?".',
+                    '2 pkt: trafne, logiczne i spójne streszczenie obejmujące wszystkie 4 elementy (1. temat: przyjaźń / jej definicja i rodzaje; 2. początek: dlaczego przyjaźń nie jest prosta i interesuje filozofów; 3. kolejne akapity: Empedokles i trzy rodzaje przyjaźni wg Arystotelesa; 4. zakończenie: przyjaźń doskonała jest rzadka). 1 pkt: braki w jednym/dwóch elementach lub drobne nieścisłości. 0 pkt: streszczenie nietrafne lub z ocenami/opiniami zamiast streszczenia.',
+                    t12Combined, 2
+                ),
+                gradeOpenPolishTask(
+                    'Zadanie 15: 15.1. Podaj tytuł lektury obowiązkowej (fragment o oswajaniu). 15.2. Na podstawie całego utworu napisz, co jest niezbędne, aby zyskać przyjaciela i zilustruj przykładem z tego utworu.',
+                    '2 pkt: 15.1 "Mały Książę" (1 pkt) + 15.2 wskazanie warunku zyskania przyjaciela: poświęcenie czasu, cierpliwość, poznawanie się, rytuały / "oswojenie" oraz konkretny przykład z utworu, np. oswajanie Lisa przez Małego Księcia lub relacja z Różą (1 pkt). 1 pkt: tylko jedna część poprawna.',
+                    t15Combined, 2
+                ),
+                gradeOpenPolishTask(
+                    'Zadanie 18: Zredaguj ogłoszenie o spotkaniu uczniów chętnych do udziału w szkolnym przedstawieniu pt. "Przyjaciel na zawsze". Zachęć dwoma argumentami (min. 1 nawiązujący do tematyki spotkania). Oceniana też poprawność językowa, ortograficzna i interpunkcyjna.',
+                    'Skala 0-3 pkt wg Informatora CKE: 2 pkt za treść i formę (wyraźne ogłoszenie, min. 5 z 6 elementów: kto, co, dla kogo, kiedy, gdzie, po co; 2 argumenty zachęcające, w tym min. 1 związany z tematyką przyjaźni/przedstawienia) [1 pkt jeśli brak jednego argumentu lub części elementów]; + 1 pkt za poprawność językową, ortograficzną i interpunkcyjną (maks. 2 błędy łącznie).',
+                    t18Val, 3
+                ),
+                gradeOpenPolishTask(
+                    'Zadanie 19 (Wypracowanie 0-20 pkt): Temat 1 (Przemówienie: przyjaźń to harmonia łącząca różne charaktery; lektura obowiązkowa + inny utwór literacki) ALBO Temat 2 (Opowiadanie twórcze: spotkanie z bohaterem lektury obowiązkowej, wspólna przygoda, czyn godny podziwu, wplecenie ilustracji 1: szlak górski z drogowskazem lub 2: lot balonami nad górami). Wymóg: min. 200 wyrazów.',
+                    `Zasady CKE Informator 2024/2025 (0-20 pkt):
+1. Realizacja tematu wypowiedzi (0-2 pkt) - zachowanie formy (przemówienie albo opowiadanie) i tematu.
+2. Elementy twórcze / retoryczne (0-5 pkt) - w przemówieniu: argumentacja, przykłady, zwroty do odbiorców; w opowiadaniu: fabuła, zwrot akcji, charakteryzacja, wplecenie sytuacji z wybranej ilustracji, elementy opisu/dialogu/przeżyć.
+3. Kompetencje literackie i kulturowe (0-2 pkt) - funkcjonalne, bezbłędne rzeczowo odwołanie do lektury obowiązkowej (i drugiego utworu w Temacie 1).
+4. Kompozycja tekstu (0-2 pkt) - trójdzielność, spójność, akapity.
+5. Styl (0-2 pkt) - stosowność do formy wypowiedzi.
+6. Język (0-4 pkt) - zakres i poprawność środków językowych.
+7. Ortografia (0-2 pkt).
+8. Interpunkcja (0-1 pkt).
+UWAGA: Praca ma ${t19Words} wyrazów. Jeśli praca ma MNIEJ niż 200 wyrazów, wg zasad CKE uczeń otrzymuje 0 pkt za kompozycję, styl, język, ortografię i interpunkcję (oceniane są tylko kryteria 1-3, maks. 9 pkt).`,
+                    t19Combined, 20, true
+                )
+            ]);
+
+            const openMap = {
+                5: { nr: 5, type: 'Otwarte (0–1 pkt)', max: 1, res: r5, userAns: t5Val || 'brak', correct: 'Nemeczek okazał się silniejszy moralnie/duchowo', solution: 'Mimo przewagi liczebnej wrogów Nemeczek pozostał wierny przyjaciołom, nie dał się zastraszyć, zawstydził Gereba i wzbudził szacunek przeciwników, którzy oddali mu honory.' },
+                6: { nr: 6, type: 'Otwarte (0–1 pkt)', max: 1, res: r6, userAns: t6Val || 'brak', correct: 'Zmiana z drwiny na wstyd po oskarżeniu o zdradę', solution: 'Najpierw Gereb drwił z pokonanego, przemoczonego Nemeczka. Kiedy jednak Nemeczek publicznie nazwał go zdrajcą i spojrzał mu w oczy, Gereb poczuł wstyd i ciężar na duszy.' },
+                7: { nr: 7, type: 'Otwarte (0–2 pkt)', max: 2, res: r7, userAns: t7Combined || 'brak', correct: 'Lektura obowiązkowa + bohater + opis sytuacji zagrożenia', solution: 'Np. „Kamienie na szaniec” – Jan Bytnar (Rudy) podczas brutalnych przesłuchań w alei Szucha nie wydał kolegów mimo tortur.' },
+                10: { nr: 10, type: 'Otwarte – interpunkcja (0–1 pkt)', max: 1, res: r10, userAns: t10Val || 'brak', correct: '3 przecinki: po „dziennikarzem,”, „pomysł,”, „jęków,”', solution: 'Brakujące przecinki: „...znanym dziennikarzem, o pomoc.”; „...wpadli na pomysł, aby w czasopiśmie...”; „...ponad 40 języków, co przyczyniło się...”.' },
+                11: { nr: 11, type: 'Otwarte – karty (0–3 pkt)', max: 3, res: r11, userAns: t11Combined || 'brak', correct: 'Np. A i F (Mały Książę) lub D i E (Opowieść wigilijna)', solution: 'Przykładowo karty A (studnia i samolot na pustyni – spotkanie Pilota z Małym Księciem) i F (Król na małej planecie) odnoszą się do lektury „Mały Książę”.' },
+                12: { nr: 12, type: 'Otwarte – streszczenie (0–2 pkt)', max: 2, res: r12, userAns: t12Combined || 'brak', correct: 'Streszczenie 4 głównych myśli tekstu', solution: 'Tematem tekstu jest przyjaźń i jej rozumienie przez filozofów. Autorka zastanawia się, dlaczego tak trudno zdefiniować przyjaźń. Następnie omawia myśl Empedoklesa oraz trzy rodzaje przyjaźni wg Arystotelesa. W zakończeniu podkreśla, że prawdziwa przyjaźń jest rzadka.' },
+                15: { nr: 15, type: 'Otwarte – lektura (0–2 pkt)', max: 2, res: r15, userAns: t15Combined || 'brak', correct: '15.1: Mały Książę; 15.2: czas, cierpliwość / oswojenie + przykład', solution: '15.1: „Mały Książę”. 15.2: Aby zyskać przyjaciela, trzeba poświęcić mu czas, cierpliwość i nawiązać więź („oswoić” go), tak jak Mały Książę stopniowo oswajał Lisa.' },
+                18: { nr: 18, type: 'Otwarte – ogłoszenie (0–3 pkt)', max: 3, res: r18, userAns: t18Val || 'brak', correct: 'Ogłoszenie z 5 elementami formy, 2 argumentami i poprawnością jęz.', solution: 'Ogłoszenie powinno zawierać: kto, co, dla kogo, kiedy, gdzie, cel spotkania („Przyjaciel na zawsze”) oraz dwa argumenty (w tym min. 1 dot. tematyki przyjaźni/teatru) przy maks. 2 błędach językowych/ort./interp.' },
+                19: { nr: 19, type: 'Wypracowanie (0–20 pkt)', max: 20, res: r19, userAns: t19Combined || 'brak', correct: 'Wypracowanie min. 200 słów oceniane w 8 kryteriach CKE', solution: 'Praca powinna realizować wybrany temat i formę (przemówienie lub opowiadanie), odwoływać się funkcjonalnie do lektury obowiązkowej, liczyć min. 200 wyrazów i spełniać wymogi kompozycyjne oraz językowe CKE.' }
+            };
+
+            // Składamy listę w kolejności 1..19
+            for (let nr = 1; nr <= 19; nr++) {
+                const item = closedMap[nr] || {
+                    nr: nr,
+                    type: openMap[nr].type,
+                    max: openMap[nr].max,
+                    score: openMap[nr].res.score,
+                    userAns: openMap[nr].userAns,
+                    correct: openMap[nr].correct,
+                    feedback: openMap[nr].res.feedback,
+                    solution: openMap[nr].solution
+                };
+                total += item.score;
+                examResults.tasks.push(item);
+            }
+
+            examResults.totalPoints = total;
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '✅ Zakończ i sprawdź egzamin';
+
+            renderResultsUI();
+        }
+
+        function renderResultsUI() {
+            const container = document.getElementById('results-container');
+            const list = document.getElementById('results-list');
+            const scoreEl = document.getElementById('final-score-text');
+            const percentEl = document.getElementById('final-percent-text');
+
+            const percent = Math.round((examResults.totalPoints / examResults.maxPoints) * 100);
+            scoreEl.innerText = `${examResults.totalPoints} / ${examResults.maxPoints} pkt`;
+            percentEl.innerText = `Wynik procentowy: ${percent}%`;
+
+            list.innerHTML = '';
+            examResults.tasks.forEach(t => {
+                let statusClass = 'wrong';
+                if (t.score === t.max) statusClass = 'correct';
+                else if (t.score > 0) statusClass = 'partial';
+
+                const item = document.createElement('div');
+                item.className = `result-task-item ${statusClass}`;
+
+                const header = document.createElement('div');
+                header.className = 'result-item-head';
+                header.innerHTML = `<span>Zadanie ${t.nr} (${t.type})</span><span>${t.score} / ${t.max} pkt</span>`;
+                item.appendChild(header);
+
+                const fb = document.createElement('div');
+                fb.className = 'result-feedback';
+                fb.innerText = t.feedback;
+                item.appendChild(fb);
+
+                if (t.score < t.max) {
+                    const sol = document.createElement('div');
+                    sol.className = 'result-solution';
+                    sol.innerText = `Wskazówka / klucz CKE: ${t.solution}`;
+                    item.appendChild(sol);
+                }
+
+                list.appendChild(item);
+            });
+
+            container.style.display = 'flex';
+            container.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // --- EKSPORT RAPORTU PDF ---
+        function transliteratePolish(str) {
+            const map = {
+                'ą':'a','ć':'c','ę':'e','ł':'l','ń':'n','ó':'o','ś':'s','ź':'z','ż':'z',
+                'Ą':'A','Ć':'C','Ę':'E','Ł':'L','Ń':'N','Ó':'O','Ś':'S','Ź':'Z','Ż':'Z'
+            };
+            return String(str).replace(/[ąćęłńóśźżĄĆĘŁŃÓŚŹŻ]/g, m => map[m] || m);
+        }
+
+        async function generatePdfReport() {
+            if (!window.jspdf) {
+                alert('Biblioteka PDF ładuje się, spróbuj za chwilę...');
+                return;
+            }
+
+            const btn = document.getElementById('pdf-btn');
+            const originalText = btn ? btn.innerHTML : '';
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '⏳ Generowanie raportu PDF...';
+            }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+            let fontLoaded = false;
+            try {
+                const fontUrl = 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Regular.ttf';
+                const fontRes = await fetch(fontUrl);
+                if (fontRes.ok) {
+                    const buf = await fontRes.arrayBuffer();
+                    const bytes = new Uint8Array(buf);
+                    let binary = '';
+                    const chunk = 8192;
+                    for (let i = 0; i < bytes.length; i += chunk) {
+                        binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
+                    }
+                    const base64 = window.btoa(binary);
+                    doc.addFileToVFS('Roboto-Regular.ttf', base64);
+                    doc.addFont('Roboto-Regular.ttf', 'Roboto', 'normal');
+                    doc.setFont('Roboto');
+                    fontLoaded = true;
+                }
+            } catch (err) {
+                console.warn('Ładowanie czcionki Roboto nie powiodło się:', err);
+            }
+
+            const sanitize = (text) => {
+                if (!text) return '';
+                let clean = String(text)
+                    .replace(/🤖\s*/g, '[AI] ')
+                    .replace(/⚠️\s*/g, '[!] ')
+                    .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, '')
+                    .trim();
+                return fontLoaded ? clean : transliteratePolish(clean);
+            };
+
+            const percent = Math.round((examResults.totalPoints / examResults.maxPoints) * 100);
+            const dateStr = new Date().toLocaleDateString('pl-PL');
+            const student = getStudentInfo();
+
+            doc.setFontSize(16);
+            if (!fontLoaded) doc.setFont(undefined, 'bold');
+            doc.text(sanitize('OFICJALNY RAPORT Z EGZAMINU ÓSMOKLASISTY'), 14, 18);
+
+            doc.setFontSize(10.5);
+            doc.setTextColor(30, 41, 59);
+            doc.text(sanitize(`Uczeń: ${student.fullName}  |  Klasa: ${student.cls}`), 14, 25);
+
+            doc.setFontSize(9.5);
+            if (!fontLoaded) doc.setFont(undefined, 'normal');
+            doc.setTextColor(80);
+            doc.text(sanitize(`Przedmiot: Język polski (Arkusz CKE 2025, 19 zadań)  |  Data: ${dateStr}`), 14, 31);
+            doc.text(sanitize(`Wynik sumaryczny: ${examResults.totalPoints} / ${examResults.maxPoints} pkt (${percent}%)`), 14, 37);
+
+            doc.setDrawColor(22, 163, 74);
+            doc.setLineWidth(0.8);
+            doc.line(14, 40, 196, 40);
+
+            const tableRows = examResults.tasks.map(t => [
+                sanitize(`Zadanie ${t.nr}`),
+                sanitize(t.type),
+                `${t.score} / ${t.max}`,
+                sanitize(t.score === t.max ? 'Maksimum punktów' : (t.score > 0 ? 'Częściowe punkty' : '0 pkt'))
+            ]);
+
+            doc.autoTable({
+                startY: 44,
+                head: [[sanitize('Zadanie'), sanitize('Typ zadania'), sanitize('Punkty'), sanitize('Ocena etapu')]],
+                body: tableRows,
+                theme: 'striped',
+                headStyles: {
+                    fillColor: [21, 128, 61],
+                    textColor: 255,
+                    font: fontLoaded ? 'Roboto' : 'helvetica',
+                    fontStyle: 'bold'
+                },
+                styles: {
+                    font: fontLoaded ? 'Roboto' : 'helvetica',
+                    fontSize: 8.5,
+                    cellPadding: 2.5,
+                    overflow: 'linebreak'
+                },
+                margin: { left: 14, right: 14 }
+            });
+
+            let currentY = doc.lastAutoTable.finalY + 8;
+
+            for (const t of examResults.tasks) {
+                if (currentY > 245) {
+                    doc.addPage();
+                    currentY = 16;
+                }
+
+                let headFill = [220, 38, 38];
+                if (t.score === t.max) headFill = [22, 163, 74];
+                else if (t.score > 0) headFill = [217, 119, 6];
+
+                const taskBody = [
+                    [
+                        {
+                            content: sanitize(`ODPOWIEDŹ UCZNIA:\n${t.userAns || 'brak'}`),
+                            colSpan: 2,
+                            styles: { fillColor: [255, 255, 255] }
+                        }
+                    ],
+                    [
+                        {
+                            content: sanitize(`KOMENTARZ EGZAMINATORA CKE:\n${t.feedback}`),
+                            colSpan: 2,
+                            styles: { fillColor: [250, 245, 255], textColor: [88, 28, 135] }
+                        }
+                    ]
+                ];
+
+                if (t.score < t.max) {
+                    taskBody.push([
+                        {
+                            content: sanitize(`WSKAZÓWKA / KLUCZ CKE:\n${t.solution}`),
+                            colSpan: 2,
+                            styles: { fillColor: [239, 246, 255], textColor: [30, 58, 138] }
+                        }
+                    ]);
+                }
+
+                doc.autoTable({
+                    startY: currentY,
+                    head: [[
+                        sanitize(`Zadanie ${t.nr}  (${t.type})`),
+                        { content: sanitize(`Wynik: ${t.score} / ${t.max} pkt`), styles: { halign: 'right' } }
+                    ]],
+                    body: taskBody,
+                    theme: 'grid',
+                    rowPageBreak: 'avoid',
+                    headStyles: {
+                        fillColor: headFill,
+                        textColor: 255,
+                        font: fontLoaded ? 'Roboto' : 'helvetica',
+                        fontStyle: 'bold',
+                        fontSize: 9.5
+                    },
+                    styles: {
+                        font: fontLoaded ? 'Roboto' : 'helvetica',
+                        fontSize: 8.5,
+                        cellPadding: 3.5,
+                        overflow: 'linebreak'
+                    },
+                    margin: { left: 14, right: 14, top: 14, bottom: 16 }
+                });
+
+                currentY = doc.lastAutoTable.finalY + 6;
+            }
+
+            const totalPages = doc.internal.getNumberOfPages();
+            for (let p = 1; p <= totalPages; p++) {
+                doc.setPage(p);
+                doc.setFontSize(8);
+                doc.setTextColor(140);
+                doc.text(sanitize(`Strona ${p} z ${totalPages}  |  Egzamin Ósmoklasisty CKE – Język polski`), 196, 290, { align: 'right' });
+            }
+
+            const nameSlug = student.hasAny
+                ? '_' + transliteratePolish([student.first, student.last, student.cls].filter(Boolean).join('_')).replace(/[^a-zA-Z0-9_-]+/g, '')
+                : '';
+            doc.save(`Raport_E8_Polski_2025${nameSlug}_${dateStr.replace(/\./g, '_')}.pdf`);
+
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            checkApiBanner();
+            updateEssayWordCount();
+
+            try {
+                const rawDraft = localStorage.getItem(EXAM_DRAFT_KEY);
+                if (rawDraft) {
+                    const parsedDraft = JSON.parse(rawDraft);
+                    applyExamState(parsedDraft);
+                    setDraftStatus(`Przywrócono sesję z ${parsedDraft.savedAt || 'ostatniej wizyty'}`, '#4ade80');
+                }
+            } catch (e) {
+                console.warn('Błąd odczytu zapisanego stanu egzaminu:', e);
+            }
+
+            const examForm = document.getElementById('exam-form');
+            if (examForm) {
+                examForm.addEventListener('input', () => saveExamDraft());
+                examForm.addEventListener('change', () => saveExamDraft());
+            }
+        });
+    </script>
+</body>
+
+</html>
