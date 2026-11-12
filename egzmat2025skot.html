@@ -239,6 +239,51 @@
             background: rgba(56, 189, 248, 0.25);
         }
 
+        /* Karta danych ucznia */
+        .student-info-card {
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            border-radius: 16px;
+            padding: 18px 22px;
+            margin-bottom: 18px;
+        }
+
+        .student-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 14px;
+            margin-top: 10px;
+        }
+
+        .student-field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .student-field label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #cbd5e1;
+        }
+
+        .student-field input {
+            background: #090f1d;
+            border: 1px solid rgba(148, 163, 184, 0.35);
+            border-radius: 8px;
+            padding: 9px 12px;
+            color: #f8fafc;
+            font-size: 0.95rem;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .student-field input:focus {
+            border-color: #38bdf8;
+            box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+        }
+
         /* Karta zadania */
         .task-card {
             background: var(--panel-bg);
@@ -855,6 +900,28 @@
         <!-- FORMULARZ ZADAŃ -->
         <form id="exam-form">
 
+            <!-- DANE UCZNIA (do raportu PDF) -->
+            <div class="student-info-card">
+                <div style="font-weight: 700; font-size: 1rem; color: #38bdf8; display: flex; align-items: center; gap: 8px;">
+                    <span>👤 Dane ucznia</span>
+                    <span style="font-size: 0.8rem; font-weight: 400; color: #94a3b8;">(zostaną umieszczone na wydruku / w raporcie PDF)</span>
+                </div>
+                <div class="student-info-grid">
+                    <div class="student-field">
+                        <label for="student_first_name">Imię</label>
+                        <input type="text" id="student_first_name" placeholder="np. Jan">
+                    </div>
+                    <div class="student-field">
+                        <label for="student_last_name">Nazwisko</label>
+                        <input type="text" id="student_last_name" placeholder="np. Kowalski">
+                    </div>
+                    <div class="student-field">
+                        <label for="student_class">Klasa</label>
+                        <input type="text" id="student_class" placeholder="np. 8a">
+                    </div>
+                </div>
+            </div>
+
             <!-- ZADANIE 1 (ABCD - 1 pkt) -->
             <div class="task-card" id="card-task-1">
                 <div class="task-header">
@@ -1141,6 +1208,7 @@
         <div id="results-container">
             <div class="score-summary-card">
                 <span class="cke-badge">WYNIK OFICJALNY</span>
+                <div id="final-student-display" style="margin-top: 10px; font-size: 1rem; font-weight: 600; color: #e2e8f0;"></div>
                 <div class="score-big" id="final-score-display">0 / 11 pkt</div>
                 <div style="font-size: 1.25rem; font-weight: 700; color: #38bdf8;" id="final-percent-display">0%</div>
                 <p style="color: #cbd5e1; margin-top: 8px;" id="final-comment-display">
@@ -1264,7 +1332,24 @@
                 task5_reasoning: (document.getElementById('task5_reasoning')?.value || ''),
                 task5_answer: (document.getElementById('task5_answer')?.value || ''),
                 task6_reasoning: (document.getElementById('task6_reasoning')?.value || ''),
-                task6_answer: (document.getElementById('task6_answer')?.value || '')
+                task6_answer: (document.getElementById('task6_answer')?.value || ''),
+                student_first_name: (document.getElementById('student_first_name')?.value || ''),
+                student_last_name: (document.getElementById('student_last_name')?.value || ''),
+                student_class: (document.getElementById('student_class')?.value || '')
+            };
+        }
+
+        function getStudentInfo() {
+            const first = (document.getElementById('student_first_name')?.value || '').trim();
+            const last = (document.getElementById('student_last_name')?.value || '').trim();
+            const cls = (document.getElementById('student_class')?.value || '').trim();
+            const fullName = [first, last].filter(Boolean).join(' ') || 'nie podano';
+            return {
+                first,
+                last,
+                cls: cls || 'nie podano',
+                fullName,
+                hasAny: Boolean(first || last || cls)
             };
         }
 
@@ -1342,6 +1427,9 @@
             setVal('task5_answer', state.task5_answer);
             setVal('task6_reasoning', state.task6_reasoning);
             setVal('task6_answer', state.task6_answer);
+            setVal('student_first_name', state.student_first_name);
+            setVal('student_last_name', state.student_last_name);
+            setVal('student_class', state.student_class);
 
             updateMathPreview('task4_reasoning', 'task4_preview');
             updateMathPreview('task5_reasoning', 'task5_preview');
@@ -1413,7 +1501,8 @@
                 tfState: { 3: { 1: null, 2: null } },
                 task4_reasoning: '', task4_answer: '',
                 task5_reasoning: '', task5_answer: '',
-                task6_reasoning: '', task6_answer: ''
+                task6_reasoning: '', task6_answer: '',
+                student_first_name: '', student_last_name: '', student_class: ''
             });
             const res = document.getElementById('results-container');
             if (res) res.style.display = 'none';
@@ -1926,6 +2015,14 @@ Odpowiedz wyłącznie poprawnym obiektem JSON:
             const container = document.getElementById('results-container');
             container.style.display = 'flex';
 
+            const student = getStudentInfo();
+            const studentDisp = document.getElementById('final-student-display');
+            if (studentDisp) {
+                studentDisp.innerText = student.hasAny
+                    ? `Uczeń: ${student.fullName}  |  Klasa: ${student.cls}`
+                    : '';
+            }
+
             const percent = Math.round((examResults.totalPoints / examResults.maxPoints) * 100);
             document.getElementById('final-score-display').innerText = `${examResults.totalPoints} / ${examResults.maxPoints} pkt`;
             document.getElementById('final-percent-display').innerText = `${percent}%`;
@@ -2096,21 +2193,26 @@ Odpowiedz wyłącznie poprawnym obiektem JSON:
 
             const percent = Math.round((examResults.totalPoints / examResults.maxPoints) * 100);
             const dateStr = new Date().toLocaleDateString('pl-PL');
+            const student = getStudentInfo();
 
             // 1. Nagłówek raportu
             doc.setFontSize(16);
             if (!fontLoaded) doc.setFont(undefined, 'bold');
             doc.text(sanitize('OFICJALNY RAPORT Z EGZAMINU ÓSMOKLASISTY'), 14, 18);
 
-            doc.setFontSize(10);
+            doc.setFontSize(10.5);
+            doc.setTextColor(30, 41, 59);
+            doc.text(sanitize(`Uczeń: ${student.fullName}  |  Klasa: ${student.cls}`), 14, 25);
+
+            doc.setFontSize(9.5);
             if (!fontLoaded) doc.setFont(undefined, 'normal');
             doc.setTextColor(80);
-            doc.text(sanitize(`Przedmiot: Matematyka (Wersja skrócona 2025)  |  Data: ${dateStr}`), 14, 25);
-            doc.text(sanitize(`Wynik sumaryczny: ${examResults.totalPoints} / ${examResults.maxPoints} pkt (${percent}%)`), 14, 31);
+            doc.text(sanitize(`Przedmiot: Matematyka (Wersja skrócona 2025)  |  Data: ${dateStr}`), 14, 31);
+            doc.text(sanitize(`Wynik sumaryczny: ${examResults.totalPoints} / ${examResults.maxPoints} pkt (${percent}%)`), 14, 37);
 
             doc.setDrawColor(147, 51, 234);
             doc.setLineWidth(0.8);
-            doc.line(14, 34, 196, 34);
+            doc.line(14, 40, 196, 40);
 
             // 2. Tabela 1: Zbiorcze podsumowanie zadań
             const tableRows = examResults.tasks.map(t => [
@@ -2121,7 +2223,7 @@ Odpowiedz wyłącznie poprawnym obiektem JSON:
             ]);
 
             doc.autoTable({
-                startY: 38,
+                startY: 44,
                 head: [[sanitize('Zadanie'), sanitize('Typ zadania'), sanitize('Punkty'), sanitize('Ocena etapu')]],
                 body: tableRows,
                 theme: 'striped',
@@ -2297,7 +2399,10 @@ Odpowiedz wyłącznie poprawnym obiektem JSON:
                 );
             }
 
-            doc.save(`Raport_E8_Matematyka_${dateStr.replace(/\./g, '_')}.pdf`);
+            const nameSlug = student.hasAny
+                ? '_' + transliteratePolish([student.first, student.last, student.cls].filter(Boolean).join('_')).replace(/[^a-zA-Z0-9_-]+/g, '')
+                : '';
+            doc.save(`Raport_E8_Matematyka${nameSlug}_${dateStr.replace(/\./g, '_')}.pdf`);
 
             if (btn) {
                 btn.disabled = false;

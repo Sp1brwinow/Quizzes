@@ -1,0 +1,3093 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <!-- Google Analytics Tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZP827DTZJ5"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-ZP827DTZJ5');
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Egzamin Ósmoklasisty – Matematyka 2025 (Pełny Arkusz)</title>
+
+    <!-- KaTeX do pięknego renderowania matematyki -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+    <!-- jsPDF do generowania raportu PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    <!-- html2canvas do renderowania wzorów KaTeX jako grafika w PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <style>
+        :root {
+            --bg-dark: #070d18;
+            --panel-bg: rgba(15, 23, 42, 0.92);
+            --card-border: rgba(168, 85, 247, 0.35);
+            --primary: #a855f7;
+            --primary-hover: #9333ea;
+            --accent-cyan: #38bdf8;
+            --accent-green: #22c55e;
+            --accent-red: #ef4444;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            padding: 24px 16px 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 920px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Belka górna */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .nav-link {
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(168, 85, 247, 0.4);
+            color: #c084fc;
+            text-decoration: none;
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .nav-link:hover {
+            background: #7e22ce;
+            color: #fff;
+            transform: translateX(-2px);
+        }
+
+        .timer-badge {
+            background: rgba(30, 41, 59, 0.9);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            color: var(--accent-cyan);
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .timer-pause-btn {
+            background: rgba(56, 189, 248, 0.12);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            color: #38bdf8;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-left: 4px;
+            transition: all 0.2s;
+        }
+
+        .timer-pause-btn:hover {
+            background: rgba(56, 189, 248, 0.25);
+        }
+
+        /* Nagłówek arkusza CKE */
+        .exam-header {
+            background: linear-gradient(135deg, rgba(30, 27, 75, 0.75) 0%, rgba(15, 23, 42, 0.95) 100%);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 24px 28px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        }
+
+        .exam-header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(168, 85, 247, 0.25);
+            padding-bottom: 12px;
+            margin-bottom: 14px;
+        }
+
+        .cke-badge {
+            font-size: 0.82rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            background: #a855f7;
+            color: #fff;
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+
+        .exam-header h1 {
+            font-size: 1.85rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 0%, #c084fc 60%, #38bdf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 6px;
+        }
+
+        .exam-header p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        /* Pasek statusu AI */
+        .ai-banner {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            border-radius: 12px;
+            padding: 10px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            font-size: 0.88rem;
+        }
+
+        .ai-status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 700;
+        }
+
+        /* Pasek zapisu / wznawiania postępu */
+        .save-banner {
+            background: rgba(15, 23, 42, 0.72);
+            border: 1px solid rgba(168, 85, 247, 0.28);
+            border-radius: 12px;
+            padding: 10px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            font-size: 0.86rem;
+        }
+
+        .draft-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .draft-btn {
+            background: rgba(30, 41, 59, 0.9);
+            border: 1px solid rgba(148, 163, 184, 0.35);
+            color: #e2e8f0;
+            padding: 6px 11px;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .draft-btn:hover {
+            background: rgba(56, 189, 248, 0.16);
+            border-color: #38bdf8;
+            color: #ffffff;
+        }
+
+        .draft-btn-danger:hover {
+            background: rgba(239, 68, 68, 0.18);
+            border-color: #ef4444;
+            color: #fca5a5;
+        }
+
+        /* Karta danych ucznia */
+        .student-info-card {
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            border-radius: 16px;
+            padding: 18px 22px;
+            margin-bottom: 4px;
+        }
+
+        .student-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 14px;
+            margin-top: 10px;
+        }
+
+        .student-field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .student-field label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #cbd5e1;
+        }
+
+        .student-field input {
+            background: #090f1d;
+            border: 1px solid rgba(148, 163, 184, 0.35);
+            border-radius: 8px;
+            padding: 9px 12px;
+            color: #f8fafc;
+            font-size: 0.95rem;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .student-field input:focus {
+            border-color: #38bdf8;
+            box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+        }
+
+        /* Podział na sekcje arkusza */
+        .section-divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 10px 0 4px;
+            color: #c084fc;
+            font-weight: 800;
+            font-size: 1.05rem;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .section-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, rgba(168, 85, 247, 0.5), transparent);
+        }
+
+        /* Karta zadania */
+        #exam-form {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .task-card {
+            background: var(--panel-bg);
+            border: 1px solid rgba(168, 85, 247, 0.25);
+            border-radius: 16px;
+            padding: 22px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+            transition: border-color 0.2s;
+        }
+
+        .task-card:focus-within {
+            border-color: rgba(168, 85, 247, 0.6);
+        }
+
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 10px;
+        }
+
+        .task-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .task-pts {
+            background: rgba(168, 85, 247, 0.2);
+            color: #d8b4fe;
+            border: 1px solid rgba(168, 85, 247, 0.4);
+            padding: 3px 10px;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .task-desc {
+            font-size: 1rem;
+            line-height: 1.65;
+            color: #e2e8f0;
+        }
+
+        /* Opcje wyboru ABCD */
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+        }
+
+        .option-label {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(148, 163, 184, 0.25);
+            border-radius: 10px;
+            padding: 12px 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s;
+            font-size: 0.98rem;
+        }
+
+        .option-label:hover {
+            border-color: #a855f7;
+            background: rgba(88, 28, 135, 0.25);
+        }
+
+        .option-label input[type="radio"] {
+            accent-color: #a855f7;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .option-label.selected {
+            border-color: #a855f7;
+            background: rgba(147, 51, 234, 0.25);
+            box-shadow: 0 0 12px rgba(168, 85, 247, 0.25);
+        }
+
+        /* Tabela Prawda/Fałsz i dane */
+        .tf-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(30, 41, 59, 0.5);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .tf-table th,
+        .tf-table td {
+            padding: 12px 14px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            text-align: left;
+        }
+
+        .tf-table th {
+            background: rgba(15, 23, 42, 0.8);
+            color: #94a3b8;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        .tf-table th:first-child {
+            text-align: left;
+        }
+
+        .tf-btn {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            color: #cbd5e1;
+            padding: 6px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.2s;
+            width: 100%;
+        }
+
+        .tf-btn:hover {
+            border-color: #38bdf8;
+        }
+
+        .tf-btn.active-p {
+            background: #2563eb;
+            color: #fff;
+            border-color: #60a5fa;
+        }
+
+        .tf-btn.active-f {
+            background: #9333ea;
+            color: #fff;
+            border-color: #c084fc;
+        }
+
+        /* Edytor zadań otwartych + pasek symboli */
+        .math-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            background: rgba(30, 41, 59, 0.85);
+            padding: 8px 10px;
+            border-radius: 10px 10px 0 0;
+            border: 1px solid rgba(168, 85, 247, 0.35);
+            border-bottom: none;
+            align-items: center;
+        }
+
+        .math-tool-btn {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            color: #e2e8f0;
+            padding: 4px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.88rem;
+            font-weight: 600;
+            transition: all 0.15s;
+        }
+
+        .math-tool-btn:hover {
+            background: #7e22ce;
+            color: #fff;
+            border-color: #c084fc;
+        }
+
+        .reasoning-textarea {
+            width: 100%;
+            min-height: 150px;
+            max-height: 360px;
+            overflow-y: scroll;
+            scrollbar-width: thin;
+            scrollbar-color: #a855f7 #090f1d;
+            background: #090f1d;
+            border: 1px solid rgba(168, 85, 247, 0.35);
+            border-radius: 0 0 10px 10px;
+            color: #f8fafc;
+            padding: 14px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.98rem;
+            line-height: 1.55;
+            resize: vertical;
+            outline: none;
+        }
+
+        .reasoning-textarea::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .reasoning-textarea::-webkit-scrollbar-track {
+            background: #090f1d;
+            border-radius: 0 0 10px 0;
+        }
+
+        .reasoning-textarea::-webkit-scrollbar-thumb {
+            background: #7e22ce;
+            border-radius: 4px;
+        }
+
+        .reasoning-textarea:focus {
+            border-color: #a855f7;
+            box-shadow: 0 0 14px rgba(168, 85, 247, 0.2);
+        }
+
+        .math-preview-box {
+            background: rgba(15, 23, 42, 0.75);
+            border: 1px dashed rgba(56, 189, 248, 0.4);
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-top: 8px;
+            font-size: 1.05rem;
+            min-height: 48px;
+            max-height: 220px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            overflow-y: auto;
+            overflow-x: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #38bdf8 #090f1d;
+        }
+
+        .math-preview-box::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        .math-preview-box::-webkit-scrollbar-track {
+            background: #090f1d;
+        }
+
+        .math-preview-box::-webkit-scrollbar-thumb {
+            background: #0284c7;
+            border-radius: 4px;
+        }
+
+        .math-preview-line {
+            display: block;
+            min-height: 22px;
+            line-height: 1.5;
+            color: #38bdf8;
+            font-size: 1.05rem;
+        }
+
+        .final-answer-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 6px;
+            flex-wrap: wrap;
+        }
+
+        .final-answer-input {
+            background: #090f1d;
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            border-radius: 8px;
+            padding: 10px 14px;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 600;
+            min-width: 240px;
+            outline: none;
+        }
+
+        .final-answer-input:focus {
+            border-color: #38bdf8;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+        }
+
+        /* Formatowanie matematyczne inline w treściach zadań (ułamki i pierwiastki) */
+        .inline-frac {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            vertical-align: middle;
+            margin: 0 3px;
+            font-size: 0.92em;
+            line-height: 1.1;
+        }
+
+        .inline-frac > span:first-child {
+            border-bottom: 1.5px solid currentColor;
+            padding: 0 4px 1px;
+        }
+
+        .inline-frac > span:last-child {
+            padding: 1px 4px 0;
+        }
+
+        .sqrt-wrap {
+            display: inline-flex;
+            align-items: baseline;
+        }
+
+        .sqrt-bar {
+            border-top: 1.5px solid currentColor;
+            padding: 0 3px 0 1px;
+            display: inline-block;
+            line-height: 1.15;
+        }
+
+        /* Kontener diagramów SVG */
+        .diagram-container {
+            background: rgba(9, 15, 29, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 4px 0;
+        }
+
+        /* Dolny panel sprawdzenia */
+        .action-bar {
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid rgba(168, 85, 247, 0.45);
+            border-radius: 16px;
+            padding: 18px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 14px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            margin-top: 12px;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #9333ea, #6366f1);
+            color: #fff;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.25s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-submit:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(147, 51, 234, 0.45);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: wait;
+        }
+
+        /* Sekcja wyników i raportu */
+        #results-container {
+            display: none;
+            flex-direction: column;
+            gap: 20px;
+            background: var(--panel-bg);
+            border: 2px solid #a855f7;
+            border-radius: 18px;
+            padding: 26px;
+            box-shadow: 0 12px 40px rgba(168, 85, 247, 0.25);
+        }
+
+        .score-summary-card {
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 14px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+        }
+
+        .score-big {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: #4ade80;
+            margin: 6px 0;
+        }
+
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 0.92rem;
+        }
+
+        .summary-table th,
+        .summary-table td {
+            padding: 12px 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: left;
+        }
+
+        .summary-table th {
+            background: rgba(15, 23, 42, 0.9);
+            color: #94a3b8;
+        }
+
+        .status-badge-ok {
+            background: rgba(34, 197, 94, 0.2);
+            color: #4ade80;
+            padding: 3px 10px;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 0.82rem;
+        }
+
+        .status-badge-part {
+            background: rgba(245, 158, 11, 0.2);
+            color: #fbbf24;
+            padding: 3px 10px;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 0.82rem;
+        }
+
+        .status-badge-err {
+            background: rgba(239, 68, 68, 0.2);
+            color: #f87171;
+            padding: 3px 10px;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 0.82rem;
+        }
+
+        .pdf-download-btn {
+            background: linear-gradient(135deg, #059669, #10b981);
+            color: #fff;
+            border: none;
+            padding: 13px 24px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .pdf-download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(16, 185, 129, 0.4);
+        }
+
+        .solution-box {
+            background: rgba(15, 23, 42, 0.85);
+            border-left: 4px solid #38bdf8;
+            padding: 12px 16px;
+            margin-top: 10px;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.92rem;
+            color: #cbd5e1;
+            line-height: 1.5;
+        }
+
+        /* Style dedykowane do czystego drukowania / Zapisz jako PDF z przeglądarki */
+        @media print {
+            body {
+                background: #ffffff !important;
+                color: #000000 !important;
+                padding: 0 !important;
+            }
+            .top-bar, .exam-header, .ai-banner, .save-banner, #exam-form, .action-bar, .pdf-download-btn, .nav-link, button {
+                display: none !important;
+            }
+            #results-container {
+                display: block !important;
+                background: #ffffff !important;
+                border: none !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+                color: #000000 !important;
+            }
+            .score-summary-card {
+                background: #f8fafc !important;
+                border: 2px solid #7c3aed !important;
+                color: #000000 !important;
+                padding: 16px !important;
+                margin-bottom: 20px !important;
+            }
+            .score-big {
+                color: #7c3aed !important;
+                font-size: 2.4rem !important;
+            }
+            #final-student-display {
+                color: #0f172a !important;
+            }
+            .summary-table {
+                color: #000000 !important;
+                page-break-inside: avoid;
+                margin-bottom: 20px !important;
+            }
+            .summary-table th {
+                background: #f1f5f9 !important;
+                color: #000000 !important;
+                border: 1px solid #cbd5e1 !important;
+            }
+            .summary-table td {
+                border: 1px solid #cbd5e1 !important;
+                color: #000000 !important;
+            }
+            .solution-box {
+                background: #f8fafc !important;
+                border-left: 4px solid #7c3aed !important;
+                color: #000000 !important;
+            }
+            #detailed-feedback-list > div {
+                background: #ffffff !important;
+                border: 1px solid #cbd5e1 !important;
+                color: #000000 !important;
+                page-break-inside: avoid;
+                margin-bottom: 14px !important;
+                padding: 14px !important;
+            }
+            #detailed-feedback-list h4 {
+                color: #000000 !important;
+            }
+            #detailed-feedback-list div {
+                color: #1e293b !important;
+            }
+            .math-preview-box {
+                background: #f8fafc !important;
+                border: 1px solid #cbd5e1 !important;
+                color: #0f172a !important;
+            }
+            .math-preview-line {
+                color: #0f172a !important;
+            }
+            .katex {
+                color: #0f172a !important;
+            }
+            @page {
+                size: A4 portrait;
+                margin: 12mm 15mm;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Belka górna -->
+        <div class="top-bar">
+            <a href="egzaminy.html" class="nav-link">← Wybór egzaminów</a>
+            <div class="timer-badge">
+                <span>⏱️ Czas egzaminu:</span>
+                <span id="exam-timer">125:00</span>
+                <button type="button" id="timer-pause-btn" class="timer-pause-btn" onclick="toggleTimerPause()" title="Wstrzymaj lub wznów odliczanie">⏸️ Pauza</button>
+            </div>
+            <button type="button" class="nav-link" onclick="toggleKeySettings()" style="cursor:pointer;">
+                🔑 Klucz API Gemini
+            </button>
+        </div>
+
+        <!-- Nagłówek Arkusza -->
+        <div class="exam-header">
+            <div class="exam-header-top">
+                <span class="cke-badge">CKE OMAP-100-2605</span>
+                <span style="font-size: 0.85rem; color: #cbd5e1;">Pełny arkusz • 20 zadań • 30 pkt • 125 min</span>
+            </div>
+            <h1>Egzamin Ósmoklasisty – Matematyka (Pełny Arkusz)</h1>
+            <p>
+                <strong>Kompletny arkusz egzaminacyjny (20 zadań)</strong>: zadania zamknięte 1–14 (14 pkt) oraz zadania otwarte 15–20 (16 pkt).
+                W zadaniach otwartych zapisz swój pełny tok obliczeń w wieloliniowym edytorze i podaj odpowiedź końcową.
+                Ocena i raport PDF z graficznym zapisem wzorów zostaną wygenerowane dopiero po naciśnięciu przycisku na dole strony.
+            </p>
+        </div>
+
+        <!-- Pasek AI -->
+        <div class="ai-banner">
+            <div>
+                <span>🤖 Weryfikator toku rozumowania AI: </span>
+                <span id="ai-status-text" class="ai-status-indicator" style="color: #4ade80;">Sprawdzanie...</span>
+            </div>
+            <div style="font-size: 0.82rem; color: #94a3b8;">
+                Wykorzystywany do precyzyjnej oceny etapów w zadaniach otwartych 15–20 wg CKE.
+            </div>
+        </div>
+
+        <!-- Pasek zapisu postępu (przerwanie i powrót później) -->
+        <div class="save-banner">
+            <div>
+                <span>💾 Postęp egzaminu: </span>
+                <span id="draft-status-text" style="color: #38bdf8; font-weight: 600;">Autozapis włączony</span>
+            </div>
+            <div class="draft-actions">
+                <button type="button" class="draft-btn" onclick="manualSaveDraft(this)" title="Zapisz bieżący stan w przeglądarce">💾 Zapisz teraz</button>
+                <button type="button" class="draft-btn" onclick="exportDraftFile()" title="Pobierz plik z odpowiedziami na dysk, aby dokończyć później">📥 Pobierz plik (.json)</button>
+                <button type="button" class="draft-btn" onclick="document.getElementById('draft-file-input').click()" title="Wczytaj wcześniej pobrany plik z odpowiedziami">📤 Wczytaj z pliku</button>
+                <button type="button" class="draft-btn draft-btn-danger" onclick="resetExamDraft()" title="Wyczyść wszystkie odpowiedzi i zacznij od nowa">🗑️ Od nowa</button>
+                <input type="file" id="draft-file-input" accept=".json,application/json" style="display:none" onchange="importDraftFile(event)">
+            </div>
+        </div>
+
+        <!-- FORMULARZ ZADAŃ -->
+        <form id="exam-form">
+
+            <!-- DANE UCZNIA (do raportu PDF) -->
+            <div class="student-info-card">
+                <div style="font-weight: 700; font-size: 1rem; color: #38bdf8; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                    <span>👤 Dane ucznia</span>
+                    <span style="font-size: 0.8rem; font-weight: 400; color: #94a3b8;">(zostaną umieszczone na wydruku / w raporcie PDF)</span>
+                </div>
+                <div class="student-info-grid">
+                    <div class="student-field">
+                        <label for="student_first_name">Imię</label>
+                        <input type="text" id="student_first_name" placeholder="np. Jan">
+                    </div>
+                    <div class="student-field">
+                        <label for="student_last_name">Nazwisko</label>
+                        <input type="text" id="student_last_name" placeholder="np. Kowalski">
+                    </div>
+                    <div class="student-field">
+                        <label for="student_class">Klasa</label>
+                        <input type="text" id="student_class" placeholder="np. 8a">
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-divider">Część I: Zadania zamknięte (Zadania 1–14)</div>
+
+            <!-- ZADANIE 1 (ABCD - 1 pkt) -->
+            <div class="task-card" id="card-task-1">
+                <div class="task-header">
+                    <div class="task-title"><span>Zadanie 1.</span></div>
+                    <span class="task-pts">0–1 pkt</span>
+                </div>
+                <div class="task-desc">
+                    Test z matematyki składa się z <strong>40 zadań</strong>. Na diagramie przedstawiono procentowy podział
+                    liczby zadań w teście na zadania z pięciu działów: algebry, planimetrii, stereometrii, arytmetyki, statystyki.
+                </div>
+
+                <div class="diagram-container">
+                    <svg width="220" height="220" viewBox="0 0 200 200">
+                        <circle r="90" cx="100" cy="100" fill="#1e293b" />
+                        <path d="M100,100 L100,10 A90,90 0 0,1 185.6,72.2 Z" fill="#6366f1" />
+                        <path d="M100,100 L185.6,72.2 A90,90 0 0,1 163.6,163.6 Z" fill="#10b981" />
+                        <path d="M100,100 L163.6,163.6 A90,90 0 0,1 100,190 Z" fill="#64748b" />
+                        <path d="M100,100 L100,190 A90,90 0 0,1 72.2,185.6 Z" fill="#f59e0b" />
+                        <path d="M100,100 L72.2,185.6 A90,90 0 0,1 100,10 Z" fill="#38bdf8" />
+                        <circle r="35" cx="100" cy="100" fill="#0f172a" stroke="#334155" stroke-width="2" />
+                        <text x="100" y="96" fill="#cbd5e1" font-size="11" text-anchor="middle" font-weight="bold">Test</text>
+                        <text x="100" y="112" fill="#38bdf8" font-size="12" text-anchor="middle" font-weight="bold">40 zad.</text>
+                    </svg>
+                </div>
+                <div style="font-size: 0.85rem; color: #94a3b8; text-align: center; margin-top:-8px;">
+                    Statystyka: 20% | Algebra: 25% | Planimetria: 15% | Stereometria: 5% | Arytmetyka: ?
+                </div>
+
+                <div class="task-desc">
+                    <strong>Dokończ zdanie. Wybierz właściwą odpowiedź spośród podanych.</strong><br>
+                    Liczba zadań z arytmetyki w tym teście jest równa:
+                </div>
+                <div class="options-grid">
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task1" value="A"><span><strong>A.</strong> 14</span></label>
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task1" value="B"><span><strong>B.</strong> 18</span></label>
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task1" value="C"><span><strong>C.</strong> 26</span></label>
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task1" value="D"><span><strong>D.</strong> 35</span></label>
+                </div>
+            </div>
+
+            <!-- ZADANIE 2 (ABCD - 1 pkt) -->
+            <div class="task-card" id="card-task-2">
+                <div class="task-header">
+                    <div class="task-title"><span>Zadanie 2.</span></div>
+                    <span class="task-pts">0–1 pkt</span>
+                </div>
+                <div class="task-desc">
+                    Ola otwiera swoją szafkę za pomocą czterocyfrowego kodu <strong><em>YXXY</em></strong>, gdzie <strong><em>X</em></strong> jest
+                    największym wspólnym dzielnikiem liczb <strong>18</strong> i <strong>27</strong>, a <strong><em>Y</em></strong> jest najmniejszą wspólną
+                    wielokrotnością liczb <strong>2</strong> i <strong>4</strong>.<br><br>
+                    <strong>Jaki jest kod do otwarcia szafki Oli? Wybierz właściwą odpowiedź spośród podanych.</strong>
+                </div>
+                <div class="options-grid">
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task2" value="A"><span><strong>A.</strong> 4334</span></label>
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task2" value="B"><span><strong>B.</strong> 4994</span></label>
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task2" value="C"><span><strong>C.</strong> 8338</span></label>
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task2" value="D"><span><strong>D.</strong> 8998</span></label>
+                </div>
+            </div>
+
+            <!-- ZADANIE 3 (ABCD - 1 pkt) -->
+            <div class="task-card" id="card-task-3">
+                <div class="task-header">
+                    <div class="task-title"><span>Zadanie 3.</span></div>
+                    <span class="task-pts">0–1 pkt</span>
+                </div>
+                <div class="task-desc">
+                    Dane są cztery liczby:<br>
+                    <div style="margin: 10px 0 10px 14px; display: flex; flex-direction: column; gap: 6px; font-size: 1.05rem;">
+                        <div><em>w</em> = <span class="sqrt-wrap">√<span class="sqrt-bar">100 − 64</span></span> − 2</div>
+                        <div><em>x</em> = 12 − <span class="sqrt-wrap">√<span class="sqrt-bar">64 + 36</span></span></div>
+                        <div><em>y</em> = <span class="sqrt-wrap">√<span class="sqrt-bar">25 − 16</span></span> − 3</div>
+                        <div><em>z</em> = 7 − <span class="sqrt-wrap">√<span class="sqrt-bar">9 + 16</span></span></div>
+                    </div>
+                    <strong>Która z tych liczb jest równa 0? Wybierz właściwą odpowiedź spośród podanych.</strong>
+                </div>
+                <div class="options-grid">
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task3" value="A"><span><strong>A.</strong> <em>w</em></span></label>
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task3" value="B"><span><strong>B.</strong> <em>x</em></span></label>
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task3" value="C"><span><strong>C.</strong> <em>y</em></span></label>
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task3" value="D"><span><strong>D.</strong> <em>z</em></span></label>
+                </div>
+            </div>
+
+            <!-- ZADANIE 4 (ABCD - 1 pkt) -->
+            <div class="task-card" id="card-task-4">
+                <div class="task-header">
+                    <div class="task-title"><span>Zadanie 4.</span></div>
+                    <span class="task-pts">0–1 pkt</span>
+                </div>
+                <div class="task-desc">
+                    <strong>Dokończ zdanie. Wybierz właściwą odpowiedź spośród podanych.</strong><br>
+                    Wartość wyrażenia &nbsp;<strong>2<sup>5</sup> · 3 · 3<sup>4</sup> · 2<sup>3</sup></strong>&nbsp; jest równa wartości wyrażenia:
+                </div>
+                <div class="options-grid">
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task4" value="A"><span><strong>A.</strong> 2<sup>8</sup> · 3<sup>5</sup></span></label>
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task4" value="B"><span><strong>B.</strong> 4<sup>8</sup> · 9<sup>5</sup></span></label>
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task4" value="C"><span><strong>C.</strong> 2<sup>15</sup> · 3<sup>4</sup></span></label>
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task4" value="D"><span><strong>D.</strong> 4<sup>15</sup> · 9<sup>4</sup></span></label>
+                </div>
+            </div>
+
+            <!-- ZADANIE 5 (ABCD - 1 pkt) -->
+            <div class="task-card" id="card-task-5">
+                <div class="task-header">
+                    <div class="task-title"><span>Zadanie 5.</span></div>
+                    <span class="task-pts">0–1 pkt</span>
+                </div>
+                <div class="task-desc">
+                    W pewnej hodowli rasowy kocur kosztuje <strong><em>x</em></strong> złotych, a rasowa kotka kosztuje <strong><em>y</em></strong> złotych.
+                    Janek kupił z tej hodowli rasowego kocura ze zniżką <strong>40%</strong> oraz rasową kotkę ze zniżką <strong>20%</strong>.<br><br>
+                    <strong>Które wyrażenie poprawnie opisuje, ile złotych zapłacił Janek za te koty? Wybierz właściwą odpowiedź spośród podanych.</strong>
+                </div>
+                <div class="options-grid">
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task5" value="A"><span><strong>A.</strong> 0,4<em>x</em> + 0,2<em>y</em></span></label>
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task5" value="B"><span><strong>B.</strong> 0,2<em>x</em> + 0,4<em>y</em></span></label>
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task5" value="C"><span><strong>C.</strong> 0,8<em>x</em> + 0,6<em>y</em></span></label>
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task5" value="D"><span><strong>D.</strong> 0,6<em>x</em> + 0,8<em>y</em></span></label>
+                </div>
+            </div>
+
+            <!-- ZADANIE 6 (A/B i C/D - 1 pkt) -->
+            <div class="task-card" id="card-task-6">
+                <div class="task-header">
+                    <div class="task-title"><span>Zadanie 6.</span></div>
+                    <span class="task-pts">0–1 pkt</span>
+                </div>
+                <div class="task-desc">
+                    W pudełku było jedenaście kul ponumerowanych kolejnymi liczbami naturalnymi od <strong>1</strong> do <strong>11</strong>.
+                    Z tego pudełka wylosowano pięć kul. Suma liczb na dowolnych dwóch kulach, które pozostały w pudełku, jest parzysta.<br><br>
+                    <strong>Uzupełnij zdania. Wybierz odpowiedź spośród oznaczonych literami A i B oraz odpowiedź spośród oznaczonych literami C i D.</strong>
+                </div>
+
+                <div>
+                    <p style="margin-bottom: 8px; color: #cbd5e1; font-weight: 600;">
+                        1. Po losowaniu w pudełku zostały wyłącznie kule ponumerowane liczbami:
+                    </p>
+                    <div class="options-grid">
+                        <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task6_part1" value="A"><span><strong>A.</strong> nieparzystymi</span></label>
+                        <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task6_part1" value="B"><span><strong>B.</strong> parzystymi</span></label>
+                    </div>
+                </div>
+
+                <div>
+                    <p style="margin-bottom: 8px; color: #cbd5e1; font-weight: 600;">
+                        2. Suma liczb na pięciu wylosowanych kulach jest równa:
+                    </p>
+                    <div class="options-grid">
+                        <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task6_part2" value="C"><span><strong>C.</strong> 30</span></label>
+                        <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task6_part2" value="D"><span><strong>D.</strong> 36</span></label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ZADANIE 7 (ABCD - 1 pkt) -->
+            <div class="task-card" id="card-task-7">
+                <div class="task-header">
+                    <div class="task-title"><span>Zadanie 7.</span></div>
+                    <span class="task-pts">0–1 pkt</span>
+                </div>
+                <div class="task-desc">
+                    Do <strong>10</strong> pustych koszy włożono jabłka i pomarańcze, łącznie <strong>400</strong> sztuk tych owoców.
+                    W każdym koszu łączna liczba owoców jest taka sama oraz w każdym koszu liczba jabłek jest o <strong>6</strong> większa od liczby pomarańczy.<br><br>
+                    <strong>Ile sztuk jabłek jest łącznie w tych 10 koszach? Wybierz właściwą odpowiedź spośród podanych.</strong>
+                </div>
+                <div class="options-grid">
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task7" value="A"><span><strong>A.</strong> 210</span></label>
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task7" value="B"><span><strong>B.</strong> 230</span></label>
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task7" value="C"><span><strong>C.</strong> 240</span></label>
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task7" value="D"><span><strong>D.</strong> 260</span></label>
+                </div>
+            </div>
+
+            <!-- ZADANIE 8 (A/B i C/D - 1 pkt) -->
+            <div class="task-card" id="card-task-8">
+                <div class="task-header">
+                    <div class="task-title"><span>Zadanie 8.</span></div>
+                    <span class="task-pts">0–1 pkt</span>
+                </div>
+                <div class="task-desc">
+                    Sumę <strong><em>S</em> = 1 + 2 + 3 + ... + <em>n</em></strong> kolejnych liczb naturalnych od <strong>1</strong> do <strong><em>n</em></strong> można obliczyć ze wzoru:
+                    <div style="text-align: center; margin: 14px 0; font-size: 1.25rem; color: #c084fc; font-weight: 700;">
+                        <em>S</em> = <span class="inline-frac"><span>1</span><span>2</span></span><em>n</em>(<em>n</em> + 1)
+                    </div>
+                    <strong>Uzupełnij zdania. Wybierz odpowiedź spośród oznaczonych literami A i B oraz odpowiedź spośród oznaczonych literami C i D.</strong>
+                </div>
+
+                <div>
+                    <p style="margin-bottom: 8px; color: #cbd5e1; font-weight: 600;">1. Suma stu kolejnych liczb naturalnych od 1 do 100 jest równa:</p>
+                    <div class="options-grid">
+                        <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task8_part1" value="A"><span><strong>A.</strong> 5001</span></label>
+                        <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task8_part1" value="B"><span><strong>B.</strong> 5050</span></label>
+                    </div>
+                </div>
+
+                <div>
+                    <p style="margin-bottom: 8px; color: #cbd5e1; font-weight: 600;">2. Wzór na sumę <em>S</em> po poprawnym przekształceniu ma postać:</p>
+                    <div class="options-grid">
+                        <label class="option-label" onclick="selectRadio(this)">
+                            <input type="radio" name="task8_part2" value="C">
+                            <span><strong>C.</strong> &nbsp;<em>S</em> = <span class="inline-frac"><span>1</span><span>2</span></span><em>n</em><sup>2</sup> + 1</span>
+                        </label>
+                        <label class="option-label" onclick="selectRadio(this)">
+                            <input type="radio" name="task8_part2" value="D">
+                            <span><strong>D.</strong> &nbsp;<em>S</em> = <span class="inline-frac"><span>1</span><span>2</span></span><em>n</em><sup>2</sup> + <span class="inline-frac"><span>1</span><span>2</span></span><em>n</em></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ZADANIE 9 (ABCD - 1 pkt) -->
+            <div class="task-card" id="card-task-9">
+                <div class="task-header">
+                    <div class="task-title"><span>Zadanie 9.</span></div>
+                    <span class="task-pts">0–1 pkt</span>
+                </div>
+                <div class="task-desc">
+                    Średnia arytmetyczna dwóch liczb <strong><em>x</em></strong> i <strong><em>y</em></strong> jest równa <strong>4</strong>, a średnia arytmetyczna trzech liczb <strong><em>x</em>, <em>y</em>, <em>z</em></strong> jest równa <strong>5</strong>.<br><br>
+                    <strong>Dokończ zdanie. Wybierz właściwą odpowiedź spośród podanych.</strong><br>
+                    Liczba <em>z</em> jest równa:
+                </div>
+                <div class="options-grid">
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task9" value="A"><span><strong>A.</strong> 4</span></label>
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task9" value="B"><span><strong>B.</strong> 5</span></label>
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task9" value="C"><span><strong>C.</strong> 6</span></label>
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task9" value="D"><span><strong>D.</strong> 7</span></label>
+                </div>
+            </div>
+
+            <!-- ZADANIE 10 (Prawda/Fałsz - 1 pkt) -->
+            <div class="task-card" id="card-task-10">
+                <div class="task-header">
+                    <div class="task-title"><span>Zadanie 10.</span></div>
+                    <span class="task-pts">0–1 pkt</span>
+                </div>
+                <div class="task-desc">
+                    Dany jest trójkąt równoboczny o boku długości <strong>a = 2 cm</strong>.<br>
+                    <strong>Oceń prawdziwość podanych zdań. Wybierz P, jeśli zdanie jest prawdziwe, albo F – jeśli jest fałszywe.</strong>
+                </div>
+
+                <table class="tf-table">
+                    <thead>
+                        <tr>
+                            <th>Zdanie</th>
+                            <th style="width: 70px;">P (Prawda)</th>
+                            <th style="width: 70px;">F (Fałsz)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="font-size: 1.02rem;">Wysokość tego trójkąta jest równa <strong>√3 cm</strong>.</td>
+                            <td><button type="button" class="tf-btn" onclick="setTF(10, 1, 'P', this)">P</button></td>
+                            <td><button type="button" class="tf-btn" onclick="setTF(10, 1, 'F', this)">F</button></td>
+                        </tr>
+                        <tr>
+                            <td style="font-size: 1.02rem;">Pole tego trójkąta jest równe <strong>√3 cm²</strong>.</td>
+                            <td><button type="button" class="tf-btn" onclick="setTF(10, 2, 'P', this)">P</button></td>
+                            <td><button type="button" class="tf-btn" onclick="setTF(10, 2, 'F', this)">F</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- ZADANIE 11 (ABCD - 1 pkt) -->
+            <div class="task-card" id="card-task-11">
+                <div class="task-header">
+                    <div class="task-title"><span>Zadanie 11.</span></div>
+                    <span class="task-pts">0–1 pkt</span>
+                </div>
+                <div class="task-desc">
+                    Kąty wewnętrzne czworokąta oznaczono: <strong><em>α</em>, <em>β</em>, <em>γ</em></strong> oraz <strong><em>δ</em></strong>. Miara kąta <strong><em>β</em></strong> jest o <strong>70°</strong> większa od miary kąta <strong><em>α</em></strong>, miara kąta <strong><em>γ</em></strong> jest dwukrotnie większa od miary kąta <strong><em>α</em></strong>. Kąt <strong><em>δ</em></strong> jest kątem prostym.<br><br>
+                    <strong>Dokończ zdanie. Wybierz właściwą odpowiedź spośród podanych.</strong><br>
+                    Miara kąta <em>β</em> jest równa:
+                </div>
+                <div class="options-grid">
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task11" value="A"><span><strong>A.</strong> 50°</span></label>
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task11" value="B"><span><strong>B.</strong> 85°</span></label>
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task11" value="C"><span><strong>C.</strong> 120°</span></label>
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task11" value="D"><span><strong>D.</strong> 155°</span></label>
+                </div>
+            </div>
+
+            <!-- ZADANIE 12 (Prawda/Fałsz z siatką SVG - 1 pkt) -->
+            <div class="task-card" id="card-task-12">
+                <div class="task-header">
+                    <div class="task-title"><span>Zadanie 12.</span></div>
+                    <span class="task-pts">0–1 pkt</span>
+                </div>
+                <div class="task-desc">
+                    Na kartce w kratkę Jurek wykonał rysunek. Na tym rysunku punkty <strong><em>M</em>, <em>W</em>, <em>S</em></strong> oznaczają położenia odpowiednio: muzeum, wieży widokowej oraz schroniska. Wieża widokowa znajduje się <strong>3 km na północ</strong> i <strong>4 km na zachód</strong> od schroniska. Muzeum znajduje się <strong>5 km na wschód</strong> od schroniska.
+                </div>
+
+                <div class="diagram-container">
+                    <!-- Siatka kierunków W-S-M (skala: 1 kratka = 22px = 1 km) -->
+                    <svg width="360" height="205" viewBox="0 0 360 205">
+                        <!-- Siatka 14x8 kratek (x od 26 do 334, y od 20 do 174; S=(158, 120)) -->
+                        <defs>
+                            <pattern id="grid22" width="22" height="22" patternUnits="userSpaceOnUse" x="26" y="10">
+                                <path d="M 22 0 L 0 0 0 22" fill="none" stroke="rgba(148,163,184,0.22)" stroke-width="1"/>
+                            </pattern>
+                        </defs>
+                        <rect x="26" y="10" width="308" height="176" fill="url(#grid22)" stroke="rgba(148,163,184,0.25)"/>
+
+                        <!-- Osie kierunków przechodzące przez S (158, 120) -->
+                        <line x1="26" y1="120" x2="334" y2="120" stroke="#94a3b8" stroke-width="1.4"/>
+                        <line x1="158" y1="186" x2="158" y2="12" stroke="#94a3b8" stroke-width="1.4"/>
+                        <polygon points="158,8 154,17 162,17" fill="#94a3b8"/>
+                        <polygon points="338,120 329,116 329,124" fill="#94a3b8"/>
+                        <polygon points="22,120 31,116 31,124" fill="#94a3b8"/>
+                        <polygon points="158,190 154,181 162,181" fill="#94a3b8"/>
+
+                        <!-- Trójkąt WSM: W=(158-88, 120-66)=(70, 54), S=(158, 120), M=(158+110, 120)=(268, 120) -->
+                        <polygon points="70,54 158,120 268,120" fill="rgba(56, 189, 248, 0.14)" stroke="#38bdf8" stroke-width="2"/>
+                        <circle cx="70" cy="54" r="3.5" fill="#c084fc"/>
+                        <circle cx="158" cy="120" r="3.5" fill="#c084fc"/>
+                        <circle cx="268" cy="120" r="3.5" fill="#c084fc"/>
+
+                        <!-- Etykiety punktów i kierunków -->
+                        <text x="58" y="50" fill="#f8fafc" font-size="13" font-weight="bold" font-style="italic">W</text>
+                        <text x="145" y="135" fill="#f8fafc" font-size="13" font-weight="bold" font-style="italic">S</text>
+                        <text x="272" y="135" fill="#f8fafc" font-size="13" font-weight="bold" font-style="italic">M</text>
+
+                        <text x="166" y="20" fill="#cbd5e1" font-size="11">północ</text>
+                        <text x="166" y="198" fill="#cbd5e1" font-size="11">południe</text>
+                        <text x="2" y="113" fill="#cbd5e1" font-size="11">zachód</text>
+                        <text x="315" y="113" fill="#cbd5e1" font-size="11">wschód</text>
+
+                        <!-- Skala kratki 1 km x 1 km -->
+                        <rect x="290" y="32" width="22" height="22" fill="rgba(168,85,247,0.18)" stroke="#c084fc" stroke-width="1.2"/>
+                        <text x="301" y="27" fill="#cbd5e1" font-size="10" text-anchor="middle">1 km</text>
+                        <text x="316" y="47" fill="#cbd5e1" font-size="10">1 km</text>
+                    </svg>
+                </div>
+
+                <div class="task-desc">
+                    <strong>Oceń prawdziwość podanych zdań. Wybierz P, jeśli zdanie jest prawdziwe, albo F – jeśli jest fałszywe.</strong>
+                </div>
+
+                <table class="tf-table">
+                    <thead>
+                        <tr>
+                            <th>Zdanie</th>
+                            <th style="width: 70px;">P (Prawda)</th>
+                            <th style="width: 70px;">F (Fałsz)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Odległość w linii prostej schroniska od muzeum jest równa odległości w linii prostej schroniska od wieży widokowej.</td>
+                            <td><button type="button" class="tf-btn" onclick="setTF(12, 1, 'P', this)">P</button></td>
+                            <td><button type="button" class="tf-btn" onclick="setTF(12, 1, 'F', this)">F</button></td>
+                        </tr>
+                        <tr>
+                            <td>Odległość w linii prostej muzeum od wieży widokowej jest mniejsza niż 10 km.</td>
+                            <td><button type="button" class="tf-btn" onclick="setTF(12, 2, 'P', this)">P</button></td>
+                            <td><button type="button" class="tf-btn" onclick="setTF(12, 2, 'F', this)">F</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- ZADANIE 13 (ABCD z rysunkiem SVG - 1 pkt) -->
+            <div class="task-card" id="card-task-13">
+                <div class="task-header">
+                    <div class="task-title"><span>Zadanie 13.</span></div>
+                    <span class="task-pts">0–1 pkt</span>
+                </div>
+                <div class="task-desc">
+                    Przekątna <strong><em>AD</em></strong> dzieli pięciokąt <strong><em>ABCDE</em></strong> na trójkąt <strong><em>ADE</em></strong> i na kwadrat <strong><em>ABCD</em></strong> (zobacz rysunek). Pole trójkąta <strong><em>ADE</em></strong> jest równe <strong>28</strong>, a wysokość poprowadzona z wierzchołka <strong><em>E</em></strong> na bok <strong><em>AD</em></strong> jest równa <strong>7</strong>.
+                </div>
+
+                <div class="diagram-container">
+                    <svg width="170" height="195" viewBox="0 0 170 195">
+                        <!-- Kwadrat ABCD: A=(40,85), D=(130,85), C=(130,175), B=(40,175), E=(85,20) -->
+                        <polygon points="40,85 85,20 130,85 130,175 40,175" fill="rgba(168, 85, 247, 0.14)" stroke="#c084fc" stroke-width="2"/>
+                        <line x1="40" y1="85" x2="130" y2="85" stroke="#38bdf8" stroke-dasharray="4,4" stroke-width="1.6"/>
+                        <text x="85" y="15" fill="#f8fafc" font-size="13" font-weight="bold" text-anchor="middle" font-style="italic">E</text>
+                        <text x="27" y="88" fill="#f8fafc" font-size="13" font-weight="bold" font-style="italic">A</text>
+                        <text x="137" y="88" fill="#f8fafc" font-size="13" font-weight="bold" font-style="italic">D</text>
+                        <text x="27" y="180" fill="#f8fafc" font-size="13" font-weight="bold" font-style="italic">B</text>
+                        <text x="137" y="180" fill="#f8fafc" font-size="13" font-weight="bold" font-style="italic">C</text>
+                    </svg>
+                </div>
+
+                <div class="task-desc">
+                    <strong>Dokończ zdanie. Wybierz właściwą odpowiedź spośród podanych.</strong><br>
+                    Pole kwadratu <em>ABCD</em> jest równe:
+                </div>
+                <div class="options-grid">
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task13" value="A"><span><strong>A.</strong> 16</span></label>
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task13" value="B"><span><strong>B.</strong> 32</span></label>
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task13" value="C"><span><strong>C.</strong> 49</span></label>
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task13" value="D"><span><strong>D.</strong> 64</span></label>
+                </div>
+            </div>
+
+            <!-- ZADANIE 14 (ABCD z rysunkiem 3 sześcianów SVG - 1 pkt) -->
+            <div class="task-card" id="card-task-14">
+                <div class="task-header">
+                    <div class="task-title"><span>Zadanie 14.</span></div>
+                    <span class="task-pts">0–1 pkt</span>
+                </div>
+                <div class="task-desc">
+                    Trzy jednakowe sześciany o krawędzi długości <strong>5</strong> ustawiono jeden na drugim i otrzymano prostopadłościan (zobacz rysunek).
+                </div>
+
+                <div class="diagram-container">
+                    <!-- 3 sześciany ustawione jeden na drugim -->
+                    <svg width="130" height="200" viewBox="0 0 130 200">
+                        <!-- Korpus przedni (3 kwadraty 44x44) -->
+                        <rect x="30" y="34" width="46" height="138" fill="rgba(34, 197, 94, 0.22)" stroke="#4ade80" stroke-width="2"/>
+                        <!-- Prawa ściana boczna -->
+                        <polygon points="76,34 98,18 98,156 76,172" fill="rgba(34, 197, 94, 0.12)" stroke="#4ade80" stroke-width="2"/>
+                        <!-- Górna ściana -->
+                        <polygon points="30,34 52,18 98,18 76,34" fill="rgba(34, 197, 94, 0.30)" stroke="#4ade80" stroke-width="2"/>
+                        <!-- Linie podziału na 3 sześciany -->
+                        <line x1="30" y1="80" x2="76" y2="80" stroke="#4ade80" stroke-width="1.6"/>
+                        <line x1="76" y1="80" x2="98" y2="64" stroke="#4ade80" stroke-width="1.6"/>
+                        <line x1="30" y1="126" x2="76" y2="126" stroke="#4ade80" stroke-width="1.6"/>
+                        <line x1="76" y1="126" x2="98" y2="110" stroke="#4ade80" stroke-width="1.6"/>
+                    </svg>
+                </div>
+
+                <div class="task-desc">
+                    <strong>Dokończ zdanie. Wybierz właściwą odpowiedź spośród podanych.</strong><br>
+                    Pole powierzchni całkowitej otrzymanego prostopadłościanu jest równe:
+                </div>
+                <div class="options-grid">
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task14" value="A"><span><strong>A.</strong> 350</span></label>
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task14" value="B"><span><strong>B.</strong> 375</span></label>
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task14" value="C"><span><strong>C.</strong> 400</span></label>
+                    <label class="option-label" onclick="selectRadio(this)"><input type="radio" name="task14" value="D"><span><strong>D.</strong> 450</span></label>
+                </div>
+            </div>
+
+            <div class="section-divider">Część II: Zadania otwarte (Zadania 15–20)</div>
+
+            <!-- ZADANIE 15 (Otwarte 0-2 pkt) -->
+            <div class="task-card" id="card-task-15">
+                <div class="task-header">
+                    <div class="task-title"><span>Zadanie 15. (Otwarte)</span></div>
+                    <span class="task-pts">0–2 pkt</span>
+                </div>
+                <div class="task-desc">
+                    Do wykonania origami Ela przygotowała łącznie <strong>160 kartek</strong>. Każda z tych kartek była w jednym z czterech kolorów:
+                    białym, niebieskim, zielonym lub czerwonym. Kartek białych było <strong>37</strong>. Kartek niebieskich było <strong>1,5 raza więcej</strong> niż czerwonych, a kartek zielonych było <strong>o 10 mniej</strong> niż czerwonych.<br><br>
+                    <strong>Oblicz, ile kartek niebieskich przygotowała Ela. Zapisz obliczenia.</strong>
+                </div>
+
+                <div>
+                    <div class="math-toolbar">
+                        <span style="font-size:0.8rem; color:#94a3b8; margin-right:4px;">Symbole:</span>
+                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task15_reasoning', '²')">x²</button>
+                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task15_reasoning', '√()')">√x</button>
+                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task15_reasoning', '·')">·</button>
+                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task15_reasoning', ' 1/2')" title="Wstaw ułamek 1/2">½</button>
+                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task15_reasoning', '/')" title="Kreska ułamkowa / dzielenie">/</button>
+                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task15_reasoning', 'x')">x</button>
+                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task15_reasoning', '( )')">( )</button>
+                    </div>
+                    <textarea id="task15_reasoning" class="reasoning-textarea" placeholder="Wpisz pełny tok rozumowania, ułożone równanie i kolejne kroki obliczeń..." oninput="updateMathPreview('task15_reasoning', 'task15_preview')"></textarea>
+                    <div id="task15_preview" class="math-preview-box">
+                        <span style="color:#64748b; font-style:italic;">Podgląd zapisu matematycznego pojawi się tutaj...</span>
+                    </div>
+                </div>
+
+                <div class="final-answer-row">
+                    <label for="task15_answer" style="font-weight: 600;">Odpowiedź końcowa (liczba kartek niebieskich):</label>
+                    <input type="text" id="task15_answer" class="final-answer-input" placeholder="Wpisz liczbę, np. 24">
+                </div>
+            </div>
+
+            <!-- ZADANIE 16 (Otwarte - Uzasadnienie 0-3 pkt) -->
+            <div class="task-card" id="card-task-16">
+                <div class="task-header">
+                    <div class="task-title"><span>Zadanie 16. (Otwarte – Uzasadnienie)</span></div>
+                    <span class="task-pts">0–3 pkt</span>
+                </div>
+                <div class="task-desc">
+                    Z Polanki do Dębiny prowadzi jedna droga przez Jodłowo i ma długość <strong>123 km</strong>.
+                    Droga z Polanki do Jodłowa ma długość <strong>48 km</strong> i samochód przejechał ją w czasie <strong>40 minut</strong>.
+                    Drogę z Jodłowa do Dębiny ten samochód pokonał z taką samą prędkością, jak drogę z Polanki do Jodłowa.<br><br>
+                    <strong>Uzasadnij, że przejazd tego samochodu z Jodłowa do Dębiny trwał dłużej niż godzinę. Zapisz obliczenia.</strong>
+                </div>
+
+                <div>
+                    <div class="math-toolbar">
+                        <span style="font-size:0.8rem; color:#94a3b8; margin-right:4px;">Symbole:</span>
+                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task16_reasoning', 'km/h')">km/h</button>
+                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task16_reasoning', '·')">·</button>
+                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task16_reasoning', ' 1/2')" title="Wstaw ułamek 1/2">½</button>
+                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task16_reasoning', '/')" title="Kreska ułamkowa / dzielenie">/</button>
+                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task16_reasoning', '>')">></button>
+                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task16_reasoning', '<')">&lt;</button>
+                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task16_reasoning', '=')">=</button>
+                    </div>
+                    <textarea id="task16_reasoning" class="reasoning-textarea" placeholder="Zapisz obliczenie prędkości samochodu, długości drogi Jodłowo–Dębina, czasu przejazdu oraz sformułuj uzasadnienie..." oninput="updateMathPreview('task16_reasoning', 'task16_preview')"></textarea>
+                    <div id="task16_preview" class="math-preview-box">
+                        <span style="color:#64748b; font-style:italic;">Podgląd zapisu matematycznego pojawi się tutaj...</span>
+                    </div>
+                </div>
+
+                <div class="final-answer-row">
+                    <label for="task16_answer" style="font-weight: 600;">Wniosek / odpowiedź:</label>
+                    <input type="text" id="task16_answer" class="final-answer-input" placeholder="Wpisz wniosek (np. czas wynosi ... h, co jest > 1 h)">
+                </div>
+            </div>
+
+            <!-- ZADANIE 17 (Otwarte 0-3 pkt) -->
+            <div class="task-card" id="card-task-17">
+                <div class="task-header">
+                    <div class="task-title"><span>Zadanie 17. (Otwarte)</span></div>
+                    <span class="task-pts">0–3 pkt</span>
+                </div>
+                <div class="task-desc">
+                    Podczas Dnia Sportu w pewnej szkole rozegrano trzy turnieje sportowe. Każde dziecko, które było uczestnikiem tego Dnia Sportu, wzięło udział w dokładnie jednym turnieju sportowym. W tabeli podano informacje dotyczące liczby dzieci biorących udział w poszczególnych turniejach.<br>
+                    Łączna liczba dziewcząt była <strong>o 8 większa</strong> od łącznej liczby chłopców uczestniczących w tym Dniu Sportu.
+                </div>
+
+                <table class="tf-table" style="text-align: center;">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th style="text-align: center;">Turniej piłki nożnej</th>
+                            <th style="text-align: center;">Turniej tańca</th>
+                            <th style="text-align: center;">Turniej tenisa stołowego</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Liczba dziewcząt</strong></td>
+                            <td style="text-align: center;">15</td>
+                            <td style="text-align: center;">65</td>
+                            <td style="text-align: center; color: #38bdf8; font-weight: 700;">?</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Liczba chłopców</strong></td>
+                            <td style="text-align: center;">46</td>
+                            <td style="text-align: center;">16</td>
+                            <td style="text-align: center;">34</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="task-desc">
+                    <strong>Oblicz, ile procent liczby wszystkich uczestników Dnia Sportu stanowi liczba dzieci, które brały udział w turnieju tenisa stołowego. Zapisz obliczenia.</strong>
+                </div>
+
+                <div>
+                    <div class="math-toolbar">
+                        <span style="font-size:0.8rem; color:#94a3b8; margin-right:4px;">Symbole:</span>
+                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task17_reasoning', '%')">%</button>
+                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task17_reasoning', '·')">·</button>
+                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task17_reasoning', '/')" title="Kreska ułamkowa / dzielenie">/</button>
+                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task17_reasoning', '( )')">( )</button>
+                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task17_reasoning', '=')">=</button>
+                    </div>
+                    <textarea id="task17_reasoning" class="reasoning-textarea" placeholder="Oblicz liczbę chłopców, liczbę dziewcząt, liczbę uczestników tenisa stołowego oraz szukany procent..." oninput="updateMathPreview('task17_reasoning', 'task17_preview')"></textarea>
+                    <div id="task17_preview" class="math-preview-box">
+                        <span style="color:#64748b; font-style:italic;">Podgląd zapisu matematycznego pojawi się tutaj...</span>
+                    </div>
+                </div>
+
+                <div class="final-answer-row">
+                    <label for="task17_answer" style="font-weight: 600;">Odpowiedź końcowa (procent uczestników):</label>
+                    <input type="text" id="task17_answer" class="final-answer-input" placeholder="Wpisz wynik w %, np. 35%">
+                </div>
+            </div>
+
+            <!-- ZADANIE 18 (Otwarte 0-2 pkt) -->
+            <div class="task-card" id="card-task-18">
+                <div class="task-header">
+                    <div class="task-title"><span>Zadanie 18. (Otwarte)</span></div>
+                    <span class="task-pts">0–2 pkt</span>
+                </div>
+                <div class="task-desc">
+                    Dany jest sześcian <strong><em>ABCDEFGH</em></strong> o krawędzi długości <strong><em>a</em></strong>. Punkt <strong><em>S</em></strong> jest środkiem krawędzi <strong><em>DH</em></strong> tego sześcianu. Punkty <strong><em>A</em>, <em>C</em>, <em>D</em>, <em>S</em></strong> są wierzchołkami ostrosłupa trójkątnego (zobacz rysunek).<br><br>
+                    <strong>Oblicz, ile razy objętość ostrosłupa <em>ACDS</em> jest mniejsza od objętości sześcianu <em>ABCDEFGH</em>. Zapisz obliczenia.</strong>
+                </div>
+
+                <div class="diagram-container">
+                    <!-- Sześcian ABCDEFGH z ostrosłupem ACDS -->
+                    <svg width="210" height="190" viewBox="0 0 210 190">
+                        <!-- Tylne krawędzie sześcianu -->
+                        <line x1="65" y1="30" x2="65" y2="130" stroke="#64748b" stroke-width="1.3" stroke-dasharray="3,3"/>
+                        <line x1="65" y1="130" x2="175" y2="130" stroke="#64748b" stroke-width="1.3" stroke-dasharray="3,3"/>
+                        <line x1="30" y1="165" x2="65" y2="130" stroke="#64748b" stroke-width="1.3" stroke-dasharray="3,3"/>
+
+                        <!-- Ostrosłup ACDS (A=(30,165), C=(175,130), D=(65,130), S=(65,80)) -->
+                        <polygon points="30,165 65,130 175,130" fill="rgba(34, 197, 94, 0.16)" stroke="#4ade80" stroke-width="1.6"/>
+                        <polygon points="30,165 65,80 175,130" fill="rgba(34, 197, 94, 0.22)" stroke="#4ade80" stroke-width="1.8"/>
+                        <line x1="65" y1="80" x2="65" y2="130" stroke="#4ade80" stroke-width="1.8"/>
+
+                        <!-- Przednie i górne krawędzie sześcianu -->
+                        <rect x="30" y="65" width="110" height="100" fill="none" stroke="#c084fc" stroke-width="1.8"/>
+                        <polygon points="30,65 65,30 175,30 140,65" fill="none" stroke="#c084fc" stroke-width="1.8"/>
+                        <line x1="175" y1="30" x2="175" y2="130" stroke="#c084fc" stroke-width="1.8"/>
+                        <line x1="140" y1="165" x2="175" y2="130" stroke="#c084fc" stroke-width="1.8"/>
+
+                        <!-- Punkty i etykiety -->
+                        <circle cx="65" cy="80" r="3" fill="#4ade80"/>
+                        <text x="18" y="170" fill="#f8fafc" font-size="13" font-weight="bold" font-style="italic">A</text>
+                        <text x="144" y="175" fill="#f8fafc" font-size="13" font-weight="bold" font-style="italic">B</text>
+                        <text x="181" y="135" fill="#f8fafc" font-size="13" font-weight="bold" font-style="italic">C</text>
+                        <text x="72" y="126" fill="#cbd5e1" font-size="12" font-weight="bold" font-style="italic">D</text>
+                        <text x="18" y="65" fill="#f8fafc" font-size="13" font-weight="bold" font-style="italic">E</text>
+                        <text x="144" y="72" fill="#f8fafc" font-size="13" font-weight="bold" font-style="italic">F</text>
+                        <text x="181" y="32" fill="#f8fafc" font-size="13" font-weight="bold" font-style="italic">G</text>
+                        <text x="65" y="22" fill="#f8fafc" font-size="13" font-weight="bold" font-style="italic" text-anchor="middle">H</text>
+                        <text x="53" y="84" fill="#4ade80" font-size="13" font-weight="bold" font-style="italic">S</text>
+                    </svg>
+                </div>
+
+                <div>
+                    <div class="math-toolbar">
+                        <span style="font-size:0.8rem; color:#94a3b8; margin-right:4px;">Symbole:</span>
+                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task18_reasoning', '²')">a²</button>
+                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task18_reasoning', '³')">a³</button>
+                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task18_reasoning', '·')">·</button>
+                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task18_reasoning', ' 1/2')" title="Wstaw ułamek 1/2">½</button>
+                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task18_reasoning', '/')" title="Kreska ułamkowa / dzielenie">/</button>
+                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task18_reasoning', '( )')">( )</button>
+                    </div>
+                    <textarea id="task18_reasoning" class="reasoning-textarea" placeholder="Zapisz wzór na pole podstawy ACD, wysokość DS, objętość ostrosłupa i porównaj z objętością sześcianu..." oninput="updateMathPreview('task18_reasoning', 'task18_preview')"></textarea>
+                    <div id="task18_preview" class="math-preview-box">
+                        <span style="color:#64748b; font-style:italic;">Podgląd zapisu matematycznego pojawi się tutaj...</span>
+                    </div>
+                </div>
+
+                <div class="final-answer-row">
+                    <label for="task18_answer" style="font-weight: 600;">Odpowiedź końcowa (ile razy mniejsza):</label>
+                    <input type="text" id="task18_answer" class="final-answer-input" placeholder="Wpisz liczbę, np. 8 razy">
+                </div>
+            </div>
+
+            <!-- ZADANIE 19 (Otwarte 0-3 pkt) -->
+            <div class="task-card" id="card-task-19">
+                <div class="task-header">
+                    <div class="task-title"><span>Zadanie 19. (Otwarte)</span></div>
+                    <span class="task-pts">0–3 pkt</span>
+                </div>
+                <div class="task-desc">
+                    Ogródek pani Anny ma kształt <strong>trapezu</strong>, którego podstawy mają długości <strong>18 m</strong> i <strong>12 m</strong>, a wysokość jest równa <strong>9 m</strong>.
+                    Pani Anna chce zmienić swój ogródek w łąkę kwietną. Jedno opakowanie z nasionami wybrane przez panią Annę wystarcza na obsianie <strong>25 m²</strong> powierzchni i kosztuje <strong>23,80 zł</strong>.<br><br>
+                    <strong>Oblicz, ile złotych musi zapłacić pani Anna za najmniejszą liczbę opakowań z nasionami potrzebnych na obsianie całej powierzchni tego ogródka. Zapisz obliczenia.</strong>
+                </div>
+
+                <div class="diagram-container">
+                    <svg width="260" height="130" viewBox="0 0 260 130">
+                        <polygon points="50,20 170,20 220,110 20,110" fill="rgba(168, 85, 247, 0.15)" stroke="#c084fc" stroke-width="2" />
+                        <line x1="50" y1="20" x2="50" y2="110" stroke="#38bdf8" stroke-dasharray="4,4" stroke-width="1.5" />
+                        <text x="110" y="16" fill="#cbd5e1" font-size="12" text-anchor="middle">12 m</text>
+                        <text x="120" y="125" fill="#cbd5e1" font-size="12" text-anchor="middle">18 m</text>
+                        <text x="42" y="70" fill="#38bdf8" font-size="12" text-anchor="end">h = 9 m</text>
+                    </svg>
+                </div>
+
+                <div>
+                    <div class="math-toolbar">
+                        <span style="font-size:0.8rem; color:#94a3b8; margin-right:4px;">Symbole:</span>
+                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task19_reasoning', 'm²')">m²</button>
+                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task19_reasoning', 'zł')">zł</button>
+                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task19_reasoning', '·')">·</button>
+                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task19_reasoning', ' 1/2')" title="Wstaw ułamek 1/2">½</button>
+                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task19_reasoning', '/')" title="Kreska ułamkowa / dzielenie">/</button>
+                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task19_reasoning', '( )')">( )</button>
+                    </div>
+                    <textarea id="task19_reasoning" class="reasoning-textarea" placeholder="Zapisz obliczenie pola powierzchni ogródka, liczby opakowań oraz łącznego kosztu..." oninput="updateMathPreview('task19_reasoning', 'task19_preview')"></textarea>
+                    <div id="task19_preview" class="math-preview-box">
+                        <span style="color:#64748b; font-style:italic;">Podgląd zapisu matematycznego pojawi się tutaj...</span>
+                    </div>
+                </div>
+
+                <div class="final-answer-row">
+                    <label for="task19_answer" style="font-weight: 600;">Koszt zakupu opakowań (w zł):</label>
+                    <input type="text" id="task19_answer" class="final-answer-input" placeholder="Wpisz kwotę w zł (np. 95,20 zł)">
+                </div>
+            </div>
+
+            <!-- ZADANIE 20 (Otwarte 0-3 pkt) -->
+            <div class="task-card" id="card-task-20">
+                <div class="task-header">
+                    <div class="task-title"><span>Zadanie 20. (Otwarte)</span></div>
+                    <span class="task-pts">0–3 pkt</span>
+                </div>
+                <div class="task-desc">
+                    Z kartonu wycięto prostokąt <strong><em>ABCD</em></strong> o wymiarach <strong>3</strong> i <strong>9</strong> (zobacz rysunek 1.). Następnie ten prostokąt rozcięto na dwie figury: trapez prostokątny oraz trójkąt prostokątny równoramienny. Z tych figur złożono równoległobok <strong><em>KLMN</em></strong>, który nie jest prostokątem (zobacz rysunek 2.).<br><br>
+                    <strong>Oblicz obwód równoległoboku <em>KLMN</em>. Zapisz obliczenia.</strong>
+                </div>
+
+                <div class="diagram-container">
+                    <div style="text-align: center;">
+                        <svg width="190" height="90" viewBox="0 0 190 90">
+                            <rect x="20" y="22" width="150" height="48" fill="rgba(168, 85, 247, 0.14)" stroke="#c084fc" stroke-width="2"/>
+                            <text x="14" y="18" fill="#f8fafc" font-size="12" font-weight="bold" font-style="italic">D</text>
+                            <text x="172" y="18" fill="#f8fafc" font-size="12" font-weight="bold" font-style="italic">C</text>
+                            <text x="14" y="84" fill="#f8fafc" font-size="12" font-weight="bold" font-style="italic">A</text>
+                            <text x="172" y="84" fill="#f8fafc" font-size="12" font-weight="bold" font-style="italic">B</text>
+                        </svg>
+                        <div style="font-size: 0.85rem; color: #94a3b8; margin-top: 2px;">Rysunek 1.</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <svg width="215" height="90" viewBox="0 0 215 90">
+                            <polygon points="20,70 155,70 195,22 60,22" fill="rgba(56, 189, 248, 0.14)" stroke="#38bdf8" stroke-width="2"/>
+                            <text x="58" y="17" fill="#f8fafc" font-size="12" font-weight="bold" font-style="italic">N</text>
+                            <text x="197" y="17" fill="#f8fafc" font-size="12" font-weight="bold" font-style="italic">M</text>
+                            <text x="14" y="84" fill="#f8fafc" font-size="12" font-weight="bold" font-style="italic">K</text>
+                            <text x="155" y="84" fill="#f8fafc" font-size="12" font-weight="bold" font-style="italic">L</text>
+                        </svg>
+                        <div style="font-size: 0.85rem; color: #94a3b8; margin-top: 2px;">Rysunek 2.</div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="math-toolbar">
+                        <span style="font-size:0.8rem; color:#94a3b8; margin-right:4px;">Symbole:</span>
+                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task20_reasoning', '²')">x²</button>
+                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task20_reasoning', '√()')">√x</button>
+                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task20_reasoning', '·')">·</button>
+                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task20_reasoning', '/')" title="Kreska ułamkowa / dzielenie">/</button>
+                        <button type="button" class="math-tool-btn" onclick="insertSymbol('task20_reasoning', '( )')">( )</button>
+                    </div>
+                    <textarea id="task20_reasoning" class="reasoning-textarea" placeholder="Wyznacz długości przyprostokątnych trójkąta, oblicz bok skośny równoległoboku (z tw. Pitagorasa) oraz obwód równoległoboku..." oninput="updateMathPreview('task20_reasoning', 'task20_preview')"></textarea>
+                    <div id="task20_preview" class="math-preview-box">
+                        <span style="color:#64748b; font-style:italic;">Podgląd zapisu matematycznego pojawi się tutaj...</span>
+                    </div>
+                </div>
+
+                <div class="final-answer-row">
+                    <label for="task20_answer" style="font-weight: 600;">Odpowiedź końcowa (obwód równoległoboku):</label>
+                    <input type="text" id="task20_answer" class="final-answer-input" placeholder="np. 14 + 4√2">
+                </div>
+            </div>
+
+            <!-- Pasek akcji Zakończ egzamin -->
+            <div class="action-bar">
+                <div>
+                    <div style="font-weight: 700; font-size: 1.05rem;">Zakończyłeś rozwiązywanie wszystkich 20 zadań?</div>
+                    <div style="font-size: 0.85rem; color: #94a3b8;">
+                        AI zweryfikuje tok rozumowania zadań otwartych (15–20) wg kryteriów CKE i wygeneruje raport PDF.
+                    </div>
+                </div>
+                <button type="button" id="submit-btn" class="btn-submit" onclick="gradeExam()">
+                    <span>🏁 Zakończ i sprawdź egzamin</span>
+                </button>
+            </div>
+        </form>
+
+        <!-- KONTENER WYNIKÓW I RAPORTU PDF -->
+        <div id="results-container">
+            <div class="score-summary-card">
+                <span class="cke-badge">WYNIK OFICJALNY</span>
+                <div id="final-student-display" style="margin-top: 10px; font-size: 1rem; font-weight: 600; color: #e2e8f0;"></div>
+                <div class="score-big" id="final-score-display">0 / 30 pkt</div>
+                <div style="font-size: 1.25rem; font-weight: 700; color: #38bdf8;" id="final-percent-display">0%</div>
+                <p style="color: #cbd5e1; margin-top: 8px;" id="final-comment-display">
+                    Trwa analiza rozwiązań...
+                </p>
+                <div style="margin-top: 18px; display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">
+                    <button type="button" class="pdf-download-btn" onclick="generatePdfReport()" id="pdf-btn">
+                        📄 Pobierz plik PDF (.pdf)
+                    </button>
+                    <button type="button" class="pdf-download-btn" onclick="window.print()" style="background: linear-gradient(135deg, #9333ea, #7c3aed);">
+                        🖨️ Zapisz jako PDF / Drukuj
+                    </button>
+                    <button type="button" class="nav-link" onclick="window.scrollTo({top:0, behavior:'smooth'})" style="cursor:pointer;">
+                        ↑ Przeglądaj odpowiedzi
+                    </button>
+                </div>
+            </div>
+
+            <h3 style="color:#f8fafc; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:8px;">
+                📊 Tabela Zbiorcza Wyników wg Zasad CKE
+            </h3>
+            <table class="summary-table">
+                <thead>
+                    <tr>
+                        <th>Zadanie</th>
+                        <th>Typ</th>
+                        <th>Twoja odpowiedź</th>
+                        <th>Punkty</th>
+                        <th>Ocena / Etap CKE</th>
+                    </tr>
+                </thead>
+                <tbody id="summary-table-body">
+                    <!-- Wiersze generowane dynamicznie -->
+                </tbody>
+            </table>
+
+            <h3 style="color:#f8fafc; margin-top: 12px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:8px;">
+                📝 Szczegółowa ocena toku rozumowania &amp; Wzorcowe rozwiązania CKE
+            </h3>
+            <div id="detailed-feedback-list" style="display:flex; flex-direction:column; gap:16px;">
+                <!-- Karty szczegółowe zadań -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- STAN EGZAMINU ---
+        let examResults = {
+            totalPoints: 0,
+            maxPoints: 30,
+            tasks: []
+        };
+
+        const tfState = {
+            10: { 1: null, 2: null },
+            12: { 1: null, 2: null }
+        };
+
+        const OPEN_TASK_IDS = [15, 16, 17, 18, 19, 20];
+
+        // --- ZARZĄDZANIE CZASEM (125 min) & PAUZA ---
+        const EXAM_DRAFT_KEY = 'egzmat2025_full_draft_v1';
+        let timeLeft = 125 * 60;
+        let isTimerPaused = false;
+
+        function updateTimerDisplay() {
+            const el = document.getElementById('exam-timer');
+            if (!el) return;
+            if (timeLeft <= 0) {
+                el.innerText = "00:00 (Czas minął!)";
+                return;
+            }
+            const mins = String(Math.floor(timeLeft / 60)).padStart(2, '0');
+            const secs = String(timeLeft % 60).padStart(2, '0');
+            el.innerText = isTimerPaused ? `${mins}:${secs} (Pauza)` : `${mins}:${secs}`;
+        }
+
+        function toggleTimerPause() {
+            isTimerPaused = !isTimerPaused;
+            const btn = document.getElementById('timer-pause-btn');
+            if (btn) {
+                btn.innerText = isTimerPaused ? '▶️ Wznów' : '⏸️ Pauza';
+            }
+            updateTimerDisplay();
+            saveExamDraft(true);
+        }
+
+        let timerInterval = setInterval(() => {
+            if (isTimerPaused) return;
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                updateTimerDisplay();
+                return;
+            }
+            timeLeft--;
+            updateTimerDisplay();
+            if (timeLeft % 5 === 0 && localStorage.getItem(EXAM_DRAFT_KEY)) {
+                saveExamDraft(true);
+            }
+        }, 1000);
+
+        // --- ZAPISYWANIE I ODTWARZANIE STANU EGZAMINU ---
+        function getStudentInfo() {
+            const first = (document.getElementById('student_first_name')?.value || '').trim();
+            const last = (document.getElementById('student_last_name')?.value || '').trim();
+            const cls = (document.getElementById('student_class')?.value || '').trim();
+            const fullName = [first, last].filter(Boolean).join(' ') || 'nie podano';
+            return {
+                first,
+                last,
+                cls: cls || 'nie podano',
+                fullName,
+                hasAny: Boolean(first || last || cls)
+            };
+        }
+
+        function collectExamState() {
+            const radioNames = ['task1', 'task2', 'task3', 'task4', 'task5', 'task6_part1', 'task6_part2', 'task7', 'task8_part1', 'task8_part2', 'task9', 'task11', 'task13', 'task14'];
+            const radios = {};
+            radioNames.forEach(name => {
+                const checked = document.querySelector(`input[name="${name}"]:checked`);
+                radios[name] = checked ? checked.value : null;
+            });
+
+            const openInputs = {};
+            OPEN_TASK_IDS.forEach(id => {
+                openInputs[`task${id}_reasoning`] = document.getElementById(`task${id}_reasoning`)?.value || '';
+                openInputs[`task${id}_answer`] = document.getElementById(`task${id}_answer`)?.value || '';
+            });
+
+            return {
+                version: 1,
+                savedAt: new Date().toLocaleString('pl-PL'),
+                timeLeft: timeLeft,
+                isTimerPaused: isTimerPaused,
+                radios: radios,
+                tfState: {
+                    10: { 1: tfState[10][1] || null, 2: tfState[10][2] || null },
+                    12: { 1: tfState[12][1] || null, 2: tfState[12][2] || null }
+                },
+                openInputs: openInputs,
+                student_first_name: (document.getElementById('student_first_name')?.value || ''),
+                student_last_name: (document.getElementById('student_last_name')?.value || ''),
+                student_class: (document.getElementById('student_class')?.value || '')
+            };
+        }
+
+        function setDraftStatus(msg, color = '#4ade80') {
+            const label = document.getElementById('draft-status-text');
+            if (label) {
+                label.style.color = color;
+                label.innerText = msg;
+            }
+        }
+
+        function saveExamDraft(silent = false) {
+            try {
+                const state = collectExamState();
+                localStorage.setItem(EXAM_DRAFT_KEY, JSON.stringify(state));
+                const timeOnly = new Date().toLocaleTimeString('pl-PL');
+                if (!silent) {
+                    setDraftStatus(`Zapisano w przeglądarce (${timeOnly})`, '#4ade80');
+                }
+            } catch (e) {
+                console.warn('Nie udało się zapisać postępu w localStorage:', e);
+            }
+        }
+
+        function manualSaveDraft(btn) {
+            saveExamDraft(false);
+            if (btn) {
+                const old = btn.innerText;
+                btn.innerText = '✅ Zapisano!';
+                setTimeout(() => { btn.innerText = old; }, 1400);
+            }
+        }
+
+        function applyExamState(state) {
+            if (!state || typeof state !== 'object') return;
+
+            document.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
+            document.querySelectorAll('#exam-form input[type="radio"]').forEach(r => { r.checked = false; });
+
+            if (state.radios) {
+                Object.entries(state.radios).forEach(([name, val]) => {
+                    if (!val) return;
+                    const radio = document.querySelector(`input[name="${name}"][value="${val}"]`);
+                    if (radio) {
+                        radio.checked = true;
+                        const label = radio.closest('.option-label');
+                        if (label) label.classList.add('selected');
+                    }
+                });
+            }
+
+            // Przywrócenie P/F w zadaniach 10 i 12
+            [10, 12].forEach(tNum => {
+                document.querySelectorAll(`#card-task-${tNum} .tf-btn`).forEach(b => b.classList.remove('active-p', 'active-f'));
+                [1, 2].forEach(rowNum => {
+                    const val = state.tfState && state.tfState[tNum] ? state.tfState[tNum][rowNum] : null;
+                    tfState[tNum][rowNum] = val || null;
+                    if (val === 'P' || val === 'F') {
+                        const btn = document.querySelector(`#card-task-${tNum} button[onclick*="setTF(${tNum}, ${rowNum}, '${val}'"]`);
+                        if (btn) btn.classList.add(val === 'P' ? 'active-p' : 'active-f');
+                    }
+                });
+            });
+
+            // Przywrócenie pól zadań otwartych 15-20 i podglądów KaTeX
+            const setVal = (id, val) => {
+                const el = document.getElementById(id);
+                if (el) el.value = val || '';
+            };
+
+            OPEN_TASK_IDS.forEach(id => {
+                setVal(`task${id}_reasoning`, state.openInputs ? state.openInputs[`task${id}_reasoning`] : '');
+                setVal(`task${id}_answer`, state.openInputs ? state.openInputs[`task${id}_answer`] : '');
+                updateMathPreview(`task${id}_reasoning`, `task${id}_preview`);
+            });
+
+            setVal('student_first_name', state.student_first_name);
+            setVal('student_last_name', state.student_last_name);
+            setVal('student_class', state.student_class);
+
+            if (typeof state.timeLeft === 'number' && state.timeLeft >= 0) {
+                timeLeft = state.timeLeft;
+            }
+            if (typeof state.isTimerPaused === 'boolean') {
+                isTimerPaused = state.isTimerPaused;
+                const pBtn = document.getElementById('timer-pause-btn');
+                if (pBtn) pBtn.innerText = isTimerPaused ? '▶️ Wznów' : '⏸️ Pauza';
+            }
+            updateTimerDisplay();
+        }
+
+        function exportDraftFile() {
+            const state = collectExamState();
+            saveExamDraft(false);
+            const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            const now = new Date();
+            const stamp = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}`;
+            a.href = url;
+            a.download = `E8_Matematyka_Pelny_Zapis_${stamp}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            setDraftStatus('Pobrano kopię zapasową (.json)', '#38bdf8');
+        }
+
+        function importDraftFile(event) {
+            const file = event.target.files && event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const parsed = JSON.parse(e.target.result);
+                    applyExamState(parsed);
+                    saveExamDraft(true);
+                    setDraftStatus(`Wczytano z pliku (${parsed.savedAt || file.name})`, '#4ade80');
+                } catch (err) {
+                    alert('Nieprawidłowy plik zapisu egzaminu (.json).');
+                }
+            };
+            reader.readAsText(file, 'utf-8');
+            event.target.value = '';
+        }
+
+        function resetExamDraft() {
+            if (!confirm('Czy na pewno chcesz wyczyścić wszystkie wpisane odpowiedzi oraz dane ucznia i zresetować czas do 125:00?')) {
+                return;
+            }
+            localStorage.removeItem(EXAM_DRAFT_KEY);
+            isTimerPaused = false;
+            timeLeft = 125 * 60;
+            const pBtn = document.getElementById('timer-pause-btn');
+            if (pBtn) pBtn.innerText = '⏸️ Pauza';
+
+            applyExamState({
+                timeLeft: 125 * 60,
+                isTimerPaused: false,
+                radios: {},
+                tfState: { 10: { 1: null, 2: null }, 12: { 1: null, 2: null } },
+                openInputs: {},
+                student_first_name: '',
+                student_last_name: '',
+                student_class: ''
+            });
+            const res = document.getElementById('results-container');
+            if (res) res.style.display = 'none';
+            setDraftStatus('Wyczyszczono (nowe podejście)', '#94a3b8');
+        }
+
+        // --- ZARZĄDZANIE KLUCZEM GEMINI API ---
+        function checkApiBanner() {
+            const key = localStorage.getItem('gemini_api_key');
+            const label = document.getElementById('ai-status-text');
+            if (key && key.trim().length > 10) {
+                label.style.color = '#4ade80';
+                label.innerText = '🟢 Klucz Gemini aktywny (model Flash)';
+            } else {
+                label.style.color = '#f87171';
+                label.innerText = '⚠️ Brak klucza (ocena lokalna)';
+            }
+        }
+
+        function toggleKeySettings() {
+            const current = localStorage.getItem('gemini_api_key') || '';
+            const entered = prompt('Wprowadź swój bezpłatny klucz API Google Gemini (AI Studio):', current);
+            if (entered !== null) {
+                const trimmed = entered.trim();
+                if (trimmed.length > 5) {
+                    localStorage.setItem('gemini_api_key', trimmed);
+                    alert('Klucz API Gemini został zapisany!');
+                } else if (trimmed.length === 0) {
+                    localStorage.removeItem('gemini_api_key');
+                    alert('Klucz API został usunięty.');
+                }
+                checkApiBanner();
+            }
+        }
+
+        // --- OBSŁUGA KLAWISZY I POLA TEKSTOWEGO ---
+        function selectRadio(labelEl) {
+            const radio = labelEl.querySelector('input[type="radio"]');
+            if (radio) {
+                radio.checked = true;
+                const name = radio.name;
+                document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
+                    const l = r.closest('.option-label');
+                    if (l) l.classList.remove('selected');
+                });
+                labelEl.classList.add('selected');
+                saveExamDraft();
+            }
+        }
+
+        function setTF(taskNum, rowNum, val, btn) {
+            tfState[taskNum][rowNum] = val;
+            const parentRow = btn.closest('tr');
+            parentRow.querySelectorAll('.tf-btn').forEach(b => {
+                b.classList.remove('active-p', 'active-f');
+            });
+            if (val === 'P') btn.classList.add('active-p');
+            if (val === 'F') btn.classList.add('active-f');
+            saveExamDraft();
+        }
+
+        function insertSymbol(textareaId, symbol) {
+            const ta = document.getElementById(textareaId);
+            if (!ta) return;
+            const start = ta.selectionStart;
+            const end = ta.selectionEnd;
+            const text = ta.value;
+
+            let insertText = symbol;
+            if (symbol === '√()') {
+                insertText = '√(';
+            }
+
+            ta.value = text.substring(0, start) + insertText + text.substring(end);
+            ta.focus();
+            const newPos = start + insertText.length;
+            ta.setSelectionRange(newPos, newPos);
+            updateMathPreview(textareaId, textareaId.replace('_reasoning', '_preview'));
+            saveExamDraft();
+        }
+
+        function escapeHtml(str) {
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+        }
+
+        function formatMathLineToLatex(trimmed) {
+            let formatted = trimmed
+                .replace(/½/g, '1/2')
+                .replace(/¼/g, '1/4')
+                .replace(/¾/g, '3/4')
+                .replace(/km\/h/g, '___0___')
+                .replace(/m²/g, '___1___')
+                .replace(/cm²/g, '___2___')
+                .replace(/\bcm\b/g, '___3___')
+                .replace(/\bzł\b/g, '___4___')
+                .replace(/\bmin\b/g, '___5___')
+                .replace(/·|\*/g, ' \\cdot ')
+                .replace(/√\(([^)]+)\)/g, '\\sqrt{$1}')
+                .replace(/√([a-zA-Z0-9]+)/g, '\\sqrt{$1}')
+                .replace(/²/g, '^2')
+                .replace(/³/g, '^3');
+
+            formatted = formatted
+                .replace(/(\d+)\s+(\d+)\/(\d+)/g, '$1\\frac{$2}{$3}')
+                .replace(/(\d+)\s+i\s+(\d+)\/(\d+)/g, '$1\\frac{$2}{$3}')
+                .replace(/\(([^()]+)\)\s*\/\s*\(([^()]+)\)/g, '\\frac{$1}{$2}')
+                .replace(/\(([^()]+)\)\s*\/\s*([a-zA-Z0-9]+)/g, '\\frac{$1}{$2}')
+                .replace(/([a-zA-Z0-9]+)\s*\/\s*\(([^()]+)\)/g, '\\frac{$1}{$2}')
+                .replace(/(?<![a-zA-Z0-9_\/])(\d+)\/(\d+)(?![0-9_\/])/g, '\\frac{$1}{$2}');
+
+            formatted = formatted.replace(/\b(?<!\\)[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ]{2,}(?:\s+[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ]+)*\b/g, match => {
+                if (['sqrt', 'cdot', 'frac', 'text'].includes(match)) return match;
+                return `\\text{${match}}`;
+            });
+
+            formatted = formatted.replace(/(\d+),(\d+)/g, '$1{,}$2');
+
+            return formatted
+                .replace(/___0___/g, '\\text{ km/h}')
+                .replace(/___1___/g, '\\text{ m}^2')
+                .replace(/___2___/g, '\\text{ cm}^2')
+                .replace(/___3___/g, '\\text{ cm}')
+                .replace(/___4___/g, '\\text{ zł}')
+                .replace(/___5___/g, '\\text{ min}');
+        }
+
+        function renderMathLinesToHtml(text, isLightTheme = false) {
+            const textColor = isLightTheme ? '#0f172a' : '#e2e8f0';
+            const mathColor = isLightTheme ? '#1e3a8a' : '#38bdf8';
+
+            return (text || '').split('\n').map(line => {
+                const tr = line.trim();
+                if (!tr) return '<div class="math-preview-line" style="min-height:14px;">&nbsp;</div>';
+
+                const hasMathOperators = /[=+\-*/·^√<>²³½¼¾%]/.test(tr);
+                if (!hasMathOperators) {
+                    return `<div class="math-preview-line" style="color:${textColor}; font-style:normal; font-weight:500; font-size:0.96rem;">${escapeHtml(tr)}</div>`;
+                }
+
+                const latex = formatMathLineToLatex(tr);
+                if (window.katex) {
+                    try {
+                        const rendered = katex.renderToString(latex, { throwOnError: false, displayMode: false });
+                        return `<div class="math-preview-line" style="color:${mathColor};">${rendered}</div>`;
+                    } catch (e) {}
+                }
+                return `<div class="math-preview-line" style="color:${mathColor};">${escapeHtml(tr.replace(/\*/g, ' · '))}</div>`;
+            }).join('');
+        }
+
+        function updateMathPreview(textareaId, previewId) {
+            const ta = document.getElementById(textareaId);
+            const prev = document.getElementById(previewId);
+            if (!ta || !prev) return;
+
+            const val = ta.value;
+            if (!val.trim()) {
+                prev.innerHTML = '<span style="color:#64748b; font-style:italic;">Podgląd zapisu matematycznego pojawi się tutaj...</span>';
+                return;
+            }
+            prev.innerHTML = renderMathLinesToHtml(val, false);
+        }
+
+        async function renderMathBoxToImage(reasoningText) {
+            if (!window.html2canvas || !reasoningText || reasoningText === 'brak zapisu obliczeń') {
+                return null;
+            }
+            try {
+                if (document.fonts && document.fonts.ready) {
+                    await document.fonts.ready;
+                }
+                const host = document.createElement('div');
+                host.style.cssText = [
+                    'position: fixed',
+                    'left: -10000px',
+                    'top: 0',
+                    'width: 560px',
+                    'background: #f8fafc',
+                    'color: #0f172a',
+                    'padding: 12px 16px',
+                    'border: 1px solid #cbd5e1',
+                    'border-radius: 8px',
+                    'font-family: "Segoe UI", system-ui, -apple-system, sans-serif',
+                    'font-size: 15px',
+                    'line-height: 1.65',
+                    'display: flex',
+                    'flex-direction: column',
+                    'gap: 6px',
+                    'z-index: -1'
+                ].join(';');
+
+                host.innerHTML = renderMathLinesToHtml(reasoningText, true);
+
+                host.querySelectorAll('.math-preview-line').forEach(el => {
+                    el.style.whiteSpace = 'normal';
+                    el.style.wordBreak = 'break-word';
+                    el.style.margin = '0';
+                });
+                host.querySelectorAll('.katex').forEach(el => {
+                    el.style.color = '#1e3a8a';
+                    el.style.fontSize = '1.08em';
+                });
+
+                document.body.appendChild(host);
+                await new Promise(r => requestAnimationFrame(() => setTimeout(r, 40)));
+
+                const canvas = await window.html2canvas(host, {
+                    scale: 2,
+                    backgroundColor: '#f8fafc',
+                    useCORS: true,
+                    logging: false
+                });
+                document.body.removeChild(host);
+
+                return {
+                    dataUrl: canvas.toDataURL('image/png'),
+                    widthPx: canvas.width,
+                    heightPx: canvas.height
+                };
+            } catch (err) {
+                console.warn('Nie udało się wyrenderować grafiki KaTeX do PDF:', err);
+                return null;
+            }
+        }
+
+        // --- KOMUNIKACJA Z GEMINI AI ---
+        async function evaluateWithGemini(promptText) {
+            const key = localStorage.getItem('gemini_api_key');
+            if (!key || key.trim().length < 10) return null;
+
+            const model = localStorage.getItem('gemini_selected_model') || 'gemini-2.5-flash';
+            const cleanModel = model.includes('gemini') ? model : 'gemini-2.5-flash';
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${cleanModel}:generateContent?key=${key}`;
+
+            try {
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: promptText }] }],
+                        generationConfig: {
+                            temperature: 0.1,
+                            responseMimeType: "application/json"
+                        }
+                    })
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                    if (text) {
+                        return JSON.parse(text);
+                    }
+                }
+            } catch (err) {
+                console.warn('Błąd wywołania Gemini API:', err);
+            }
+            return null;
+        }
+
+        // --- KONFIGURACJA ZADAŃ ZAMKNIĘTYCH 1-14 ---
+        const CLOSED_TASKS_SPEC = [
+            {
+                nr: 1, kind: 'radio', name: 'task1', type: 'Zamknięte (ABCD)',
+                correct: 'A', correctDesc: 'A (14)',
+                okMsg: 'Poprawna odpowiedź!',
+                errMsg: 'Niepoprawna odpowiedź.',
+                solution: 'Arytmetyka stanowi 100% - (20% + 25% + 15% + 5%) = 35% testu. 35% z 40 zadań = 0,35 · 40 = 14.'
+            },
+            {
+                nr: 2, kind: 'radio', name: 'task2', type: 'Zamknięte (ABCD)',
+                correct: 'B', correctDesc: 'B (4994)',
+                okMsg: 'Poprawna odpowiedź!',
+                errMsg: 'Niepoprawna odpowiedź.',
+                solution: 'NWD(18, 27) = 9, więc X = 9. NWW(2, 4) = 4, więc Y = 4. Kod YXXY to 4994.'
+            },
+            {
+                nr: 3, kind: 'radio', name: 'task3', type: 'Zamknięte (ABCD)',
+                correct: 'C', correctDesc: 'C (y)',
+                okMsg: 'Poprawna odpowiedź!',
+                errMsg: 'Niepoprawna odpowiedź.',
+                solution: 'w = √36 - 2 = 4; x = 12 - √100 = 2; y = √9 - 3 = 3 - 3 = 0; z = 7 - √25 = 2. Zatem liczba y jest równa 0.'
+            },
+            {
+                nr: 4, kind: 'radio', name: 'task4', type: 'Zamknięte (ABCD)',
+                correct: 'A', correctDesc: 'A (2^8 · 3^5)',
+                okMsg: 'Poprawna odpowiedź!',
+                errMsg: 'Niepoprawna odpowiedź.',
+                solution: '2^5 · 3 · 3^4 · 2^3 = 2^(5+3) · 3^(1+4) = 2^8 · 3^5.'
+            },
+            {
+                nr: 5, kind: 'radio', name: 'task5', type: 'Zamknięte (ABCD)',
+                correct: 'D', correctDesc: 'D (0,6x + 0,8y)',
+                okMsg: 'Poprawna odpowiedź!',
+                errMsg: 'Niepoprawna odpowiedź.',
+                solution: 'Zniżka 40% oznacza zapłatę 60% ceny (0,6x). Zniżka 20% oznacza zapłatę 80% ceny (0,8y). Razem: 0,6x + 0,8y.'
+            },
+            {
+                nr: 6, kind: 'dual', name1: 'task6_part1', name2: 'task6_part2', type: 'Zamknięte (A/B i C/D)',
+                correct1: 'A', correct2: 'C', correctDesc: 'A (nieparzystymi) oraz C (30)',
+                okMsg: 'Obie części poprawnie zaznaczone!',
+                errMsg: 'Błędny lub niepełny wybór (wymagane obie poprawne odpowiedzi dla 1 pkt).',
+                solution: 'Zostało 11 - 5 = 6 kul o tej samej parzystości. Wśród liczb 1..11 jest 6 nieparzystych i 5 parzystych, więc zostały wszystkie nieparzyste (A). Wylosowano 5 parzystych: 2+4+6+8+10 = 30 (C).'
+            },
+            {
+                nr: 7, kind: 'radio', name: 'task7', type: 'Zamknięte (ABCD)',
+                correct: 'B', correctDesc: 'B (230)',
+                okMsg: 'Poprawna odpowiedź!',
+                errMsg: 'Niepoprawna odpowiedź.',
+                solution: 'W jednym koszu jest 400 : 10 = 40 owoców. p + (p + 6) = 40 => p = 17 pomarańczy, j = 23 jabłka. W 10 koszach jest 10 · 23 = 230 jabłek.'
+            },
+            {
+                nr: 8, kind: 'dual', name1: 'task8_part1', name2: 'task8_part2', type: 'Zamknięte (A/B i C/D)',
+                correct1: 'B', correct2: 'D', correctDesc: 'B (5050) oraz D (1/2 n² + 1/2 n)',
+                okMsg: 'Obie części poprawnie zaznaczone!',
+                errMsg: 'Błędny lub niepełny wybór (wymagane obie poprawne odpowiedzi dla 1 pkt).',
+                solution: 'Dla n = 100: S = 1/2 · 100 · 101 = 5050. Po wymnożeniu: 1/2 n(n + 1) = 1/2 n² + 1/2 n.'
+            },
+            {
+                nr: 9, kind: 'radio', name: 'task9', type: 'Zamknięte (ABCD)',
+                correct: 'D', correctDesc: 'D (7)',
+                okMsg: 'Poprawna odpowiedź!',
+                errMsg: 'Niepoprawna odpowiedź.',
+                solution: '(x + y)/2 = 4 => x + y = 8. (x + y + z)/3 = 5 => x + y + z = 15 => z = 15 - 8 = 7.'
+            },
+            {
+                nr: 10, kind: 'tf', taskNum: 10, type: 'Zamknięte (Prawda/Fałsz)',
+                correct1: 'P', correct2: 'P', correctDesc: 'Zdanie 1: P, Zdanie 2: P',
+                okMsg: 'Poprawnie oceniono oba zdania!',
+                errMsg: 'Błędna lub niepełna ocena zdań.',
+                solution: 'Wysokość h = a√3/2 = 2√3/2 = √3 cm (Prawda). Pole P = a²√3/4 = 4√3/4 = √3 cm² (Prawda).'
+            },
+            {
+                nr: 11, kind: 'radio', name: 'task11', type: 'Zamknięte (ABCD)',
+                correct: 'C', correctDesc: 'C (120°)',
+                okMsg: 'Poprawna odpowiedź!',
+                errMsg: 'Niepoprawna odpowiedź.',
+                solution: 'α + (α + 70°) + 2α + 90° = 360° => 4α = 200° => α = 50°. Stąd β = 50° + 70° = 120°.'
+            },
+            {
+                nr: 12, kind: 'tf', taskNum: 12, type: 'Zamknięte (Prawda/Fałsz)',
+                correct1: 'P', correct2: 'P', correctDesc: 'Zdanie 1: P, Zdanie 2: P',
+                okMsg: 'Poprawnie oceniono oba zdania!',
+                errMsg: 'Błędna lub niepełna ocena zdań.',
+                solution: 'SW = √(3² + 4²) = 5 km = SM (Prawda). Odległość WM = √((4 + 5)² + 3²) = √(81 + 9) = √90 < √100 = 10 km (Prawda).'
+            },
+            {
+                nr: 13, kind: 'radio', name: 'task13', type: 'Zamknięte (ABCD)',
+                correct: 'D', correctDesc: 'D (64)',
+                okMsg: 'Poprawna odpowiedź!',
+                errMsg: 'Niepoprawna odpowiedź.',
+                solution: '1/2 · |AD| · 7 = 28 => |AD| = 8. Pole kwadratu ABCD = 8² = 64.'
+            },
+            {
+                nr: 14, kind: 'radio', name: 'task14', type: 'Zamknięte (ABCD)',
+                correct: 'A', correctDesc: 'A (350)',
+                okMsg: 'Poprawna odpowiedź!',
+                errMsg: 'Niepoprawna odpowiedź.',
+                solution: 'Prostopadłościan ma wymiary 5 × 5 × 15 (lub 14 ścian kwadratowych 5×5). Pc = 2·25 + 4·75 = 50 + 300 = 350.'
+            }
+        ];
+
+        // --- GŁÓWNA PROCEDURA OCENIANIA (PO KLIKNIĘCIU "ZAKOŃCZ") ---
+        async function gradeExam() {
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '⏳ Trwa sprawdzanie toku rozumowania zadań 15–20 przez AI...';
+
+            examResults.tasks = [];
+            let total = 0;
+
+            // 1. Sprawdzenie zadań zamkniętych 1-14
+            CLOSED_TASKS_SPEC.forEach(spec => {
+                let score = 0;
+                let userAns = 'brak';
+                if (spec.kind === 'radio') {
+                    const inp = document.querySelector(`input[name="${spec.name}"]:checked`);
+                    userAns = inp ? inp.value : 'brak';
+                    score = (userAns === spec.correct) ? 1 : 0;
+                } else if (spec.kind === 'dual') {
+                    const p1 = document.querySelector(`input[name="${spec.name1}"]:checked`)?.value || 'brak';
+                    const p2 = document.querySelector(`input[name="${spec.name2}"]:checked`)?.value || 'brak';
+                    userAns = `Część 1: ${p1}, Część 2: ${p2}`;
+                    score = (p1 === spec.correct1 && p2 === spec.correct2) ? 1 : 0;
+                } else if (spec.kind === 'tf') {
+                    const r1 = tfState[spec.taskNum][1] || 'brak';
+                    const r2 = tfState[spec.taskNum][2] || 'brak';
+                    userAns = `Zdanie 1: ${r1}, Zdanie 2: ${r2}`;
+                    score = (r1 === spec.correct1 && r2 === spec.correct2) ? 1 : 0;
+                }
+                total += score;
+                examResults.tasks.push({
+                    nr: spec.nr,
+                    type: spec.type,
+                    max: 1,
+                    score: score,
+                    userAns: userAns,
+                    correct: spec.correctDesc,
+                    feedback: score === 1 ? spec.okMsg : spec.errMsg,
+                    solution: spec.solution
+                });
+            });
+
+            // 2. Pobranie odpowiedzi otwartych 15-20 i równoległa ocena AI / heurystyki
+            const getOpenVals = (id) => ({
+                reason: document.getElementById(`task${id}_reasoning`).value.trim(),
+                ans: document.getElementById(`task${id}_answer`).value.trim()
+            });
+
+            const o15 = getOpenVals(15);
+            const o16 = getOpenVals(16);
+            const o17 = getOpenVals(17);
+            const o18 = getOpenVals(18);
+            const o19 = getOpenVals(19);
+            const o20 = getOpenVals(20);
+
+            const [r15, r16, r17, r18, r19, r20] = await Promise.all([
+                gradeTask15(o15.reason, o15.ans),
+                gradeTask16(o16.reason, o16.ans),
+                gradeTask17(o17.reason, o17.ans),
+                gradeTask18(o18.reason, o18.ans),
+                gradeTask19(o19.reason, o19.ans),
+                gradeTask20(o20.reason, o20.ans)
+            ]);
+
+            const openSpecs = [
+                {
+                    nr: 15, type: 'Otwarte (0–2 pkt)', max: 2, vals: o15, res: r15,
+                    correct: '57 kartek niebieskich',
+                    solution: 'Niech c oznacza liczbę kartek czerwonych: 37 + 1,5c + (c - 10) + c = 160 => 3,5c + 27 = 160 => 3,5c = 133 => c = 38. Liczba kartek niebieskich: 1,5 · 38 = 57.'
+                },
+                {
+                    nr: 16, type: 'Otwarte – Uzasadnienie (0–3 pkt)', max: 3, vals: o16, res: r16,
+                    correct: 'v = 72 km/h, s = 75 km, czas = 75/72 h > 1 h',
+                    solution: '1) Prędkość: v = 48 km / (2/3 h) = 72 km/h. 2) Droga Jodłowo–Dębina: 123 km - 48 km = 75 km. 3) Czas t = 75/72 h > 1 h (lub: w 1 h przejedzie 72 km < 75 km).'
+                },
+                {
+                    nr: 17, type: 'Otwarte (0–3 pkt)', max: 3, vals: o17, res: r17,
+                    correct: '29% wszystkich uczestników',
+                    solution: '1) Chłopcy: 46 + 16 + 34 = 96. 2) Dziewczęta: 96 + 8 = 104. 3) Dziewczęta w tenisie: 104 - (15 + 65) = 24. 4) Tenis stołowy łącznie: 24 + 34 = 58. 5) Wszyscy uczestnicy: 96 + 104 = 200. 6) Procent: (58 / 200) · 100% = 29%.'
+                },
+                {
+                    nr: 18, type: 'Otwarte (0–2 pkt)', max: 2, vals: o18, res: r18,
+                    correct: '12 razy mniejsza',
+                    solution: 'Pole podstawy ACD: P = 1/2 a². Wysokość ostrosłupa DS = 1/2 a. Objętość ostrosłupa: V_o = 1/3 · 1/2 a² · 1/2 a = 1/12 a³. Objętość sześcianu: V = a³. Zatem objętość ostrosłupa jest 12 razy mniejsza.'
+                },
+                {
+                    nr: 19, type: 'Otwarte (0–3 pkt)', max: 3, vals: o19, res: r19,
+                    correct: '142,80 zł (6 opakowań po 23,80 zł)',
+                    solution: '1) Pole trapezu: P = (18 + 12) · 9 / 2 = 135 m². 2) Liczba opakowań: 135 : 25 = 5,4 => należy kupić 6 opakowań. 3) Koszt: 6 · 23,80 zł = 142,80 zł.'
+                },
+                {
+                    nr: 20, type: 'Otwarte (0–3 pkt)', max: 3, vals: o20, res: r20,
+                    correct: '18 + 6√2 (lub 18 + 2√18)',
+                    solution: '1) Przyprostokątne odciętego trójkąta prostokątnego równoramiennego wynoszą 3 i 3 (wysokość prostokąta). 2) Przeciwprostokątna (ramię równoległoboku): c = √(3² + 3²) = √18 = 3√2. 3) Podstawy równoległoboku mają długość 9. 4) Obwód KLMN: 2 · 9 + 2 · 3√2 = 18 + 6√2.'
+                }
+            ];
+
+            openSpecs.forEach(sp => {
+                total += sp.res.score;
+                examResults.tasks.push({
+                    nr: sp.nr,
+                    isOpen: true,
+                    type: sp.type,
+                    max: sp.max,
+                    score: sp.res.score,
+                    finalAns: sp.vals.ans || 'brak',
+                    reasoning: sp.vals.reason || 'brak zapisu obliczeń',
+                    userAns: sp.vals.ans ? `${sp.vals.ans} (zapis: ${sp.vals.reason.replace(/\n/g, '; ')})` : 'brak',
+                    correct: sp.correct,
+                    feedback: sp.res.feedback,
+                    solution: sp.solution
+                });
+            });
+
+            examResults.totalPoints = total;
+
+            renderResultsUI();
+
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '✅ Egzamin oceniony! Zobacz podsumowanie poniżej';
+            document.getElementById('results-container').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // --- OCENA ZADAŃ OTWARTYCH (15-20) WG KRYTERIÓW CKE ---
+        async function gradeTask15(reason, ans) {
+            const has57 = ans.includes('57') || reason.includes('57');
+            const has38 = reason.includes('38');
+            const hasEq = reason.includes('160') && (reason.includes('1,5') || reason.includes('1.5'));
+
+            const prompt = `Jesteś egzaminatorem CKE sprawdzającym egzamin ósmoklasisty z matematyki.
+Oceń rozwiązanie ucznia dla zadania 15:
+"Do origami przygotowano 160 kartek w 4 kolorach. Białych: 37. Niebieskich 1,5 raza więcej niż czerwonych, zielonych o 10 mniej niż czerwonych. Oblicz liczbę kartek niebieskich."
+Kryteria punktowania CKE (max 2 pkt):
+- 2 pkt: pełne rozwiązanie, poprawny wynik (57).
+- 1 pkt: istotny postęp (poprawne ułożenie równania z jedną niewiadomą LUB wyznaczenie liczby kartek czerwonych: 38).
+- 0 pkt: rozwiązanie błędne lub brak.
+
+Zapis ucznia:
+Tok rozumowania: "${reason}"
+Odpowiedź końcowa: "${ans}"
+
+Odpowiedz wyłącznie poprawnym obiektem JSON:
+{"score": liczba_0_1_lub_2, "stage": "pełne rozwiązanie / istotny postęp / błędne", "feedback": "krótkie uzasadnienie przyznanych punktów wg CKE"}`;
+
+            const aiResp = await evaluateWithGemini(prompt);
+            if (aiResp && typeof aiResp.score === 'number') {
+                return { score: aiResp.score, feedback: `🤖 Ocena AI (${aiResp.stage}): ${aiResp.feedback}` };
+            }
+            if (has57 && (has38 || hasEq)) return { score: 2, feedback: '2/2 pkt – Pełne rozwiązanie: poprawny wynik 57 oraz zapisany tok obliczeń.' };
+            if (has57) return { score: 2, feedback: '2/2 pkt – Podano poprawny wynik końcowy (57).' };
+            if (has38 || hasEq) return { score: 1, feedback: '1/2 pkt – Istotny postęp: ułożenie równania lub obliczenie liczby kartek czerwonych (38).' };
+            return { score: 0, feedback: '0/2 pkt – Brak istotnego postępu lub brak obliczeń.' };
+        }
+
+        async function gradeTask16(reason, ans) {
+            const fullText = (reason + " " + ans).toLowerCase();
+            const has72 = fullText.includes('72');
+            const has75 = fullText.includes('75');
+            const hasLogic = fullText.includes('>') || fullText.includes('dłużej') || fullText.includes('więcej') || fullText.includes('1 h') || fullText.includes('godzin');
+
+            const prompt = `Jesteś egzaminatorem CKE sprawdzającym egzamin ósmoklasisty z matematyki.
+Oceń rozwiązanie ucznia dla zadania 16:
+"Droga Polanka-Dębina przez Jodłowo ma 123 km. Polanka-Jodłowo: 48 km w 40 min. Prędkość na odcinku Jodłowo-Dębina jest taka sama. Uzasadnij, że przejazd Jodłowo-Dębina trwał dłużej niż godzinę."
+Kryteria punktowania CKE (max 3 pkt):
+- 3 pkt: pełne uzasadnienie (droga 75 km, prędkość 72 km/h oraz poprawne wykazanie, że czas > 1 h lub droga 75 km > 72 km).
+- 2 pkt: obliczenie prędkości (72 km/h) oraz drogi (75 km), ale brak końcowego wniosku lub błąd rachunkowy w obliczeniu czasu.
+- 1 pkt: obliczenie prędkości (72 km/h) LUB obliczenie drogi (75 km).
+- 0 pkt: rozwiązanie błędne lub brak.
+
+Zapis ucznia:
+Tok rozumowania: "${reason}"
+Odpowiedź / wniosek: "${ans}"
+
+Odpowiedz wyłącznie poprawnym obiektem JSON:
+{"score": liczba_0_1_2_lub_3, "stage": "pełne uzasadnienie / pokonane trudności / istotny postęp / błędne", "feedback": "krótkie uzasadnienie punktacji wg CKE"}`;
+
+            const aiResp = await evaluateWithGemini(prompt);
+            if (aiResp && typeof aiResp.score === 'number') {
+                return { score: aiResp.score, feedback: `🤖 Ocena AI (${aiResp.stage}): ${aiResp.feedback}` };
+            }
+            if (has72 && has75 && hasLogic) return { score: 3, feedback: '3/3 pkt – Pełne uzasadnienie: wyznaczono drogę (75 km), prędkość (72 km/h) i poprawny wniosek.' };
+            if (has72 && has75) return { score: 2, feedback: '2/3 pkt – Pokonano trudności: obliczono drogę (75 km) i prędkość (72 km/h), brak pełnego wniosku.' };
+            if (has72 || has75) return { score: 1, feedback: '1/3 pkt – Istotny postęp: obliczono prędkość lub pozostałą drogę.' };
+            return { score: 0, feedback: '0/3 pkt – Brak istotnego postępu.' };
+        }
+
+        async function gradeTask17(reason, ans) {
+            const fullText = (reason + " " + ans).toLowerCase();
+            const has29 = fullText.includes('29');
+            const has200 = fullText.includes('200');
+            const has58 = fullText.includes('58');
+            const hasStep1 = fullText.includes('96') || fullText.includes('104') || fullText.includes('24');
+
+            const prompt = `Jesteś egzaminatorem CKE sprawdzającym egzamin ósmoklasisty z matematyki.
+Oceń rozwiązanie ucznia dla zadania 17:
+"Dzień Sportu, 3 turnieje: piłka nożna (15 dz., 46 chł.), taniec (65 dz., 16 chł.), tenis stołowy (? dz., 34 chł.). Łączna liczba dziewcząt była o 8 większa od łącznej liczby chłopców. Oblicz, ile procent wszystkich uczestników stanowili uczestnicy tenisa stołowego."
+Kryteria punktowania CKE (max 3 pkt):
+- 3 pkt: pełne rozwiązanie i poprawny wynik (29%).
+- 2 pkt: pokonanie zasadniczych trudności (wyznaczenie liczby wszystkich uczestników: 200 oraz uczestników tenisa stołowego: 58), brak dokończenia lub błąd w procencie.
+- 1 pkt: istotny postęp (obliczenie łącznej liczby chłopców: 96 LUB łącznej liczby dziewcząt: 104 LUB liczby dziewcząt w tenisie: 24).
+- 0 pkt: rozwiązanie błędne lub brak.
+
+Zapis ucznia:
+Tok rozumowania: "${reason}"
+Odpowiedź końcowa: "${ans}"
+
+Odpowiedz wyłącznie poprawnym obiektem JSON:
+{"score": liczba_0_1_2_lub_3, "stage": "pełne rozwiązanie / pokonane trudności / istotny postęp / błędne", "feedback": "krótkie uzasadnienie punktacji wg CKE"}`;
+
+            const aiResp = await evaluateWithGemini(prompt);
+            if (aiResp && typeof aiResp.score === 'number') {
+                return { score: aiResp.score, feedback: `🤖 Ocena AI (${aiResp.stage}): ${aiResp.feedback}` };
+            }
+            if (has29 && (has200 || has58)) return { score: 3, feedback: '3/3 pkt – Pełne rozwiązanie: poprawny wynik 29% oraz zapisany tok obliczeń.' };
+            if (has200 && has58) return { score: 2, feedback: '2/3 pkt – Pokonano trudności: wyznaczono 200 uczestników i 58 graczy tenisa, brak obliczenia procentu.' };
+            if (hasStep1) return { score: 1, feedback: '1/3 pkt – Istotny postęp: wyznaczono liczbę chłopców (96), dziewcząt (104) lub dziewcząt w tenisie (24).' };
+            return { score: 0, feedback: '0/3 pkt – Brak istotnego postępu.' };
+        }
+
+        async function gradeTask18(reason, ans) {
+            const fullText = (reason + " " + ans).toLowerCase();
+            const has12 = ans.includes('12') || (fullText.includes('12') && (fullText.includes('razy') || fullText.includes('1/12')));
+            const hasStep = fullText.includes('1/12') || fullText.includes('1/2') || fullText.includes('0,5');
+
+            const prompt = `Jesteś egzaminatorem CKE sprawdzającym egzamin ósmoklasisty z matematyki.
+Oceń rozwiązanie ucznia dla zadania 18:
+"Sześcian ABCDEFGH o krawędzi a. S jest środkiem krawędzi DH. Oblicz, ile razy objętość ostrosłupa ACDS jest mniejsza od objętości sześcianu."
+Kryteria punktowania CKE (max 2 pkt):
+- 2 pkt: pełne rozwiązanie, poprawny wynik (12 razy mniejsza; stosunek a³ do 1/12 a³ = 12). Uwaga: w CKE dopuszczalne jest też rozwiązanie na konkretnej liczbie zamiast a, o ile metoda jest ogólna lub poprawnie uargumentowana? Jeśli uczeń przyjął konkretną liczbę a (np. a=2), w CKE za brak ogólnego dowodu zazwyczaj przyznaje się 1 pkt (istotny postęp) albo 2 pkt zależnie od zapisu - oceń sprawiedliwie wg kryteriów CKE (pełne ogólne = 2 pkt).
+- 1 pkt: istotny postęp (zapisanie objętości ostrosłupa 1/12 a³ LUB poprawne wyrażenie pola podstawy 1/2 a² i wysokości 1/2 a, albo poprawne rozwiązanie wyłącznie na konkretnej liczbie bez uogólnienia).
+- 0 pkt: rozwiązanie błędne lub brak.
+
+Zapis ucznia:
+Tok rozumowania: "${reason}"
+Odpowiedź końcowa: "${ans}"
+
+Odpowiedz wyłącznie poprawnym obiektem JSON:
+{"score": liczba_0_1_lub_2, "stage": "pełne rozwiązanie / istotny postęp / błędne", "feedback": "krótkie uzasadnienie przyznanych punktów wg CKE"}`;
+
+            const aiResp = await evaluateWithGemini(prompt);
+            if (aiResp && typeof aiResp.score === 'number') {
+                return { score: aiResp.score, feedback: `🤖 Ocena AI (${aiResp.stage}): ${aiResp.feedback}` };
+            }
+            if (has12 && hasStep) return { score: 2, feedback: '2/2 pkt – Pełne rozwiązanie: poprawny wynik (12 razy mniejsza).' };
+            if (hasStep || ans.includes('12')) return { score: 1, feedback: '1/2 pkt – Istotny postęp w wyznaczeniu zależności objętości ostrosłupa.' };
+            return { score: 0, feedback: '0/2 pkt – Brak istotnego postępu.' };
+        }
+
+        async function gradeTask19(reason, ans) {
+            const fullText = (reason + " " + ans).toLowerCase().replace(',', '.');
+            const has142 = fullText.includes('142.8') || fullText.includes('142.80') || fullText.includes('143');
+            const has135 = fullText.includes('135');
+            const has6 = fullText.includes('6 opak') || fullText.includes('6 szt') || fullText.includes(' 6 ');
+
+            const prompt = `Jesteś egzaminatorem CKE sprawdzającym egzamin ósmoklasisty z matematyki.
+Oceń rozwiązanie ucznia dla zadania 19:
+"Ogródek trapezu: podstawy 18 m i 12 m, wysokość 9 m. Jedno opakowanie wystarcza na 25 m2 i kosztuje 23,80 zł. Oblicz koszt najmniejszej liczby opakowań na cały ogródek."
+Kryteria punktowania CKE (max 3 pkt):
+- 3 pkt: pełne rozwiązanie, poprawny koszt (142,80 zł).
+- 2 pkt: obliczenie pola (135 m2) i wyznaczenie liczby opakowań (6), z błędem w końcowym mnożeniu LUB zaokrąglenie w dół do 5 opakowań i policzenie 119 zł.
+- 1 pkt: poprawne obliczenie pola trapezu (135 m2).
+- 0 pkt: rozwiązanie błędne lub brak.
+
+Zapis ucznia:
+Tok rozumowania: "${reason}"
+Odpowiedź / koszt: "${ans}"
+
+Odpowiedz wyłącznie poprawnym obiektem JSON:
+{"score": liczba_0_1_2_lub_3, "stage": "pełne rozwiązanie / pokonane trudności / istotny postęp / błędne", "feedback": "krótkie uzasadnienie punktacji wg CKE"}`;
+
+            const aiResp = await evaluateWithGemini(prompt);
+            if (aiResp && typeof aiResp.score === 'number') {
+                return { score: aiResp.score, feedback: `🤖 Ocena AI (${aiResp.stage}): ${aiResp.feedback}` };
+            }
+            if (has142) return { score: 3, feedback: '3/3 pkt – Pełne rozwiązanie: poprawny koszt (142,80 zł).' };
+            if (has135 && has6) return { score: 2, feedback: '2/3 pkt – Pokonano trudności: obliczono pole (135 m²) i liczbę opakowań (6), błąd w koszcie.' };
+            if (has135) return { score: 1, feedback: '1/3 pkt – Istotny postęp: poprawne obliczenie pola powierzchni trapezu (135 m²).' };
+            return { score: 0, feedback: '0/3 pkt – Brak istotnego postępu.' };
+        }
+
+        async function gradeTask20(reason, ans) {
+            const fullText = (reason + " " + ans).toLowerCase();
+            const hasPerim = fullText.includes('18') && (fullText.includes('6√2') || fullText.includes('6*√2') || fullText.includes('2√18') || fullText.includes('6 sqrt'));
+            const hasSide = fullText.includes('3√2') || fullText.includes('√18');
+
+            const prompt = `Jesteś egzaminatorem CKE sprawdzającym egzamin ósmoklasisty z matematyki.
+Oceń rozwiązanie ucznia dla zadania 20:
+"Prostokąt ABCD o wymiarach 3 i 9 rozcięto na trapez prostokątny oraz trójkąt prostokątny równoramienny. Złożono z nich równoległobok KLMN niebędący prostokątem. Oblicz obwód równoległoboku KLMN."
+Kryteria punktowania CKE (max 3 pkt):
+- 3 pkt: pełne rozwiązanie, poprawny wynik (18 + 6√2 lub 18 + 2√18).
+- 2 pkt: pokonanie zasadniczych trudności (wyznaczenie długości ramienia równoległoboku 3√2 lub √18 ORAZ podstawy równoległoboku 9), ale błąd rachunkowy w obliczeniu obwodu.
+- 1 pkt: istotny postęp (wyznaczenie długości przyprostokątnych trójkąta = 3 LUB obliczenie długości przeciwprostokątnej 3√2 / √18 LUB wyznaczenie wymiarów trapezu 6 i 9).
+- 0 pkt: rozwiązanie błędne lub brak.
+
+Zapis ucznia:
+Tok rozumowania: "${reason}"
+Odpowiedź końcowa: "${ans}"
+
+Odpowiedz wyłącznie poprawnym obiektem JSON:
+{"score": liczba_0_1_2_lub_3, "stage": "pełne rozwiązanie / pokonane trudności / istotny postęp / błędne", "feedback": "krótkie uzasadnienie punktacji wg CKE"}`;
+
+            const aiResp = await evaluateWithGemini(prompt);
+            if (aiResp && typeof aiResp.score === 'number') {
+                return { score: aiResp.score, feedback: `🤖 Ocena AI (${aiResp.stage}): ${aiResp.feedback}` };
+            }
+            if (hasPerim) return { score: 3, feedback: '3/3 pkt – Pełne rozwiązanie: poprawny obwód równoległoboku (18 + 6√2).' };
+            if (hasSide && fullText.includes('9')) return { score: 2, feedback: '2/3 pkt – Pokonano trudności: wyznaczono podstawę 9 i ramię 3√2, błąd w obwodzie.' };
+            if (hasSide || fullText.includes('3') && fullText.includes('6')) return { score: 1, feedback: '1/3 pkt – Istotny postęp w wyznaczeniu wymiarów części figur.' };
+            return { score: 0, feedback: '0/3 pkt – Brak istotnego postępu.' };
+        }
+
+        // --- PREZENTACJA WYNIKÓW W UI ---
+        function renderResultsUI() {
+            const container = document.getElementById('results-container');
+            container.style.display = 'flex';
+
+            const student = getStudentInfo();
+            const studentDisp = document.getElementById('final-student-display');
+            if (studentDisp) {
+                studentDisp.innerText = student.hasAny
+                    ? `Uczeń: ${student.fullName}  |  Klasa: ${student.cls}`
+                    : '';
+            }
+
+            const percent = Math.round((examResults.totalPoints / examResults.maxPoints) * 100);
+            document.getElementById('final-score-display').innerText = `${examResults.totalPoints} / ${examResults.maxPoints} pkt`;
+            document.getElementById('final-percent-display').innerText = `${percent}%`;
+
+            let comment = "Świetny wynik! Twoje umiejętności matematyczne są na bardzo wysokim poziomie.";
+            if (percent < 50) {
+                comment = "Warto przećwiczyć trudniejsze zagadnienia i zapoznać się ze wzorcowymi rozwiązaniami poniżej.";
+            } else if (percent < 80) {
+                comment = "Dobry wynik! Przeanalizuj popełnione drobne błędy i kryteria CKE.";
+            }
+            document.getElementById('final-comment-display').innerText = comment;
+
+            // Tabela zbiorcza
+            const tbody = document.getElementById('summary-table-body');
+            tbody.innerHTML = '';
+
+            examResults.tasks.forEach(t => {
+                let badgeClass = 'status-badge-err';
+                let statusText = '0 pkt';
+                if (t.score === t.max) {
+                    badgeClass = 'status-badge-ok';
+                    statusText = 'Maksimum punktów';
+                } else if (t.score > 0) {
+                    badgeClass = 'status-badge-part';
+                    statusText = 'Częściowe punkty';
+                }
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>Zadanie ${t.nr}</strong></td>
+                    <td style="color:#94a3b8; font-size:0.85rem;">${t.type}</td>
+                    <td style="max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${escapeHtml(t.userAns)}">${escapeHtml(t.userAns)}</td>
+                    <td><strong>${t.score} / ${t.max}</strong></td>
+                    <td><span class="${badgeClass}">${statusText}</span></td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // Karty szczegółowe
+            const detailsDiv = document.getElementById('detailed-feedback-list');
+            detailsDiv.innerHTML = '';
+
+            examResults.tasks.forEach(t => {
+                const card = document.createElement('div');
+                card.style.background = 'rgba(15, 23, 42, 0.75)';
+                card.style.border = '1px solid rgba(168, 85, 247, 0.25)';
+                card.style.borderRadius = '14px';
+                card.style.padding = '18px';
+
+                let scoreColor = t.score === t.max ? '#4ade80' : (t.score > 0 ? '#fbbf24' : '#f87171');
+
+                let studentAnswerHtml = '';
+                if (t.isOpen) {
+                    studentAnswerHtml = `
+                        <div style="background: rgba(30, 41, 59, 0.65); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 10px; padding: 12px 14px; margin: 10px 0;">
+                            <div style="margin-bottom: 8px;">
+                                <span style="color:#94a3b8; font-size:0.88rem; font-weight:600;">Odpowiedź końcowa ucznia:</span>
+                                <strong style="color:#38bdf8; font-size:1.05rem; margin-left: 6px;">${escapeHtml(t.finalAns || 'brak')}</strong>
+                            </div>
+                            <div style="color:#94a3b8; font-size:0.88rem; font-weight:600; margin-bottom: 6px;">Zapisany tok rozumowania i obliczenia (wieloliniowy):</div>
+                            <div class="math-preview-box" style="margin-top:4px; max-height:none; background:rgba(9, 15, 29, 0.8);">
+                                ${renderMathLinesToHtml(t.reasoning, false)}
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    studentAnswerHtml = `
+                        <div style="font-size:0.92rem; color:#cbd5e1; margin-bottom:8px;">
+                            <strong>Twoja odpowiedź:</strong> <span style="color:#38bdf8; font-weight:bold;">${escapeHtml(t.userAns)}</span>
+                        </div>
+                    `;
+                }
+
+                card.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:8px;">
+                        <h4 style="color:#ffffff; font-size:1.1rem;">Zadanie ${t.nr} <span style="font-size:0.85rem; font-weight:normal; color:#94a3b8;">(${t.type})</span></h4>
+                        <span style="font-weight:bold; color:${scoreColor}; font-size:1.15rem; background:rgba(0,0,0,0.3); padding:4px 12px; border-radius:8px;">${t.score} / ${t.max} pkt</span>
+                    </div>
+                    ${studentAnswerHtml}
+                    <div style="background: rgba(147, 51, 234, 0.12); border: 1px solid rgba(168, 85, 247, 0.35); border-radius: 8px; padding: 10px 14px; font-size:0.93rem; color:#d8b4fe; margin-bottom:10px; line-height:1.5;">
+                        <strong style="color:#c084fc;">Komentarz egzaminatora CKE (AI):</strong><br>
+                        ${escapeHtml(t.feedback)}
+                    </div>
+                    ${t.score < t.max ? `
+                        <div class="solution-box" style="margin-top:8px;">
+                            <strong style="color:#38bdf8;">Wzorcowe rozwiązanie CKE i poprawna odpowiedź:</strong><br>
+                            ${escapeHtml(t.solution)}<br>
+                            <span style="display:inline-block; margin-top:4px; color:#4ade80; font-weight:600;">Poprawny wynik: ${escapeHtml(t.correct)}</span>
+                        </div>
+                    ` : ''}
+                `;
+                detailsDiv.appendChild(card);
+            });
+        }
+
+        // --- FUNKCJE POMOCNICZE DLA PDF ---
+        function transliteratePolish(str) {
+            if (!str) return '';
+            return str
+                .replace(/ą/g, 'a').replace(/Ą/g, 'A')
+                .replace(/ć/g, 'c').replace(/Ć/g, 'C')
+                .replace(/ę/g, 'e').replace(/Ę/g, 'E')
+                .replace(/ł/g, 'l').replace(/Ł/g, 'L')
+                .replace(/ń/g, 'n').replace(/Ń/g, 'N')
+                .replace(/ó/g, 'o').replace(/Ó/g, 'O')
+                .replace(/ś/g, 's').replace(/Ś/g, 'S')
+                .replace(/ź/g, 'z').replace(/Ź/g, 'Z')
+                .replace(/ż/g, 'z').replace(/Ż/g, 'Z')
+                .replace(/•/g, '-')
+                .replace(/√/g, 'sqrt')
+                .replace(/·/g, '*');
+        }
+
+        // --- GENEROWANIE RAPORTU PDF ---
+        async function generatePdfReport() {
+            if (!window.jspdf) {
+                alert('Biblioteka PDF ładuje się, spróbuj za chwilę...');
+                return;
+            }
+
+            const btn = document.getElementById('pdf-btn');
+            const originalText = btn ? btn.innerHTML : '';
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '⏳ Generowanie raportu PDF...';
+            }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a4'
+            });
+
+            let fontLoaded = false;
+            try {
+                const fontUrl = 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Regular.ttf';
+                const fontRes = await fetch(fontUrl);
+                if (fontRes.ok) {
+                    const buf = await fontRes.arrayBuffer();
+                    const bytes = new Uint8Array(buf);
+                    let binary = '';
+                    const chunk = 8192;
+                    for (let i = 0; i < bytes.length; i += chunk) {
+                        binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
+                    }
+                    const base64 = window.btoa(binary);
+                    doc.addFileToVFS('Roboto-Regular.ttf', base64);
+                    doc.addFont('Roboto-Regular.ttf', 'Roboto', 'normal');
+                    doc.setFont('Roboto');
+                    fontLoaded = true;
+                }
+            } catch (err) {
+                console.warn('Ładowanie czcionki Roboto z CDN nie powiodło się, używam bezpiecznego kodowania:', err);
+            }
+
+            const sanitize = (text) => {
+                if (!text) return '';
+                let clean = String(text)
+                    .replace(/🤖\s*/g, '[AI] ')
+                    .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, '')
+                    .trim();
+                return fontLoaded ? clean : transliteratePolish(clean);
+            };
+
+            const percent = Math.round((examResults.totalPoints / examResults.maxPoints) * 100);
+            const dateStr = new Date().toLocaleDateString('pl-PL');
+            const student = getStudentInfo();
+
+            // 1. Nagłówek raportu
+            doc.setFontSize(16);
+            if (!fontLoaded) doc.setFont(undefined, 'bold');
+            doc.text(sanitize('OFICJALNY RAPORT Z EGZAMINU ÓSMOKLASISTY'), 14, 18);
+
+            doc.setFontSize(10.5);
+            doc.setTextColor(30, 41, 59);
+            doc.text(sanitize(`Uczeń: ${student.fullName}  |  Klasa: ${student.cls}`), 14, 25);
+
+            doc.setFontSize(9.5);
+            if (!fontLoaded) doc.setFont(undefined, 'normal');
+            doc.setTextColor(80);
+            doc.text(sanitize(`Przedmiot: Matematyka (Pełny arkusz 2025, 20 zadań)  |  Data: ${dateStr}`), 14, 31);
+            doc.text(sanitize(`Wynik sumaryczny: ${examResults.totalPoints} / ${examResults.maxPoints} pkt (${percent}%)`), 14, 37);
+
+            doc.setDrawColor(147, 51, 234);
+            doc.setLineWidth(0.8);
+            doc.line(14, 40, 196, 40);
+
+            // 2. Tabela 1: Zbiorcze podsumowanie wszystkich 20 zadań
+            const tableRows = examResults.tasks.map(t => [
+                sanitize(`Zadanie ${t.nr}`),
+                sanitize(t.type),
+                `${t.score} / ${t.max}`,
+                sanitize(t.score === t.max ? 'Maksimum punktów' : (t.score > 0 ? 'Częściowe punkty' : '0 pkt'))
+            ]);
+
+            doc.autoTable({
+                startY: 44,
+                head: [[sanitize('Zadanie'), sanitize('Typ zadania'), sanitize('Punkty'), sanitize('Ocena etapu')]],
+                body: tableRows,
+                theme: 'striped',
+                headStyles: {
+                    fillColor: [88, 28, 135],
+                    textColor: 255,
+                    font: fontLoaded ? 'Roboto' : 'helvetica',
+                    fontStyle: 'bold'
+                },
+                styles: {
+                    font: fontLoaded ? 'Roboto' : 'helvetica',
+                    fontSize: 8.5,
+                    cellPadding: 2.6,
+                    overflow: 'linebreak'
+                },
+                margin: { left: 14, right: 14 }
+            });
+
+            // 3. Szczegółowa weryfikacja zadań (z grafiką KaTeX dla zadań otwartych 15-20)
+            let currentY = doc.lastAutoTable.finalY + 8;
+
+            for (const t of examResults.tasks) {
+                if (currentY > 245) {
+                    doc.addPage();
+                    currentY = 16;
+                }
+
+                let headFill = [220, 38, 38];
+                if (t.score === t.max) headFill = [22, 163, 74];
+                else if (t.score > 0) headFill = [217, 119, 6];
+
+                const taskBody = [];
+
+                if (t.isOpen) {
+                    const mathImg = await renderMathBoxToImage(t.reasoning);
+                    taskBody.push([
+                        {
+                            content: sanitize(`ODPOWIEDŹ KOŃCOWA UCZNIA:  ${t.finalAns || 'brak'}`),
+                            colSpan: 2,
+                            styles: { fontStyle: 'bold', fillColor: [241, 245, 249], textColor: [15, 23, 42] }
+                        }
+                    ]);
+
+                    if (mathImg) {
+                        const maxImgW = 148;
+                        let imgW = maxImgW;
+                        let imgH = mathImg.heightPx * (imgW / mathImg.widthPx);
+
+                        if (imgH > 210) {
+                            const ratio = 210 / imgH;
+                            imgH = 210;
+                            imgW = imgW * ratio;
+                        }
+
+                        taskBody.push([
+                            {
+                                content: sanitize('TOK ROZUMOWANIA UCZNIA (ZAPIS MATEMATYCZNY):'),
+                                colSpan: 2,
+                                _isMathImgCell: true,
+                                _mathImg: mathImg,
+                                _imgW: imgW,
+                                _imgH: imgH,
+                                styles: {
+                                    minCellHeight: imgH + 13,
+                                    fillColor: [255, 255, 255],
+                                    textColor: [71, 85, 105],
+                                    valign: 'top'
+                                }
+                            }
+                        ]);
+                    } else {
+                        const formattedReasoning = (t.reasoning || '')
+                            .split('\n')
+                            .map(l => l.trim())
+                            .filter(l => l.length > 0)
+                            .map(l => '  • ' + l.replace(/\*/g, ' · '))
+                            .join('\n');
+                        taskBody.push([
+                            {
+                                content: sanitize(`TOK ROZUMOWANIA UCZNIA:\n${formattedReasoning || '  • (brak zapisu toku rozumowania)'}`),
+                                colSpan: 2,
+                                styles: { fillColor: [255, 255, 255] }
+                            }
+                        ]);
+                    }
+
+                    taskBody.push([
+                        {
+                            content: sanitize(`KOMENTARZ EGZAMINATORA CKE (AI):\n${t.feedback}`),
+                            colSpan: 2,
+                            styles: { fillColor: [250, 245, 255], textColor: [88, 28, 135] }
+                        }
+                    ]);
+                } else {
+                    taskBody.push([
+                        {
+                            content: sanitize(`ODPOWIEDŹ UCZNIA:  ${t.userAns}`),
+                            colSpan: 2,
+                            styles: { fillColor: [255, 255, 255] }
+                        }
+                    ]);
+                    taskBody.push([
+                        {
+                            content: sanitize(`KOMENTARZ EGZAMINATORA CKE:\n${t.feedback}`),
+                            colSpan: 2,
+                            styles: { fillColor: [250, 245, 255], textColor: [88, 28, 135] }
+                        }
+                    ]);
+                }
+
+                if (t.score < t.max) {
+                    taskBody.push([
+                        {
+                            content: sanitize(`WZORCOWE ROZWIĄZANIE CKE:\n${t.solution}\nPoprawny wynik: ${t.correct}`),
+                            colSpan: 2,
+                            styles: { fillColor: [239, 246, 255], textColor: [30, 58, 138] }
+                        }
+                    ]);
+                }
+
+                doc.autoTable({
+                    startY: currentY,
+                    head: [[
+                        sanitize(`Zadanie ${t.nr}  (${t.type})`),
+                        { content: sanitize(`Wynik: ${t.score} / ${t.max} pkt`), styles: { halign: 'right' } }
+                    ]],
+                    body: taskBody,
+                    theme: 'grid',
+                    rowPageBreak: 'avoid',
+                    headStyles: {
+                        fillColor: headFill,
+                        textColor: 255,
+                        font: fontLoaded ? 'Roboto' : 'helvetica',
+                        fontStyle: 'bold',
+                        fontSize: 9.5
+                    },
+                    styles: {
+                        font: fontLoaded ? 'Roboto' : 'helvetica',
+                        fontSize: 8.5,
+                        cellPadding: 3.5,
+                        overflow: 'linebreak'
+                    },
+                    margin: { left: 14, right: 14, top: 14, bottom: 16 },
+                    didDrawCell: (data) => {
+                        if (data.section === 'body' && data.cell.raw && data.cell.raw._isMathImgCell) {
+                            const raw = data.cell.raw;
+                            doc.addImage(
+                                raw._mathImg.dataUrl,
+                                'PNG',
+                                data.cell.x + 3.5,
+                                data.cell.y + 9.5,
+                                raw._imgW,
+                                raw._imgH
+                            );
+                        }
+                    }
+                });
+
+                currentY = doc.lastAutoTable.finalY + 6;
+            }
+
+            // Stopka ze stronami na wszystkich stronach dokumentu
+            const totalPages = doc.internal.getNumberOfPages();
+            for (let p = 1; p <= totalPages; p++) {
+                doc.setPage(p);
+                doc.setFontSize(8);
+                doc.setTextColor(140);
+                doc.text(
+                    sanitize(`Strona ${p} z ${totalPages}  |  Egzamin Ósmoklasisty CKE`),
+                    196,
+                    290,
+                    { align: 'right' }
+                );
+            }
+
+            const nameSlug = student.hasAny
+                ? '_' + transliteratePolish([student.first, student.last, student.cls].filter(Boolean).join('_')).replace(/[^a-zA-Z0-9_-]+/g, '')
+                : '';
+            doc.save(`Raport_E8_Matematyka_Pelny${nameSlug}_${dateStr.replace(/\./g, '_')}.pdf`);
+
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            if (window.renderMathInElement) {
+                try {
+                    renderMathInElement(document.body, {
+                        delimiters: [
+                            {left: '$$', right: '$$', display: true},
+                            {left: '\\(', right: '\\)', display: false}
+                        ],
+                        throwOnError: false
+                    });
+                } catch(e) {}
+            }
+            checkApiBanner();
+
+            try {
+                const rawDraft = localStorage.getItem(EXAM_DRAFT_KEY);
+                if (rawDraft) {
+                    const parsedDraft = JSON.parse(rawDraft);
+                    applyExamState(parsedDraft);
+                    setDraftStatus(`Przywrócono sesję z ${parsedDraft.savedAt || 'ostatniej wizyty'}`, '#4ade80');
+                }
+            } catch (e) {
+                console.warn('Błąd odczytu zapisanego stanu egzaminu:', e);
+            }
+
+            const examForm = document.getElementById('exam-form');
+            if (examForm) {
+                examForm.addEventListener('input', () => saveExamDraft());
+                examForm.addEventListener('change', () => saveExamDraft());
+            }
+        });
+    </script>
+</body>
+
+</html>
