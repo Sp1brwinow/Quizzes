@@ -1,0 +1,3739 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Symulator Schematów Ideowych 2D | Fizyka & Elektronika</title>
+  
+  <style>
+    :root {
+      --bg-dark: #070d18;
+      --panel-bg: #0f172a;
+      --card-bg: #1e293b;
+      --accent-blue: #38bdf8;
+      --accent-green: #4ade80;
+      --accent-yellow: #facc15;
+      --accent-red: #f87171;
+      --accent-purple: #c084fc;
+      --accent-orange: #fb923c;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-color: #334155;
+      --wire-high: #ef4444;
+      --wire-low: #38bdf8;
+      --wire-zero: #64748b;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      user-select: none;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* HEADER */
+    header {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      padding: 10px 20px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+      z-index: 10;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-left h1 {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .badge-phys {
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid var(--accent-blue);
+      color: var(--accent-blue);
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 999px;
+      text-transform: uppercase;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-action {
+      background: var(--card-bg);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .btn-action:hover {
+      background: var(--accent-blue);
+      color: #000;
+      border-color: var(--accent-blue);
+    }
+
+    .btn-action.active {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--accent-blue);
+      color: var(--accent-blue);
+    }
+
+    .btn-audio {
+      background: rgba(192, 132, 252, 0.15);
+      border-color: var(--accent-purple);
+      color: var(--accent-purple);
+    }
+    .btn-audio.active {
+      background: var(--accent-purple);
+      color: #000;
+      font-weight: 700;
+      box-shadow: 0 0 12px rgba(192, 132, 252, 0.5);
+    }
+
+    /* GŁÓWNY UKŁAD 3 KOLUMNY */
+    .app-body {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* LEWY PANEL: PALETA SYMBOLI */
+    .sidebar-left {
+      width: 250px;
+      background: var(--panel-bg);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      z-index: 5;
+    }
+
+    .sidebar-title {
+      padding: 12px 16px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--accent-blue);
+      border-bottom: 1px solid var(--border-color);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .components-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .comp-item {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 8px 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .comp-item:hover {
+      background: #334155;
+      border-color: var(--accent-blue);
+      transform: translateX(4px);
+    }
+
+    .comp-icon {
+      font-size: 1.3rem;
+      width: 30px;
+      text-align: center;
+    }
+
+    .comp-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .comp-name {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .comp-desc {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    /* ŚRODEK: OBSZAR ROBOCZY SCHEMATU Z PASKAMI PRZEWIJANIA (LEWY I DOLNY) */
+    .workspace-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      background: #020617;
+    }
+
+    .workspace-row {
+      flex: 1;
+      display: flex;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .workspace-container {
+      flex: 1;
+      position: relative;
+      background: #020617;
+      overflow: hidden;
+      cursor: default;
+    }
+
+    #circuitCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* PIONOWY PASEK PRZEWIJANIA PO LEWEJ STRONIE (LEFT VERTICAL SCROLLBAR) */
+    .custom-scrollbar-v {
+      width: 16px;
+      background: #090e1a;
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      user-select: none;
+      z-index: 6;
+      flex-shrink: 0;
+    }
+
+    .scroll-arrow {
+      height: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 8px;
+      color: var(--text-muted);
+      cursor: pointer;
+      background: #0f172a;
+      transition: all 0.15s;
+    }
+    .scroll-arrow:hover {
+      background: #1e293b;
+      color: var(--accent-blue);
+    }
+    .scroll-arrow:active {
+      background: var(--accent-blue);
+      color: #000;
+    }
+
+    .scroll-track-inner-v {
+      flex: 1;
+      position: relative;
+      background: #070d18;
+      cursor: pointer;
+    }
+
+    .scroll-thumb-v {
+      position: absolute;
+      left: 2px;
+      width: 11px;
+      min-height: 24px;
+      background: #334155;
+      border: 1px solid #475569;
+      border-radius: 4px;
+      cursor: grab;
+      transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+    }
+    .scroll-thumb-v:hover {
+      background: #475569;
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 6px rgba(56, 189, 248, 0.4);
+    }
+    .scroll-thumb-v.dragging {
+      background: var(--accent-blue);
+      border-color: #7dd3fc;
+      cursor: grabbing;
+    }
+
+    /* POZIOMY PASEK PRZEWIJANIA NA DOLE (BOTTOM HORIZONTAL SCROLLBAR) */
+    .workspace-bottom-bar {
+      height: 16px;
+      display: flex;
+      background: #090e1a;
+      border-top: 1px solid var(--border-color);
+      user-select: none;
+      z-index: 6;
+      flex-shrink: 0;
+    }
+
+    .scrollbar-corner {
+      width: 16px;
+      height: 16px;
+      background: #0f172a;
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: all 0.15s;
+    }
+    .scrollbar-corner:hover {
+      background: var(--accent-blue);
+      color: #000;
+    }
+
+    .custom-scrollbar-h {
+      flex: 1;
+      display: flex;
+      flex-direction: row;
+      background: #090e1a;
+      overflow: hidden;
+    }
+
+    .scroll-arrow-h {
+      width: 16px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 8px;
+      color: var(--text-muted);
+      cursor: pointer;
+      background: #0f172a;
+      transition: all 0.15s;
+    }
+    .scroll-arrow-h:hover {
+      background: #1e293b;
+      color: var(--accent-blue);
+    }
+    .scroll-arrow-h:active {
+      background: var(--accent-blue);
+      color: #000;
+    }
+
+    .scroll-track-inner-h {
+      flex: 1;
+      position: relative;
+      background: #070d18;
+      cursor: pointer;
+    }
+
+    .scroll-thumb-h {
+      position: absolute;
+      top: 2px;
+      height: 11px;
+      min-width: 24px;
+      background: #334155;
+      border: 1px solid #475569;
+      border-radius: 4px;
+      cursor: grab;
+      transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+    }
+    .scroll-thumb-h:hover {
+      background: #475569;
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 6px rgba(56, 189, 248, 0.4);
+    }
+    .scroll-thumb-h.dragging {
+      background: var(--accent-blue);
+      border-color: #7dd3fc;
+      cursor: grabbing;
+    }
+
+    /* Pływające paski narzędzi w obszarze roboczym */
+    .floating-toolbar {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(8px);
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      z-index: 5;
+    }
+
+    .tool-btn {
+      background: var(--card-bg);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .tool-btn:hover { background: var(--accent-blue); color: #000; }
+    .tool-btn.active { background: var(--accent-blue); color: #000; }
+
+    .hint-bar {
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(8px);
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      pointer-events: none;
+      z-index: 5;
+    }
+    .hint-bar strong { color: var(--accent-yellow); }
+
+    /* PRAWY PANEL: WŁAŚCIWOŚCI, POMIARY & PRESETY */
+    .sidebar-right {
+      width: 320px;
+      background: var(--panel-bg);
+      border-left: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      z-index: 5;
+    }
+
+    .right-section {
+      padding: 12px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .section-header {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--accent-blue);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Panel właściwości wybranego elementu */
+    .props-panel {
+      background: #020617;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 0.8rem;
+    }
+
+    .prop-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .prop-input {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      color: #fff;
+      padding: 4px 8px;
+      border-radius: 4px;
+      width: 90px;
+      font-size: 0.8rem;
+      font-family: monospace;
+      text-align: right;
+    }
+    .prop-input:focus {
+      outline: none;
+      border-color: var(--accent-blue);
+    }
+
+    /* Multimetr */
+    .meter-display {
+      background: #020617;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 8px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+
+    .meter-box {
+      display: flex;
+      flex-direction: column;
+    }
+    .meter-label { font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; }
+    .meter-val { font-size: 1.1rem; font-weight: 800; color: var(--accent-green); font-family: monospace; }
+
+    /* Mini Oscyloskop */
+    .scope-box {
+      width: 100%;
+      height: 110px;
+      background: #020617;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      position: relative;
+      overflow: hidden;
+    }
+    #scopeCanvas { width: 100%; height: 100%; display: block; }
+
+    /* Presety edukacyjne */
+    .presets-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .btn-preset {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 6px 10px;
+      border-radius: 5px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-preset:hover {
+      background: var(--accent-blue);
+      color: #000;
+      border-color: var(--accent-blue);
+    }
+
+    /* Toast Powiadomień */
+    .toast-msg {
+      position: absolute;
+      top: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid var(--accent-blue);
+      color: #fff;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s;
+      z-index: 100;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-left">
+      <h1>📐 Symulator Schematów Ideowych 2D</h1>
+      <span class="badge-phys">Normy PN-EN / IEC &bull; SP 1 w Brwinowie</span>
+    </div>
+
+    <div class="header-actions">
+      <button class="btn-action" onclick="saveCircuitToFile()" title="Zapisz projekt schematu do pliku JSON na dysku">
+        💾 Zapisz (.json)
+      </button>
+      <button class="btn-action" onclick="document.getElementById('fileInput').click()" title="Wczytaj zapisany wcześniej schemat z pliku JSON">
+        📂 Wczytaj (.json)
+      </button>
+      <button class="btn-action" onclick="exportCircuitToImage()" title="Eksportuj schemat jako plik graficzny PNG">
+        🖼️ Eksport PNG
+      </button>
+      <input type="file" id="fileInput" accept=".json" style="display: none;" onchange="loadCircuitFromFile(event)">
+      <div style="width: 1px; height: 18px; background: var(--border-color); margin: 0 4px;"></div>
+      <button class="btn-action btn-audio" id="btnAudioToggle" onclick="toggleAudio()">
+        🔊 Dźwięk Toru Audio (OFF)
+      </button>
+      <button class="btn-action active" id="btnAnimToggle" onclick="toggleElectronAnimation()">
+        ⚡ Animacja Ładunków (ON)
+      </button>
+      <button class="btn-action active" id="btnFlowDirToggle" onclick="toggleCurrentDirection()" title="Zmień kierunek animacji prądu">
+        ⚡ Kierunek: Umowny (+&rarr;-)
+      </button>
+      <button class="btn-action active" id="btnGridToggle" onclick="toggleGrid()">
+        📐 Siatka Snap (ON)
+      </button>
+      <button class="btn-action" onclick="clearCircuit()">
+        🗑️ Wyczyść wszystko
+      </button>
+    </div>
+  </header>
+
+  <!-- GŁÓWNA STRUKTURA -->
+  <div class="app-body">
+    
+    <!-- LEWY PANEL: PALETA SYMBOLI SCHEMATOWYCH -->
+    <div class="sidebar-left">
+      <div class="sidebar-title">
+        <span>📦 Symbole PN-EN / IEC</span>
+        <span style="font-size: 0.72rem; color: var(--text-muted);">Kliknij, aby dodać</span>
+      </div>
+
+      <div class="components-list">
+        <!-- Zasilanie -->
+        <div class="comp-item" onclick="addSymbol('battery')">
+          <div class="comp-icon">🔋</div>
+          <div class="comp-info">
+            <span class="comp-name">Bateria DC (+/-)</span>
+            <span class="comp-desc">Napięcie stałe (domyślnie 9V)</span>
+          </div>
+        </div>
+
+        <div class="comp-item" onclick="addSymbol('generator')">
+          <div class="comp-icon">〰️</div>
+          <div class="comp-info">
+            <span class="comp-name">Generator AC (Sinus)</span>
+            <span class="comp-desc">Sygnał zmienny 1kHz</span>
+          </div>
+        </div>
+
+        <div class="comp-item" onclick="addSymbol('gnd')">
+          <div class="comp-icon">⏚</div>
+          <div class="comp-info">
+            <span class="comp-name">Masa (GND)</span>
+            <span class="comp-desc">Potencjał odniesienia 0V</span>
+          </div>
+        </div>
+
+        <!-- Pasywne -->
+        <div class="comp-item" onclick="addSymbol('resistor')">
+          <div class="comp-icon">🟫</div>
+          <div class="comp-info">
+            <span class="comp-name">Rezystor (IEC Prostokąt)</span>
+            <span class="comp-desc">Domyślnie 1 k&Omega;</span>
+          </div>
+        </div>
+
+        <div class="comp-item" onclick="addSymbol('potentiometer')">
+          <div class="comp-icon">🎛️</div>
+          <div class="comp-info">
+            <span class="comp-name">Potencjometr (3-pin)</span>
+            <span class="comp-desc">Regulowany ze ślizgaczem</span>
+          </div>
+        </div>
+
+        <div class="comp-item" onclick="addSymbol('switch')">
+          <div class="comp-icon">🔘</div>
+          <div class="comp-info">
+            <span class="comp-name">Wyłącznik (SPST)</span>
+            <span class="comp-desc">Kliknij w schemacie, aby załączyć</span>
+          </div>
+        </div>
+
+        <div class="comp-item" onclick="addSymbol('capacitor')">
+          <div class="comp-icon">🔋</div>
+          <div class="comp-info">
+            <span class="comp-name">Kondensator (100 &mu;F)</span>
+            <span class="comp-desc">Pojemność / Filtrowanie</span>
+          </div>
+        </div>
+
+        <div class="comp-item" onclick="addSymbol('inductor')">
+          <div class="comp-icon">🌀</div>
+          <div class="comp-info">
+            <span class="comp-name">Cewka Indukcyjna (10 mH)</span>
+            <span class="comp-desc">Łuki indukcyjne PN-EN</span>
+          </div>
+        </div>
+
+        <div class="comp-item" onclick="addSymbol('transformer')">
+          <div class="comp-icon">⚡</div>
+          <div class="comp-info">
+            <span class="comp-name">Transformator (2:1)</span>
+            <span class="comp-desc">Uzwojenie pierwotne i wtórne</span>
+          </div>
+        </div>
+
+        <!-- Półprzewodniki -->
+        <div class="comp-item" onclick="addSymbol('led')">
+          <div class="comp-icon">💡</div>
+          <div class="comp-info">
+            <span class="comp-name">Dioda LED</span>
+            <span class="comp-desc">Świeci przy prądzie &gt;2mA</span>
+          </div>
+        </div>
+
+        <div class="comp-item" onclick="addSymbol('diode')">
+          <div class="comp-icon">🔺</div>
+          <div class="comp-info">
+            <span class="comp-name">Dioda 1N4007</span>
+            <span class="comp-desc">Prostownicza z paskiem</span>
+          </div>
+        </div>
+
+        <div class="comp-item" onclick="addSymbol('npn')">
+          <div class="comp-icon">🔲</div>
+          <div class="comp-info">
+            <span class="comp-name">Tranzystor NPN (BC547)</span>
+            <span class="comp-desc">Symbol BJT (C, B, E &rarr;)</span>
+          </div>
+        </div>
+
+        <div class="comp-item" onclick="addSymbol('pnp')">
+          <div class="comp-icon">🔳</div>
+          <div class="comp-info">
+            <span class="comp-name">Tranzystor PNP (BC557)</span>
+            <span class="comp-desc">Symbol BJT (&larr; E, B, C)</span>
+          </div>
+        </div>
+
+        <!-- Przyrządy pomiarowe -->
+        <div class="comp-item" onclick="addSymbol('voltmeter')">
+          <div class="comp-icon">📟</div>
+          <div class="comp-info">
+            <span class="comp-name">Woltomierz (V)</span>
+            <span class="comp-desc">Pomiar napięcia (równolegle)</span>
+          </div>
+        </div>
+
+        <div class="comp-item" onclick="addSymbol('ammeter')">
+          <div class="comp-icon">⏲️</div>
+          <div class="comp-info">
+            <span class="comp-name">Amperomierz (A)</span>
+            <span class="comp-desc">Pomiar prądu (szeregowo)</span>
+          </div>
+        </div>
+
+        <!-- Akustyka -->
+        <div class="comp-item" onclick="addSymbol('microphone')">
+          <div class="comp-icon">🎙️</div>
+          <div class="comp-info">
+            <span class="comp-name">Mikrofon</span>
+            <span class="comp-desc">Źródło sygnału m.cz.</span>
+          </div>
+        </div>
+
+        <div class="comp-item" onclick="addSymbol('speaker')">
+          <div class="comp-icon">🔊</div>
+          <div class="comp-info">
+            <span class="comp-name">Głośnik</span>
+            <span class="comp-desc">Odsłuch Web Audio API</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ŚRODEK: OBSZAR ROBOCZY CANVAS 2D Z PASKAMI PRZEWIJANIA -->
+    <div class="workspace-wrapper">
+      <div class="workspace-row">
+        <!-- PIONOWY PASEK PRZEWIJANIA PO LEWEJ STRONIE (LEFT VERTICAL SCROLLBAR) -->
+        <div class="custom-scrollbar-v" id="vScrollTrack" title="Przewijaj schemat w pionie (Góra / Dół)">
+          <div class="scroll-arrow" id="btnScrollUp" title="Przewiń w górę">▲</div>
+          <div class="scroll-track-inner-v" id="vTrackInner">
+            <div class="scroll-thumb-v" id="vScrollThumb" title="Przeciągnij, aby przesunąć widok pionowo"></div>
+          </div>
+          <div class="scroll-arrow" id="btnScrollDown" title="Przewiń w dół">▼</div>
+        </div>
+
+        <!-- OBSZAR CANVAS -->
+        <div class="workspace-container" id="workspaceContainer">
+          <canvas id="circuitCanvas"></canvas>
+
+          <!-- Pływające menu narzędziowe -->
+          <div class="floating-toolbar">
+            <button class="tool-btn" onclick="rotateSelected()" title="Obróć zaznaczony symbol (Klawisz R)">🔄 Obróć (R)</button>
+            <button class="tool-btn" onclick="deleteSelected()" title="Usuń zaznaczony element lub przewód">🗑️ Usuń</button>
+            <button class="tool-btn" onclick="centerView()" title="Wyśrodkuj widok na schemacie (Klawisz C)">🎯 Centruj widok</button>
+            <button class="tool-btn" onclick="squareUpCircuit()" title="Wyrównaj i ukwadratuj wszystkie przewody schematu (Klawisz S)">🔲 Ukwadratuj schemat</button>
+            <div style="width: 1px; height: 18px; background: var(--border-color); margin: 0 4px;"></div>
+            <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">PROWADZENIE:</span>
+            <button class="tool-btn active" id="btnWireDirect" onclick="toggleGlobalRoutingMode()" title="Zmień domyślny tryb załamywania linii">🔲 Kąty 90&deg; (Auto)</button>
+          </div>
+
+          <!-- Podpowiedź sterowania -->
+          <div class="hint-bar">
+            <span>Łączenie: <strong>LPM</strong> na piny (<strong>LPM w tło</strong> = punkt załamania) | Kąt: <strong>Spacja</strong> | Przeciągaj linie, aby wyrównać szyny</span>
+          </div>
+
+          <!-- Toast Powiadomień -->
+          <div class="toast-msg" id="toastMsg">Gotowe</div>
+        </div>
+      </div>
+
+      <!-- POZIOMY PASEK PRZEWIJANIA NA DOLE (BOTTOM HORIZONTAL SCROLLBAR) -->
+      <div class="workspace-bottom-bar">
+        <div class="scrollbar-corner" onclick="centerView()" title="Kliknij, aby wyśrodkować widok schematu">🎯</div>
+        <div class="custom-scrollbar-h" id="hScrollTrack" title="Przewijaj schemat w poziomie (Lewo / Prawo)">
+          <div class="scroll-arrow-h" id="btnScrollLeft" title="Przewiń w lewo">◀</div>
+          <div class="scroll-track-inner-h" id="hTrackInner">
+            <div class="scroll-thumb-h" id="hScrollThumb" title="Przeciągnij, aby przesunąć widok poziomo"></div>
+          </div>
+          <div class="scroll-arrow-h" id="btnScrollRight" title="Przewiń w prawo">▶</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRAWY PANEL: WŁAŚCIWOŚCI, POMIARY & PRESETY -->
+    <div class="sidebar-right">
+
+      <!-- Parametry zaznaczonego elementu -->
+      <div class="right-section">
+        <div class="section-header">
+          <span>⚙️ Właściwości Elementu</span>
+          <span style="font-size: 0.68rem; color: var(--accent-blue);" id="selectedElemType">BRAK</span>
+        </div>
+
+        <div class="props-panel" id="propsContainer">
+          <span style="color: var(--text-muted); font-size: 0.75rem; text-align: center;">Kliknij element, aby edytować jego parametry.</span>
+        </div>
+      </div>
+
+      <!-- Multimetr Cyfrowy -->
+      <div class="right-section">
+        <div class="section-header">
+          <span>📟 Multimetr Laboratoryjny</span>
+          <span style="font-size: 0.7rem; color: var(--accent-green);">ON-LINE</span>
+        </div>
+        
+        <div class="meter-display">
+          <div class="meter-box">
+            <span class="meter-label">Napięcie (V)</span>
+            <span class="meter-val" id="dispVoltage">0.00 V</span>
+          </div>
+          <div class="meter-box">
+            <span class="meter-label">Prąd (I)</span>
+            <span class="meter-val" id="dispCurrent">0.0 mA</span>
+          </div>
+          <div class="meter-box">
+            <span class="meter-label">Moc (P)</span>
+            <span class="meter-val" id="dispPower">0.0 mW</span>
+          </div>
+          <div class="meter-box">
+            <span class="meter-label">Częstotliwość</span>
+            <span class="meter-val" id="dispFreq">0 Hz</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mini Oscyloskop 2D -->
+      <div class="right-section">
+        <div class="section-header">
+          <span>📈 Przebieg Sygnału (Oscyloskop)</span>
+          <span style="font-size: 0.7rem; color: var(--accent-yellow);">10 ms / div</span>
+        </div>
+        <div class="scope-box">
+          <canvas id="scopeCanvas"></canvas>
+        </div>
+      </div>
+
+      <!-- Gotowe Układy Edukacyjne (Presety) -->
+      <div class="right-section" style="flex: 1; overflow-y: auto;">
+        <div class="section-header">
+          <span>📚 Gotowe Schematy Ideowe</span>
+        </div>
+
+        <div class="presets-grid">
+          <button class="btn-preset" onclick="loadPreset('ohm_law')">
+            <span>💡 1. Prawo Ohma: Bateria + R + LED</span>
+          </button>
+          <button class="btn-preset" onclick="loadPreset('voltage_divider')">
+            <span>⚖️ 2. Dzielnik Napięcia (2x Rezystor)</span>
+          </button>
+          <button class="btn-preset" onclick="loadPreset('pot_dimmer')">
+            <span>🎛️ 3. Ściemniacz LED z Potencjometrem</span>
+          </button>
+          <button class="btn-preset" onclick="loadPreset('transistor_switch')">
+            <span>⚡ 4. Klucz Tranzystorowy NPN</span>
+          </button>
+          <button class="btn-preset" onclick="loadPreset('diode_rectifier')">
+            <span>🔄 5. Prostownik Diodowy + Filtr C</span>
+          </button>
+          <button class="btn-preset" onclick="loadPreset('audio_amp')">
+            <span>🎙️ 6. Wzmacniacz Audio (Mic &rarr; Głośnik)</span>
+          </button>
+          <button class="btn-preset" onclick="loadPreset('multivibrator')">
+            <span>✨ 7. Multiwibrator Astabilny (Migacz)</span>
+          </button>
+          <button class="btn-preset" onclick="loadPreset('rlc_filter')">
+            <span>🌀 8. Obwód Rezonansowy RLC</span>
+          </button>
+          <button class="btn-preset" onclick="loadPreset('meters_demo')">
+            <span>📊 9. Pomiary V & A (Woltomierz + Amperomierz)</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- SILNIK SYMULATORA 2D, SOLVER MNA & WEB AUDIO -->
+  <script>
+    // --- RZECZYWISTE MODELE FIZYCZNE DIOD LED (Vf, Rs, Imax, Barwa) ---
+    const LED_MODELS = {
+      red: { name: '🔴 Czerwona (AlInGaP 630nm)', vf: 1.95, rs: 15, imax: 35, color: '#ef4444', glow: '#ef4444' },
+      green: { name: '🟢 Zielona (InGaN 525nm)', vf: 2.25, rs: 18, imax: 35, color: '#22c55e', glow: '#4ade80' },
+      blue: { name: '🔵 Niebieska (InGaN 470nm)', vf: 3.10, rs: 20, imax: 35, color: '#3b82f6', glow: '#60a5fa' },
+      yellow: { name: '🟡 Żółta (AlInGaP 590nm)', vf: 2.10, rs: 15, imax: 35, color: '#eab308', glow: '#facc15' },
+      white: { name: '⚪ Biała (InGaN 6000K)', vf: 3.20, rs: 20, imax: 35, color: '#f8fafc', glow: '#ffffff' },
+      ir: { name: '🟣 Podczerwona IR (GaAs 940nm)', vf: 1.35, rs: 10, imax: 50, color: '#a855f7', glow: '#c084fc' }
+    };
+
+    // --- STAN SYMULATORA ---
+    const circuitState = {
+      elements: [],
+      wires: [],
+      selectedElement: null,
+      selectedWire: null,
+      connectingPin: null,
+      tempWireTarget: null,
+      isDragging: false,
+      dragOffset: { x: 0, y: 0 },
+      // Przewijanie i wirtualna przestrzeń schematu
+      scrollX: 0,
+      scrollY: 0,
+      worldWidth: 3200,
+      worldHeight: 2400,
+      isPanning: false,
+      panStart: { mouseX: 0, mouseY: 0, scrollX: 0, scrollY: 0 },
+      // Prowadzenie i załamywanie przewodów (Orthogonal Routing)
+      wireWaypoints: [],
+      defaultRouteMode: 'auto',
+      tempRouteMode: 'auto',
+      isDraggingWireHandle: false,
+      draggedWireHandle: null,
+      gridSnap: true,
+      gridSize: 20,
+      showElectrons: true,
+      currentFlowMode: 'conventional', // 'conventional' (+ -> -) lub 'electrons' (- -> +)
+      pinPotentials: new Map(),
+      wireCurrents: new Map(),
+      electronOffset: 0,
+      time: 0,
+      activeAudio: false,
+      audioCtx: null,
+      audioOsc: null,
+      audioGain: null,
+      voltage: 0,
+      current: 0,
+      power: 0,
+      freq: 0,
+      scopeData: new Array(100).fill(0)
+    };
+
+    let canvas, ctx, container;
+    let scopeCanvas, scopeCtx;
+
+    // --- INICJALIZACJA ---
+    function init() {
+      container = document.getElementById('workspaceContainer');
+      canvas = document.getElementById('circuitCanvas');
+      ctx = canvas.getContext('2d');
+
+      scopeCanvas = document.getElementById('scopeCanvas');
+      scopeCtx = scopeCanvas.getContext('2d');
+
+      setupScrollbars();
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas);
+
+      setupInteractions();
+
+      // Wczytaj domyślny preset dydaktyczny
+      loadPreset('ohm_law');
+
+      // Główna pętla renderująca (60 FPS)
+      function renderLoop() {
+        circuitState.time += 0.016;
+        if (circuitState.showElectrons) {
+          circuitState.electronOffset = (circuitState.electronOffset + (circuitState.current > 0 ? circuitState.current * 0.15 : 0.4)) % 20;
+        }
+
+        simulateCircuit();
+        drawWorkspace();
+        drawOscilloscope();
+
+        requestAnimationFrame(renderLoop);
+      }
+      renderLoop();
+    }
+
+    function resizeCanvas() {
+      canvas.width = container.clientWidth;
+      canvas.height = container.clientHeight;
+      scopeCanvas.width = scopeCanvas.parentElement.clientWidth;
+      scopeCanvas.height = scopeCanvas.parentElement.clientHeight;
+      updateScrollbars();
+    }
+
+    // --- OBSŁUGA PASKÓW PRZEWIJANIA (LEWY PIONOWY & DOLNY POZIOMY) ---
+    function setupScrollbars() {
+      const vTrackInner = document.getElementById('vTrackInner');
+      const vThumb = document.getElementById('vScrollThumb');
+      const hTrackInner = document.getElementById('hTrackInner');
+      const hThumb = document.getElementById('hScrollThumb');
+
+      let isDraggingV = false;
+      let isDraggingH = false;
+      let startMouseY = 0;
+      let startMouseX = 0;
+      let startScrollY = 0;
+      let startScrollX = 0;
+
+      // 1. Pionowy suwak (Vertical thumb)
+      vThumb.addEventListener('mousedown', (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        isDraggingV = true;
+        vThumb.classList.add('dragging');
+        startMouseY = e.clientY;
+        startScrollY = circuitState.scrollY;
+      });
+
+      // Kliknięcie w tor pionowy (poza suwakiem)
+      vTrackInner.addEventListener('mousedown', (e) => {
+        if (e.target === vThumb) return;
+        const rect = vTrackInner.getBoundingClientRect();
+        const clickY = e.clientY - rect.top;
+        const thumbTop = parseFloat(vThumb.style.top) || 0;
+        const thumbHeight = parseFloat(vThumb.style.height) || 24;
+        const pageSize = canvas.height * 0.75;
+        if (clickY < thumbTop) {
+          setScroll(circuitState.scrollX, circuitState.scrollY - pageSize);
+        } else if (clickY > thumbTop + thumbHeight) {
+          setScroll(circuitState.scrollX, circuitState.scrollY + pageSize);
+        }
+      });
+
+      // 2. Poziomy suwak (Horizontal thumb)
+      hThumb.addEventListener('mousedown', (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        isDraggingH = true;
+        hThumb.classList.add('dragging');
+        startMouseX = e.clientX;
+        startScrollX = circuitState.scrollX;
+      });
+
+      // Kliknięcie w tor poziomy (poza suwakiem)
+      hTrackInner.addEventListener('mousedown', (e) => {
+        if (e.target === hThumb) return;
+        const rect = hTrackInner.getBoundingClientRect();
+        const clickX = e.clientX - rect.left;
+        const thumbLeft = parseFloat(hThumb.style.left) || 0;
+        const thumbWidth = parseFloat(hThumb.style.width) || 24;
+        const pageSize = canvas.width * 0.75;
+        if (clickX < thumbLeft) {
+          setScroll(circuitState.scrollX - pageSize, circuitState.scrollY);
+        } else if (clickX > thumbLeft + thumbWidth) {
+          setScroll(circuitState.scrollX + pageSize, circuitState.scrollY);
+        }
+      });
+
+      // Globalne przeciąganie suwaków myszą
+      window.addEventListener('mousemove', (e) => {
+        if (isDraggingV) {
+          const trackH = vTrackInner.clientHeight;
+          const thumbH = parseFloat(vThumb.style.height) || 24;
+          const maxTrackTravel = trackH - thumbH;
+          const maxScrollY = Math.max(1, circuitState.worldHeight - canvas.height);
+          if (maxTrackTravel > 0) {
+            const deltaY = e.clientY - startMouseY;
+            const deltaScroll = (deltaY / maxTrackTravel) * maxScrollY;
+            setScroll(circuitState.scrollX, startScrollY + deltaScroll);
+          }
+        }
+        if (isDraggingH) {
+          const trackW = hTrackInner.clientWidth;
+          const thumbW = parseFloat(hThumb.style.width) || 24;
+          const maxTrackTravel = trackW - thumbW;
+          const maxScrollX = Math.max(1, circuitState.worldWidth - canvas.width);
+          if (maxTrackTravel > 0) {
+            const deltaX = e.clientX - startMouseX;
+            const deltaScroll = (deltaX / maxTrackTravel) * maxScrollX;
+            setScroll(startScrollX + deltaScroll, circuitState.scrollY);
+          }
+        }
+      });
+
+      window.addEventListener('mouseup', () => {
+        if (isDraggingV) {
+          isDraggingV = false;
+          vThumb.classList.remove('dragging');
+        }
+        if (isDraggingH) {
+          isDraggingH = false;
+          hThumb.classList.remove('dragging');
+        }
+      });
+
+      // Przyciski strzałek
+      document.getElementById('btnScrollUp').addEventListener('click', () => {
+        setScroll(circuitState.scrollX, circuitState.scrollY - 60);
+      });
+      document.getElementById('btnScrollDown').addEventListener('click', () => {
+        setScroll(circuitState.scrollX, circuitState.scrollY + 60);
+      });
+      document.getElementById('btnScrollLeft').addEventListener('click', () => {
+        setScroll(circuitState.scrollX - 60, circuitState.scrollY);
+      });
+      document.getElementById('btnScrollRight').addEventListener('click', () => {
+        setScroll(circuitState.scrollX + 60, circuitState.scrollY);
+      });
+
+      // Obsługa kółka myszy nad obszarem roboczym
+      container.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        if (e.shiftKey) {
+          setScroll(circuitState.scrollX + e.deltaY, circuitState.scrollY);
+        } else {
+          setScroll(circuitState.scrollX + e.deltaX, circuitState.scrollY + e.deltaY);
+        }
+      }, { passive: false });
+    }
+
+    function updateScrollbars() {
+      const vTrackInner = document.getElementById('vTrackInner');
+      const vThumb = document.getElementById('vScrollThumb');
+      const hTrackInner = document.getElementById('hTrackInner');
+      const hThumb = document.getElementById('hScrollThumb');
+
+      if (!vTrackInner || !vThumb || !hTrackInner || !hThumb || !canvas) return;
+
+      // Dynamiczne powiększenie wirtualnego świata jeśli elementy sięgają dalej
+      let maxElemX = 0;
+      let maxElemY = 0;
+      circuitState.elements.forEach(el => {
+        if (el.x > maxElemX) maxElemX = el.x;
+        if (el.y > maxElemY) maxElemY = el.y;
+      });
+      circuitState.worldWidth = Math.max(3200, maxElemX + 600);
+      circuitState.worldHeight = Math.max(2400, maxElemY + 600);
+
+      // Aktualizacja suwaka pionowego (Left Vertical Scrollbar)
+      const trackH = vTrackInner.clientHeight;
+      const maxScrollY = Math.max(0, circuitState.worldHeight - canvas.height);
+      const thumbH = Math.max(24, Math.min(trackH, (canvas.height / circuitState.worldHeight) * trackH));
+      const thumbTop = maxScrollY > 0 ? (circuitState.scrollY / maxScrollY) * (trackH - thumbH) : 0;
+
+      vThumb.style.height = `${thumbH}px`;
+      vThumb.style.top = `${Math.max(0, Math.min(trackH - thumbH, thumbTop))}px`;
+
+      // Aktualizacja suwaka poziomego (Bottom Horizontal Scrollbar)
+      const trackW = hTrackInner.clientWidth;
+      const maxScrollX = Math.max(0, circuitState.worldWidth - canvas.width);
+      const thumbW = Math.max(24, Math.min(trackW, (canvas.width / circuitState.worldWidth) * trackW));
+      const thumbLeft = maxScrollX > 0 ? (circuitState.scrollX / maxScrollX) * (trackW - thumbW) : 0;
+
+      hThumb.style.width = `${thumbW}px`;
+      hThumb.style.left = `${Math.max(0, Math.min(trackW - thumbW, thumbLeft))}px`;
+    }
+
+    function setScroll(x, y) {
+      const maxPanX = Math.max(0, circuitState.worldWidth - canvas.width);
+      const maxPanY = Math.max(0, circuitState.worldHeight - canvas.height);
+      circuitState.scrollX = Math.max(0, Math.min(maxPanX, Math.round(x)));
+      circuitState.scrollY = Math.max(0, Math.min(maxPanY, Math.round(y)));
+      updateScrollbars();
+    }
+
+    function centerView(targetX, targetY) {
+      if (targetX === undefined || targetY === undefined) {
+        if (circuitState.elements.length > 0) {
+          let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+          circuitState.elements.forEach(el => {
+            minX = Math.min(minX, el.x);
+            maxX = Math.max(maxX, el.x);
+            minY = Math.min(minY, el.y);
+            maxY = Math.max(maxY, el.y);
+          });
+          targetX = (minX + maxX) / 2;
+          targetY = (minY + maxY) / 2;
+        } else {
+          targetX = circuitState.worldWidth / 2;
+          targetY = circuitState.worldHeight / 2;
+        }
+      }
+      setScroll(targetX - canvas.width / 2, targetY - canvas.height / 2);
+    }
+
+    // --- OBSŁUGA INTERAKCJI MYSZY I KLAWIATURY ---
+    // --- OBSŁUGA INTERAKCJI MYSZY I KLAWIATURY ---
+    function setupInteractions() {
+      let mouseDownPos = { x: 0, y: 0 };
+
+      canvas.addEventListener('mousedown', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const screenX = e.clientX - rect.left;
+        const screenY = e.clientY - rect.top;
+        const worldX = screenX + circuitState.scrollX;
+        const worldY = screenY + circuitState.scrollY;
+        mouseDownPos = { x: screenX, y: screenY };
+
+        // Środkowy przycisk myszy (przycisk rolki) -> przesuwanie widoku (Pan)
+        if (e.button === 1) {
+          e.preventDefault();
+          circuitState.isPanning = true;
+          circuitState.panStart = {
+            mouseX: e.clientX,
+            mouseY: e.clientY,
+            scrollX: circuitState.scrollX,
+            scrollY: circuitState.scrollY
+          };
+          canvas.style.cursor = 'grabbing';
+          return;
+        }
+
+        // 1. LEWY PRZYCISK MYSZY (LPM)
+        if (e.button === 0) {
+          // A. Sprawdzamy czy kliknięto w uchwyt (handle) zaznaczonego przewodu do przesuwania segmentu
+          const clickedHandle = findWireHandleAt(worldX, worldY);
+          if (clickedHandle) {
+            circuitState.isDraggingWireHandle = true;
+            circuitState.draggedWireHandle = clickedHandle;
+            return;
+          }
+
+          // B. Sprawdzamy kliknięcie w styk (pin)
+          const clickedPin = findPinAt(worldX, worldY);
+          if (clickedPin) {
+            handlePinClick(clickedPin);
+            return;
+          }
+
+          // C. Jeśli w trakcie łączenia kliknięto w puste tło -> dodaj punkt załamania (Waypoint)
+          if (circuitState.connectingPin) {
+            const wp = snapToGrid(worldX, worldY);
+            circuitState.wireWaypoints.push(wp);
+            showToast(`📍 Dodano narożnik przewodu (${wp.x}, ${wp.y}). Wskaż kolejny punkt lub styk docelowy.`);
+            return;
+          }
+
+          // D. Sprawdzamy kliknięcie w element (zaznaczenie lub przeciąganie / przełącznik)
+          const clickedElem = findElementAt(worldX, worldY);
+          if (clickedElem) {
+            selectElement(clickedElem);
+
+            // Jeśli to wyłącznik SPST -> kliknięcie przełącza stan
+            if (clickedElem.type === 'switch') {
+              clickedElem.closed = !clickedElem.closed;
+              showToast(clickedElem.closed ? '🔘 Załączono wyłącznik (Zwarcie)' : '🔘 Rozłączono wyłącznik (Przerwa)');
+            }
+
+            circuitState.isDragging = true;
+            circuitState.dragOffset = {
+              x: worldX - clickedElem.x,
+              y: worldY - clickedElem.y
+            };
+            return;
+          }
+
+          // E. Sprawdzamy kliknięcie w przewód
+          const clickedWire = findWireAt(worldX, worldY);
+          if (clickedWire) {
+            selectWire(clickedWire);
+            return;
+          }
+
+          // F. Kliknięcie w puste tło -> odznacz wszystko i rozpocznij przesuwanie widoku (Pan)
+          deselectAll();
+          circuitState.isPanning = true;
+          circuitState.panStart = {
+            mouseX: e.clientX,
+            mouseY: e.clientY,
+            scrollX: circuitState.scrollX,
+            scrollY: circuitState.scrollY
+          };
+        }
+
+        // 2. PRAWY PRZYCISK MYSZY (PPM): Zaznaczanie lub anulowanie
+        if (e.button === 2) {
+          if (circuitState.connectingPin) {
+            cancelWireConnection();
+            showToast('Anulowano prowadzenie przewodu.');
+            return;
+          }
+          const clickedElem = findElementAt(worldX, worldY);
+          if (clickedElem) {
+            selectElement(clickedElem);
+            return;
+          }
+          const clickedWire = findWireAt(worldX, worldY);
+          if (clickedWire) {
+            selectWire(clickedWire);
+            return;
+          }
+          deselectAll();
+        }
+      });
+
+      canvas.addEventListener('mousemove', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const screenX = e.clientX - rect.left;
+        const screenY = e.clientY - rect.top;
+        const worldX = screenX + circuitState.scrollX;
+        const worldY = screenY + circuitState.scrollY;
+
+        // Przesuwanie segmentu/szyny przewodu za pomocą uchwytu
+        if (circuitState.isDraggingWireHandle && circuitState.draggedWireHandle) {
+          const handle = circuitState.draggedWireHandle;
+          const snapped = snapToGrid(worldX, worldY);
+          if (handle.isVertical) {
+            handle.wire.splitPos = snapped.x;
+          } else {
+            handle.wire.splitPos = snapped.y;
+          }
+          canvas.style.cursor = handle.isVertical ? 'ew-resize' : 'ns-resize';
+          return;
+        }
+
+        // Przesuwanie widoku (Panning)
+        if (circuitState.isPanning) {
+          const dx = e.clientX - circuitState.panStart.mouseX;
+          const dy = e.clientY - circuitState.panStart.mouseY;
+          setScroll(circuitState.panStart.scrollX - dx, circuitState.panStart.scrollY - dy);
+          canvas.style.cursor = 'grabbing';
+          return;
+        }
+
+        // Ciągnięcie przewodu (podgląd w czasie rzeczywistym)
+        if (circuitState.connectingPin) {
+          circuitState.tempWireTarget = snapToGrid(worldX, worldY);
+        }
+
+        // Przeciąganie elementu po siatce
+        if (circuitState.isDragging && circuitState.selectedElement) {
+          const newPos = snapToGrid(worldX - circuitState.dragOffset.x, worldY - circuitState.dragOffset.y);
+          circuitState.selectedElement.x = newPos.x;
+          circuitState.selectedElement.y = newPos.y;
+          updateScrollbars();
+        }
+
+        // Zmiana kursora
+        const isOverHandle = findWireHandleAt(worldX, worldY);
+        const isOverPin = findPinAt(worldX, worldY);
+        const isOverElem = findElementAt(worldX, worldY);
+        const isOverWire = findWireAt(worldX, worldY);
+
+        if (isOverHandle) canvas.style.cursor = isOverHandle.isVertical ? 'ew-resize' : 'ns-resize';
+        else if (isOverPin) canvas.style.cursor = 'crosshair';
+        else if (isOverElem) canvas.style.cursor = 'move';
+        else if (isOverWire) canvas.style.cursor = 'pointer';
+        else canvas.style.cursor = 'default';
+      });
+
+      window.addEventListener('mouseup', () => {
+        circuitState.isDragging = false;
+        circuitState.isDraggingWireHandle = false;
+        circuitState.draggedWireHandle = null;
+        if (circuitState.isPanning) {
+          circuitState.isPanning = false;
+          canvas.style.cursor = 'default';
+        }
+      });
+
+      canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+
+      // Klawiatura: Obrót (R), Centrowanie (C), Ukwadratowanie (S), Przełączanie kąta (Spacja), Esc
+      window.addEventListener('keydown', (e) => {
+        if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA')) {
+          return;
+        }
+        if (e.key === 'r' || e.key === 'R') {
+          rotateSelected();
+        } else if (e.key === 's' || e.key === 'S') {
+          squareUpCircuit();
+        } else if (e.key === ' ' || e.code === 'Space') {
+          e.preventDefault();
+          if (circuitState.connectingPin) {
+            // Przełącz orientację podglądu (auto -> hv -> vh -> direct)
+            const modes = ['auto', 'hv', 'vh', 'direct'];
+            const curIdx = modes.indexOf(circuitState.tempRouteMode || 'auto');
+            circuitState.tempRouteMode = modes[(curIdx + 1) % modes.length];
+            showToast(`Tryb kąta przewodu: ${circuitState.tempRouteMode.toUpperCase()}`);
+          } else if (circuitState.selectedWire) {
+            toggleSelectedWireRoute();
+          }
+        } else if (e.key === 'Escape') {
+          cancelWireConnection();
+          deselectAll();
+        } else if (e.key === 'c' || e.key === 'C') {
+          centerView();
+        }
+      });
+    }
+
+    // --- RYSOWANIE SIATKI I OBSZARU ROBOCZEGO ---
+    function drawWorkspace() {
+      ctx.fillStyle = '#020617';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Siatka Snap-to-Grid (przesuwająca się synchronicznie z widokiem)
+      if (circuitState.gridSnap) {
+        ctx.fillStyle = '#1e293b';
+        const step = circuitState.gridSize;
+        const startX = - (circuitState.scrollX % step);
+        const startY = - (circuitState.scrollY % step);
+        for (let x = startX; x < canvas.width; x += step) {
+          for (let y = startY; y < canvas.height; y += step) {
+            ctx.fillRect(x - 1, y - 1, 2, 2);
+          }
+        }
+      }
+
+      ctx.save();
+      // Transformacja kamery (przesunięcie widoku o scrollX, scrollY)
+      ctx.translate(-circuitState.scrollX, -circuitState.scrollY);
+
+      // 1. Rysowanie Przewodów (Ścieżek)
+      drawWires();
+
+      // 2. Rysowanie ciągniętego przewodu (podgląd w czasie rzeczywistym)
+      if (circuitState.connectingPin && circuitState.tempWireTarget) {
+        const p1 = getPinWorldPos(circuitState.connectingPin.elem, circuitState.connectingPin.pin);
+        const pTarget = circuitState.tempWireTarget;
+
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 3;
+        ctx.setLineDash([6, 4]);
+        ctx.beginPath();
+
+        let pts = [];
+        if (circuitState.wireWaypoints && circuitState.wireWaypoints.length > 0) {
+          pts = [p1];
+          let prev = p1;
+          circuitState.wireWaypoints.forEach(wp => {
+            pts.push({ x: wp.x, y: prev.y }, wp);
+            prev = wp;
+          });
+          const lastSeg = getPreviewWirePoints(prev, pTarget, circuitState.tempRouteMode || circuitState.defaultRouteMode);
+          for (let i = 1; i < lastSeg.length; i++) pts.push(lastSeg[i]);
+        } else {
+          pts = getPreviewWirePoints(p1, pTarget, circuitState.tempRouteMode || circuitState.defaultRouteMode);
+        }
+
+        if (pts.length > 0) {
+          ctx.moveTo(pts[0].x, pts[0].y);
+          for (let i = 1; i < pts.length; i++) {
+            ctx.lineTo(pts[i].x, pts[i].y);
+          }
+        }
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Rysuj punkty narożne (waypoints)
+        if (circuitState.wireWaypoints) {
+          circuitState.wireWaypoints.forEach(wp => {
+            ctx.fillStyle = '#38bdf8';
+            ctx.beginPath();
+            ctx.arc(wp.x, wp.y, 4, 0, Math.PI * 2);
+            ctx.fill();
+          });
+        }
+      }
+
+      // 3. Rysowanie Symboli Schematowych
+      circuitState.elements.forEach(elem => {
+        drawSymbol(elem);
+      });
+
+      // 4. Animacja elektronów w obwodzie
+      if (circuitState.showElectrons && circuitState.current > 0) {
+        drawElectrons();
+      }
+
+      ctx.restore();
+    }
+
+    // --- ZNORMALIZOWANE SYMBOLE PN-EN / IEC ---
+    function drawSymbol(elem) {
+      ctx.save();
+      ctx.translate(elem.x, elem.y);
+      ctx.rotate((elem.rotation * Math.PI) / 180);
+
+      const isSelected = circuitState.selectedElement === elem;
+      ctx.strokeStyle = isSelected ? '#38bdf8' : '#f8fafc';
+      ctx.fillStyle = isSelected ? '#38bdf8' : '#f8fafc';
+      ctx.lineWidth = isSelected ? 3 : 2;
+
+      // Obramowanie zaznaczenia
+      if (isSelected) {
+        ctx.strokeStyle = 'rgba(56, 189, 248, 0.4)';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(-40, -30, 80, 60);
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 2.5;
+      }
+
+      switch(elem.type) {
+        case 'battery': // Bateria DC (Długa cienka +, Krótka gruba -)
+          ctx.beginPath();
+          ctx.moveTo(-30, 0); ctx.lineTo(-10, 0);
+          ctx.moveTo(10, 0); ctx.lineTo(30, 0);
+          ctx.stroke();
+
+          // Długa linia (+)
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(-10, -18); ctx.lineTo(-10, 18);
+          ctx.stroke();
+
+          // Krótka gruba linia (-)
+          ctx.lineWidth = 4.5;
+          ctx.beginPath();
+          ctx.moveTo(0, -10); ctx.lineTo(0, 10);
+          ctx.stroke();
+
+          // Etykieta
+          ctx.font = 'bold 11px sans-serif';
+          ctx.fillStyle = '#facc15';
+          ctx.fillText(`${elem.voltage || 9}V`, -10, -22);
+          break;
+
+        case 'generator': // Generator AC (Kółko z sinusoidą)
+          ctx.beginPath();
+          ctx.moveTo(-30, 0); ctx.lineTo(-18, 0);
+          ctx.moveTo(18, 0); ctx.lineTo(30, 0);
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.arc(0, 0, 18, 0, Math.PI * 2);
+          ctx.stroke();
+
+          // Sinusoida w środku
+          ctx.beginPath();
+          ctx.moveTo(-10, 0);
+          ctx.bezierCurveTo(-5, -12, -2, -12, 0, 0);
+          ctx.bezierCurveTo(2, 12, 5, 12, 10, 0);
+          ctx.stroke();
+
+          ctx.font = 'bold 10px sans-serif';
+          ctx.fillStyle = '#38bdf8';
+          ctx.fillText('1kHz AC', -16, -22);
+          break;
+
+        case 'resistor': // Rezystor IEC (Prostokąt)
+          ctx.beginPath();
+          ctx.moveTo(-35, 0); ctx.lineTo(-20, 0);
+          ctx.moveTo(20, 0); ctx.lineTo(35, 0);
+          ctx.stroke();
+
+          ctx.strokeRect(-20, -8, 40, 16);
+
+          ctx.font = 'bold 11px sans-serif';
+          ctx.fillStyle = '#fb923c';
+          ctx.fillText(`${elem.resistance >= 1000 ? (elem.resistance/1000)+'k' : elem.resistance}\u03A9`, -14, -13);
+          break;
+
+        case 'potentiometer': // Potencjometr (Prostokąt ze strzałką ślizgacza)
+          ctx.beginPath();
+          ctx.moveTo(-35, 0); ctx.lineTo(-20, 0);
+          ctx.moveTo(20, 0); ctx.lineTo(35, 0);
+          ctx.moveTo(0, 25); ctx.lineTo(0, 14); // Odczep suwaka
+          ctx.stroke();
+
+          ctx.strokeRect(-20, -8, 40, 16);
+
+          // Strzałka ślizgacza
+          ctx.beginPath();
+          ctx.moveTo(-4, 14); ctx.lineTo(0, 8); ctx.lineTo(4, 14);
+          ctx.fill();
+
+          ctx.font = 'bold 10px sans-serif';
+          ctx.fillStyle = '#facc15';
+          ctx.fillText(`${elem.resistance || 10}k\u03A9`, -10, -12);
+          break;
+
+        case 'switch': // Wyłącznik SPST
+          ctx.beginPath();
+          ctx.moveTo(-30, 0); ctx.lineTo(-12, 0);
+          ctx.moveTo(12, 0); ctx.lineTo(30, 0);
+          ctx.arc(-12, 0, 2.5, 0, Math.PI*2);
+          ctx.arc(12, 0, 2.5, 0, Math.PI*2);
+          ctx.stroke();
+
+          // Ruchoma dźwigienka
+          ctx.beginPath();
+          ctx.moveTo(-12, 0);
+          if (elem.closed) {
+            ctx.lineTo(12, 0);
+            ctx.strokeStyle = '#4ade80';
+          } else {
+            ctx.lineTo(8, -14);
+          }
+          ctx.stroke();
+          break;
+
+        case 'capacitor': // Kondensator (Dwie równoległe kreski)
+          ctx.beginPath();
+          ctx.moveTo(-30, 0); ctx.lineTo(-6, 0);
+          ctx.moveTo(6, 0); ctx.lineTo(30, 0);
+          ctx.stroke();
+
+          ctx.lineWidth = 2.5;
+          ctx.beginPath();
+          ctx.moveTo(-6, -16); ctx.lineTo(-6, 16);
+          ctx.moveTo(6, -16); ctx.lineTo(6, 16);
+          ctx.stroke();
+
+          ctx.font = 'bold 10px sans-serif';
+          ctx.fillStyle = '#94a3b8';
+          ctx.fillText(`${elem.capacitance || 100}\u03BCF`, -14, -20);
+          break;
+
+        case 'inductor': // Cewka indukcyjna (Łuki PN-EN)
+          ctx.beginPath();
+          ctx.moveTo(-35, 0); ctx.lineTo(-24, 0);
+          ctx.moveTo(24, 0); ctx.lineTo(35, 0);
+          ctx.stroke();
+
+          for (let i = -24; i < 24; i += 12) {
+            ctx.beginPath();
+            ctx.arc(i + 6, 0, 6, Math.PI, 0);
+            ctx.stroke();
+          }
+
+          ctx.font = 'bold 10px sans-serif';
+          ctx.fillStyle = '#fb923c';
+          ctx.fillText(`${elem.inductance || 10}mH`, -12, -12);
+          break;
+
+        case 'transformer': // Transformator (2 uzwojenia i rdzeń)
+          ctx.beginPath();
+          // Pierwotne
+          ctx.moveTo(-25, -20); ctx.lineTo(-12, -20);
+          ctx.moveTo(-25, 20); ctx.lineTo(-12, 20);
+          // Wtórne
+          ctx.moveTo(12, -20); ctx.lineTo(25, -20);
+          ctx.moveTo(12, 20); ctx.lineTo(25, 20);
+          // Rdzeń
+          ctx.moveTo(-2, -22); ctx.lineTo(-2, 22);
+          ctx.moveTo(2, -22); ctx.lineTo(2, 22);
+          ctx.stroke();
+
+          // Łuki
+          for (let y = -15; y <= 15; y += 10) {
+            ctx.beginPath(); ctx.arc(-12, y, 5, -Math.PI/2, Math.PI/2, true); ctx.stroke();
+            ctx.beginPath(); ctx.arc(12, y, 5, -Math.PI/2, Math.PI/2, false); ctx.stroke();
+          }
+          break;
+
+        case 'diode': // Dioda Prostownicza (Trójkąt z poprzeczką)
+          ctx.beginPath();
+          ctx.moveTo(-30, 0); ctx.lineTo(-12, 0);
+          ctx.moveTo(12, 0); ctx.lineTo(30, 0);
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.moveTo(-12, -12); ctx.lineTo(-12, 12); ctx.lineTo(12, 0); ctx.closePath();
+          ctx.fillStyle = '#1e293b';
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.moveTo(12, -12); ctx.lineTo(12, 12);
+          ctx.stroke();
+          break;
+
+        case 'led': // Rzeczywista Dioda LED (Wielokolorowa z modelem fizycznym i ostrzeżeniem przed spaleniem)
+          ctx.beginPath();
+          ctx.moveTo(-30, 0); ctx.lineTo(-12, 0);
+          ctx.moveTo(12, 0); ctx.lineTo(30, 0);
+          ctx.stroke();
+
+          const ledModelKey = elem.ledModel || 'red';
+          const model = LED_MODELS[ledModelKey] || LED_MODELS.red;
+          const isBurned = elem.isBurned === true;
+          const isGlowing = !isBurned && (circuitState.current > 0.5);
+          const glowIntensity = isGlowing ? Math.min(1.0, circuitState.current / 20.0) : 0;
+
+          // Trójkąt złącza p-n
+          ctx.beginPath();
+          ctx.moveTo(-12, -12); ctx.lineTo(-12, 12); ctx.lineTo(12, 0); ctx.closePath();
+          if (isBurned) {
+            ctx.fillStyle = '#334155';
+          } else {
+            ctx.fillStyle = isGlowing ? model.color : '#1e293b';
+          }
+          ctx.fill();
+          ctx.stroke();
+
+          // Kreska katody
+          ctx.beginPath();
+          ctx.moveTo(12, -12); ctx.lineTo(12, 12);
+          ctx.stroke();
+
+          // Strzałki emisji fotonów
+          if (!isBurned) {
+            ctx.strokeStyle = isGlowing ? model.glow : '#64748b';
+            ctx.beginPath();
+            ctx.moveTo(-4, -14); ctx.lineTo(6, -24);
+            ctx.moveTo(6, -14); ctx.lineTo(16, -24);
+            ctx.stroke();
+            // Groty strzałek
+            ctx.beginPath();
+            ctx.moveTo(2, -24); ctx.lineTo(6, -24); ctx.lineTo(6, -20);
+            ctx.moveTo(12, -24); ctx.lineTo(16, -24); ctx.lineTo(16, -20);
+            ctx.stroke();
+
+            if (isGlowing) {
+              ctx.shadowColor = model.glow;
+              ctx.shadowBlur = 8 + glowIntensity * 16;
+              ctx.stroke();
+              ctx.shadowBlur = 0;
+            }
+          } else {
+            // Efekt spalonej diody
+            ctx.strokeStyle = '#ef4444';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(-8, -8); ctx.lineTo(8, 8);
+            ctx.moveTo(8, -8); ctx.lineTo(-8, 8);
+            ctx.stroke();
+          }
+
+          // Etykieta modelu i napięcia
+          ctx.font = 'bold 9px sans-serif';
+          ctx.fillStyle = isBurned ? '#ef4444' : '#facc15';
+          ctx.fillText(isBurned ? '💥 SPALONA!' : `${elem.vf !== undefined ? elem.vf : model.vf}V`, -10, -15);
+          break;
+
+        case 'npn': // Tranzystor BJT NPN (C, B, E ze strzałką)
+          ctx.beginPath();
+          ctx.arc(0, 0, 24, 0, Math.PI * 2);
+          ctx.stroke();
+
+          // Baza
+          ctx.beginPath();
+          ctx.moveTo(-24, 0); ctx.lineTo(-8, 0);
+          ctx.moveTo(-8, -14); ctx.lineTo(-8, 14);
+          ctx.stroke();
+
+          // Kolektor (C)
+          ctx.beginPath();
+          ctx.moveTo(-8, -8); ctx.lineTo(14, -18); ctx.lineTo(14, -24);
+          ctx.stroke();
+
+          // Emiter (E) ze strzałką na zewnątrz
+          ctx.beginPath();
+          ctx.moveTo(-8, 8); ctx.lineTo(14, 18); ctx.lineTo(14, 24);
+          ctx.stroke();
+
+          // Grot strzałki NPN
+          ctx.fillStyle = '#4ade80';
+          ctx.beginPath();
+          ctx.moveTo(14, 18); ctx.lineTo(6, 12); ctx.lineTo(10, 8);
+          ctx.fill();
+
+          ctx.font = 'bold 9px sans-serif';
+          ctx.fillStyle = '#94a3b8';
+          ctx.fillText('B', -20, -5); ctx.fillText('C', 18, -16); ctx.fillText('E', 18, 20);
+          break;
+
+        case 'pnp': // Tranzystor BJT PNP (E ze strzałką do środka, B, C)
+          ctx.beginPath();
+          ctx.arc(0, 0, 24, 0, Math.PI * 2);
+          ctx.stroke();
+
+          // Baza
+          ctx.beginPath();
+          ctx.moveTo(-24, 0); ctx.lineTo(-8, 0);
+          ctx.moveTo(-8, -14); ctx.lineTo(-8, 14);
+          ctx.stroke();
+
+          // Emiter (E) ze strzałką do środka
+          ctx.beginPath();
+          ctx.moveTo(-8, -8); ctx.lineTo(14, -18); ctx.lineTo(14, -24);
+          ctx.stroke();
+
+          // Grot strzałki PNP
+          ctx.fillStyle = '#c084fc';
+          ctx.beginPath();
+          ctx.moveTo(-2, -11); ctx.lineTo(6, -17); ctx.lineTo(2, -8);
+          ctx.fill();
+
+          // Kolektor (C)
+          ctx.beginPath();
+          ctx.moveTo(-8, 8); ctx.lineTo(14, 18); ctx.lineTo(14, 24);
+          ctx.stroke();
+
+          ctx.font = 'bold 9px sans-serif';
+          ctx.fillStyle = '#94a3b8';
+          ctx.fillText('B', -20, -5); ctx.fillText('E', 18, -16); ctx.fillText('C', 18, 20);
+          break;
+
+        case 'gnd': // Masa (3 kreski)
+          ctx.beginPath();
+          ctx.moveTo(0, -20); ctx.lineTo(0, 0);
+          ctx.moveTo(-16, 0); ctx.lineTo(16, 0);
+          ctx.moveTo(-10, 6); ctx.lineTo(10, 6);
+          ctx.moveTo(-4, 12); ctx.lineTo(4, 12);
+          ctx.stroke();
+          break;
+
+        case 'speaker': // Głośnik
+          ctx.beginPath();
+          ctx.moveTo(-25, -10); ctx.lineTo(-10, -10);
+          ctx.moveTo(-25, 10); ctx.lineTo(-10, 10);
+          ctx.stroke();
+
+          ctx.strokeRect(-10, -14, 8, 28);
+          ctx.beginPath();
+          ctx.moveTo(-2, -14); ctx.lineTo(14, -24); ctx.lineTo(14, 24); ctx.lineTo(-2, 14);
+          ctx.closePath();
+          ctx.stroke();
+          break;
+
+        case 'microphone': // Mikrofon
+          ctx.beginPath();
+          ctx.moveTo(-25, -10); ctx.lineTo(-10, -10);
+          ctx.moveTo(-25, 10); ctx.lineTo(-10, 10);
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.arc(4, 0, 14, 0, Math.PI * 2);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(4, -14); ctx.lineTo(4, 14);
+          ctx.stroke();
+          break;
+
+        case 'voltmeter': // Woltomierz IEC (Kółko z V + odczyt)
+          ctx.beginPath();
+          ctx.moveTo(-30, 0); ctx.lineTo(-18, 0);
+          ctx.moveTo(18, 0); ctx.lineTo(30, 0);
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.arc(0, 0, 18, 0, Math.PI * 2);
+          ctx.fillStyle = '#0f172a';
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.font = 'bold 15px sans-serif';
+          ctx.fillStyle = '#38bdf8';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText('V', 0, 1);
+
+          // Cyfrowy odczyt napięcia
+          ctx.font = 'bold 11px monospace';
+          ctx.fillStyle = '#4ade80';
+          ctx.fillText(elem.measuredVal || '0.00 V', 0, -24);
+          ctx.textAlign = 'start';
+          ctx.textBaseline = 'alphabetic';
+          break;
+
+        case 'ammeter': // Amperomierz IEC (Kółko z A + odczyt)
+          ctx.beginPath();
+          ctx.moveTo(-30, 0); ctx.lineTo(-18, 0);
+          ctx.moveTo(18, 0); ctx.lineTo(30, 0);
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.arc(0, 0, 18, 0, Math.PI * 2);
+          ctx.fillStyle = '#0f172a';
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.font = 'bold 15px sans-serif';
+          ctx.fillStyle = '#fb923c';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText('A', 0, 1);
+
+          // Cyfrowy odczyt prądu
+          ctx.font = 'bold 11px monospace';
+          ctx.fillStyle = '#4ade80';
+          ctx.fillText(elem.measuredVal || '0.0 mA', 0, -24);
+          ctx.textAlign = 'start';
+          ctx.textBaseline = 'alphabetic';
+          break;
+      }
+
+      // Rysowanie pinów / styków terminala
+      elem.pins.forEach(pin => {
+        ctx.fillStyle = circuitState.connectingPin && circuitState.connectingPin.pin === pin ? '#facc15' : '#38bdf8';
+        ctx.beginPath();
+        ctx.arc(pin.x, pin.y, 4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+      });
+
+      ctx.restore();
+    }
+
+    // --- WYZNACZANIE KIERUNKU WYJŚCIA STYKU (PIN EXIT DIRECTION) ---
+    function getPinExitDirection(elem, pin) {
+      const rad = (elem.rotation * Math.PI) / 180;
+      const cos = Math.cos(rad);
+      const sin = Math.sin(rad);
+      const wx = pin.x * cos - pin.y * sin;
+      const wy = pin.x * sin + pin.y * cos;
+      if (Math.abs(wx) >= Math.abs(wy)) {
+        return wx >= 0 ? 'RIGHT' : 'LEFT';
+      } else {
+        return wy >= 0 ? 'DOWN' : 'UP';
+      }
+    }
+
+    // --- PROWADZENIE I ZAŁAMYWANIE PRZEWODÓW (ORTHOGONAL ROUTING ENGINE) ---
+    function getWirePoints(wire) {
+      const p1 = getPinWorldPos(wire.fromElem, wire.fromPin);
+      const p2 = getPinWorldPos(wire.toElem, wire.toPin);
+
+      // A. Własne punkty pośrednie (Waypoints dodane przez użytkownika)
+      if (wire.waypoints && wire.waypoints.length > 0) {
+        const pts = [p1];
+        let prev = p1;
+        wire.waypoints.forEach(wp => {
+          pts.push({ x: wp.x, y: prev.y }, wp);
+          prev = wp;
+        });
+        pts.push({ x: p2.x, y: prev.y }, p2);
+        return simplifyPoints(pts);
+      }
+
+      const mode = wire.routeMode || 'auto';
+
+      // B. Punkty współliniowe (na tej samej osi X lub Y) -> linia prosta
+      if (Math.abs(p1.x - p2.x) < 2) {
+        return [{ x: p1.x, y: p1.y }, { x: p1.x, y: p2.y }];
+      }
+      if (Math.abs(p1.y - p2.y) < 2) {
+        return [{ x: p1.x, y: p1.y }, { x: p2.x, y: p1.y }];
+      }
+
+      // C. Wymuszona linia skośna (Direct)
+      if (mode === 'direct') {
+        return [p1, p2];
+      }
+
+      // D. Tryby 2-odcinkowe L-kształtne
+      if (mode === 'hv') {
+        return simplifyPoints([p1, { x: p2.x, y: p1.y }, p2]);
+      }
+      if (mode === 'vh') {
+        return simplifyPoints([p1, { x: p1.x, y: p2.y }, p2]);
+      }
+
+      // E. Tryby 3-odcinkowe z przesuwalnym podziałem
+      if (mode === 'hvh') {
+        const splitX = wire.splitPos !== undefined ? wire.splitPos : Math.round((p1.x + p2.x) / 2);
+        return simplifyPoints([p1, { x: splitX, y: p1.y }, { x: splitX, y: p2.y }, p2]);
+      }
+      if (mode === 'vhv') {
+        const splitY = wire.splitPos !== undefined ? wire.splitPos : Math.round((p1.y + p2.y) / 2);
+        return simplifyPoints([p1, { x: p1.x, y: splitY }, { x: p2.x, y: splitY }, p2]);
+      }
+
+      // F. mode === 'auto' : Inteligentne dopasowanie do wyprowadzeń schematowych (Smart Auto-Route)
+      const dir1 = getPinExitDirection(wire.fromElem, wire.fromPin);
+      const dir2 = getPinExitDirection(wire.toElem, wire.toPin);
+
+      // 1. Obie końcówki skierowane w górę (szyna zasilania VCC)
+      if (dir1 === 'UP' && dir2 === 'UP') {
+        const railY = wire.splitPos !== undefined ? wire.splitPos : (Math.min(p1.y, p2.y) - 30);
+        return simplifyPoints([p1, { x: p1.x, y: railY }, { x: p2.x, y: railY }, p2]);
+      }
+
+      // 2. Obie końcówki skierowane w dół (szyna masy GND)
+      if (dir1 === 'DOWN' && dir2 === 'DOWN') {
+        const railY = wire.splitPos !== undefined ? wire.splitPos : (Math.max(p1.y, p2.y) + 30);
+        return simplifyPoints([p1, { x: p1.x, y: railY }, { x: p2.x, y: railY }, p2]);
+      }
+
+      // 3. Obie końcówki skierowane w prawo
+      if (dir1 === 'RIGHT' && dir2 === 'RIGHT') {
+        const railX = wire.splitPos !== undefined ? wire.splitPos : (Math.max(p1.x, p2.x) + 30);
+        return simplifyPoints([p1, { x: railX, y: p1.y }, { x: railX, y: p2.y }, p2]);
+      }
+
+      // 4. Obie końcówki skierowane w lewo
+      if (dir1 === 'LEFT' && dir2 === 'LEFT') {
+        const railX = wire.splitPos !== undefined ? wire.splitPos : (Math.min(p1.x, p2.x) - 30);
+        return simplifyPoints([p1, { x: railX, y: p1.y }, { x: railX, y: p2.y }, p2]);
+      }
+
+      // 5. Jeden styk poziomy, drugi pionowy (czysty L-kształt)
+      const isH1 = (dir1 === 'LEFT' || dir1 === 'RIGHT');
+      const isV1 = (dir1 === 'UP' || dir1 === 'DOWN');
+      const isH2 = (dir2 === 'LEFT' || dir2 === 'RIGHT');
+      const isV2 = (dir2 === 'UP' || dir2 === 'DOWN');
+
+      if (isH1 && isV2) {
+        return simplifyPoints([p1, { x: p2.x, y: p1.y }, p2]);
+      }
+      if (isV1 && isH2) {
+        return simplifyPoints([p1, { x: p1.x, y: p2.y }, p2]);
+      }
+
+      // 6. Skierowane ku sobie poziomo
+      if ((dir1 === 'RIGHT' && p1.x <= p2.x) || (dir1 === 'LEFT' && p1.x >= p2.x)) {
+        const splitX = wire.splitPos !== undefined ? wire.splitPos : Math.round((p1.x + p2.x) / 2);
+        return simplifyPoints([p1, { x: splitX, y: p1.y }, { x: splitX, y: p2.y }, p2]);
+      }
+
+      // 7. Skierowane ku sobie pionowo
+      if ((dir1 === 'DOWN' && p1.y <= p2.y) || (dir1 === 'UP' && p1.y >= p2.y)) {
+        const splitY = wire.splitPos !== undefined ? wire.splitPos : Math.round((p1.y + p2.y) / 2);
+        return simplifyPoints([p1, { x: p1.x, y: splitY }, { x: p2.x, y: splitY }, p2]);
+      }
+
+      // 8. Domyślny fallback: H-V-H lub V-H-V
+      if (Math.abs(p1.x - p2.x) >= Math.abs(p1.y - p2.y)) {
+        const splitX = wire.splitPos !== undefined ? wire.splitPos : Math.round((p1.x + p2.x) / 2);
+        return simplifyPoints([p1, { x: splitX, y: p1.y }, { x: splitX, y: p2.y }, p2]);
+      } else {
+        const splitY = wire.splitPos !== undefined ? wire.splitPos : Math.round((p1.y + p2.y) / 2);
+        return simplifyPoints([p1, { x: p1.x, y: splitY }, { x: p2.x, y: splitY }, p2]);
+      }
+    }
+
+    // Upraszcza listę punktów eliminując zbędne współliniowe załamania
+    function simplifyPoints(pts) {
+      if (!pts || pts.length <= 2) return pts || [];
+      const res = [pts[0]];
+      for (let i = 1; i < pts.length - 1; i++) {
+        const prev = res[res.length - 1];
+        const curr = pts[i];
+        const next = pts[i + 1];
+        if (Math.abs(prev.x - curr.x) < 1 && Math.abs(prev.y - curr.y) < 1) continue;
+        const isCollinearX = Math.abs(prev.x - curr.x) < 1 && Math.abs(curr.x - next.x) < 1;
+        const isCollinearY = Math.abs(prev.y - curr.y) < 1 && Math.abs(curr.y - next.y) < 1;
+        if (isCollinearX || isCollinearY) continue;
+        res.push(curr);
+      }
+      res.push(pts[pts.length - 1]);
+      return res;
+    }
+
+    // Wyznacza punkty podglądu podczas ciągnięcia nowego przewodu
+    function getPreviewWirePoints(p1, p2, mode) {
+      if (Math.abs(p1.x - p2.x) < 2 || Math.abs(p1.y - p2.y) < 2) {
+        return [p1, p2];
+      }
+      if (mode === 'direct') {
+        return [p1, p2];
+      }
+      if (mode === 'vh') {
+        return [p1, { x: p1.x, y: p2.y }, p2];
+      }
+      if (mode === 'hv') {
+        return [p1, { x: p2.x, y: p1.y }, p2];
+      }
+      if (mode === 'vhv') {
+        const midY = Math.round((p1.y + p2.y) / 2);
+        return [p1, { x: p1.x, y: midY }, { x: p2.x, y: midY }, p2];
+      }
+      // auto / hvh
+      const midX = Math.round((p1.x + p2.x) / 2);
+      return [p1, { x: midX, y: p1.y }, { x: midX, y: p2.y }, p2];
+    }
+
+    // --- RYSOWANIE PRZEWODÓW I WĘZŁÓW ---
+    function drawWires() {
+      circuitState.wires.forEach(wire => {
+        const pts = getWirePoints(wire);
+        if (pts.length < 2) return;
+
+        const isSelected = circuitState.selectedWire === wire;
+        ctx.strokeStyle = isSelected ? '#38bdf8' : (circuitState.voltage > 0 ? '#ef4444' : '#64748b');
+        ctx.lineWidth = isSelected ? 3.5 : 2.5;
+
+        ctx.beginPath();
+        ctx.moveTo(pts[0].x, pts[0].y);
+        for (let i = 1; i < pts.length; i++) {
+          ctx.lineTo(pts[i].x, pts[i].y);
+        }
+        ctx.stroke();
+
+        // Rysuj uchwyty przeciągania szyn dla zaznaczonego kabla
+        if (isSelected) {
+          drawWireHandles(wire, pts);
+        }
+      });
+
+      // Kropki węzłowe połączeń (Junction dots)
+      drawJunctionDots();
+    }
+
+    function drawWireHandles(wire, pts) {
+      for (let i = 0; i < pts.length - 1; i++) {
+        const pA = pts[i];
+        const pB = pts[i + 1];
+        const mx = (pA.x + pB.x) / 2;
+        const my = (pA.y + pB.y) / 2;
+        const isV = Math.abs(pA.x - pB.x) < 2;
+
+        ctx.fillStyle = '#facc15';
+        ctx.strokeStyle = '#020617';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        if (isV) {
+          ctx.rect(mx - 3, my - 6, 6, 12);
+        } else {
+          ctx.rect(mx - 6, my - 3, 12, 6);
+        }
+        ctx.fill();
+        ctx.stroke();
+      }
+    }
+
+    function drawJunctionDots() {
+      const pinConnectCount = new Map();
+      circuitState.wires.forEach(w => {
+        const p1 = getPinWorldPos(w.fromElem, w.fromPin);
+        const p2 = getPinWorldPos(w.toElem, w.toPin);
+        const k1 = `${Math.round(p1.x)},${Math.round(p1.y)}`;
+        const k2 = `${Math.round(p2.x)},${Math.round(p2.y)}`;
+        pinConnectCount.set(k1, (pinConnectCount.get(k1) || 0) + 1);
+        pinConnectCount.set(k2, (pinConnectCount.get(k2) || 0) + 1);
+      });
+
+      pinConnectCount.forEach((count, key) => {
+        const [x, y] = key.split(',').map(Number);
+        ctx.fillStyle = count >= 2 ? '#f8fafc' : '#38bdf8';
+        ctx.beginPath();
+        ctx.arc(x, y, count >= 2 ? 4.5 : 3, 0, Math.PI * 2);
+        ctx.fill();
+        if (count >= 2) {
+          ctx.strokeStyle = '#020617';
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+        }
+      });
+    }
+
+    // Animacja płynących ładunków (umowny kierunek lub ruch elektronów)
+    function drawElectrons() {
+      ctx.fillStyle = circuitState.currentFlowMode === 'conventional' ? '#facc15' : '#38bdf8';
+
+      circuitState.wires.forEach(wire => {
+        const pts = getWirePoints(wire);
+        if (pts.length < 2) return;
+
+        const Iw = circuitState.wireCurrents ? (circuitState.wireCurrents.get(wire) || 0) : 0;
+        if (Math.abs(Iw) < 0.005) return; // Brak prądu w tej gałęzi
+
+        let forward = (Iw > 0);
+        if (circuitState.currentFlowMode === 'electrons') {
+          forward = !forward;
+        }
+
+        const orderedPts = forward ? pts : [...pts].reverse();
+        const speedFactor = Math.min(2.5, Math.max(0.4, Math.pow(Math.abs(Iw), 0.3)));
+
+        for (let i = 0; i < orderedPts.length - 1; i++) {
+          const pA = orderedPts[i];
+          const pB = orderedPts[i + 1];
+          const len = Math.hypot(pB.x - pA.x, pB.y - pA.y);
+          if (len < 1) continue;
+          const step = 18;
+          const offset = (circuitState.electronOffset * speedFactor) % step;
+          for (let d = offset; d < len; d += step) {
+            const t = d / len;
+            const ex = pA.x + (pB.x - pA.x) * t;
+            const ey = pA.y + (pB.y - pA.y) * t;
+            ctx.beginPath();
+            ctx.arc(ex, ey, 2.5, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+      });
+    }
+    function addSymbol(type) {
+      const cx = circuitState.scrollX + (canvas ? canvas.width / 2 : 400);
+      const cy = circuitState.scrollY + (canvas ? canvas.height / 2 : 300);
+      const elem = createPresetElem(type, cx, cy, 0);
+      selectElement(elem);
+      showToast(`Dodano element: ${elem.name || type}`);
+    }
+
+    function getPinWorldPos(elem, pin) {
+      const rad = (elem.rotation * Math.PI) / 180;
+      const cos = Math.cos(rad);
+      const sin = Math.sin(rad);
+      return {
+        x: Math.round(elem.x + pin.x * cos - pin.y * sin),
+        y: Math.round(elem.y + pin.x * sin + pin.y * cos)
+      };
+    }
+
+    function findPinAt(worldX, worldY) {
+      for (const elem of circuitState.elements) {
+        for (const pin of elem.pins) {
+          const pos = getPinWorldPos(elem, pin);
+          if (Math.hypot(pos.x - worldX, pos.y - worldY) <= 14) {
+            return { elem, pin };
+          }
+        }
+      }
+      return null;
+    }
+
+    function findElementAt(worldX, worldY) {
+      for (let i = circuitState.elements.length - 1; i >= 0; i--) {
+        const elem = circuitState.elements[i];
+        const dx = worldX - elem.x;
+        const dy = worldY - elem.y;
+        const rad = (-elem.rotation * Math.PI) / 180;
+        const lx = dx * Math.cos(rad) - dy * Math.sin(rad);
+        const ly = dx * Math.sin(rad) + dy * Math.cos(rad);
+        if (Math.abs(lx) <= 40 && Math.abs(ly) <= 30) {
+          return elem;
+        }
+      }
+      return null;
+    }
+
+    function findWireHandleAt(worldX, worldY) {
+      if (!circuitState.selectedWire) return null;
+      const wire = circuitState.selectedWire;
+      const pts = getWirePoints(wire);
+      for (let i = 0; i < pts.length - 1; i++) {
+        const pA = pts[i];
+        const pB = pts[i + 1];
+        const mx = (pA.x + pB.x) / 2;
+        const my = (pA.y + pB.y) / 2;
+        const isV = Math.abs(pA.x - pB.x) < 2;
+        if (Math.hypot(worldX - mx, worldY - my) <= 10) {
+          return { wire, isVertical: isV, segmentIndex: i };
+        }
+      }
+      return null;
+    }
+
+    function distToSegment(px, py, x1, y1, x2, y2) {
+      const l2 = (x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1);
+      if (l2 === 0) return Math.hypot(px - x1, py - y1);
+      let t = ((px - x1) * (x2 - x1) + (py - y1) * (y2 - y1)) / l2;
+      t = Math.max(0, Math.min(1, t));
+      return Math.hypot(px - (x1 + t * (x2 - x1)), py - (y1 + t * (y2 - y1)));
+    }
+
+    function findWireAt(worldX, worldY) {
+      for (let i = circuitState.wires.length - 1; i >= 0; i--) {
+        const wire = circuitState.wires[i];
+        const pts = getWirePoints(wire);
+        for (let j = 0; j < pts.length - 1; j++) {
+          if (distToSegment(worldX, worldY, pts[j].x, pts[j].y, pts[j + 1].x, pts[j + 1].y) <= 8) {
+            return wire;
+          }
+        }
+      }
+      return null;
+    }
+
+    function snapToGrid(x, y) {
+      if (!circuitState.gridSnap) return { x, y };
+      const sz = circuitState.gridSize || 20;
+      return {
+        x: Math.round(x / sz) * sz,
+        y: Math.round(y / sz) * sz
+      };
+    }
+
+    function handlePinClick(clickedPin) {
+      if (!circuitState.connectingPin) {
+        circuitState.connectingPin = clickedPin;
+        circuitState.tempWireTarget = getPinWorldPos(clickedPin.elem, clickedPin.pin);
+        circuitState.wireWaypoints = [];
+        circuitState.tempRouteMode = circuitState.defaultRouteMode;
+        showToast(`Prowadzenie przewodu ze styku: ${clickedPin.pin.label || clickedPin.pin.id}`);
+        return;
+      }
+
+      // Kliknięto w styk docelowy
+      const fromElem = circuitState.connectingPin.elem;
+      const fromPin = circuitState.connectingPin.pin;
+      const toElem = clickedPin.elem;
+      const toPin = clickedPin.pin;
+
+      if (fromElem === toElem && fromPin === toPin) {
+        cancelWireConnection();
+        showToast('Anulowano: nie można łączyć styku z samym sobą.');
+        return;
+      }
+
+      // Sprawdź czy połączenie już istnieje
+      const alreadyExists = circuitState.wires.some(w =>
+        (w.fromElem === fromElem && w.fromPin === fromPin && w.toElem === toElem && w.toPin === toPin) ||
+        (w.fromElem === toElem && w.fromPin === toPin && w.toElem === fromElem && w.toPin === fromPin)
+      );
+
+      if (alreadyExists) {
+        cancelWireConnection();
+        showToast('⚠️ Przewód między tymi stykami już istnieje.');
+        return;
+      }
+
+      const newWire = {
+        id: 'wire_' + Date.now() + '_' + Math.floor(Math.random() * 1000),
+        fromElem,
+        fromPin,
+        toElem,
+        toPin,
+        routeType: circuitState.tempRouteMode || circuitState.defaultRouteMode,
+        waypoints: [...circuitState.wireWaypoints]
+      };
+
+      circuitState.wires.push(newWire);
+      selectWire(newWire);
+      cancelWireConnection();
+      showToast('✅ Połączono styki przewodem.');
+    }
+
+    function cancelWireConnection() {
+      circuitState.connectingPin = null;
+      circuitState.tempWireTarget = null;
+      circuitState.wireWaypoints = [];
+      circuitState.tempRouteMode = circuitState.defaultRouteMode;
+    }
+
+    function squareUpCircuit() {
+      circuitState.elements.forEach(elem => {
+        const snapped = snapToGrid(elem.x, elem.y);
+        elem.x = snapped.x;
+        elem.y = snapped.y;
+      });
+      circuitState.wires.forEach(w => {
+        w.routeType = 'auto';
+        delete w.splitPos;
+      });
+      showToast('🔲 Wyrównano i ukwadratowano cały schemat.');
+    }
+
+    function toggleGlobalRoutingMode() {
+      const modes = ['auto', 'hv', 'vh', 'direct'];
+      const curIdx = modes.indexOf(circuitState.defaultRouteMode || 'auto');
+      circuitState.defaultRouteMode = modes[(curIdx + 1) % modes.length];
+      const btn = document.getElementById('btnWireDirect');
+      if (btn) {
+        const label = circuitState.defaultRouteMode === 'direct' ? '📐 Linia Prosta (Skośna)' :
+                      circuitState.defaultRouteMode === 'hv' ? '🔲 Kąty 90° (Poziom-Pion)' :
+                      circuitState.defaultRouteMode === 'vh' ? '🔲 Kąty 90° (Pion-Poziom)' : '🔲 Kąty 90° (Auto)';
+        btn.innerHTML = label;
+      }
+      showToast(`Tryb prowadzenia: ${circuitState.defaultRouteMode.toUpperCase()}`);
+    }
+
+    function setWireRouteType(routeType) {
+      if (circuitState.selectedWire) {
+        circuitState.selectedWire.routeType = routeType;
+        selectWire(circuitState.selectedWire);
+        showToast(`Ustawiono trasowanie: ${routeType.toUpperCase()}`);
+      }
+    }
+
+    function toggleSelectedWireRoute() {
+      if (circuitState.selectedWire) {
+        const modes = ['auto', 'hv', 'vh', 'direct'];
+        const curIdx = modes.indexOf(circuitState.selectedWire.routeType || 'auto');
+        circuitState.selectedWire.routeType = modes[(curIdx + 1) % modes.length];
+        selectWire(circuitState.selectedWire);
+        showToast(`Tryb trasy kabla: ${circuitState.selectedWire.routeType.toUpperCase()}`);
+      }
+    }
+
+    function selectElement(elem) {
+      deselectAll();
+      circuitState.selectedElement = elem;
+      updatePropsPanel(elem);
+    }
+
+    function selectWire(wire) {
+      deselectAll();
+      circuitState.selectedWire = wire;
+      document.getElementById('selectedElemType').textContent = 'PRZEWÓD';
+      document.getElementById('propsContainer').innerHTML = `
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <span style="font-size: 0.8rem; font-weight: 700; color: var(--accent-blue);">Przewód połączeniowy</span>
+          <span style="font-size: 0.72rem; color: var(--text-muted);">Łączy: ${wire.fromElem.name || wire.fromElem.type} (${wire.fromPin.label || wire.fromPin.id}) &rarr; ${wire.toElem.name || wire.toElem.type} (${wire.toPin.label || wire.toPin.id})</span>
+          <div style="margin-top: 6px;">
+            <label style="font-size: 0.72rem; color: var(--text-muted); display: block; margin-bottom: 4px;">Prowadzenie linii:</label>
+            <select onchange="setWireRouteType(this.value)" style="width: 100%; background: var(--bg-dark); color: #fff; border: 1px solid var(--border-color); padding: 4px 8px; border-radius: 4px; font-size: 0.78rem;">
+              <option value="auto" ${wire.routeType === 'auto' || !wire.routeType ? 'selected' : ''}>Inteligentne (Auto 90°)</option>
+              <option value="hv" ${wire.routeType === 'hv' ? 'selected' : ''}>Kąt 90° (Poziomo &rarr; Pionowo)</option>
+              <option value="vh" ${wire.routeType === 'vh' ? 'selected' : ''}>Kąt 90° (Pionowo &rarr; Poziomo)</option>
+              <option value="direct" ${wire.routeType === 'direct' ? 'selected' : ''}>Linia prosta (Skośna)</option>
+            </select>
+          </div>
+          <button class="tool-btn" onclick="toggleSelectedWireRoute()" style="margin-top: 4px; width: 100%;">🔀 Przełącz załamanie (Spacja)</button>
+          <button class="tool-btn" onclick="deleteSelected()" style="margin-top: 4px; width: 100%; color: var(--accent-red); border-color: rgba(248,113,113,0.3);">🗑️ Usuń ten przewód</button>
+        </div>
+      `;
+    }
+
+    function deselectAll() {
+      circuitState.selectedElement = null;
+      circuitState.selectedWire = null;
+      document.getElementById('selectedElemType').textContent = 'BRAK';
+      document.getElementById('propsContainer').innerHTML = `
+        <span style="color: var(--text-muted); font-size: 0.75rem; text-align: center;">Kliknij element, aby edytować jego parametry.</span>
+      `;
+    }
+
+    function rotateSelected() {
+      if (circuitState.selectedElement) {
+        circuitState.selectedElement.rotation = (circuitState.selectedElement.rotation + 90) % 360;
+        showToast(`Obrócono: ${circuitState.selectedElement.name}`);
+      }
+    }
+
+    function deleteSelected() {
+      if (circuitState.selectedElement) {
+        const elem = circuitState.selectedElement;
+        // Usuń podpięte kable
+        circuitState.wires = circuitState.wires.filter(w => w.fromElem !== elem && w.toElem !== elem);
+        circuitState.elements = circuitState.elements.filter(e => e !== elem);
+        deselectAll();
+        showToast(`🗑️ Usunięto: ${elem.name}`);
+      } else if (circuitState.selectedWire) {
+        const wire = circuitState.selectedWire;
+        circuitState.wires = circuitState.wires.filter(w => w !== wire);
+        deselectAll();
+        showToast('✂️ Usunięto przewód');
+      }
+    }
+
+    function clearCircuit() {
+      circuitState.elements = [];
+      circuitState.wires = [];
+      cancelWireConnection();
+      deselectAll();
+      showToast('Wyczyszczono cały schemat.');
+    }
+
+    // --- PANEL WŁAŚCIWOŚCI ---
+    function updatePropsPanel(elem) {
+      document.getElementById('selectedElemType').textContent = elem.type.toUpperCase();
+      let html = `<div style="font-weight: 700; color: #fff; margin-bottom: 4px;">${elem.name}</div>`;
+
+      if (elem.type === 'battery') {
+        html += `
+          <div class="prop-row">
+            <span>Napięcie U (V):</span>
+            <input type="number" class="prop-input" value="${elem.voltage}" step="0.5" onchange="updateElemProp('voltage', parseFloat(this.value))">
+          </div>
+        `;
+      } else if (elem.type === 'resistor' || elem.type === 'potentiometer') {
+        html += `
+          <div class="prop-row">
+            <span>Rezystancja R (&Omega;):</span>
+            <input type="number" class="prop-input" value="${elem.resistance}" step="50" onchange="updateElemProp('resistance', parseFloat(this.value))">
+          </div>
+        `;
+      } else if (elem.type === 'capacitor') {
+        html += `
+          <div class="prop-row">
+            <span>Pojemność C (&mu;F):</span>
+            <input type="number" class="prop-input" value="${elem.capacitance}" step="10" onchange="updateElemProp('capacitance', parseFloat(this.value))">
+          </div>
+        `;
+      } else if (elem.type === 'inductor') {
+        html += `
+          <div class="prop-row">
+            <span>Indukcyjność L (mH):</span>
+            <input type="number" class="prop-input" value="${elem.inductance}" step="1" onchange="updateElemProp('inductance', parseFloat(this.value))">
+          </div>
+        `;
+      } else if (elem.type === 'voltmeter') {
+        html += `
+          <div class="prop-row">
+            <span>Zmierzona wartość U:</span>
+            <span id="liveMeterPropVal" style="color: var(--accent-green); font-weight: 800; font-family: monospace; font-size: 1rem;">${elem.measuredVal || '0.00 V'}</span>
+          </div>
+          <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 6px; background: rgba(56, 189, 248, 0.08); padding: 6px; border-radius: 4px; border: 1px dashed var(--accent-blue);">
+            💡 <b>Zasada pomiaru:</b> Woltomierz wpinamy <b>równolegle</b> do badanego fragmentu obwodu. Rezystancja wewnętrzna R<sub>V</sub> &rarr; &infin;.
+          </div>
+        `;
+      } else if (elem.type === 'ammeter') {
+        html += `
+          <div class="prop-row">
+            <span>Zmierzona wartość I:</span>
+            <span id="liveMeterPropVal" style="color: var(--accent-green); font-weight: 800; font-family: monospace; font-size: 1rem;">${elem.measuredVal || '0.0 mA'}</span>
+          </div>
+          <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 6px; background: rgba(251, 146, 60, 0.08); padding: 6px; border-radius: 4px; border: 1px dashed var(--accent-orange);">
+            💡 <b>Zasada pomiaru:</b> Amperomierz wpinamy <b>szeregowo</b> (rozcinając gałąź obwodu). Rezystancja wewnętrzna R<sub>A</sub> &rarr; 0.
+          </div>
+        `;
+      } else if (elem.type === 'led') {
+        const currentModel = elem.ledModel || 'red';
+        const model = LED_MODELS[currentModel] || LED_MODELS.red;
+        const vfVal = elem.vf !== undefined ? elem.vf : model.vf;
+        const rsVal = elem.rs !== undefined ? elem.rs : model.rs;
+        const isBurned = elem.isBurned === true;
+        const iVal = isBurned ? 0 : circuitState.current;
+        const uVal = isBurned ? 0 : (iVal > 0 ? (vfVal + (iVal/1000) * rsVal) : 0);
+
+        html += `
+          <div class="prop-row">
+            <span>Model / Barwa:</span>
+            <select class="prop-input" style="width: 140px; text-align: left;" onchange="changeLedModel(this.value)">
+              <option value="red" ${currentModel === 'red' ? 'selected' : ''}>🔴 Czerwona (1.95V)</option>
+              <option value="green" ${currentModel === 'green' ? 'selected' : ''}>🟢 Zielona (2.25V)</option>
+              <option value="blue" ${currentModel === 'blue' ? 'selected' : ''}>🔵 Niebieska (3.10V)</option>
+              <option value="yellow" ${currentModel === 'yellow' ? 'selected' : ''}>🟡 Żółta (2.10V)</option>
+              <option value="white" ${currentModel === 'white' ? 'selected' : ''}>⚪ Biała (3.20V)</option>
+              <option value="ir" ${currentModel === 'ir' ? 'selected' : ''}>🟣 Podczerwień IR (1.35V)</option>
+            </select>
+          </div>
+          <div class="prop-row">
+            <span>Napięcie progowe V<sub>f</sub>:</span>
+            <input type="number" class="prop-input" value="${vfVal}" step="0.05" onchange="updateElemProp('vf', parseFloat(this.value))">
+          </div>
+          <div class="prop-row">
+            <span>Opór szeregowy R<sub>s</sub> (&Omega;):</span>
+            <input type="number" class="prop-input" value="${rsVal}" step="1" onchange="updateElemProp('rs', parseFloat(this.value))">
+          </div>
+          <div class="prop-row">
+            <span>Spadek napięcia U<sub>D</sub>:</span>
+            <span style="color: var(--accent-green); font-weight: 800; font-family: monospace;">${uVal.toFixed(2)} V</span>
+          </div>
+          <div class="prop-row">
+            <span>Prąd przewodzenia I<sub>D</sub>:</span>
+            <span style="color: ${iVal > 35 ? 'var(--accent-red)' : 'var(--accent-yellow)'}; font-weight: 800; font-family: monospace;">${iVal.toFixed(1)} mA</span>
+          </div>
+        `;
+
+        if (isBurned) {
+          html += `
+            <div style="background: rgba(239, 68, 68, 0.15); border: 1px solid var(--accent-red); padding: 8px; border-radius: 6px; margin-top: 6px;">
+              <div style="color: var(--accent-red); font-weight: 700; font-size: 0.8rem;">💥 DIODA SPALONA!</div>
+              <div style="color: var(--text-muted); font-size: 0.7rem; margin: 4px 0;">Prąd przekroczył I<sub>max</sub> (brak rezystora ograniczającego prąd).</div>
+              <button class="tool-btn" style="width: 100%; background: var(--accent-blue); color: #000; font-weight: 700; margin-top: 4px;" onclick="replaceBurnedLed()">🔄 Wymień diodę na nową</button>
+            </div>
+          `;
+        } else {
+          html += `
+            <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 6px; background: rgba(56, 189, 248, 0.08); padding: 6px; border-radius: 4px; border: 1px dashed var(--accent-blue);">
+              💡 <b>Rzeczywisty model:</b> U<sub>D</sub> = V<sub>f</sub> + I<sub>D</sub> &bull; R<sub>s</sub>. Pamiętaj o rezystorze szeregowym R, aby nie spalić diody!
+            </div>
+          `;
+        }
+      } else if (elem.type === 'diode') {
+        html += `
+          <div class="prop-row">
+            <span>Napięcie przewodzenia V<sub>f</sub>:</span>
+            <input type="number" class="prop-input" value="${elem.vf || 0.70}" step="0.05" onchange="updateElemProp('vf', parseFloat(this.value))">
+          </div>
+          <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 6px; background: rgba(56, 189, 248, 0.08); padding: 6px; border-radius: 4px; border: 1px dashed var(--accent-blue);">
+            💡 Dioda prostownicza krzemowa 1N4007 (V<sub>f</sub> &approx; 0,7V).
+          </div>
+        `;
+      }
+
+      html += `
+        <div style="display: flex; gap: 6px; margin-top: 8px;">
+          <button class="tool-btn" style="flex:1" onclick="rotateSelected()">🔄 Obróć (90&deg;)</button>
+          <button class="tool-btn" style="flex:1; background: #dc2626; color:#fff;" onclick="deleteSelected()">🗑️ Usuń</button>
+        </div>
+      `;
+
+      document.getElementById('propsContainer').innerHTML = html;
+    }
+
+    function updateElemProp(prop, val) {
+      if (circuitState.selectedElement && !isNaN(val)) {
+        circuitState.selectedElement[prop] = val;
+        showToast(`Zaktualizowano: ${prop} = ${val}`);
+      }
+    }
+
+    function changeLedModel(modelKey) {
+      if (circuitState.selectedElement && circuitState.selectedElement.type === 'led') {
+        const model = LED_MODELS[modelKey];
+        if (model) {
+          circuitState.selectedElement.ledModel = modelKey;
+          circuitState.selectedElement.vf = model.vf;
+          circuitState.selectedElement.rs = model.rs;
+          circuitState.selectedElement.imax = model.imax;
+          circuitState.selectedElement.isBurned = false;
+          updatePropsPanel(circuitState.selectedElement);
+          showToast(`Zmieniono model LED: ${model.name} (Vf = ${model.vf}V)`);
+        }
+      }
+    }
+
+    function replaceBurnedLed() {
+      if (circuitState.selectedElement && circuitState.selectedElement.type === 'led') {
+        circuitState.selectedElement.isBurned = false;
+        updatePropsPanel(circuitState.selectedElement);
+        showToast('🔄 Wymieniono diodę LED na nową!');
+      }
+    }
+
+    // --- SYMULACJA FIZYCZNA OBWODU (SOLVER MNA / ANALIZA WĘZŁOWA Z METODĄ NEWTONA-RAPHSONA) ---
+    function simulateCircuit() {
+      if (!circuitState.elements || circuitState.elements.length === 0) {
+        circuitState.voltage = 0;
+        circuitState.current = 0;
+        circuitState.power = 0;
+        circuitState.pinPotentials.clear();
+        if (circuitState.wireCurrents) circuitState.wireCurrents.clear();
+        return;
+      }
+
+      // 1. Unikalne indeksy węzłów dla każdego styku
+      const pinToNode = new Map();
+      let nodeCount = 0;
+      circuitState.elements.forEach(el => {
+        el.pins.forEach(p => {
+          pinToNode.set(`${el.id}:${p.id}`, nodeCount++);
+        });
+      });
+
+      // 2. Wybór węzła odniesienia (GND / 0V)
+      let gndNode = -1;
+      const gndEl = circuitState.elements.find(e => e.type === 'gnd');
+      if (gndEl) {
+        gndNode = pinToNode.get(`${gndEl.id}:${gndEl.pins[0].id}`);
+      } else {
+        const bat = circuitState.elements.find(e => e.type === 'battery' || e.type === 'generator');
+        if (bat) {
+          gndNode = pinToNode.get(`${bat.id}:m`);
+        } else {
+          gndNode = 0;
+        }
+      }
+      if (gndNode === undefined || gndNode < 0) gndNode = 0;
+
+      const dim = nodeCount - 1;
+      if (dim <= 0) {
+        circuitState.voltage = 0;
+        circuitState.current = 0;
+        circuitState.power = 0;
+        return;
+      }
+
+      function mapNode(idx) {
+        if (idx === gndNode) return -1;
+        return idx < gndNode ? idx : idx - 1;
+      }
+      function unmapNode(matIdx) {
+        return matIdx < gndNode ? matIdx : matIdx + 1;
+      }
+
+      let V = new Array(nodeCount).fill(0);
+      circuitState.elements.forEach(el => {
+        if (el.type === 'battery') {
+          const np = pinToNode.get(`${el.id}:p`);
+          if (np !== undefined) V[np] = el.voltage || 9.0;
+        }
+      });
+
+      const gWire = 200; // 5 mOhm na przewód
+
+      // Pętla nieliniowa Newtona-Raphsona (15 iteracji dla pełnej zbieżności półprzewodników)
+      for (let iter = 0; iter < 15; iter++) {
+        const G = Array.from({ length: dim }, () => new Array(dim).fill(0));
+        const RHS = new Array(dim).fill(0);
+
+        function addG(n1, n2, g) {
+          if (n1 === undefined || n2 === undefined) return;
+          const m1 = mapNode(n1);
+          const m2 = mapNode(n2);
+          if (m1 >= 0) G[m1][m1] += g;
+          if (m2 >= 0) G[m2][m2] += g;
+          if (m1 >= 0 && m2 >= 0) {
+            G[m1][m2] -= g;
+            G[m2][m1] -= g;
+          }
+        }
+        function addI(n1, n2, ieq) {
+          if (n1 === undefined || n2 === undefined) return;
+          const m1 = mapNode(n1);
+          const m2 = mapNode(n2);
+          if (m1 >= 0) RHS[m1] -= ieq;
+          if (m2 >= 0) RHS[m2] += ieq;
+        }
+
+        // Stemplowanie przewodów (wires)
+        circuitState.wires.forEach(w => {
+          const n1 = pinToNode.get(`${w.fromElem.id}:${w.fromPin.id}`);
+          const n2 = pinToNode.get(`${w.toElem.id}:${w.toPin.id}`);
+          addG(n1, n2, gWire);
+        });
+
+        // Stemplowanie elementów
+        circuitState.elements.forEach(el => {
+          switch (el.type) {
+            case 'battery': {
+              const np = pinToNode.get(`${el.id}:p`);
+              const nm = pinToNode.get(`${el.id}:m`);
+              const vBat = el.voltage || 9.0;
+              const gBat = 100;
+              addG(np, nm, gBat);
+              addI(np, nm, - vBat * gBat);
+              break;
+            }
+            case 'generator': {
+              const np = pinToNode.get(`${el.id}:p`);
+              const nm = pinToNode.get(`${el.id}:m`);
+              const vGen = (el.voltage || 5.0) * Math.sin(2 * Math.PI * 1000 * circuitState.time);
+              const gGen = 100;
+              addG(np, nm, gGen);
+              addI(np, nm, - vGen * gGen);
+              break;
+            }
+            case 'resistor': {
+              const n1 = pinToNode.get(`${el.id}:1`);
+              const n2 = pinToNode.get(`${el.id}:2`);
+              const r = Math.max(0.1, el.resistance || 1000);
+              addG(n1, n2, 1 / r);
+              break;
+            }
+            case 'potentiometer': {
+              const n1 = pinToNode.get(`${el.id}:1`);
+              const nw = pinToNode.get(`${el.id}:wiper`);
+              const n2 = pinToNode.get(`${el.id}:2`);
+              const rTot = Math.max(1, (el.resistance || 10) * 1000);
+              const pos = el.wiperPos !== undefined ? el.wiperPos : 0.5;
+              const r1 = Math.max(0.1, rTot * pos);
+              const r2 = Math.max(0.1, rTot * (1 - pos));
+              addG(n1, nw, 1 / r1);
+              addG(nw, n2, 1 / r2);
+              break;
+            }
+            case 'switch': {
+              const n1 = pinToNode.get(`${el.id}:1`);
+              const n2 = pinToNode.get(`${el.id}:2`);
+              const gSw = el.closed ? 200 : 1e-7;
+              addG(n1, n2, gSw);
+              break;
+            }
+            case 'capacitor': {
+              const n1 = pinToNode.get(`${el.id}:1`);
+              const n2 = pinToNode.get(`${el.id}:2`);
+              const capUf = el.capacitance || 100;
+              const xc = 1 / (2 * Math.PI * 1000 * (capUf * 1e-6) + 1e-9);
+              addG(n1, n2, 1 / xc);
+              break;
+            }
+            case 'inductor': {
+              const n1 = pinToNode.get(`${el.id}:1`);
+              const n2 = pinToNode.get(`${el.id}:2`);
+              const indMh = el.inductance || 10;
+              const xl = (2 * Math.PI * 1000 * (indMh * 1e-3)) + 0.01;
+              addG(n1, n2, 1 / xl);
+              break;
+            }
+            case 'transformer': {
+              const np1 = pinToNode.get(`${el.id}:p1`);
+              const np2 = pinToNode.get(`${el.id}:p2`);
+              const ns1 = pinToNode.get(`${el.id}:s1`);
+              const ns2 = pinToNode.get(`${el.id}:s2`);
+              addG(np1, np2, 1 / 2);
+              addG(ns1, ns2, 1 / 2);
+              break;
+            }
+            case 'led':
+            case 'diode': {
+              const na = pinToNode.get(`${el.id}:a`);
+              const nk = pinToNode.get(`${el.id}:k`);
+              if (na === undefined || nk === undefined) break;
+              const vD = V[na] - V[nk];
+              const vf = el.vf !== undefined ? el.vf : (el.type === 'led' ? 1.95 : 0.70);
+              const rs = el.rs !== undefined ? el.rs : (el.type === 'led' ? 15 : 1.5);
+              const Iknee = 0.0001; // 0.1 mA
+              if (el.isBurned || vD <= 0) {
+                addG(na, nk, 1e-9);
+              } else if (vD < vf) {
+                const g = 4 * Iknee * Math.pow(vD / vf, 3) / vf + 1e-9;
+                const I = Iknee * Math.pow(vD / vf, 4);
+                const Ieq = I - g * vD;
+                addG(na, nk, g);
+                addI(na, nk, Ieq);
+              } else {
+                const g = 1 / rs;
+                const I = Iknee + (vD - vf) / rs;
+                const Ieq = I - g * vD;
+                addG(na, nk, g);
+                addI(na, nk, Ieq);
+              }
+              break;
+            }
+            case 'npn': {
+              const nb = pinToNode.get(`${el.id}:b`);
+              const nc = pinToNode.get(`${el.id}:c`);
+              const ne = pinToNode.get(`${el.id}:e`);
+              if (nb === undefined || nc === undefined || ne === undefined) break;
+              const vbe = V[nb] - V[ne];
+
+              // Model Shockleya złącza Baza-Emiter dla BC547 (Is = 15 fA, n = 1.05, Vt = 26 mV, Rb = 10 Ohm)
+              const Is = 1.5e-14;
+              const nVt = 1.05 * 0.026; // ~0.0273 V
+              const Rb = 10;
+              const V_trans = 0.65;
+              const I_trans = Is * (Math.exp(V_trans / nVt) - 1);
+              const gd_trans = (Is * Math.exp(V_trans / nVt)) / nVt;
+              const g_trans = gd_trans / (1 + gd_trans * Rb);
+
+              let geff, Ieq, ib;
+              if (vbe <= 0) {
+                geff = 1e-9; Ieq = 0; ib = 0;
+              } else if (vbe < V_trans) {
+                const eVal = Math.exp(vbe / nVt);
+                const Id = Is * (eVal - 1);
+                const gd = (Is * eVal) / nVt + 1e-9;
+                geff = gd / (1 + gd * Rb);
+                ib = Math.max(0, Id / (1 + gd * Rb));
+                Ieq = ib - geff * vbe;
+              } else {
+                geff = g_trans;
+                ib = Math.max(0, I_trans + (vbe - V_trans) * g_trans);
+                Ieq = ib - geff * vbe;
+              }
+
+              addG(nb, ne, geff);
+              addI(nb, ne, Ieq);
+
+              const beta = 200;
+              const icTarget = Math.max(0, beta * ib);
+              const vce = Math.max(0, V[nc] - V[ne]);
+              const rSat = 8;
+              const icSat = Math.max(0, (vce - 0.15) / rSat);
+              if (icTarget >= icSat) {
+                addG(nc, ne, 1 / rSat);
+                addI(nc, ne, - 0.15 / rSat);
+              } else {
+                addI(nc, ne, icTarget);
+              }
+              break;
+            }
+            case 'pnp': {
+              const nb = pinToNode.get(`${el.id}:b`);
+              const ne = pinToNode.get(`${el.id}:e`);
+              const nc = pinToNode.get(`${el.id}:c`);
+              if (nb === undefined || ne === undefined || nc === undefined) break;
+              const veb = V[ne] - V[nb];
+
+              // Model Shockleya złącza Emiter-Baza dla BC557 (Is = 15 fA, n = 1.05, Vt = 26 mV, Rb = 10 Ohm)
+              const Is = 1.5e-14;
+              const nVt = 1.05 * 0.026;
+              const Rb = 10;
+              const V_trans = 0.65;
+              const I_trans = Is * (Math.exp(V_trans / nVt) - 1);
+              const gd_trans = (Is * Math.exp(V_trans / nVt)) / nVt;
+              const g_trans = gd_trans / (1 + gd_trans * Rb);
+
+              let geff, Ieq, ib;
+              if (veb <= 0) {
+                geff = 1e-9; Ieq = 0; ib = 0;
+              } else if (veb < V_trans) {
+                const eVal = Math.exp(veb / nVt);
+                const Id = Is * (eVal - 1);
+                const gd = (Is * eVal) / nVt + 1e-9;
+                geff = gd / (1 + gd * Rb);
+                ib = Math.max(0, Id / (1 + gd * Rb));
+                Ieq = ib - geff * veb;
+              } else {
+                geff = g_trans;
+                ib = Math.max(0, I_trans + (veb - V_trans) * g_trans);
+                Ieq = ib - geff * veb;
+              }
+
+              addG(ne, nb, geff);
+              addI(ne, nb, Ieq);
+
+              const beta = 200;
+              const icTarget = Math.max(0, beta * ib);
+              const vec = Math.max(0, V[ne] - V[nc]);
+              const rSat = 8;
+              const icSat = Math.max(0, (vec - 0.15) / rSat);
+              if (icTarget >= icSat) {
+                addG(ne, nc, 1 / rSat);
+                addI(ne, nc, - 0.15 / rSat);
+              } else {
+                addI(ne, nc, icTarget);
+              }
+              break;
+            }
+            case 'voltmeter': {
+              const np = pinToNode.get(`${el.id}:p`);
+              const nm = pinToNode.get(`${el.id}:m`);
+              addG(np, nm, 1e-7);
+              break;
+            }
+            case 'ammeter': {
+              const np = pinToNode.get(`${el.id}:p`);
+              const nm = pinToNode.get(`${el.id}:m`);
+              addG(np, nm, 1000); // 1 mOhm
+              break;
+            }
+            case 'speaker': {
+              const n1 = pinToNode.get(`${el.id}:in`);
+              const n2 = pinToNode.get(`${el.id}:gnd`);
+              addG(n1, n2, 1 / 8);
+              break;
+            }
+            case 'microphone': {
+              const n1 = pinToNode.get(`${el.id}:out`);
+              const n2 = pinToNode.get(`${el.id}:gnd`);
+              const vMic = 0.1 * Math.sin(2 * Math.PI * 1000 * circuitState.time);
+              const gMic = 1 / 600;
+              addG(n1, n2, gMic);
+              addI(n1, n2, - vMic * gMic);
+              break;
+            }
+          }
+        });
+
+        // Boczniki numeryczne
+        for (let i = 0; i < dim; i++) G[i][i] += 1e-9;
+
+        // Rozwiązanie układu liniowego Gaussa
+        const M = Array.from({ length: dim }, (_, i) => [...G[i], RHS[i]]);
+        for (let i = 0; i < dim; i++) {
+          let maxRow = i;
+          for (let k = i + 1; k < dim; k++) {
+            if (Math.abs(M[k][i]) > Math.abs(M[maxRow][i])) maxRow = k;
+          }
+          if (Math.abs(M[maxRow][i]) > 1e-12) {
+            if (maxRow !== i) { const tmp = M[i]; M[i] = M[maxRow]; M[maxRow] = tmp; }
+            const pivot = M[i][i];
+            for (let j = i; j <= dim; j++) M[i][j] /= pivot;
+            for (let k = 0; k < dim; k++) {
+              if (k !== i) {
+                const factor = M[k][i];
+                for (let j = i; j <= dim; j++) M[k][j] -= factor * M[i][j];
+              }
+            }
+          }
+        }
+
+        V = new Array(nodeCount).fill(0);
+        for (let i = 0; i < dim; i++) {
+          V[unmapNode(i)] = isNaN(M[i][dim]) ? 0 : M[i][dim];
+        }
+      }
+
+      // Sprawdzanie przeciążenia LED na stanie ustalonym
+      circuitState.elements.forEach(el => {
+        if (el.type === 'led' && !el.isBurned) {
+          const na = pinToNode.get(`${el.id}:a`);
+          const nk = pinToNode.get(`${el.id}:k`);
+          if (na !== undefined && nk !== undefined) {
+            const vD = V[na] - V[nk];
+            const vf = el.vf !== undefined ? el.vf : 1.95;
+            const rs = el.rs !== undefined ? el.rs : 15;
+            if (vD > vf) {
+              const I_mA = (vD - vf) / rs * 1000;
+              const imax = el.imax || 35;
+              if (I_mA > imax * 1.5) {
+                el.isBurned = true;
+                showToast(`💥 Dioda LED uległa spaleniu! Prąd ${I_mA.toFixed(1)} mA przekroczył Imax (${imax} mA) - brak rezystora R!`);
+              }
+            }
+          }
+        }
+      });
+
+      // Zapis potencjałów pinów
+      circuitState.pinPotentials.clear();
+      pinToNode.forEach((nodeIdx, key) => {
+        circuitState.pinPotentials.set(key, V[nodeIdx]);
+      });
+
+      // Wyznaczenie rzeczywistych prądów w każdym przewodzie
+      if (!circuitState.wireCurrents) circuitState.wireCurrents = new Map();
+      circuitState.wireCurrents.clear();
+      let maxCurrent = 0;
+
+      circuitState.wires.forEach(w => {
+        const n1 = pinToNode.get(`${w.fromElem.id}:${w.fromPin.id}`);
+        const n2 = pinToNode.get(`${w.toElem.id}:${w.toPin.id}`);
+        if (n1 !== undefined && n2 !== undefined) {
+          const I = (V[n1] - V[n2]) * gWire * 1000; // mA
+          circuitState.wireCurrents.set(w, I);
+          if (Math.abs(I) > maxCurrent) maxCurrent = Math.abs(I);
+        } else {
+          circuitState.wireCurrents.set(w, 0);
+        }
+      });
+
+      // Odczyty mierników na schemacie
+      circuitState.elements.forEach(el => {
+        if (el.type === 'voltmeter') {
+          const np = pinToNode.get(`${el.id}:p`);
+          const nm = pinToNode.get(`${el.id}:m`);
+          const vp = np !== undefined ? V[np] : 0;
+          const vm = nm !== undefined ? V[nm] : 0;
+          const measuredU = Math.abs(vp - vm);
+          el.measuredVal = measuredU.toFixed(2) + ' V';
+        } else if (el.type === 'ammeter') {
+          const np = pinToNode.get(`${el.id}:p`);
+          const nm = pinToNode.get(`${el.id}:m`);
+          const vp = np !== undefined ? V[np] : 0;
+          const vm = nm !== undefined ? V[nm] : 0;
+          const I = Math.abs((vp - vm) * 1000 * 1000); // mA
+          el.measuredVal = I.toFixed(1) + ' mA';
+        }
+      });
+
+      // Multimetr laboratoryjny
+      const bat = circuitState.elements.find(e => e.type === 'battery' || e.type === 'generator');
+      circuitState.voltage = bat ? (bat.voltage || 9.0) : 0;
+      circuitState.current = maxCurrent;
+      circuitState.power = (circuitState.voltage * (circuitState.current / 1000)) * 1000;
+
+      if (circuitState.selectedElement && (circuitState.selectedElement.type === 'voltmeter' || circuitState.selectedElement.type === 'ammeter')) {
+        const liveValElem = document.getElementById('liveMeterPropVal');
+        if (liveValElem) {
+          liveValElem.textContent = circuitState.selectedElement.measuredVal || '0.00 V';
+        }
+      }
+
+      document.getElementById('dispVoltage').textContent = circuitState.voltage.toFixed(2) + ' V';
+      document.getElementById('dispCurrent').textContent = circuitState.current.toFixed(1) + ' mA';
+      document.getElementById('dispPower').textContent = circuitState.power.toFixed(1) + ' mW';
+      document.getElementById('dispFreq').textContent = circuitState.activeAudio ? '1000 Hz' : '0 Hz';
+
+      // Próbkowanie do oscyloskopu
+      circuitState.scopeData.shift();
+      const signal = circuitState.voltage > 0 ? 
+        (Math.sin(circuitState.time * 15) * (circuitState.voltage * 0.4) + circuitState.voltage * 0.5) : 0;
+      circuitState.scopeData.push(signal);
+    }
+
+    // --- OSCYLOSKOP 2D ---
+    function drawOscilloscope() {
+      const w = scopeCanvas.width;
+      const h = scopeCanvas.height;
+
+      scopeCtx.fillStyle = '#020617';
+      scopeCtx.fillRect(0, 0, w, h);
+
+      // Siatka podziałki oscyloskopu
+      scopeCtx.strokeStyle = '#1e293b';
+      scopeCtx.lineWidth = 1;
+      for (let x = 0; x < w; x += 20) {
+        scopeCtx.beginPath(); scopeCtx.moveTo(x, 0); scopeCtx.lineTo(x, h); scopeCtx.stroke();
+      }
+      for (let y = 0; y < h; y += 20) {
+        scopeCtx.beginPath(); scopeCtx.moveTo(0, y); scopeCtx.lineTo(w, y); scopeCtx.stroke();
+      }
+
+      // Przebieg fali
+      scopeCtx.strokeStyle = '#4ade80';
+      scopeCtx.lineWidth = 2;
+      scopeCtx.shadowColor = '#4ade80';
+      scopeCtx.shadowBlur = 6;
+      scopeCtx.beginPath();
+
+      for (let i = 0; i < circuitState.scopeData.length; i++) {
+        const x = (i / (circuitState.scopeData.length - 1)) * w;
+        const y = h - (circuitState.scopeData[i] / 12) * h;
+        if (i === 0) scopeCtx.moveTo(x, y); else scopeCtx.lineTo(x, y);
+      }
+      scopeCtx.stroke();
+      scopeCtx.shadowBlur = 0;
+    }
+
+    // --- WEB AUDIO API (SYNTEZA DŹWIĘKU) ---
+    function toggleAudio() {
+      const btn = document.getElementById('btnAudioToggle');
+      if (!circuitState.activeAudio) {
+        try {
+          circuitState.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          circuitState.audioOsc = circuitState.audioCtx.createOscillator();
+          circuitState.audioGain = circuitState.audioCtx.createGain();
+
+          circuitState.audioOsc.type = 'sine';
+          circuitState.audioOsc.frequency.setValueAtTime(440, circuitState.audioCtx.currentTime);
+
+          circuitState.audioGain.gain.setValueAtTime(0.08, circuitState.audioCtx.currentTime);
+          circuitState.audioOsc.connect(circuitState.audioGain);
+          circuitState.audioGain.connect(circuitState.audioCtx.destination);
+          circuitState.audioOsc.start();
+
+          circuitState.activeAudio = true;
+          btn.classList.add('active');
+          btn.textContent = '🔊 Dźwięk Toru Audio (ON - 440Hz)';
+          showToast('Włączono odsłuch akustyczny Web Audio!');
+        } catch(e) {
+          console.error(e);
+        }
+      } else {
+        if (circuitState.audioCtx) {
+          circuitState.audioCtx.close();
+          circuitState.audioCtx = null;
+          circuitState.activeAudio = false;
+          btn.classList.remove('active');
+          btn.textContent = '🔊 Dźwięk Toru Audio (OFF)';
+          showToast('Wyłączono dźwięk.');
+        }
+      }
+    }
+
+    function toggleElectronAnimation() {
+      circuitState.showElectrons = !circuitState.showElectrons;
+      const btn = document.getElementById('btnAnimToggle');
+      btn.classList.toggle('active', circuitState.showElectrons);
+      btn.textContent = circuitState.showElectrons ? '⚡ Animacja Ładunków (ON)' : '⚡ Animacja Ładunków (OFF)';
+    }
+
+    function toggleCurrentDirection() {
+      circuitState.currentFlowMode = circuitState.currentFlowMode === 'conventional' ? 'electrons' : 'conventional';
+      const btn = document.getElementById('btnFlowDirToggle');
+      if (circuitState.currentFlowMode === 'conventional') {
+        btn.innerHTML = '⚡ Kierunek: Umowny (+&rarr;-)';
+        showToast('⚡ Ustawiono umowny kierunek prądu: od (+) do (-)');
+      } else {
+        btn.innerHTML = '⚡ Kierunek: Elektrony (-&rarr;+)';
+        showToast('⚡ Ustawiono fizyczny ruch elektronów: od (-) do (+)');
+      }
+    }
+
+    function toggleGrid() {
+      circuitState.gridSnap = !circuitState.gridSnap;
+      const btn = document.getElementById('btnGridToggle');
+      btn.classList.toggle('active', circuitState.gridSnap);
+      btn.textContent = circuitState.gridSnap ? '📐 Siatka Snap (ON)' : '📐 Siatka Snap (OFF)';
+    }
+
+    // --- GOTOWE PRESETY EDUKACYJNE Z UKWADRATOWANYMI POŁĄCZENIAMI ---
+    function loadPreset(presetName) {
+      clearCircuit();
+
+      const cx = Math.round(circuitState.worldWidth / 2);
+      const cy = Math.round(circuitState.worldHeight / 2);
+
+      if (presetName === 'ohm_law') {
+        // 1. Prawo Ohma: Bateria + Rezystor + Dioda LED
+        const bat = createPresetElem('battery', cx - 180, cy, 90, { voltage: 9.0 });
+        const res = createPresetElem('resistor', cx, cy - 100, 0, { resistance: 470 });
+        const led = createPresetElem('led', cx + 180, cy, 90);
+
+        circuitState.wires.push(
+          { fromElem: bat, fromPin: bat.pins[0], toElem: res, toPin: res.pins[0], routeMode: 'auto' },
+          { fromElem: res, fromPin: res.pins[1], toElem: led, toPin: led.pins[0], routeMode: 'auto' },
+          { fromElem: led, fromPin: led.pins[1], toElem: bat, toPin: bat.pins[1], routeMode: 'auto' }
+        );
+        showToast('Wczytano: Prawo Ohma (Bateria 9V + Rezystor 470\u03A9 + LED)');
+
+      } else if (presetName === 'voltage_divider') {
+        // 2. Dzielnik napięcia
+        const bat = createPresetElem('battery', cx - 160, cy, 90, { voltage: 12.0 });
+        const r1 = createPresetElem('resistor', cx + 40, cy - 60, 90, { resistance: 1000 });
+        const r2 = createPresetElem('resistor', cx + 40, cy + 40, 90, { resistance: 1000 });
+        const gnd = createPresetElem('gnd', cx + 40, cy + 140, 0);
+
+        circuitState.wires.push(
+          { fromElem: bat, fromPin: bat.pins[0], toElem: r1, toPin: r1.pins[0], routeMode: 'auto' },
+          { fromElem: r1, fromPin: r1.pins[1], toElem: r2, toPin: r2.pins[0], routeMode: 'auto' },
+          { fromElem: r2, fromPin: r2.pins[1], toElem: gnd, toPin: gnd.pins[0], routeMode: 'auto' },
+          { fromElem: bat, fromPin: bat.pins[1], toElem: gnd, toPin: gnd.pins[0], routeMode: 'auto' }
+        );
+        showToast('Wczytano: Dzielnik Napięcia (U1 = U2 = 6.00V)');
+
+      } else if (presetName === 'pot_dimmer') {
+        // 3. Ściemniacz LED z potencjometrem
+        const bat = createPresetElem('battery', cx - 180, cy, 90, { voltage: 9.0 });
+        const pot = createPresetElem('potentiometer', cx, cy - 100, 0, { resistance: 10 });
+        const led = createPresetElem('led', cx + 180, cy, 90);
+
+        circuitState.wires.push(
+          { fromElem: bat, fromPin: bat.pins[0], toElem: pot, toPin: pot.pins[0], routeMode: 'auto' },
+          { fromElem: pot, fromPin: pot.pins[1], toElem: led, toPin: led.pins[0], routeMode: 'auto' }, // Suwak do anody LED
+          { fromElem: led, fromPin: led.pins[1], toElem: bat, toPin: bat.pins[1], routeMode: 'auto' }
+        );
+        showToast('Wczytano: Ściemniacz LED z potencjometrem');
+
+      } else if (presetName === 'transistor_switch') {
+        // 4. Klucz tranzystorowy NPN (Układ laboratoryjny z dzielnikiem bazy i pomiarami V & A)
+        const bat = createPresetElem('battery', cx + 180, cy + 60, 90, { voltage: 9.0 });
+        const r10k = createPresetElem('resistor', cx - 160, cy - 80, 90, { resistance: 10000 });
+        const r47k = createPresetElem('resistor', cx - 160, cy + 120, 90, { resistance: 4700 });
+        const volt = createPresetElem('voltmeter', cx - 240, cy + 120, 90);
+        const npn = createPresetElem('npn', cx - 20, cy + 60, 0);
+        const rc = createPresetElem('resistor', cx + 60, cy - 180, 90, { resistance: 390 });
+        const led = createPresetElem('led', cx + 60, cy - 100, 90);
+        const amm = createPresetElem('ammeter', cx + 60, cy - 20, 90);
+
+        circuitState.wires.push(
+          // Szyna górna (+9V): bat(+) -> rc(1) oraz bat(+) -> r10k(1)
+          { fromElem: bat, fromPin: bat.pins[0], toElem: rc, toPin: rc.pins[0], routeMode: 'auto' },
+          { fromElem: bat, fromPin: bat.pins[0], toElem: r10k, toPin: r10k.pins[0], routeMode: 'auto' },
+          // Dzielnik bazy: r10k(2) -> r47k(1) oraz do bazy NPN
+          { fromElem: r10k, fromPin: r10k.pins[1], toElem: r47k, toPin: r47k.pins[0], routeMode: 'auto' },
+          { fromElem: r10k, fromPin: r10k.pins[1], toElem: npn, toPin: npn.pins[0], routeMode: 'auto' },
+          // Woltomierz równolegle do r47k
+          { fromElem: r47k, fromPin: r47k.pins[0], toElem: volt, toPin: volt.pins[0], routeMode: 'auto' },
+          { fromElem: r47k, fromPin: r47k.pins[1], toElem: volt, toPin: volt.pins[1], routeMode: 'auto' },
+          // Gałąź kolektora: rc(2) -> led(a) -> led(k) -> amm(p) -> amm(m) -> npn(c)
+          { fromElem: rc, fromPin: rc.pins[1], toElem: led, toPin: led.pins[0], routeMode: 'auto' },
+          { fromElem: led, fromPin: led.pins[1], toElem: amm, toPin: amm.pins[0], routeMode: 'auto' },
+          { fromElem: amm, fromPin: amm.pins[1], toElem: npn, toPin: npn.pins[1], routeMode: 'auto' },
+          // Szyna dolna masy (0V / GND): r47k(2) -> bat(m) oraz npn(e) -> bat(m)
+          { fromElem: r47k, fromPin: r47k.pins[1], toElem: bat, toPin: bat.pins[1], routeMode: 'auto' },
+          { fromElem: npn, fromPin: npn.pins[2], toElem: bat, toPin: bat.pins[1], routeMode: 'auto' }
+        );
+        showToast('Wczytano: Klucz Tranzystorowy NPN (Dzielnik + LED + Pomiary)');
+
+      } else if (presetName === 'diode_rectifier') {
+        // 5. Prostownik jednopołówkowy z diodą i filtrem RC
+        const gen = createPresetElem('generator', cx - 180, cy, 90);
+        const dio = createPresetElem('diode', cx - 20, cy - 100, 0);
+        const cap = createPresetElem('capacitor', cx + 80, cy, 90, { capacitance: 100 });
+        const res = createPresetElem('resistor', cx + 180, cy, 90, { resistance: 1000 });
+
+        circuitState.wires.push(
+          { fromElem: gen, fromPin: gen.pins[0], toElem: dio, toPin: dio.pins[0], routeMode: 'auto' },
+          { fromElem: dio, fromPin: dio.pins[1], toElem: cap, toPin: cap.pins[0], routeMode: 'auto' },
+          { fromElem: cap, fromPin: cap.pins[0], toElem: res, toPin: res.pins[0], routeMode: 'auto' },
+          { fromElem: res, fromPin: res.pins[1], toElem: cap, toPin: cap.pins[1], routeMode: 'auto' },
+          { fromElem: cap, fromPin: cap.pins[1], toElem: gen, toPin: gen.pins[1], routeMode: 'auto' }
+        );
+        showToast('Wczytano: Prostownik diodowy z filtrem RC');
+
+      } else if (presetName === 'audio_amp') {
+        // 6. Wzmacniacz akustyczny m.cz.
+        const mic = createPresetElem('microphone', cx - 180, cy, 0);
+        const npn = createPresetElem('npn', cx - 20, cy, 0);
+        const bat = createPresetElem('battery', cx + 80, cy - 120, 90, { voltage: 9.0 });
+        const spk = createPresetElem('speaker', cx + 180, cy, 0);
+
+        circuitState.wires.push(
+          { fromElem: mic, fromPin: mic.pins[0], toElem: npn, toPin: npn.pins[0], routeMode: 'auto' },
+          { fromElem: npn, fromPin: npn.pins[1], toElem: spk, toPin: spk.pins[0], routeMode: 'auto' },
+          { fromElem: bat, fromPin: bat.pins[0], toElem: spk, toPin: spk.pins[1], routeMode: 'auto' },
+          { fromElem: npn, fromPin: npn.pins[2], toElem: mic, toPin: mic.pins[1], routeMode: 'auto' }
+        );
+        showToast('Wczytano: Wzmacniacz akustyczny (Mic &rarr; Głośnik)');
+
+      } else if (presetName === 'multivibrator') {
+        // 7. Multiwibrator astabilny
+        const bat = createPresetElem('battery', cx - 200, cy, 90, { voltage: 9.0 });
+        const led1 = createPresetElem('led', cx - 60, cy - 100, 90);
+        const led2 = createPresetElem('led', cx + 60, cy - 100, 90);
+        const npn1 = createPresetElem('npn', cx - 60, cy + 40, 0);
+        const npn2 = createPresetElem('npn', cx + 60, cy + 40, 0);
+
+        circuitState.wires.push(
+          { fromElem: bat, fromPin: bat.pins[0], toElem: led1, toPin: led1.pins[0], routeMode: 'auto' },
+          { fromElem: bat, fromPin: bat.pins[0], toElem: led2, toPin: led2.pins[0], routeMode: 'auto' },
+          { fromElem: led1, fromPin: led1.pins[1], toElem: npn1, toPin: npn1.pins[1], routeMode: 'auto' },
+          { fromElem: led2, fromPin: led2.pins[1], toElem: npn2, toPin: npn2.pins[1], routeMode: 'auto' },
+          { fromElem: npn1, fromPin: npn1.pins[2], toElem: bat, toPin: bat.pins[1], routeMode: 'auto' },
+          { fromElem: npn2, fromPin: npn2.pins[2], toElem: bat, toPin: bat.pins[1], routeMode: 'auto' }
+        );
+        showToast('Wczytano: Multiwibrator astabilny (Migacz 2x LED)');
+
+      } else if (presetName === 'rlc_filter') {
+        // 8. Obwód RLC
+        const gen = createPresetElem('generator', cx - 180, cy, 90);
+        const ind = createPresetElem('inductor', cx - 40, cy - 100, 0, { inductance: 10 });
+        const cap = createPresetElem('capacitor', cx + 60, cy - 100, 0, { capacitance: 100 });
+        const res = createPresetElem('resistor', cx + 180, cy, 90, { resistance: 1000 });
+
+        circuitState.wires.push(
+          { fromElem: gen, fromPin: gen.pins[0], toElem: ind, toPin: ind.pins[0], routeMode: 'auto' },
+          { fromElem: ind, fromPin: ind.pins[1], toElem: cap, toPin: cap.pins[0], routeMode: 'auto' },
+          { fromElem: cap, fromPin: cap.pins[1], toElem: res, toPin: res.pins[0], routeMode: 'auto' },
+          { fromElem: res, fromPin: res.pins[1], toElem: gen, toPin: gen.pins[1], routeMode: 'auto' }
+        );
+        showToast('Wczytano: Obwód rezonansowy RLC');
+
+      } else if (presetName === 'meters_demo') {
+        // 9. Pomiary V & A (Woltomierz równolegle, Amperomierz szeregowo)
+        const bat = createPresetElem('battery', cx - 220, cy, 90, { voltage: 9.0 });
+        const amm = createPresetElem('ammeter', cx - 80, cy - 100, 0);
+        const res = createPresetElem('resistor', cx + 80, cy - 100, 0, { resistance: 470 });
+        const led = createPresetElem('led', cx + 220, cy, 90);
+        const volt = createPresetElem('voltmeter', cx + 80, cy + 60, 0);
+
+        circuitState.wires.push(
+          { fromElem: bat, fromPin: bat.pins[0], toElem: amm, toPin: amm.pins[0], routeMode: 'auto' },
+          { fromElem: amm, fromPin: amm.pins[1], toElem: res, toPin: res.pins[0], routeMode: 'auto' },
+          { fromElem: res, fromPin: res.pins[1], toElem: led, toPin: led.pins[0], routeMode: 'auto' },
+          { fromElem: led, fromPin: led.pins[1], toElem: bat, toPin: bat.pins[1], routeMode: 'auto' },
+          // Woltomierz wpięty równolegle do rezystora
+          { fromElem: res, fromPin: res.pins[0], toElem: volt, toPin: volt.pins[0], routeMode: 'auto' },
+          { fromElem: res, fromPin: res.pins[1], toElem: volt, toPin: volt.pins[1], routeMode: 'auto' }
+        );
+        showToast('Wczytano: Pomiary V & A (Woltomierz równolegle, Amperomierz szeregowo)');
+      }
+
+      centerView(cx, cy);
+      updateScrollbars();
+    }
+
+    function createPresetElem(type, x, y, rotation, props = {}) {
+      const snap = snapToGrid(x, y);
+      const elem = {
+        id: 'elem_' + Date.now() + '_' + Math.floor(Math.random()*1000),
+        type,
+        x: snap.x,
+        y: snap.y,
+        rotation: rotation || 0,
+        pins: [],
+        ...props
+      };
+
+      // Konfiguracja styków terminala dla każdego symbolu
+      switch(type) {
+        case 'battery':
+          elem.name = 'Bateria DC';
+          elem.voltage = props.voltage || 9.0;
+          elem.pins = [{ id: 'p', x: -30, y: 0, label: '+' }, { id: 'm', x: 30, y: 0, label: '-' }];
+          break;
+        case 'generator':
+          elem.name = 'Generator AC';
+          elem.voltage = 5.0;
+          elem.pins = [{ id: 'p', x: -30, y: 0, label: '~' }, { id: 'm', x: 30, y: 0, label: 'GND' }];
+          break;
+        case 'gnd':
+          elem.name = 'Masa (GND)';
+          elem.pins = [{ id: 'gnd', x: 0, y: -20, label: '0V' }];
+          break;
+        case 'resistor':
+          elem.name = 'Rezystor';
+          elem.resistance = props.resistance || 1000;
+          elem.pins = [{ id: '1', x: -35, y: 0, label: 'R1' }, { id: '2', x: 35, y: 0, label: 'R2' }];
+          break;
+        case 'potentiometer':
+          elem.name = 'Potencjometr';
+          elem.resistance = props.resistance || 10;
+          elem.pins = [{ id: '1', x: -35, y: 0, label: '1' }, { id: 'wiper', x: 0, y: 25, label: 'Ślizgacz' }, { id: '2', x: 35, y: 0, label: '2' }];
+          break;
+        case 'capacitor':
+          elem.name = 'Kondensator';
+          elem.capacitance = props.capacitance || 100;
+          elem.pins = [{ id: '1', x: -30, y: 0, label: '+' }, { id: '2', x: 30, y: 0, label: '-' }];
+          break;
+        case 'inductor':
+          elem.name = 'Cewka Indukcyjna';
+          elem.inductance = props.inductance || 10;
+          elem.pins = [{ id: '1', x: -35, y: 0, label: 'L1' }, { id: '2', x: 35, y: 0, label: 'L2' }];
+          break;
+        case 'led':
+          elem.name = 'Dioda LED';
+          elem.ledModel = props.ledModel || 'red';
+          elem.vf = props.vf !== undefined ? props.vf : (LED_MODELS[elem.ledModel]?.vf || 1.95);
+          elem.rs = props.rs !== undefined ? props.rs : (LED_MODELS[elem.ledModel]?.rs || 15);
+          elem.imax = props.imax || 35;
+          elem.isBurned = false;
+          elem.pins = [{ id: 'a', x: -30, y: 0, label: 'Anoda (+)' }, { id: 'k', x: 30, y: 0, label: 'Katoda (-)' }];
+          break;
+        case 'diode':
+          elem.name = 'Dioda 1N4007 (Krzemowa)';
+          elem.vf = props.vf !== undefined ? props.vf : 0.70;
+          elem.rs = props.rs !== undefined ? props.rs : 1.5;
+          elem.pins = [{ id: 'a', x: -30, y: 0, label: 'Anoda (+)' }, { id: 'k', x: 30, y: 0, label: 'Katoda (-)' }];
+          break;
+        case 'npn':
+          elem.name = 'Tranzystor NPN';
+          elem.pins = [
+            { id: 'b', x: -24, y: 0, label: 'Baza (B)' },
+            { id: 'c', x: 14, y: -24, label: 'Kolektor (C)' },
+            { id: 'e', x: 14, y: 24, label: 'Emiter (E)' }
+          ];
+          break;
+        case 'switch':
+          elem.name = 'Wyłącznik SPST';
+          elem.closed = props.closed !== undefined ? props.closed : false;
+          elem.pins = [{ id: '1', x: -30, y: 0, label: '1' }, { id: '2', x: 30, y: 0, label: '2' }];
+          break;
+        case 'transformer':
+          elem.name = 'Transformator';
+          elem.ratio = props.ratio || 1.0;
+          elem.pins = [
+            { id: 'p1', x: -25, y: -20, label: 'P1' },
+            { id: 'p2', x: -25, y: 20, label: 'P2' },
+            { id: 's1', x: 25, y: -20, label: 'S1' },
+            { id: 's2', x: 25, y: 20, label: 'S2' }
+          ];
+          break;
+        case 'pnp':
+          elem.name = 'Tranzystor PNP';
+          elem.pins = [
+            { id: 'b', x: -24, y: 0, label: 'Baza (B)' },
+            { id: 'e', x: 14, y: -24, label: 'Emiter (E)' },
+            { id: 'c', x: 14, y: 24, label: 'Kolektor (C)' }
+          ];
+          break;
+        case 'microphone':
+          elem.name = 'Mikrofon';
+          elem.pins = [{ id: 'out', x: -25, y: -10, label: 'Mic +' }, { id: 'gnd', x: -25, y: 10, label: 'GND' }];
+          break;
+        case 'speaker':
+          elem.name = 'Głośnik';
+          elem.pins = [{ id: 'in', x: -25, y: -10, label: 'Audio +' }, { id: 'gnd', x: -25, y: 10, label: 'GND' }];
+          break;
+        case 'voltmeter':
+          elem.name = 'Woltomierz (V)';
+          elem.measuredVal = props.measuredVal || '0.00 V';
+          elem.pins = [{ id: 'p', x: -30, y: 0, label: 'V+' }, { id: 'm', x: 30, y: 0, label: 'V-' }];
+          break;
+        case 'ammeter':
+          elem.name = 'Amperomierz (A)';
+          elem.measuredVal = props.measuredVal || '0.0 mA';
+          elem.pins = [{ id: 'p', x: -30, y: 0, label: 'A in' }, { id: 'm', x: 30, y: 0, label: 'A out' }];
+          break;
+      }
+
+      circuitState.elements.push(elem);
+      return elem;
+    }
+
+    // --- ZAPIS I ODCZYT SCHEMATU Z DYSKU (JSON & PNG Z WYBOREM KATALOGU I NAZWY) ---
+    async function saveCircuitToFile() {
+      if (circuitState.elements.length === 0) {
+        showToast('⚠️ Schemat jest pusty – brak elementów do zapisania.');
+        return;
+      }
+
+      const defaultFileName = `schemat_obwodu_${new Date().toISOString().slice(0, 10)}.json`;
+
+      const exportData = {
+        app: "Symulator Schematów Ideowych 2D",
+        version: "1.1",
+        savedAt: new Date().toISOString(),
+        elements: circuitState.elements.map(elem => ({
+          id: elem.id,
+          type: elem.type,
+          name: elem.name,
+          x: elem.x,
+          y: elem.y,
+          rotation: elem.rotation,
+          voltage: elem.voltage,
+          resistance: elem.resistance,
+          capacitance: elem.capacitance,
+          inductance: elem.inductance,
+          ratio: elem.ratio,
+          closed: elem.closed,
+          ledModel: elem.ledModel,
+          vf: elem.vf,
+          rs: elem.rs,
+          imax: elem.imax,
+          isBurned: elem.isBurned,
+          pins: elem.pins
+        })),
+        wires: circuitState.wires.map(w => ({
+          fromElemId: w.fromElem.id,
+          fromPinId: w.fromPin.id,
+          toElemId: w.toElem.id,
+          toPinId: w.toPin.id,
+          routeMode: w.routeMode || 'auto',
+          splitPos: w.splitPos,
+          waypoints: w.waypoints || []
+        }))
+      };
+
+      const jsonStr = JSON.stringify(exportData, null, 2);
+      const blob = new Blob([jsonStr], { type: 'application/json' });
+
+      // Natywny dialog 'Zapisz jako' (Wybór folderu i nazwy pliku)
+      if ('showSaveFilePicker' in window) {
+        try {
+          const handle = await window.showSaveFilePicker({
+            suggestedName: defaultFileName,
+            types: [{
+              description: 'Plik schematu elektronicznego JSON (*.json)',
+              accept: { 'application/json': ['.json'] }
+            }]
+          });
+          const writable = await handle.createWritable();
+          await writable.write(blob);
+          await writable.close();
+          showToast(`💾 Zapisano plik: ${handle.name}`);
+          return;
+        } catch (err) {
+          if (err.name === 'AbortError') {
+            return; // Użytkownik zamknął okno bez zapisu
+          }
+          console.warn('showSaveFilePicker error:', err);
+        }
+      }
+
+      // Fallback: Monit o nazwę pliku + pobieranie przeglądarkowe
+      let chosenName = prompt('Podaj nazwę pliku do zapisu (.json):', defaultFileName);
+      if (!chosenName) return;
+      if (!chosenName.toLowerCase().endsWith('.json')) chosenName += '.json';
+
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = chosenName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast(`💾 Zapisano schemat jako: ${chosenName}`);
+    }
+
+    function loadCircuitFromFile(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const data = JSON.parse(e.target.result);
+          if (!data.elements || !Array.isArray(data.elements)) {
+            throw new Error('Plik nie zawiera poprawnych danych schematu.');
+          }
+
+          clearCircuit();
+
+          const elemMap = new Map();
+
+          // Odtwarzanie elementów
+          data.elements.forEach(rawElem => {
+            const elem = {
+              id: rawElem.id,
+              type: rawElem.type,
+              name: rawElem.name || rawElem.type,
+              x: rawElem.x,
+              y: rawElem.y,
+              rotation: rawElem.rotation || 0,
+              pins: rawElem.pins || [],
+              voltage: rawElem.voltage,
+              resistance: rawElem.resistance,
+              capacitance: rawElem.capacitance,
+              inductance: rawElem.inductance,
+              ratio: rawElem.ratio,
+              closed: rawElem.closed,
+              ledModel: rawElem.ledModel,
+              vf: rawElem.vf,
+              rs: rawElem.rs,
+              imax: rawElem.imax,
+              isBurned: rawElem.isBurned
+            };
+            circuitState.elements.push(elem);
+            elemMap.set(elem.id, elem);
+          });
+
+          // Odtwarzanie połączeń przewodami wraz z trybem prowadzenia i punktami
+          if (data.wires && Array.isArray(data.wires)) {
+            data.wires.forEach(w => {
+              const fromElem = elemMap.get(w.fromElemId);
+              const toElem = elemMap.get(w.toElemId);
+              if (fromElem && toElem) {
+                const fromPin = fromElem.pins.find(p => p.id === w.fromPinId);
+                const toPin = toElem.pins.find(p => p.id === w.toPinId);
+                if (fromPin && toPin) {
+                  circuitState.wires.push({
+                    fromElem,
+                    fromPin,
+                    toElem,
+                    toPin,
+                    routeMode: w.routeMode || 'auto',
+                    splitPos: w.splitPos,
+                    waypoints: w.waypoints || []
+                  });
+                }
+              }
+            });
+          }
+
+          deselectAll();
+          centerView();
+          updateScrollbars();
+          showToast(`📂 Wczytano plik: ${file.name}`);
+        } catch (err) {
+          console.error(err);
+          alert('Błąd podczas wczytywania pliku schematu: ' + err.message);
+        }
+        event.target.value = '';
+      };
+      reader.readAsText(file);
+    }
+
+    async function exportCircuitToImage() {
+      if (circuitState.elements.length === 0) {
+        showToast('⚠️ Schemat jest pusty.');
+        return;
+      }
+
+      // Renderowanie całego obwodu do dedykowanego canvasu
+      let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+      circuitState.elements.forEach(el => {
+        minX = Math.min(minX, el.x);
+        maxX = Math.max(maxX, el.x);
+        minY = Math.min(minY, el.y);
+        maxY = Math.max(maxY, el.y);
+      });
+
+      const pad = 80;
+      const exportW = Math.max(800, (maxX - minX) + pad * 2);
+      const exportH = Math.max(600, (maxY - minY) + pad * 2);
+
+      const offCanvas = document.createElement('canvas');
+      offCanvas.width = exportW;
+      offCanvas.height = exportH;
+      const offCtx = offCanvas.getContext('2d');
+
+      // Tło
+      offCtx.fillStyle = '#020617';
+      offCtx.fillRect(0, 0, exportW, exportH);
+
+      // Siatka
+      offCtx.fillStyle = '#1e293b';
+      for (let x = 20; x < exportW; x += 20) {
+        for (let y = 20; y < exportH; y += 20) {
+          offCtx.fillRect(x - 1, y - 1, 2, 2);
+        }
+      }
+
+      const shiftX = pad - minX;
+      const shiftY = pad - minY;
+
+      offCtx.save();
+      offCtx.translate(shiftX, shiftY);
+
+      // Rysowanie przewodów wieloodcinkowych
+      circuitState.wires.forEach(wire => {
+        const pts = getWirePoints(wire);
+        if (pts.length < 2) return;
+
+        offCtx.strokeStyle = circuitState.voltage > 0 ? '#ef4444' : '#64748b';
+        offCtx.lineWidth = 2.5;
+        offCtx.beginPath();
+        offCtx.moveTo(pts[0].x, pts[0].y);
+        for (let i = 1; i < pts.length; i++) {
+          offCtx.lineTo(pts[i].x, pts[i].y);
+        }
+        offCtx.stroke();
+      });
+
+      // Kropki węzłowe na eksporcie
+      const pinConnectCount = new Map();
+      circuitState.wires.forEach(w => {
+        const p1 = getPinWorldPos(w.fromElem, w.fromPin);
+        const p2 = getPinWorldPos(w.toElem, w.toPin);
+        const k1 = `${Math.round(p1.x)},${Math.round(p1.y)}`;
+        const k2 = `${Math.round(p2.x)},${Math.round(p2.y)}`;
+        pinConnectCount.set(k1, (pinConnectCount.get(k1) || 0) + 1);
+        pinConnectCount.set(k2, (pinConnectCount.get(k2) || 0) + 1);
+      });
+
+      pinConnectCount.forEach((count, key) => {
+        const [x, y] = key.split(',').map(Number);
+        offCtx.fillStyle = count >= 2 ? '#f8fafc' : '#38bdf8';
+        offCtx.beginPath();
+        offCtx.arc(x, y, count >= 2 ? 4.5 : 3, 0, Math.PI * 2);
+        offCtx.fill();
+        if (count >= 2) {
+          offCtx.strokeStyle = '#020617';
+          offCtx.lineWidth = 1.5;
+          offCtx.stroke();
+        }
+      });
+
+      // Elementy
+      const savedCtx = ctx;
+      ctx = offCtx;
+      circuitState.elements.forEach(elem => {
+        drawSymbol(elem);
+      });
+      ctx = savedCtx;
+
+      offCtx.restore();
+
+      // Stopka
+      offCtx.font = 'bold 12px sans-serif';
+      offCtx.fillStyle = '#38bdf8';
+      offCtx.fillText('📐 Symulator Schematów Ideowych 2D | SP 1 w Brwinowie', 20, exportH - 20);
+
+      const defaultFileName = `schemat_elektroniczny_${new Date().toISOString().slice(0, 10)}.png`;
+      const blob = await new Promise(resolve => offCanvas.toBlob(resolve, 'image/png'));
+
+      if ('showSaveFilePicker' in window) {
+        try {
+          const handle = await window.showSaveFilePicker({
+            suggestedName: defaultFileName,
+            types: [{
+              description: 'Plik obrazu PNG (*.png)',
+              accept: { 'image/png': ['.png'] }
+            }]
+          });
+          const writable = await handle.createWritable();
+          await writable.write(blob);
+          await writable.close();
+          showToast(`🖼️ Zapisano obraz: ${handle.name}`);
+          return;
+        } catch (err) {
+          if (err.name === 'AbortError') {
+            return;
+          }
+          console.warn('showSaveFilePicker error:', err);
+        }
+      }
+
+      let chosenName = prompt('Podaj nazwę pliku graficznego (.png):', defaultFileName);
+      if (!chosenName) return;
+      if (!chosenName.toLowerCase().endsWith('.png')) chosenName += '.png';
+
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = chosenName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast(`🖼️ Wyeksportowano obraz jako: ${chosenName}`);
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toastMsg');
+      toast.textContent = msg;
+      toast.style.opacity = '1';
+      setTimeout(() => { toast.style.opacity = '0'; }, 2400);
+    }
+
+    // Uruchomienie aplikacji po załadowaniu DOM
+    window.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
